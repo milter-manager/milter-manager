@@ -37,6 +37,7 @@ struct _MilterLibeventEventLoopPrivate
 {
     struct ev_loop *base;
     guint tag;
+    GHashTable *callbacks;
 };
 
 enum
@@ -47,6 +48,8 @@ enum
 
 static void     dispose          (GObject         *object);
 static void     constructed      (GObject         *object);
+
+static void     destroy_callback (gpointer         callback);
 
 static void     run              (MilterEventLoop *loop);
 static gboolean iterate          (MilterEventLoop *loop,
@@ -112,6 +115,7 @@ milter_libevent_event_loop_init (MilterLibeventEventLoop *loop)
     priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
     priv->base = NULL;
     priv->tag = 0;
+    priv->callbacks = NULL;
 }
 
 static void
@@ -121,6 +125,10 @@ dispose (GObject *object)
 
     priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(object);
 
+    if (priv->callbacks) {
+        g_hash_table_destroy(priv->callbacks);
+        priv->callbacks = NULL;
+    }
     if (priv->base) {
         ev_loop_destroy(priv->base);
         priv->base = NULL;
@@ -138,6 +146,8 @@ constructed (GObject *object)
     loop = MILTER_LIBEVENT_EVENT_LOOP(object);
     priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
     priv->base = ev_default_loop(0);
+    priv->callbacks = g_hash_table_new_full(g_int_hash, g_int_equal,
+                                            NULL, destroy_callback);
 }
 
 MilterEventLoop *
@@ -145,6 +155,51 @@ milter_libevent_event_loop_new (void)
 {
     return g_object_new(MILTER_TYPE_LIBEVENT_EVENT_LOOP,
                         NULL);
+}
+
+struct callback_funcs {
+    void (*stop)(struct ev_loop *, void *);
+};
+
+struct callback_header {
+    MilterLibeventEventLoop *loop;
+    const struct callback_funcs *funcs;
+};
+
+static guint
+add_callback (MilterLibeventEventLoopPrivate *priv, gpointer data)
+{
+    guint tag = ++priv->tag;
+    g_hash_table_insert(priv->callbacks, (gpointer)(gsize)tag, data);
+    return tag;
+}
+
+static gpointer
+alloc_callback (MilterEventLoop *loop,
+                const struct callback_funcs *funcs,
+                gsize size)
+{
+    struct callback_header *header = g_malloc0(size + sizeof(*header));
+    header->loop = (MilterLibeventEventLoop *)loop;
+    header->funcs = funcs;
+    return header + 1;
+}
+
+#define new_callback(type) alloc_callback((loop), &type##_callback_funcs, sizeof(struct type##_callback_data))
+#define callback_get_private(data) (((const struct callback_header *)(data)-1)->loop)
+#define callback_get_funcs(data) (((const struct callback_header *)(data)-1)->funcs)
+
+static void
+destroy_callback (gpointer data)
+{
+    struct callback_header *header = data;
+    MilterLibeventEventLoopPrivate *priv;
+    const struct callback_funcs *funcs;
+    --header;
+    priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(header->loop);
+    funcs = header->funcs;
+    funcs->stop(priv->base, data);
+    g_free(header);
 }
 
 static void
@@ -204,7 +259,6 @@ evcond_to_g_io_condition(short event)
 
 struct io_callback_data {
     ev_io event;
-    MilterLibeventEventLoop *loop;
     GIOChannel *channel;
     GIOFunc function;
     void *user_data;
@@ -221,6 +275,10 @@ io_func (struct ev_loop *loop, ev_io *w, int revents)
     }
 }
 
+static const struct callback_funcs io_callback_funcs = {
+    (void (*)(struct ev_loop *, void *))ev_io_stop,
+};
+
 static guint
 watch_io (MilterEventLoop *loop,
           GIOChannel      *channel,
@@ -234,19 +292,17 @@ watch_io (MilterEventLoop *loop,
 
     priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
     if (fd == -1) return 0;
-    cb = g_malloc0(sizeof(*cb));
+    cb = new_callback(io);
     cb->channel = channel;
     cb->function = function;
     cb->user_data = data;
-    cb->loop = MILTER_LIBEVENT_EVENT_LOOP(loop);
     ev_io_init(&cb->event, io_func, fd, evcond_from_g_io_condition(condition));
     ev_io_start(priv->base, &cb->event);
-    return ++priv->tag;
+    return add_callback(priv, cb);
 }
 
 struct child_callback_data {
     ev_child event;
-    MilterLibeventEventLoop *loop;
     GChildWatchFunc  function;
     void            *user_data;
     GDestroyNotify   notify;
@@ -255,12 +311,16 @@ struct child_callback_data {
 static void
 child_func (struct ev_loop *loop, ev_child *w, int revents)
 {
-    struct child_callback_data *cb = (struct chlid_callback_data *)w;
+    struct child_callback_data *cb = (struct child_callback_data *)w;
 
     cb->function((GPid)w->rpid, w->rstatus, cb->user_data);
     ev_child_stop(loop, w);
     g_free(cb);
 }
+
+static const struct callback_funcs child_callback_funcs = {
+    (void (*)(struct ev_loop *, void *))ev_child_stop,
+};
 
 static guint
 watch_child_full (MilterEventLoop *loop,
@@ -274,19 +334,17 @@ watch_child_full (MilterEventLoop *loop,
     MilterLibeventEventLoopPrivate *priv;
 
     priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
-    cb = g_malloc0(sizeof(*cb));
+    cb = new_callback(child);
     cb->function = function;
     cb->user_data = data;
     cb->notify = notify;
-    cb->loop = MILTER_LIBEVENT_EVENT_LOOP(loop);
     ev_child_init(&cb->event, child_func, pid, FALSE);
     ev_child_start(priv->base, &cb->event);
-    return ++priv->tag;
+    return add_callback(priv, cb);
 }
 
 struct timer_callback_data {
     ev_timer event;
-    MilterLibeventEventLoop *loop;
     GSourceFunc function;
     void *user_data;
 };
@@ -301,6 +359,10 @@ timer_func (struct ev_loop *loop, ev_timer *w, int revents)
     }
 }
 
+static const struct callback_funcs timer_callback_funcs = {
+    (void (*)(struct ev_loop *, void *))ev_timer_stop,
+};
+
 static guint
 add_timeout_full (MilterEventLoop *loop,
                   gint             priority,
@@ -314,18 +376,16 @@ add_timeout_full (MilterEventLoop *loop,
 
     priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
     if (interval_in_seconds < 0) return 0;
-    cb = g_malloc0(sizeof(*cb));
+    cb = new_callback(timer);
     cb->function = function;
     cb->user_data = data;
-    cb->loop = MILTER_LIBEVENT_EVENT_LOOP(loop);
     ev_timer_init(&cb->event, timer_func, interval_in_seconds, interval_in_seconds);
     ev_timer_start(priv->base, &cb->event);
-    return ++priv->tag;
+    return add_callback(priv, cb);
 }
 
 struct idle_callback_data {
     ev_idle event;
-    MilterLibeventEventLoop *loop;
     GSourceFunc function;
     void *user_data;
 };
@@ -340,6 +400,10 @@ idle_func (struct ev_loop *loop, ev_idle *w, int revents)
     }
 }
 
+static const struct callback_funcs idle_callback_funcs = {
+    (void (*)(struct ev_loop *, void *))ev_idle_stop,
+};
+
 static guint
 add_idle_full (MilterEventLoop *loop,
                gint             priority,
@@ -351,13 +415,12 @@ add_idle_full (MilterEventLoop *loop,
     MilterLibeventEventLoopPrivate *priv;
 
     priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
-    cb = g_malloc0(sizeof(*cb));
+    cb = new_callback(idle);
     cb->function = function;
     cb->user_data = data;
-    cb->loop = MILTER_LIBEVENT_EVENT_LOOP(loop);
     ev_idle_init(&cb->event, idle_func);
     ev_idle_start(priv->base, &cb->event);
-    return ++priv->tag;
+    return add_callback(priv, cb);
 }
 
 static gboolean

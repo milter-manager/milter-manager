@@ -6,6 +6,7 @@
 	(constructed): remove libevent only stuff.
 	(io_func): renamed.
 	(watch_child_full): add.
+	(MilterLibeventEventLoopPrivate): manage callbacks.
 
 	* configure.ac: check libev before libevent.
 	abandon libevent.
