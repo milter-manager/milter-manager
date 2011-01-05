@@ -269,12 +269,12 @@ struct io_callback_data {
 };
 
 static void
-io_func (struct ev_loop *loop, ev_io *w, int revents)
+io_func (struct ev_loop *loop, ev_io *watcher, int revents)
 {
-    struct io_callback_data *cb = (struct io_callback_data *)w;
+    struct io_callback_data *cb = (struct io_callback_data *)watcher;
 
     if (!cb->function(cb->channel, evcond_to_g_io_condition(revents), cb->user_data)) {
-        ev_io_stop(loop, w);
+        ev_io_stop(loop, watcher);
         g_free(cb);
     }
 }
@@ -313,12 +313,12 @@ struct child_callback_data {
 };
 
 static void
-child_func (struct ev_loop *loop, ev_child *w, int revents)
+child_func (struct ev_loop *loop, ev_child *watcher, int revents)
 {
-    struct child_callback_data *cb = (struct child_callback_data *)w;
+    struct child_callback_data *cb = (struct child_callback_data *)watcher;
 
-    cb->function((GPid)w->rpid, w->rstatus, cb->user_data);
-    ev_child_stop(loop, w);
+    cb->function((GPid)watcher->rpid, watcher->rstatus, cb->user_data);
+    ev_child_stop(loop, watcher);
     g_free(cb);
 }
 
@@ -354,11 +354,11 @@ struct timer_callback_data {
 };
 
 static void
-timer_func (struct ev_loop *loop, ev_timer *w, int revents)
+timer_func (struct ev_loop *loop, ev_timer *watcher, int revents)
 {
-    struct timer_callback_data *cb = (struct timer_callback_data *)w;
+    struct timer_callback_data *cb = (struct timer_callback_data *)watcher;
     if (!cb->function(cb->user_data)) {
-        ev_timer_stop(loop, w);
+        ev_timer_stop(loop, watcher);
         g_free(cb);
     }
 }
@@ -395,11 +395,11 @@ struct idle_callback_data {
 };
 
 static void
-idle_func (struct ev_loop *loop, ev_idle *w, int revents)
+idle_func (struct ev_loop *loop, ev_idle *watcher, int revents)
 {
-    struct idle_callback_data *cb = (struct idle_callback_data *)w;
+    struct idle_callback_data *cb = (struct idle_callback_data *)watcher;
     if (!cb->function(cb->user_data)) {
-        ev_idle_stop(loop, w);
+        ev_idle_stop(loop, watcher);
         g_free(cb);
     }
 }
