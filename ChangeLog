@@ -1,5 +1,8 @@
 2011-01-05  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-report-statistics: use top instead of ps for
+	retrieving %CPU.
+
 	* tool/milter-report-statistics: show more statistics.
 
 	* tool/milter-report-statistics: add.

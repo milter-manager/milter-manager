@@ -49,11 +49,11 @@ class MilterStatus
   end
 
   def cpu_time
-    ps["time"]
+    top["TIME+"]
   end
 
   def cpu_percent
-    ps["pcpu"]
+    top["%CPU"]
   end
 
   def n_file_descriptors
@@ -82,19 +82,27 @@ class MilterStatus
     status
   end
 
-  def ps
-    @ps ||= retrieve_ps_info
+  def top
+    @top ||= retrieve_top_info
   end
 
-  def retrieve_ps_info
-    ps_info = {}
-    items = ["time", "pcpu"]
-    ps_result = `ps -p #{pid} --no-headers -o #{items.join(",")}`
-    values = ps_result.split(/\s+/)
-    items.each_with_index do |item, i|
-      ps_info[item] = values[i]
+  def retrieve_top_info
+    top_info = {}
+    top_result = `env LANG=C top -p #{pid} -n 1 -b`
+    header, body = top_result.split(/\n\n/, 2)
+    labels = nil
+    body.each_line do |line|
+      values = line.strip.split(/\s+/, 12)
+      if labels.nil?
+        labels = values
+      else
+        labels.each_with_index do |label, i|
+          top_info[label] = values[i]
+        end
+        break
+      end
     end
-    ps_info
+    top_info
   end
 end
 
@@ -131,7 +139,7 @@ class MilterStatisticsReporter
   private
   def show(time, pid, vss, rss, cpu_percent, cpu_time, n_fds, command_line)
     items = [time, pid, vss, rss, cpu_percent, cpu_time, n_fds, command_line]
-    puts("%8s %6s %9s %9s %5s %8s %5s %s" % items)
+    puts("%8s %6s %9s %9s %4s %8s %5s %s" % items)
   end
 end
 
