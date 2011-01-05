@@ -299,6 +299,23 @@ add_timeout_full (MilterEventLoop *loop,
     return ++priv->tag;
 }
 
+struct idle_callback_data {
+    ev_idle event;
+    MilterLibeventEventLoop *loop;
+    GSourceFunc function;
+    void *user_data;
+};
+
+static void
+idle_func (struct ev_loop *loop, ev_idle *w, int revents)
+{
+    struct idle_callback_data *cb = (struct idle_callback_data *)w;
+    if (!cb->function(cb->user_data)) {
+        ev_idle_stop(loop, w);
+        g_free(cb);
+    }
+}
+
 static guint
 add_idle_full (MilterEventLoop *loop,
                gint             priority,
@@ -306,9 +323,17 @@ add_idle_full (MilterEventLoop *loop,
                gpointer         data,
                GDestroyNotify   notify)
 {
-    /* TODO: implement */
-    /* maybe using lowest priority timeout */
-    return 0;
+    struct idle_callback_data *cb;
+    MilterLibeventEventLoopPrivate *priv;
+
+    priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
+    cb = g_malloc0(sizeof(*cb));
+    cb->function = function;
+    cb->user_data = data;
+    cb->loop = MILTER_LIBEVENT_EVENT_LOOP(loop);
+    ev_idle_init(&cb->event, idle_func);
+    ev_idle_start(priv->base, &cb->event);
+    return ++priv->tag;
 }
 
 static gboolean

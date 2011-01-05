@@ -2,6 +2,7 @@
 
 	* milter/core/milter-libevent-event-loop.c (add_timeout_full):
 	start the timer.
+	(add_idle_full): add.
 
 	* configure.ac: check libev before libevent.
 	abandon libevent.
