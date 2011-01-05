@@ -1,0 +1,82 @@
+#!/usr/bin/env ruby
+#
+# Copyright (C) 2011  Kouhei Sutou <kou@clear-code.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+require 'pathname'
+require 'time'
+require 'optparse'
+
+class MilterStatisticsReporter
+  def initialize(target)
+    @target = target
+  end
+
+  def show_header
+    show("Time", "PID", "#FD", "command")
+  end
+
+  def report
+    Pathname.glob("/proc/*/cmdline") do |cmdline|
+      next unless cmdline.readable?
+      command_line = cmdline.read
+      command, *arguments = command_line.split(/\0/)
+      next if command.nil?
+      next if File.basename(command) != @target
+      proc = cmdline.dirname
+      pid = proc.basename.to_s
+      next if pid == "self"
+      fd = proc + "fd"
+      next unless fd.readable?
+      show(Time.now.strftime("%H:%M:%S"),
+               pid,
+               fd.entries.size.to_s,
+               command_line.split(/\0/).join(" "))
+    end
+  end
+
+  private
+  def show(time, pid, n_fds, command_line)
+    puts("%8s\t%6s\t%6s\t%s" % [time, pid, n_fds, command_line])
+  end
+end
+
+if __FILE__ == $0
+  options = OptionParser.new do |_options|
+    _options.banner += " TARGET1 TARGET2 ..."
+  end
+  targets = options.parse!(ARGV)
+  if targets.empty?
+    puts options
+    exit(false)
+  end
+
+  reporters = ARGV.collect do |target|
+    MilterStatisticsReporter.new(target)
+  end
+  reporters.first.show_header
+  loop do
+    begin
+      reporters.each do |reporter|
+        reporter.report
+      end
+      sleep(1)
+    rescue Interrupt
+      break
+    end
+  end
+end
+
+# vi:ts=2:nowrap:ai:expandtab:sw=2

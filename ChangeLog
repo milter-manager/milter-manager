@@ -1,3 +1,7 @@
+2011-01-05  Kouhei Sutou  <kou@clear-code.com>
+
+	* tool/milter-report-statistics: add.
+
 2011-01-05  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/core/milter-libevent-event-loop.c (add_timeout_full):

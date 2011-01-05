@@ -42,4 +42,5 @@ milter_test_server_CFLAGS =				\
 
 dist_bin_SCRIPTS =			\
 	milter-performance-check	\
-	milter-manager-log-analyzer
+	milter-manager-log-analyzer	\
+	milter-report-statistics
