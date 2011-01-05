@@ -517,27 +517,12 @@ if test "x$with_libevent" != "xno"; then
     libevent_prefixes="$with_libevent"
   fi
   for libevent_prefix in $libevent_prefixes; do
-    libevent_header=no
-    for header in ev event; do
-      AC_CHECK_FILE("$libevent_prefix/include/$header.h",
-                    [libevent_header=yes; break])
-    done
-    if test "$libevent_header" = no; then
-      continue
-    fi
     CFLAGS="$CFLAGS -I$libevent_prefix/include"
     LDFLAGS="$LDFLAGS -L$libevent_prefix/lib"
     libevent_available=no
     AC_CHECK_HEADERS(ev.h,
                      [AC_CHECK_LIB(ev, ev_loop_new,
                                    [libevent_available=ev])])
-    if test "x$libevent_available" = "xno"; then
-      AC_CHECK_HEADERS(event.h,
-                       [AC_CHECK_LIB(event, event_init,
-                                     [libevnet_available=event],
-                                     [libevent_available=no])],
-                       [libev_available=no])
-    fi
     CFLAGS="$_SAVE_CFLAGS"
     LDFLAGS="$_SAVE_LDFLAGS"
     if test "x$libevent_available" != "xno"; then
@@ -552,13 +537,9 @@ if test "x$with_libevent" != "xno"; then
   fi],
   [ev], [
     AC_DEFINE(HAVE_LIBEV, [1], [Define to 1 if libev is available.])
-  ],
-  [event], [
-    AC_DEFINE(HAVE_LIBEVENT, [1], [Define to 1 if libevent is available.])
   ])
 fi
-AM_CONDITIONAL(WITH_LIBEV, [test "$libevent_available" = ev])
-AM_CONDITIONAL(WITH_LIBEVENT, [test "$libevent_available" = event])
+AM_CONDITIONAL(WITH_LIBEVENT, [test "x$libevent_available" != xno])
 AC_SUBST(LIBEVENT_CFLAGS)
 AC_SUBST(LIBEVENT_LIBS)
 
