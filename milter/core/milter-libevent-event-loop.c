@@ -215,14 +215,12 @@ struct io_callback_data {
 };
 
 static void
-watch_func (int fd, short event, void *data)
+watch_func (struct ev_loop *loop, ev_io *w, int revents)
 {
-    struct io_callback_data *cb = data;
-    MilterLibeventEventLoopPrivate *priv;
+    struct io_callback_data *cb = (struct io_callback_data *)w;
 
-    priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(cb->loop);
-    if (!cb->function(cb->channel, evcond_to_g_io_condition(event), cb->user_data)) {
-        ev_io_stop(priv->base, &cb->event);
+    if (!cb->function(cb->channel, evcond_to_g_io_condition(revents), cb->user_data)) {
+        ev_io_stop(loop, w);
         g_free(cb);
     }
 }
@@ -245,10 +243,7 @@ watch_io (MilterEventLoop *loop,
     cb->function = function;
     cb->user_data = data;
     cb->loop = MILTER_LIBEVENT_EVENT_LOOP(loop);
-    ev_init(&cb->event, watch_func);
-    ev_io_set(&cb->event, fd,
-              evcond_from_g_io_condition(condition));
-    ev_set_userdata(&cb->event, cb);
+    ev_io_init(&cb->event, watch_func, fd, evcond_from_g_io_condition(condition));
     ev_io_start(priv->base, &cb->event);
     return ++priv->tag;
 }
@@ -266,18 +261,18 @@ watch_child_full (MilterEventLoop *loop,
 }
 
 struct timer_callback_data {
-    ev_timeout event;
+    ev_timer event;
     MilterLibeventEventLoop *loop;
     GSourceFunc function;
     void *user_data;
 };
 
 static void
-timer_func (int fd, short event, void *data)
+timer_func (struct ev_loop *loop, ev_timer *w, int revents)
 {
-    struct timer_callback_data *cb = data;
+    struct timer_callback_data *cb = (struct timer_callback_data *)w;
     if (!cb->function(cb->user_data)) {
-        event_del(&cb->event);
+        ev_timer_stop(loop, w);
         g_free(cb);
     }
 }
@@ -291,20 +286,15 @@ add_timeout_full (MilterEventLoop *loop,
                   GDestroyNotify   notify)
 {
     struct timer_callback_data *cb;
-    struct timeval tv;
     MilterLibeventEventLoopPrivate *priv;
 
     priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
     if (interval_in_seconds < 0) return 0;
-    /* should use modf() and round() */
-    tv.tv_sec = (time_t)interval_in_seconds;
-    tv.tv_usec = (unsigned long)((interval_in_seconds - tv.tv_sec) * 1000);
     cb = g_malloc0(sizeof(*cb));
     cb->function = function;
     cb->user_data = data;
     cb->loop = MILTER_LIBEVENT_EVENT_LOOP(loop);
-    evtimer_set(&cb->event, timer_func, cb);
-    evtimer_add(&cb->event, &tv);
+    ev_timer_init(&cb->event, timer_func, interval_in_seconds, interval_in_seconds);
     return ++priv->tag;
 }
 
