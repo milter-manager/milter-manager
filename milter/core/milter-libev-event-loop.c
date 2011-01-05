@@ -323,7 +323,7 @@ child_func (struct ev_loop *loop, ev_child *w, int revents)
 }
 
 static const struct callback_funcs child_callback_funcs = {
-    (void (*)(struct ev_loop *, void *))ev_child_stop,
+    (CallbackFunc)ev_child_stop,
 };
 
 static guint
