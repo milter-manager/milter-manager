@@ -527,7 +527,7 @@ if test "x$with_libev" != "xno"; then
     LDFLAGS="$_SAVE_LDFLAGS"
     if test "x$libev_available" != "xno"; then
       LIBEV_CFLAGS="-I$libev_prefix/include"
-      LIBEV_LIBS="-L$libev_prefix/lib -l$libev_available"
+      LIBEV_LIBS="-L$libev_prefix/lib -lev"
       break
     fi
   done
