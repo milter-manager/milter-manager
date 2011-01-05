@@ -17,7 +17,6 @@
 
 require 'pathname'
 require 'time'
-require 'scanf'
 require 'optparse'
 
 class MilterStatus
