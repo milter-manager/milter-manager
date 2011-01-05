@@ -37,6 +37,7 @@ typedef enum
 } MilterTestErrno;
 
 const gchar   *milter_test_get_base_dir    (void);
+gchar         *milter_test_get_tmp_dir     (void);
 
 void           milter_test_write_data_to_io_channel
                                            (MilterEventLoop *loop,

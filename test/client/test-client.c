@@ -370,12 +370,7 @@ cut_setup (void)
     actual_address = NULL;
     actual_address_size = 0;
 
-    tmp_dir = g_build_filename(milter_test_get_base_dir(),
-                               "tmp",
-                               NULL);
-    cut_remove_path(tmp_dir, NULL);
-    if (g_mkdir_with_parents(tmp_dir, 0700) == -1)
-        cut_assert_errno();
+    tmp_dir = milter_test_get_tmp_dir();
 }
 
 void

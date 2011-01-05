@@ -50,6 +50,25 @@ milter_test_get_base_dir (void)
     return base_dir;
 }
 
+gchar *
+milter_test_get_tmp_dir (void)
+{
+    gchar *tmp_dir;
+    const gchar *dir;
+
+    dir = g_getenv("TMPDIR");
+    if (!dir)
+        dir = "/tmp";
+
+    tmp_dir = g_build_filename(dir, "milter-test-XXXXXX", NULL);
+    if (!mkdtemp(tmp_dir)) {
+        g_free(tmp_dir);
+        return NULL;
+    }
+
+    return tmp_dir;
+}
+
 #define BUFFER_SIZE 4096
 void
 milter_test_write_data_to_io_channel (MilterEventLoop *loop,
