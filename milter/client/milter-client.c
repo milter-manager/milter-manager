@@ -1692,7 +1692,16 @@ milter_client_run (MilterClient *client, GError **error)
 gboolean
 milter_client_main (MilterClient *client)
 {
-    return milter_client_run(client, NULL);
+    gboolean success;
+    GError *error = NULL;
+
+    success = milter_client_run(client, &error);
+    if (error) {
+        milter_error("[client][main][error] %s", error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), error);
+        g_error_free(error);
+    }
+    return success;
 }
 
 gboolean
