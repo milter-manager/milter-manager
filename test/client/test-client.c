@@ -311,6 +311,7 @@ cut_setup (void)
 
     client = milter_client_new();
     loop = milter_client_get_process_loop(client);
+    g_object_ref(loop);
     setup_client_signals();
     server = NULL;
 

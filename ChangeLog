@@ -1,5 +1,7 @@
 2011-01-05  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* test/client/test-client.c (cut_setup): add reference to loop.
+
 	* milter/core/milter-libevent-event-loop.{c,h}: event loop using
 	libevent.  (still in progress)
 
