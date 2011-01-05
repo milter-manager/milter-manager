@@ -211,7 +211,7 @@ struct io_callback_data {
 };
 
 static void
-watch_func (struct ev_loop *loop, ev_io *w, int revents)
+io_func (struct ev_loop *loop, ev_io *w, int revents)
 {
     struct io_callback_data *cb = (struct io_callback_data *)w;
 
@@ -239,7 +239,7 @@ watch_io (MilterEventLoop *loop,
     cb->function = function;
     cb->user_data = data;
     cb->loop = MILTER_LIBEVENT_EVENT_LOOP(loop);
-    ev_io_init(&cb->event, watch_func, fd, evcond_from_g_io_condition(condition));
+    ev_io_init(&cb->event, io_func, fd, evcond_from_g_io_condition(condition));
     ev_io_start(priv->base, &cb->event);
     return ++priv->tag;
 }

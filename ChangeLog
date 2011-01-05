@@ -4,6 +4,7 @@
 	start the timer.
 	(add_idle_full): add.
 	(constructed): remove libevent only stuff.
+	(io_func): renamed.
 
 	* configure.ac: check libev before libevent.
 	abandon libevent.
