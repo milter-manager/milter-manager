@@ -23,7 +23,7 @@
 
 #include "milter-libevent-event-loop.h"
 #include <math.h>
-#include <event.h>
+#include <ev.h>
 
 #define MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(obj)              \
   (G_TYPE_INSTANCE_GET_PRIVATE((obj),                   \
@@ -35,7 +35,7 @@ G_DEFINE_TYPE(MilterLibeventEventLoop, milter_libevent_event_loop, MILTER_TYPE_E
 typedef struct _MilterLibeventEventLoopPrivate	MilterLibeventEventLoopPrivate;
 struct _MilterLibeventEventLoopPrivate
 {
-    struct event_base *base;
+    struct ev_loop *base;
     guint tag;
 };
 
@@ -122,7 +122,7 @@ dispose (GObject *object)
     priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(object);
 
     if (priv->base) {
-        event_base_free(priv->base);
+        ev_loop_destroy(priv->base);
         priv->base = NULL;
     }
 
@@ -137,7 +137,11 @@ constructed (GObject *object)
 
     loop = MILTER_LIBEVENT_EVENT_LOOP(object);
     priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
+#ifdef HAVE_LIBEV
+    priv->base = ev_default_loop(0);
+#else
     priv->base = event_init();
+#endif
 }
 
 MilterEventLoop *
@@ -153,7 +157,7 @@ run (MilterEventLoop *loop)
     MilterLibeventEventLoopPrivate *priv;
 
     priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
-    event_base_loop(priv->base, EVLOOP_NONBLOCK);
+    ev_loop(priv->base, EVLOOP_NONBLOCK);
 }
 
 static gboolean
@@ -163,7 +167,8 @@ iterate (MilterEventLoop *loop, gboolean may_block)
 
     /* TODO: may_block */
     priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
-    return event_base_dispatch(priv->base);
+    ev_loop(priv->base, EVLOOP_ONESHOT);
+    return TRUE;                /* TODO */
 }
 
 static void
@@ -172,7 +177,7 @@ quit (MilterEventLoop *loop)
     MilterLibeventEventLoopPrivate *priv;
 
     priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
-    event_base_loopbreak(priv->base);
+    ev_unloop(priv->base, EVUNLOOP_ONE);
 }
 
 static short
@@ -202,7 +207,7 @@ evcond_to_g_io_condition(short event)
 }
 
 struct io_callback_data {
-    struct event event;
+    ev_io event;
     MilterLibeventEventLoop *loop;
     GIOChannel *channel;
     GIOFunc function;
@@ -213,8 +218,11 @@ static void
 watch_func (int fd, short event, void *data)
 {
     struct io_callback_data *cb = data;
+    MilterLibeventEventLoopPrivate *priv;
+
+    priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(cb->loop);
     if (!cb->function(cb->channel, evcond_to_g_io_condition(event), cb->user_data)) {
-        event_del(&cb->event);
+        ev_io_stop(priv->base, &cb->event);
         g_free(cb);
     }
 }
@@ -237,9 +245,11 @@ watch_io (MilterEventLoop *loop,
     cb->function = function;
     cb->user_data = data;
     cb->loop = MILTER_LIBEVENT_EVENT_LOOP(loop);
-    event_set(&cb->event, fd,
-              evcond_from_g_io_condition(condition),
-              watch_func, cb);
+    ev_init(&cb->event, watch_func);
+    ev_io_set(&cb->event, fd,
+              evcond_from_g_io_condition(condition));
+    ev_set_userdata(&cb->event, cb);
+    ev_io_start(priv->base, &cb->event);
     return ++priv->tag;
 }
 
@@ -256,7 +266,7 @@ watch_child_full (MilterEventLoop *loop,
 }
 
 struct timer_callback_data {
-    struct event event;
+    ev_timeout event;
     MilterLibeventEventLoop *loop;
     GSourceFunc function;
     void *user_data;
