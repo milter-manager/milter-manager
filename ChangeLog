@@ -1,5 +1,8 @@
 2011-01-05  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/core/milter-libevent-event-loop.c (add_timeout_full):
+	start the timer.
+
 	* configure.ac: check libev before libevent.
 	abandon libevent.
 

@@ -295,6 +295,7 @@ add_timeout_full (MilterEventLoop *loop,
     cb->user_data = data;
     cb->loop = MILTER_LIBEVENT_EVENT_LOOP(loop);
     ev_timer_init(&cb->event, timer_func, interval_in_seconds, interval_in_seconds);
+    ev_timer_start(priv->base, &cb->event);
     return ++priv->tag;
 }
 
