@@ -137,11 +137,7 @@ constructed (GObject *object)
 
     loop = MILTER_LIBEVENT_EVENT_LOOP(object);
     priv = MILTER_LIBEVENT_EVENT_LOOP_GET_PRIVATE(loop);
-#ifdef HAVE_LIBEV
     priv->base = ev_default_loop(0);
-#else
-    priv->base = event_init();
-#endif
 }
 
 MilterEventLoop *
