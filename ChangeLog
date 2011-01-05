@@ -1,5 +1,8 @@
 2011-01-05  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/core/milter-libevent-event-loop.{c,h}: event loop using
+	libevent.  (still in progress)
+
 	* configure.ac (RD2RUBY), doc/Makefile.am (.rd.man, .rd.jman):
 	use associated version ruby.
 

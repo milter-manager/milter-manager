@@ -538,6 +538,8 @@ if test "x$with_libevent" != "xno"; then
   done
   if test "x$libevent_available" = "xno" -a "x$with_libevent" = "xyes"; then
     AC_MSG_ERROR("No libevent found")
+  else
+    AM_CONDITIONAL(WITH_LIBEVENT, true)
   fi
 fi
 AC_SUBST(LIBEVENT_CFLAGS)
