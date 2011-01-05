@@ -1,5 +1,7 @@
 2011-01-05  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-report-statistics: show more statistics.
+
 	* tool/milter-report-statistics: add.
 
 2011-01-05  Nobuyoshi Nakada  <nakada@clear-code.com>

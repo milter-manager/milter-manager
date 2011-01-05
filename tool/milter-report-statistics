@@ -17,39 +17,122 @@
 
 require 'pathname'
 require 'time'
+require 'scanf'
 require 'optparse'
 
+class MilterStatus
+  def initialize(proc_path)
+    @proc_path = proc_path
+    @status = parse_status(read_proc_path("status"))
+  end
+
+  def target?(targets)
+    _name = name
+    return false if _name.empty?
+    no_lt_name = _name.sub(/\Alt-/, '')
+    targets.any? {|target| _name == target or no_lt_name == target}
+  end
+
+  def name
+    @name ||= File.basename(command_line[0] || '')
+  end
+
+  def pid
+    @status["Pid"]
+  end
+
+  def vss
+    @status["VmSize"]
+  end
+
+  def rss
+    @status["VmRSS"]
+  end
+
+  def cpu_time
+    ps["time"]
+  end
+
+  def cpu_percent
+    ps["pcpu"]
+  end
+
+  def n_file_descriptors
+    @n_file_descriptors ||= (@proc_path + "fd").entries.size
+  end
+
+  def command_line
+    @command_line ||= read_proc_path("cmdline").split(/\0/)
+  end
+
+  private
+  def read_proc_path(type)
+    begin
+      (@proc_path + type).read
+    rescue SystemCallError
+      ""
+    end
+  end
+
+  def parse_status(status_text)
+    status = {}
+    status_text.each_line do |line|
+      key, value = line.chomp.split(/\s*:\s*/, 2)
+      status[key] = value
+    end
+    status
+  end
+
+  def ps
+    @ps ||= retrieve_ps_info
+  end
+
+  def retrieve_ps_info
+    ps_info = {}
+    items = ["time", "pcpu"]
+    ps_result = `ps -p #{pid} --no-headers -o #{items.join(",")}`
+    values = ps_result.split(/\s+/)
+    items.each_with_index do |item, i|
+      ps_info[item] = values[i]
+    end
+    ps_info
+  end
+end
+
 class MilterStatisticsReporter
-  def initialize(target)
-    @target = target
+  def initialize(targets)
+    @targets = targets
   end
 
   def show_header
-    show("Time", "PID", "#FD", "command")
+    show("Time", "PID", "VSS", "RSS", "%CPU", "CPU time", "#FD", "command")
   end
 
   def report
-    Pathname.glob("/proc/*/cmdline") do |cmdline|
-      next unless cmdline.readable?
-      command_line = cmdline.read
-      command, *arguments = command_line.split(/\0/)
-      next if command.nil?
-      next if File.basename(command) != @target
-      proc = cmdline.dirname
-      pid = proc.basename.to_s
-      next if pid == "self"
-      fd = proc + "fd"
-      next unless fd.readable?
+    reported = false
+    Pathname.glob("/proc/[0-9]*") do |proc_path|
+      status = MilterStatus.new(proc_path)
+      next unless status.target?(@targets)
+      reported = true
       show(Time.now.strftime("%H:%M:%S"),
-               pid,
-               fd.entries.size.to_s,
-               command_line.split(/\0/).join(" "))
+           status.pid,
+           status.vss,
+           status.rss,
+           status.cpu_percent,
+           status.cpu_time,
+           status.n_file_descriptors,
+           status.command_line.join(" "))
+    end
+    unless reported
+      puts "not-found"
+      exit(false)
     end
   end
 
   private
-  def show(time, pid, n_fds, command_line)
-    puts("%8s\t%6s\t%6s\t%s" % [time, pid, n_fds, command_line])
+  def show(time, pid, vss, rss, cpu_percent, cpu_time, n_fds, command_line)
+    items = [time, pid, vss, rss, cpu_percent, cpu_time, n_fds, command_line]
+    puts("%8s %6s %9s %9s %5s %8s %5s %s" % items)
   end
 end
 
@@ -63,15 +146,11 @@ if __FILE__ == $0
     exit(false)
   end
 
-  reporters = ARGV.collect do |target|
-    MilterStatisticsReporter.new(target)
-  end
-  reporters.first.show_header
+  reporter = MilterStatisticsReporter.new(ARGV)
+  reporter.show_header
   loop do
     begin
-      reporters.each do |reporter|
-        reporter.report
-      end
+      reporter.report
       sleep(1)
     rescue Interrupt
       break
