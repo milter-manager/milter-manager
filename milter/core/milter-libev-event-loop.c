@@ -148,7 +148,7 @@ constructed (GObject *object)
     loop = MILTER_LIBEV_EVENT_LOOP(object);
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
     priv->base = ev_default_loop(0);
-    priv->callbacks = g_hash_table_new_full(g_int_hash, g_int_equal,
+    priv->callbacks = g_hash_table_new_full(g_direct_hash, g_direct_equal,
                                             NULL, destroy_callback);
 }
 
@@ -174,7 +174,7 @@ static guint
 add_callback (MilterLibevEventLoopPrivate *priv, gpointer data)
 {
     guint tag = ++priv->tag;
-    g_hash_table_insert(priv->callbacks, (gpointer)(gsize)tag, data);
+    g_hash_table_insert(priv->callbacks, GUINT_TO_POINTER(tag), data);
     return tag;
 }
 
@@ -434,7 +434,7 @@ remove (MilterEventLoop *loop,
     MilterLibevEventLoopPrivate *priv;
 
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
-    return g_hash_table_remove(priv->callbacks, (gconstpointer)(gsize)tag);
+    return g_hash_table_remove(priv->callbacks, GUINT_TO_POINTER(tag));
 }
 
 /*

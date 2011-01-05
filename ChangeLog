@@ -1,5 +1,8 @@
 2011-01-05  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-libev-event-loop.c: use GUINT_TO_POINTER(),
+	g_direct_hash() and g_direct_equal().
+
 	* milter/core/milter-libev-event-loop.c: use more meaningful name.
 
 	* milter/core/milter-libev-event-loop.c (CallbackFunc): define.
