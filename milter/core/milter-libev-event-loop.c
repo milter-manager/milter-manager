@@ -172,6 +172,12 @@ typedef union {
         guint tag;
     } header;
     double alignment_double;
+#ifdef HAVE_LONG_LONG
+    long long alignment_long_long;
+#endif
+#ifdef HAVE_LONG_DOUBLE
+    long double alignment_long_double;
+#endif
 } callback_header;
 
 static guint

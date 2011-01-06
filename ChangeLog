@@ -1,7 +1,7 @@
 2011-01-06  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/core/milter-libev-event-loop.c (callback_header): ensure
-	alignment.
+	alignment.  more alignment.
 
 	* milter/client.h (MilterClientClass):
 	add {get,set}_event_loop_backend_mode.

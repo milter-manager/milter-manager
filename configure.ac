@@ -140,6 +140,9 @@ AC_CHECK_HEADER(sys/un.h,
                 [AC_DEFINE(HAVE_SYS_UN_H, 1,
                            [Define to 1 if you have <sys/un.h>.])])
 
+AC_CHECK_TYPE([long long])
+AC_CHECK_TYPE([long double])
+
 dnl **************************************************************
 dnl Check for network libraries.
 dnl **************************************************************
