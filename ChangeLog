@@ -1,5 +1,9 @@
 2011-01-06  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/client/milter-client-objects.h (MilterClientEventLoopBackendMode):
+	event loop backend mode.
+	* milter/client/milter-client.c: and its accessor functions.
+
 	* configure.ac: fix typo.
 	inverted condition to compare with no.
 

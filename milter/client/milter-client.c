@@ -120,6 +120,7 @@ struct _MilterClientPrivate
     GList *finished_data;
 
     MilterSyslogLogger *syslog_logger;
+    MilterClientEventLoopBackendMode event_loop_backend_mode;
 };
 
 typedef struct _MilterClientProcessData
@@ -269,6 +270,8 @@ _milter_client_init (MilterClient *client)
     priv->finished_data = NULL;
 
     priv->syslog_logger = NULL;
+
+    priv->event_loop_backend_mode = MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
 }
 
 static void
@@ -2140,6 +2143,29 @@ milter_client_get_process_loop (MilterClient *client)
         if (!priv->process_loop)
             priv->process_loop = event_loop_new(client, TRUE);
         return priv->process_loop;
+    }
+}
+
+MilterClientEventLoopBackendMode
+milter_client_get_event_loop_backend_mode (MilterClient  *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->event_loop_backend_mode;
+}
+
+void
+milter_client_set_event_loop_backend_mode (MilterClient  *client,
+                                           MilterClientEventLoopBackendMode mode)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    switch (mode) {
+      case MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB:
+      case MILTER_CLIENT_EVENT_LOOP_BACKEND_LIBEV:
+        priv->event_loop_backend_mode = mode;
+        break;
+      default:
+        break;
     }
 }
 

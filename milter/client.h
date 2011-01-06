@@ -802,6 +802,29 @@ void                 milter_client_set_fd_passing_fd (MilterClient *client, gint
  */
 MilterEventLoop     *milter_client_get_process_loop  (MilterClient  *client);
 
+/**
+ * milter_client_get_event_loop_backend_mode:
+ * @client: a %MilterClient.
+ *
+ * Gets the %MilterClientEventLoopBackendMode of @client.
+ *
+ * Returns: the %MilterClientEventLoopBackendMode of @client.
+ */
+MilterClientEventLoopBackendMode milter_client_get_event_loop_backend_mode
+                                                     (MilterClient  *client);
+
+/**
+ * milter_client_set_event_loop_backend_mode:
+ * @client: a %MilterClient.
+ *
+ * Sets the %MilterClientEventLoopBackendMode of @client.
+ *
+ * Returns: the %MilterClientEventLoopBackendMode of @client.
+ */
+void                             milter_client_set_event_loop_backend_mode
+                                                     (MilterClient  *client,
+                                                      MilterClientEventLoopBackendMode mode);
+
 G_END_DECLS
 
 #endif /* __MILTER_CLIENT_H__ */
