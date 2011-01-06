@@ -1,5 +1,8 @@
 2011-01-06  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/core/Makefile.am (libmilter_core_la_CFLAGS): add
+	LIBEV_CFLAGS if using libev.
+
 	* configure.ac: use bundled libev if 4.01 or later is not found.
 
 	* libev-4.01/Makefile.am (libev.la): no install shared library.
