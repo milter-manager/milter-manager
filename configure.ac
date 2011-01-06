@@ -523,6 +523,13 @@ if test "x$with_libev" != "xno"; then
     AC_CHECK_HEADERS(ev.h,
                      [AC_CHECK_LIB(ev, ev_loop_new,
                                    [libev_available=yes])])
+    if test "x$libev_available" != "xno"; then
+      AC_COMPILE_IFELSE(
+        [AC_LANG_BOOL_COMPILE_TRY([@%:@include <ev.h>],
+	  [EV_VERSION_MAJOR > 4 || (EV_VERSION_MAJOR == 4 && EV_VERSION_MINOR >= 1)])],
+	[],
+	[libev_available=no])
+    fi
     CFLAGS="$_SAVE_CFLAGS"
     LDFLAGS="$_SAVE_LDFLAGS"
     if test "x$libev_available" != "xno"; then
@@ -531,13 +538,15 @@ if test "x$with_libev" != "xno"; then
       break
     fi
   done
-  AS_CASE("$libev_available",
-  [no], [if test "x$with_libev" = "xyes"; then
-    AC_MSG_ERROR("No libev found")
-  fi],
-  [ev], [
+  if test "$libev_available" != ev; then
+    libev_available=yes
+    libev_prefix=bundled
+    m4_include([libev-4.01/libev.m4])
     AC_DEFINE(HAVE_LIBEV, [1], [Define to 1 if libev is available.])
-  ])
+    LIBEV_CFLAGS='-I$(top_srcdir)/libev-4.01'
+    LIBEV_LIBS='$(top_builddir)/libev-4.01/libev.la'
+  fi
+  AC_DEFINE(HAVE_LIBEV, [1], [Define to 1 if libev is available.])
 fi
 AM_CONDITIONAL(WITH_LIBEV, [test "x$libev_available" != xno])
 AC_SUBST(LIBEV_CFLAGS)
@@ -754,6 +763,7 @@ AC_CONFIG_FILES([Makefile
 		 rpm/centos/milter-manager.spec
 		 gio-unix-compatible/Makefile
 		 gio-unix-compatible/gio/Makefile
+		 libev-4.01/Makefile
 		 milter/Makefile
 		 milter/core/Makefile
 		 milter/core/milter-version.h
