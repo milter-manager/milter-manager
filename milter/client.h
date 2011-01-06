@@ -259,6 +259,10 @@ struct _MilterClientClass
     void   (*maintain)                    (MilterClient *client);
     void   (*sessions_finished)           (MilterClient *client,
                                            guint         n_finished_sessions);
+    MilterClientEventLoopBackendMode (*get_event_loop_backend_mode)
+                                          (MilterClient *client);
+    void   (*set_event_loop_backend_mode) (MilterClient *client,
+                                           MilterClientEventLoopBackendMode mode);
 };
 
 GQuark               milter_client_error_quark       (void);

@@ -2173,6 +2173,11 @@ milter_client_get_process_loop (MilterClient *client)
 MilterClientEventLoopBackendMode
 milter_client_get_event_loop_backend_mode (MilterClient  *client)
 {
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->get_event_loop_backend_mode)
+        return klass->get_event_loop_backend_mode(client);
     return MILTER_CLIENT_GET_PRIVATE(client)->event_loop_backend_mode;
 }
 
@@ -2181,6 +2186,11 @@ milter_client_set_event_loop_backend_mode (MilterClient  *client,
                                            MilterClientEventLoopBackendMode mode)
 {
     MilterClientPrivate *priv;
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->set_event_loop_backend_mode)
+        return klass->set_event_loop_backend_mode(client, mode);
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
     switch (mode) {
