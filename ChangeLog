@@ -1,5 +1,8 @@
 2011-01-06  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/manager/milter-manager-configuration.c (MilterManagerConfigurationPrivate):
+	add event_loop_backend_mode property.
+
 	* milter/client/milter-client-objects.h (MilterClientEventLoopBackendMode):
 	event loop backend mode.
 	* milter/client/milter-client.c: and its accessor functions.

@@ -72,6 +72,7 @@ struct _MilterManagerConfigurationPrivate
     gchar *custom_configuration_directory;
     GHashTable *locations;
     guint connection_check_interval;
+    MilterClientEventLoopBackendMode event_loop_backend_mode;
 };
 
 enum
@@ -100,7 +101,9 @@ enum
     PROP_MAX_CONNECTIONS,
     PROP_MAX_FILE_DESCRIPTORS,
     PROP_CUSTOM_CONFIGURATION_DIRECTORY,
-    PROP_CONNECTION_CHECK_INTERVAL
+    PROP_CONNECTION_CHECK_INTERVAL,
+    PROP_EVENT_LOOP_BACKEND_MODE,
+    PROP__MAX
 };
 
 enum
@@ -368,6 +371,17 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                              G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class,
                                     PROP_CONNECTION_CHECK_INTERVAL,
+                                    spec);
+
+
+    spec = g_param_spec_enum("event-loop-backend-mode",
+                             "Event loop backend mode",
+                             "The mode of client event loop",
+                             MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND_MODE,
+                             MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB,
+                             G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class,
+                                    PROP_EVENT_LOOP_BACKEND_MODE,
                                     spec);
 
 
