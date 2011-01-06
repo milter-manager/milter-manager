@@ -66,6 +66,13 @@ milter_client_quit (void)
 
 enum
 {
+    PROP_0,
+    PROP_EVENT_LOOP_BACKEND_MODE,
+    PROP_LAST
+};
+
+enum
+{
     CONNECTION_ESTABLISHED,
     LISTEN_STARTED,
     MAINTAIN,
@@ -159,6 +166,7 @@ _milter_client_class_init (MilterClientClass *klass)
 {
     GObjectClass *gobject_class;
     MilterClientClass *client_class = NULL;
+    GParamSpec *spec;
 
     gobject_class = G_OBJECT_CLASS(klass);
     client_class = MILTER_CLIENT_CLASS(klass);
@@ -169,6 +177,14 @@ _milter_client_class_init (MilterClientClass *klass)
 
     client_class->get_default_connection_spec = get_default_connection_spec;
     client_class->listen_started = listen_started;
+
+    spec = g_param_spec_enum("event-loop-backend-mode",
+                             "Event loop backend mode",
+                             "The mode of client event loop",
+                             MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND_MODE,
+                             MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB,
+                             G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_EVENT_LOOP_BACKEND_MODE, spec);
 
     signals[CONNECTION_ESTABLISHED] =
         g_signal_new("connection-established",
@@ -525,10 +541,15 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
+    MilterClient *client;
     MilterClientPrivate *priv;
 
+    client = MILTER_CLIENT(object);
     priv = MILTER_CLIENT_GET_PRIVATE(object);
     switch (prop_id) {
+      case PROP_EVENT_LOOP_BACKEND_MODE:
+        milter_client_set_event_loop_backend_mode(client, g_value_get_enum(value));
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -545,6 +566,9 @@ get_property (GObject    *object,
 
     priv = MILTER_CLIENT_GET_PRIVATE(object);
     switch (prop_id) {
+      case PROP_EVENT_LOOP_BACKEND_MODE:
+        g_value_set_enum(value, priv->event_loop_backend_mode);
+        break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;

@@ -3,6 +3,7 @@
 	* milter/client/milter-client-objects.h (MilterClientEventLoopBackendMode):
 	event loop backend mode.
 	* milter/client/milter-client.c: and its accessor functions.
+	(_milter_client_class_init, set_property, get_property): and property.
 
 	* configure.ac: fix typo.
 	inverted condition to compare with no.
