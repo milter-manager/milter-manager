@@ -538,7 +538,7 @@ if test "x$with_libev" != "xno"; then
       break
     fi
   done
-  if test "$libev_available" != ev; then
+  if test "$libev_available" != yes; then
     libev_available=yes
     libev_prefix=bundled
     m4_include([libev-4.01/libev.m4])
