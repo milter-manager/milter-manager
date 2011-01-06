@@ -1,6 +1,7 @@
 2011-01-06  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* configure.ac: fix typo.
+	inverted condition to compare with no.
 
 	* milter/core/Makefile.am (libmilter_core_la_CFLAGS): add
 	LIBEV_CFLAGS if using libev.
