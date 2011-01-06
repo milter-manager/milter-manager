@@ -165,10 +165,14 @@ struct callback_funcs {
     CallbackFunc stop;
 };
 
-struct callback_header {
-    MilterLibevEventLoop *loop;
-    const struct callback_funcs *funcs;
-};
+typedef union {
+    struct {
+        MilterLibevEventLoop *loop;
+        const struct callback_funcs *funcs;
+        guint tag;
+    } header;
+    double alignment_double;
+} callback_header;
 
 static guint
 add_callback (MilterLibevEventLoopPrivate *priv, gpointer data)
@@ -183,25 +187,25 @@ alloc_callback (MilterEventLoop *loop,
                 const struct callback_funcs *funcs,
                 gsize size)
 {
-    struct callback_header *header = g_malloc0(size + sizeof(*header));
-    header->loop = (MilterLibevEventLoop *)loop;
-    header->funcs = funcs;
+    callback_header *header = g_malloc0(size + sizeof(*header));
+    header->header.loop = (MilterLibevEventLoop *)loop;
+    header->header.funcs = funcs;
     return header + 1;
 }
 
 #define new_callback(type) alloc_callback((loop), &type##_callback_funcs, sizeof(struct type##_callback_data))
-#define callback_get_private(data) (((const struct callback_header *)(data)-1)->loop)
-#define callback_get_funcs(data) (((const struct callback_header *)(data)-1)->funcs)
+#define callback_get_private(data) (((const callback_header *)(data)-1)->header.loop)
+#define callback_get_funcs(data) (((const callback_header *)(data)-1)->header.funcs)
 
 static void
 destroy_callback (gpointer data)
 {
-    struct callback_header *header = data;
+    callback_header *header = data;
     MilterLibevEventLoopPrivate *priv;
     const struct callback_funcs *funcs;
     --header;
-    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(header->loop);
-    funcs = header->funcs;
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(header->header.loop);
+    funcs = header->header.funcs;
     funcs->stop(priv->base, data);
     g_free(header);
 }
