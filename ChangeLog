@@ -1,5 +1,8 @@
 2011-01-07  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* configure.ac (ENABLE_GTK_DOC, GTK_DOC_USE_LIBTOOL): set
+	AM_CONDITIONAL.
+
 	* binding/ruby/test/toolkit/test-client.rb
 	(TestClient#test_event_loop_backend_mode): add test.
 
