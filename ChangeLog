@@ -1,5 +1,8 @@
 2011-01-07  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* binding/ruby/test/run-test.sh (MILTER_MANAGER_RUBYLIB): do not
+	prepend empty path:
+
 	* test/manager/test-manager.c (cut_setup): take care of
 	out-of-place build.
 

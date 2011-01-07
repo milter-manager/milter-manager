@@ -47,7 +47,7 @@ fi
 
 ruby_build_dir=$abs_top_builddir/binding/ruby
 ruby_source_dir=$abs_top_srcdir/binding/ruby
-MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_source_dir/lib
+MILTER_MANAGER_RUBYLIB=$ruby_source_dir/lib
 MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_build_dir/src/toolkit/.libs
 MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_build_dir/src/manager/.libs
 ruby_glib2_lib_dir=
