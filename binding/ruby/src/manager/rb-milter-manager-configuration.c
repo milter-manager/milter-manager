@@ -305,6 +305,10 @@ Init_milter_manager_configuration (void)
 				 mark,
 				 NULL);
 
+    G_DEF_CLASS(MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND_MODE,
+		"EventLoopBackendMode",
+		rb_mMilterManager);
+
     G_DEF_SIGNAL_FUNC(rb_cMilterManagerConfiguration,
                       "to-xml", rb_milter_manager_gstring_handle_to_xml_signal);
 

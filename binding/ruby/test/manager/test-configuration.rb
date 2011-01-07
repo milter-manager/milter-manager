@@ -458,6 +458,14 @@ EOD
     assert_equal({}, @configuration.locations)
   end
 
+  def test_event_loop_backend_mode
+    mode = @configuration.event_loop_backend_mode
+    assert_equal(Milter::Manager::EventLoopBackendMode::GLIB, mode)
+    @configuration.event_loop_backend_mode = :libev
+    mode = @configuration.event_loop_backend_mode
+    assert_equal(Milter::Manager::EventLoopBackendMode::LIBEV, mode)
+  end
+
   private
   def create_children
     children = Milter::Manager::Children.new(@configuration, @loop)
