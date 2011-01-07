@@ -1,5 +1,8 @@
 2011-01-07  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* binding/ruby/test/toolkit/test-client.rb
+	(TestClient#test_event_loop_backend_mode): add test.
+
 	* binding/ruby/src/manager/rb-milter-manager-configuration.c
 	(Init_milter_manager_configuration) add EventLoopBackendMode:
 

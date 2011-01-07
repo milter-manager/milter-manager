@@ -57,4 +57,12 @@ class TestClient < Test::Unit::TestCase
       @client.unix_socket_mode = "a=rwZ"
     end
   end
+
+  def test_event_loop_backend_mode
+    mode = @client.event_loop_backend_mode
+    assert_equal(Milter::Manager::EventLoopBackendMode::GLIB, mode)
+    @client.event_loop_backend_mode = :libev
+    mode = @client.event_loop_backend_mode
+    assert_equal(Milter::Manager::EventLoopBackendMode::LIBEV, mode)
+  end
 end
