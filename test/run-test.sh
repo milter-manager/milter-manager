@@ -16,8 +16,10 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 export BASE_DIR="`dirname $0`"
-top_dir="$BASE_DIR/.."
-top_dir="`cd $top_dir; pwd`"
+top_srcdir="$BASE_DIR/.."
+top_srcdir="`cd $top_srcdir; pwd`"
+top_dir=.
+export BUILD_DIR="`cd $top_dir; pwd`"
 
 if gmake --version > /dev/null 2>&1; then
     MAKE=${MAKE:-"gmake"}
@@ -30,7 +32,7 @@ if test x"$NO_MAKE" != x"yes"; then
 fi
 
 if test -z "$CUTTER"; then
-    CUTTER="$(${MAKE} -s -C $BASE_DIR echo-cutter)"
+    CUTTER="$(${MAKE} -s -C $top_dir echo-cutter)"
 fi
 
 CUTTER_ARGS=
@@ -57,24 +59,25 @@ if test x"$USE_GTK" = x"yes"; then
 fi
 
 if test -z "$RUBY"; then
-    RUBY="$(${MAKE} -s -C $BASE_DIR echo-ruby)"
+    RUBY="$(${MAKE} -s -C $top_dir echo-ruby)"
 fi
 
 export RUBY
 
 ruby_dir=$top_dir/binding/ruby
-MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_dir/lib
+ruby_srcdir=$top_srcdir/binding/ruby
+MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_srcdir/lib
 MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_dir/src/toolkit/.libs
 MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_dir/src/manager/.libs
 ruby_glib2_lib_dir=
 ruby_glib2_ext_dir=
 for dir in $(for dir in $ruby_dir/glib-*; do echo $dir; done | sort -r); do
     if [ -f $dir/ext/glib2/glib2.so ]; then
-	ruby_glib2_lib_dir=$dir/lib
+	ruby_glib2_lib_dir=$ruby_srcdir/${dir##*/}/lib
 	ruby_glib2_ext_dir=$dir/ext/glib2
 	break
     elif [ -f $dir/src/glib2.so ]; then
-	ruby_glib2_lib_dir=$dir/src/lib
+	ruby_glib2_lib_dir=$ruby_srcdir/${dir##*/}/src/lib
 	ruby_glib2_ext_dir=$dir/src
 	break
     fi

@@ -50,6 +50,32 @@ milter_test_get_base_dir (void)
     return base_dir;
 }
 
+static gchar *build_dir = NULL;
+const gchar *
+milter_test_get_build_dir (void)
+{
+    const gchar *dir;
+
+    if (build_dir)
+        return build_dir;
+
+    dir = g_getenv("BUILD_DIR");
+    if (!dir)
+        dir = ".";
+
+    if (g_path_is_absolute(dir)) {
+        build_dir = g_strdup(dir);
+    } else {
+        gchar *current_dir;
+
+        current_dir = g_get_current_dir();
+        build_dir = g_build_filename(current_dir, dir, NULL);
+        g_free(current_dir);
+    }
+
+    return build_dir;
+}
+
 gchar *
 milter_test_get_tmp_dir (void)
 {
