@@ -64,6 +64,7 @@ void test_save_custom (void);
 void test_to_xml_full (void);
 void test_to_xml_signal (void);
 void test_location (void);
+void test_event_loop_backend_mode (void);
 
 static MilterManagerConfiguration *config;
 static MilterEventLoop *loop;
@@ -1013,6 +1014,26 @@ test_location (void)
     milter_assert_equal_location_keys(NULL);
 }
 
+void
+test_event_loop_backend_mode (void)
+{
+    MilterClientEventLoopBackendMode mode;
+    MilterClientEventLoopBackendMode actual_mode;
+
+    mode = MILTER_CLIENT_EVENT_LOOP_BACKEND_LIBEV;
+    milter_manager_configuration_set_event_loop_backend_mode(config,
+                                                             mode);
+    actual_mode =
+        milter_manager_configuration_get_event_loop_backend_mode(config);
+    cut_assert_equal_uint(mode, actual_mode); 
+
+    mode = MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
+    milter_manager_configuration_set_event_loop_backend_mode(config,
+                                                             mode);
+    actual_mode =
+        milter_manager_configuration_get_event_loop_backend_mode(config);
+    cut_assert_equal_uint(mode, actual_mode);
+}
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

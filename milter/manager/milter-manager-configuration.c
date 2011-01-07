@@ -2015,6 +2015,24 @@ milter_manager_configuration_set_connection_check_interval (MilterManagerConfigu
     priv->connection_check_interval = interval_in_seconds;
 }
 
+MilterClientEventLoopBackendMode
+milter_manager_configuration_get_event_loop_backend_mode (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->event_loop_backend_mode;
+}
+
+void
+milter_manager_configuration_set_event_loop_backend_mode (MilterManagerConfiguration *configuration,
+                                                          MilterClientEventLoopBackendMode mode)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->event_loop_backend_mode = mode;
+}
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

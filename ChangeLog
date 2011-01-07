@@ -1,5 +1,10 @@
 2011-01-07  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/manager/milter-manager-configuration.c:
+	(milter_manager_configuration_get_event_loop_backend_mode)
+	(milter_manager_configuration_set_event_loop_backend_mode): add
+	accessors.
+
 	* milter/client/milter-client-objects.h (MilterClientEventLoopBackendMode):
 	* milter/manager/milter-manager-configuration.c: removed LAST.
 
