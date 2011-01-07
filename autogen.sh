@@ -10,7 +10,7 @@ run()
 }
 
 # for old intltoolize
-if [ ! -e config/po ]; then
+if [ ! -d config/po ]; then
     ln -s ../po config/po
 fi
 

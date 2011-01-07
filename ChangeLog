@@ -1,5 +1,7 @@
 2011-01-07  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* autogen.sh: use -d for older sh.
+
 	* configure.ac (ENABLE_GTK_DOC, GTK_DOC_USE_LIBTOOL): set
 	AM_CONDITIONAL.
 
