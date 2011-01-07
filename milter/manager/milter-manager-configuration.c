@@ -575,6 +575,10 @@ set_property (GObject      *object,
         milter_manager_configuration_set_connection_check_interval(
             config, g_value_get_uint(value));
         break;
+    case PROP_EVENT_LOOP_BACKEND_MODE:
+        milter_manager_configuration_set_event_loop_backend_mode(
+            config, g_value_get_enum(value));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -662,6 +666,9 @@ get_property (GObject    *object,
         break;
     case PROP_CONNECTION_CHECK_INTERVAL:
         g_value_set_uint(value, priv->connection_check_interval);
+        break;
+    case PROP_EVENT_LOOP_BACKEND_MODE:
+        g_value_set_enum(value, priv->event_loop_backend_mode);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
