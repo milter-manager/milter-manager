@@ -189,7 +189,7 @@ milter_manager_leader_check_connection (MilterManagerLeader *leader)
     }
 
     if (priv->children &&
-        milter_manager_children_is_waiting_reply(priv->children)) {
+        !milter_manager_children_is_waiting_reply(priv->children)) {
         milter_debug("[%u] [leader][connection-check][%s][skip] "
                      "not milter turn",
                      priv->tag, state_nick);
