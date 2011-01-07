@@ -252,6 +252,8 @@ manager.max_file_descriptors = 0
 manager.custom_configuration_directory = nil
 # default
 manager.connection_check_interval = 0
+# default
+manager.event_loop_backend_mode = "glib"
 
 # default
 controller.connection_spec = nil
@@ -354,6 +356,8 @@ manager.max_file_descriptors = 0
 manager.custom_configuration_directory = "/tmp/milter-manager/"
 # default
 manager.connection_check_interval = 0
+# default
+manager.event_loop_backend_mode = "glib"
 
 # #{__FILE__}:#{controller_connection_spec}
 controller.connection_spec = "inet:10025"

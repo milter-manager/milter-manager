@@ -121,6 +121,8 @@ module Milter::Manager
                 c.custom_configuration_directory.inspect)
       dump_item("manager.connection_check_interval",
                 c.connection_check_interval.inspect)
+      dump_item("manager.event_loop_backend_mode",
+                c.event_loop_backend_mode.nick.dump)
       @result << "\n"
 
       dump_item("controller.connection_spec",
@@ -864,6 +866,15 @@ module Milter::Manager
         update_location("connection_check_interval", interval.nil?)
         interval ||= 0
         @configuration.connection_check_interval = interval
+      end
+
+      def event_loop_backend_mode
+        @configuration.event_loop_backend_mode
+      end
+
+      def event_loop_backend_mode=(event_loop_backend_mode)
+        update_location("event_loop_backend_mode", event_loop_backend_mode.nil?)
+        @configuration.event_loop_backend_mode = event_loop_backend_mode
       end
 
       def define_connection_checker(name, &block)
