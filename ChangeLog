@@ -3,6 +3,8 @@
 	* milter/client/milter-client-objects.h (MilterClientEventLoopBackendMode):
 	renamed MAX as LAST in GLib way.
 
+	* milter/manager/milter-manager-configuration.c: ditto.
+
 2011-01-06  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/core/milter-libev-event-loop.c (callback_header): ensure
