@@ -2,6 +2,7 @@
 
 	* binding/ruby/test/run-test.sh (MILTER_MANAGER_RUBYLIB): do not
 	prepend empty path:
+	(ruby_glib2_lib_dir): take care of out-of-place build.
 
 	* test/manager/test-manager.c (cut_setup): take care of
 	out-of-place build.
