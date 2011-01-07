@@ -68,6 +68,7 @@ current configuration is shown.
   manager.max_connections = 0
   manager.custom_configuration_directory = nil
   manager.connection_check_interval = 0
+  manager.event_loop_backend_mode = "glib"
 
   controller.connection_spec = nil
   controller.unix_socket_mode = 0660
@@ -500,6 +501,23 @@ Here are descriptions of configuration items.
 
    Default:
      manager.connection_check_interval = 0
+
+: manager.event_loop_backend_mode
+
+   ((*Normally, this item doesn't need to be used directly.*))
+
+   Since 1.6.3.
+
+   Specifies an backend for event loop.  Valid values are "glib" and
+   "libev".
+
+   ((*NOTE: This item is an experimental feature.*))
+
+   Example:
+     manager.event_loop_backend_mode = "libev" # Run with libev.
+
+   Default:
+     manager.connection_check_interval = "glib"
 
 : manager.define_connection_checker(name) {|context| ... # -> true/false}
 

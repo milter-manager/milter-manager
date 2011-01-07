@@ -1,5 +1,7 @@
 2011-01-07  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* doc/configuration.rd (manager.event_loop_backend_mode): documented.
+
 	* binding/ruby/lib/milter/manager.rb
 	(Milter::ConfigurationLoader::ManagerConfiguration#event_loop_backend_mode):
 	(Milter::ConfigurationLoader::ManagerConfiguration#event_loop_backend_mode=):
