@@ -9,7 +9,7 @@ AM_CFLAGS =					\
 LIBS =						\
 	$(GLIB_LIBS)
 
-if !GIO_UNIX_2_26
+if !GIO_UNIX_2_24
 noinst_LTLIBRARIES =				\
 	libgio-compatible.la			\
 	libgio-unix-compatible.la

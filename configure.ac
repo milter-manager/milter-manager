@@ -172,12 +172,12 @@ AM_PATH_GLIB_2_0($GLIB_REQUIRED,
                  [AC_MSG_ERROR([GLib >= $GLIB_REQUIRED required.])],
                  [gobject gmodule gthread])
 
-PKG_CHECK_MODULES(GIO_UNIX, gio-unix-2.0 >= 2.26,
-		  [gio_unix_2_26=yes], [gio_unix_2_26=no])
-AM_CONDITIONAL([GIO_UNIX_2_26], [test "$gio_unix_2_26" = "yes"])
-if test "$gio_unix_2_26" = "yes"; then
-  AC_DEFINE(HAVE_GIO_UNIX_2_26, 1,
-            [Define to 1 if you have gio-unix-2.0 >= 2.26.])
+PKG_CHECK_MODULES(GIO_UNIX, gio-unix-2.0 >= 2.24,
+		  [gio_unix_2_24=yes], [gio_unix_2_24=no])
+AM_CONDITIONAL([GIO_UNIX_2_24], [test "$gio_unix_2_24" = "yes"])
+if test "$gio_unix_2_24" = "yes"; then
+  AC_DEFINE(HAVE_GIO_UNIX_2_24, 1,
+            [Define to 1 if you have gio-unix-2.0 >= 2.24.])
 fi
 
 dnl **************************************************************

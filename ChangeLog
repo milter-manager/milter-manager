@@ -1,5 +1,7 @@
 2011-01-07  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* configure.ac (GIO_UNIX): use 2.24 or later.
+
 	* autogen.sh: use -d for older sh.
 
 	* configure.ac (ENABLE_GTK_DOC, GTK_DOC_USE_LIBTOOL): set
