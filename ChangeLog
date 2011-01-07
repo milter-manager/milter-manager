@@ -1,5 +1,13 @@
 2011-01-07  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* test/manager/test-manager.c (cut_setup): take care of
+	out-of-place build.
+
+	* test/run-test.sh (BUILD_DIR): set build directory.
+
+	* test/lib/milter-test-utils.c (milter_test_get_build_dir): get
+	build directory.
+
 	* milter/manager/milter-manager-configuration.c:
 	(milter_manager_configuration_get_event_loop_backend_mode)
 	(milter_manager_configuration_set_event_loop_backend_mode): add

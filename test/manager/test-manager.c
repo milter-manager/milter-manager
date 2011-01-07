@@ -74,8 +74,7 @@ static EggData *server_data;
 static gchar *
 build_manager_path (void)
 {
-    return g_build_filename(milter_test_get_base_dir(),
-                            "..",
+    return g_build_filename(milter_test_get_build_dir(),
                             "src",
                             "milter-manager",
                             NULL);
@@ -84,8 +83,7 @@ build_manager_path (void)
 static gchar *
 build_server_path (void)
 {
-    return g_build_filename(milter_test_get_base_dir(),
-                            "..",
+    return g_build_filename(milter_test_get_build_dir(),
                             "tool",
                             "milter-test-server",
                             NULL);
@@ -187,8 +185,7 @@ cut_setup (void)
     manager_data = egg_data_new(build_manager_path);
     server_data = egg_data_new(build_server_path);
 
-    lt_milter_manager = g_build_filename(milter_test_get_base_dir(),
-                                         "..",
+    lt_milter_manager = g_build_filename(milter_test_get_build_dir(),
                                          "src",
                                          ".libs",
                                          "lt-milter-manager",
@@ -199,12 +196,7 @@ cut_setup (void)
         milter_manager_program_name = g_strdup("milter-manager");
     g_free(lt_milter_manager);
 
-    tmp_dir = g_build_filename(milter_test_get_base_dir(),
-                               "tmp",
-                               NULL);
-    cut_remove_path(tmp_dir, NULL);
-    if (g_mkdir_with_parents(tmp_dir, 0700) == -1)
-        cut_assert_errno();
+    tmp_dir = milter_test_get_tmp_dir();
 }
 
 void
