@@ -1,6 +1,9 @@
 2011-01-07  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/client/milter-client-objects.h (MilterClientEventLoopBackendMode):
+	* milter/manager/milter-manager-configuration.c: removed LAST.
+
+	* milter/client/milter-client-objects.h (MilterClientEventLoopBackendMode):
 	renamed MAX as LAST in GLib way.
 
 	* milter/manager/milter-manager-configuration.c: ditto.
