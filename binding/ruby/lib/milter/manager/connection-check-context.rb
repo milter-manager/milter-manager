@@ -1,4 +1,4 @@
-# Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2010-2011  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -15,6 +15,8 @@
 
 module Milter::Manager
   class ConnectionCheckContext
+    include Milter::MacroNameNormalizer
+
     def initialize(leader)
       @leader = leader
     end
@@ -27,6 +29,14 @@ module Milter::Manager
       client_context.socket_address
     end
 
+    def [](macro_name)
+      macros[normalize_macro_name(macro_name)]
+    end
+
+    def smtp_server_name
+      self["v"]
+    end
+
     private
     def children
       @children ||= @leader.children
@@ -34,6 +44,10 @@ module Milter::Manager
 
     def client_context
       @client_context ||= @leader.client_context
+    end
+
+    def macros
+      @macros ||= client_context.available_macros || {}
     end
   end
 end

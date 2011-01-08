@@ -1,4 +1,4 @@
-# Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2010-2011  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -34,6 +34,17 @@ module Milter::Manager
         type = :tcp6
       end
       return true if type.nil?
+
+      if address.port.zero?
+        message = "[netstat][warning] " +
+          "can't detect disconnected connection because " +
+          "SMTP client port address is unknwon: " +
+          "<#{address}>"
+        smtp_server_name = context.smtp_server_name
+        message << ":<#{smtp_server_name}>" if smtp_server_name
+        Milter::Logger.warning(message)
+        return true
+      end
 
       update_database
       state = @database[type]["#{address.address}:#{address.port}"]
