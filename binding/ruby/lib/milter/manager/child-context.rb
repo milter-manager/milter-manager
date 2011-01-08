@@ -1,4 +1,4 @@
-# Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2011  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -15,6 +15,7 @@
 
 module Milter::Manager
   class ChildContext
+    include Milter::MacroNameNormalizer
     include Milter::MacroPredicates
 
     def initialize(child, children, client_context)
@@ -72,10 +73,6 @@ module Milter::Manager
         contexts[child.name] = self.class.new(child, @children, @client_context)
       end
       contexts
-    end
-
-    def normalize_macro_name(name)
-      name.sub(/\A\{(.+)\}\z/, '\1')
     end
   end
 end

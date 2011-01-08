@@ -162,6 +162,12 @@ module Milter
     end
   end
 
+  module MacroNameNormalizer
+    def normalize_macro_name(name)
+      name.sub(/\A\{(.+)\}\z/, '\1')
+    end
+  end
+
   module MacroPredicates
     def authenticated?
       (self["auth_type"] or self["auth_authen"]) ? true : false
