@@ -73,6 +73,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
   manager.max_connections = 0
   manager.custom_configuration_directory = nil
   manager.fallback_status = "accept"
+  manager.fallback_status_at_disconnect = "temporary-failure"
   manager.connection_check_interval = 0
 
   controller.connection_spec = nil
@@ -458,11 +459,43 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
      * メール本文用の一時ファイルを作成できない。
      * など…
 
+   指定できる値は以下のいずれかの値です。
+
+     * "accept": メールを受信します。既定値です。
+     * "temporary-failure": メールを一時的に拒否します。
+     * "reject": メールを拒否します。
+     * "discard": メールを破棄します。
+
    例:
      manager.fallback_status = "accept"
 
    既定値:
      manager.fallback_status = "reject"
+
+: manager.fallback_status_at_disconnect
+
+   1.6.3から使用可能。
+
+   SMTPクライアントがSMTPセッションの途中でSMTPサーバとの接
+   続を切断したことを検出した時に返すステータスを指定します。
+   切断の検出は既定値では無効になっているので、既定値ではこ
+   の設定が利用されることがありません。切断の検出を有効にす
+   る場合は
+   ((<manager.use_netstat_connection_checker|.#manager.use_netstat_connection-checker>))
+   を利用してください。
+
+   指定できる値は以下のいずれかの値です。
+
+     * "accept": メールを受信します。
+     * "temporary-failure": メールを一時的に拒否します。既定値です。
+     * "reject": メールを拒否します。
+     * "discard": メールを破棄します。
+
+   例:
+     manager.fallback_status_at_disconnect = "discard"
+
+   既定値:
+     manager.fallback_status_at_disconnect = "reject"
 
 : manager.use_netstat_connection_checker
 

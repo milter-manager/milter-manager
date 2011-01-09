@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -120,6 +120,8 @@ module Milter::Manager
       dump_item("manager.custom_configuration_directory",
                 c.custom_configuration_directory.inspect)
       dump_item("manager.fallback_status", c.fallback_status.nick.dump)
+      dump_item("manager.fallback_status_at_disconnect",
+                c.fallback_status_at_disconnect.nick.dump)
       dump_item("manager.connection_check_interval",
                 c.connection_check_interval.inspect)
       dump_item("manager.event_loop_backend_mode",
@@ -885,6 +887,15 @@ module Milter::Manager
       def fallback_status=(status)
         update_location("fallback_status", status.nil?)
         @configuration.fallback_status = status
+      end
+
+      def fallback_status_at_disconnect
+        @configuration.fallback_status_at_disconnect
+      end
+
+      def fallback_status_at_disconnect=(status)
+        update_location("fallback_status_at_disconnect", status.nil?)
+        @configuration.fallback_status_at_disconnect = status
       end
 
       def define_connection_checker(name, &block)

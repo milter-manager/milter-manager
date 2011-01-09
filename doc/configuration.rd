@@ -68,6 +68,7 @@ current configuration is shown.
   manager.max_connections = 0
   manager.custom_configuration_directory = nil
   manager.fallback_status = "accept"
+  manager.fallback_status_at_disconnect = "temporary-failure"
   manager.connection_check_interval = 0
   manager.event_loop_backend_mode = "glib"
 
@@ -467,11 +468,42 @@ Here are descriptions of configuration items.
      * Failed to open a temporary file for mail body.
      * and so on...
 
+   Here are available values:
+
+     * "accept": Accepts a mail. It's the default.
+     * "temporary-failure": Rejects a mail temporary.
+     * "reject": Rejects a mail.
+     * "discard": Discards a mail.
+
    Example:
      manager.fallback_status = "accept"
 
    Default:
      manager.fallback_status = "reject"
+
+: manager.fallback_status_at_disconnect
+
+   Since 1.6.3.
+
+   Specifies a status that is replied to the SMTP server when
+   milter manager detects the SMTP client disconnects the
+   SMTP server connection. This item doesn't used by default
+   because disconnect check is disabled by default. We
+   can enable disconnect check by
+   ((<manager.use_netstat_connection_checker|.#manager.use_netstat_connection-checker>)).
+
+   Here are available values:
+
+     * "accept": Accepts a mail.
+     * "temporary-failure": Rejects a mail temporary. It's the default.
+     * "reject": Rejects a mail.
+     * "discard": Discards a mail.
+
+   Example:
+     manager.fallback_status_at_disconnect = "temporary-failure"
+
+   Default:
+     manager.fallback_status_at_disconnect = "discard"
 
 : manager.use_netstat_connection_checker
 
@@ -735,7 +767,7 @@ Required item is just only milter.connection_spec.
    Specifies a status that is used the child milter causes
    an error.
 
-   Here is available values:
+   Here are available values:
 
      * "accept": Accepts a mail. It's the default.
      * "temporary-failure": Rejects a mail temporary.

@@ -185,6 +185,14 @@ class TestConfigurationLoader < Test::Unit::TestCase
     assert_equal(Milter::Status::REJECT, @configuration.fallback_status)
   end
 
+  def test_manager_fallback_status_at_disconnect
+    assert_equal(Milter::Status::TEMPORARY_FAILURE,
+                 @configuration.fallback_status_at_disconnect)
+    @loader.manager.fallback_status_at_disconnect = "reject"
+    assert_equal(Milter::Status::REJECT,
+                 @configuration.fallback_status_at_disconnect)
+  end
+
   def test_to_xml
     assert_equal(<<-EOX, @configuration.to_xml)
 <configuration>
