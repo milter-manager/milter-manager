@@ -1,5 +1,10 @@
 2011-01-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/test/manager/test-configuration-loader.rb,
+	binding/ruby/test/manager/test-configuration.rb,
+	doc/configuration.rd*: add manager.fallback_status configuration.
+
 	* binding/ruby/test/run-test.sh: expand default diff target limit.
 
 	* binding/ruby/lib/milter/manager.rb (Milter::ConfigurationDumper#dump):

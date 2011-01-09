@@ -67,6 +67,7 @@ current configuration is shown.
   manager.suspend_time_on_unacceptable = 5
   manager.max_connections = 0
   manager.custom_configuration_directory = nil
+  manager.fallback_status = "accept"
   manager.connection_check_interval = 0
   manager.event_loop_backend_mode = "glib"
 
@@ -453,6 +454,24 @@ Here are descriptions of configuration items.
 
    Default:
      manager.custom_configuration_directory = nil
+
+: manager.fallback_status
+
+   Since 1.6.3.
+
+   Specifies a status that is replied to the SMTP server on
+   error in milter manager. Here is a list of error cases in
+   milter manager:
+
+     * No child milter.
+     * Failed to open a temporary file for mail body.
+     * and so on...
+
+   Example:
+     manager.fallback_status = "accept"
+
+   Default:
+     manager.fallback_status = "reject"
 
 : manager.use_netstat_connection_checker
 

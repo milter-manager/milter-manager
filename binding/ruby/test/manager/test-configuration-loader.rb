@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -177,6 +177,12 @@ class TestConfigurationLoader < Test::Unit::TestCase
                  @configuration.custom_configuration_directory)
     assert_equal(@configuration.custom_configuration_directory,
                  @loader.manager.custom_configuration_directory)
+  end
+
+  def test_manager_fallback_status
+    assert_equal(Milter::Status::ACCEPT, @configuration.fallback_status)
+    @loader.manager.fallback_status = "reject"
+    assert_equal(Milter::Status::REJECT, @configuration.fallback_status)
   end
 
   def test_to_xml

@@ -18,13 +18,18 @@
 require 'milter'
 
 class MilterTarpit < Milter::ClientSession
-  def helo(fqdn)
+  def end_of_message(*args)
+    p [:eom, args]
     GLib::Timeout.add(5000) do
       accept
-      @context.signal_emit("helo_response", @context.status)
+      @context.signal_emit("end_of_message_response", @context.status)
       false
     end
     @context.status = :progress
+  end
+
+  def abort(*args)
+    p [:here, args]
   end
 end
 

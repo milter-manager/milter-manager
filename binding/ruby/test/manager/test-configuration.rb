@@ -251,6 +251,8 @@ manager.max_file_descriptors = 0
 # default
 manager.custom_configuration_directory = nil
 # default
+manager.fallback_status = "accept"
+# default
 manager.connection_check_interval = 0
 # default
 manager.event_loop_backend_mode = "glib"
@@ -354,6 +356,8 @@ manager.max_connections = 0
 manager.max_file_descriptors = 0
 # #{__FILE__}:#{manager_custom_configuration_directory}
 manager.custom_configuration_directory = "/tmp/milter-manager/"
+# default
+manager.fallback_status = "accept"
 # default
 manager.connection_check_interval = 0
 # default

@@ -119,6 +119,7 @@ module Milter::Manager
       dump_item("manager.max_file_descriptors", c.max_file_descriptors.inspect)
       dump_item("manager.custom_configuration_directory",
                 c.custom_configuration_directory.inspect)
+      dump_item("manager.fallback_status", c.fallback_status.nick.dump)
       dump_item("manager.connection_check_interval",
                 c.connection_check_interval.inspect)
       dump_item("manager.event_loop_backend_mode",
@@ -875,6 +876,15 @@ module Milter::Manager
       def event_loop_backend_mode=(event_loop_backend_mode)
         update_location("event_loop_backend_mode", event_loop_backend_mode.nil?)
         @configuration.event_loop_backend_mode = event_loop_backend_mode
+      end
+
+      def fallback_status
+        @configuration.fallback_status
+      end
+
+      def fallback_status=(status)
+        update_location("fallback_status", status.nil?)
+        @configuration.fallback_status = status
       end
 
       def define_connection_checker(name, &block)
