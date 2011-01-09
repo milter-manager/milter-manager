@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -33,6 +33,8 @@
 #include "milter-manager-children.h"
 #include <milter/core/milter-marshalers.h>
 
+#define DEFAULT_FALLBACK_STATUS MILTER_STATUS_ACCEPT
+#define DEFAULT_FALLBACK_STATUS_AT_DISCONNECT MILTER_STATUS_TEMPORARY_FAILURE
 #define DEFAULT_MAINTENANCE_INTERVAL 10
 #define DEFAULT_CONNECTION_CHECK_INTERVAL 0
 
@@ -51,6 +53,7 @@ struct _MilterManagerConfigurationPrivate
     gchar *controller_connection_spec;
     gchar *manager_connection_spec;
     MilterStatus fallback_status;
+    MilterStatus fallback_status_at_disconnect;
     gchar *package_platform;
     gchar *package_options;
     gchar *effective_user;
@@ -82,6 +85,7 @@ enum
     PROP_CONTROLLER_CONNECTION_SPEC,
     PROP_MANAGER_CONNECTION_SPEC,
     PROP_FALLBACK_STATUS,
+    PROP_FALLBACK_STATUS_AT_DISCONNECT,
     PROP_PACKAGE_PLATFORM,
     PROP_PACKAGE_OPTIONS,
     PROP_EFFECTIVE_USER,
@@ -172,9 +176,19 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                              "Fallback status",
                              "The fallback status of the milter-manager",
                              MILTER_TYPE_STATUS,
-                             MILTER_STATUS_ACCEPT,
+                             DEFAULT_FALLBACK_STATUS,
                              G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_FALLBACK_STATUS, spec);
+
+    spec = g_param_spec_enum("fallback-status-at-disconnect",
+                             "Fallback status at disconnect",
+                             "The fallback status at disconnect "
+                             "of the milter-manager",
+                             MILTER_TYPE_STATUS,
+                             DEFAULT_FALLBACK_STATUS_AT_DISCONNECT,
+                             G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class,
+                                    PROP_FALLBACK_STATUS_AT_DISCONNECT, spec);
 
     spec = g_param_spec_string("package-platform",
                                "Package platform",
@@ -495,6 +509,10 @@ set_property (GObject      *object,
         milter_manager_configuration_set_fallback_status(
             config, g_value_get_enum(value));
         break;
+    case PROP_FALLBACK_STATUS_AT_DISCONNECT:
+        milter_manager_configuration_set_fallback_status_at_disconnect(
+            config, g_value_get_enum(value));
+        break;
     case PROP_PACKAGE_PLATFORM:
         milter_manager_configuration_set_package_platform(
             config, g_value_get_string(value));
@@ -606,6 +624,9 @@ get_property (GObject    *object,
         break;
     case PROP_FALLBACK_STATUS:
         g_value_set_enum(value, priv->fallback_status);
+        break;
+    case PROP_FALLBACK_STATUS_AT_DISCONNECT:
+        g_value_set_enum(value, priv->fallback_status_at_disconnect);
         break;
     case PROP_PACKAGE_PLATFORM:
         g_value_set_string(value, priv->package_platform);
@@ -1549,7 +1570,10 @@ MilterStatus
 milter_manager_configuration_get_fallback_status
                                      (MilterManagerConfiguration *configuration)
 {
-    return MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration)->fallback_status;
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->fallback_status;
 }
 
 void
@@ -1561,6 +1585,27 @@ milter_manager_configuration_set_fallback_status
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
     priv->fallback_status = status;
+}
+
+MilterStatus
+milter_manager_configuration_get_fallback_status_at_disconnect
+                                     (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->fallback_status_at_disconnect;
+}
+
+void
+milter_manager_configuration_set_fallback_status_at_disconnect
+                                     (MilterManagerConfiguration *configuration,
+                                      MilterStatus status)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->fallback_status_at_disconnect = status;
 }
 
 const gchar *
@@ -1722,7 +1767,8 @@ clear_manager (MilterManagerConfigurationPrivate *priv)
 
     priv->privilege_mode = FALSE;
     priv->daemon = FALSE;
-    priv->fallback_status = MILTER_STATUS_ACCEPT;
+    priv->fallback_status = DEFAULT_FALLBACK_STATUS;
+    priv->fallback_status_at_disconnect = DEFAULT_FALLBACK_STATUS_AT_DISCONNECT;
     priv->maintenance_interval = DEFAULT_MAINTENANCE_INTERVAL;
     priv->suspend_time_on_unacceptable =
         MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE;

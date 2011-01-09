@@ -1,5 +1,10 @@
 2011-01-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-leader.c,
+	milter/manager/milter-manager-configuration.[ch],
+	test/manager/test-configuration.c: use separated fallback status
+	when disconnect is detected.
+
 	* test/run-test.sh, Makefile.am, test/Makefile.am: re-support
 	in-place build test.
 

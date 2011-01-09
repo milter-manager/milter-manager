@@ -48,6 +48,7 @@ void test_custom_configuration_directory (void);
 void test_controller_connection_spec (void);
 void test_manager_connection_spec (void);
 void test_fallback_status (void);
+void test_fallback_status_at_disconnect (void);
 void test_package_platform (void);
 void test_package_options (void);
 void test_connection_check_interval (void);
@@ -455,6 +456,25 @@ test_fallback_status (void)
                                                      MILTER_STATUS_REJECT);
 
     actual_status = milter_manager_configuration_get_fallback_status(config);
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_REJECT, actual_status);
+}
+
+void
+test_fallback_status_at_disconnect (void)
+{
+    MilterStatus actual_status;
+
+    actual_status =
+        milter_manager_configuration_get_fallback_status_at_disconnect(config);
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_TEMPORARY_FAILURE, actual_status);
+
+    milter_manager_configuration_set_fallback_status_at_disconnect(
+        config, MILTER_STATUS_REJECT);
+
+    actual_status =
+        milter_manager_configuration_get_fallback_status_at_disconnect(config);
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
                            MILTER_STATUS_REJECT, actual_status);
 }

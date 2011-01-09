@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -202,6 +202,11 @@ void          milter_manager_configuration_set_pid_file
 MilterStatus  milter_manager_configuration_get_fallback_status
                                      (MilterManagerConfiguration *configuration);
 void          milter_manager_configuration_set_fallback_status
+                                     (MilterManagerConfiguration *configuration,
+                                      MilterStatus                status);
+MilterStatus  milter_manager_configuration_get_fallback_status_at_disconnect
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_fallback_status_at_disconnect
                                      (MilterManagerConfiguration *configuration,
                                       MilterStatus                status);
 
