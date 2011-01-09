@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -711,6 +711,20 @@ void                 milter_server_context_set_message_result
  */
 gboolean             milter_server_context_need_reply (MilterServerContext *context,
                                                        MilterServerContextState state);
+
+/**
+ * milter_server_context_has_accepted_recipient:
+ * @context: a %MilterServerContext.
+ *
+ * Returns %TRUE if the context has one or more accepted
+ * recipients. If the context doesn't know about recipients,
+ * it always returns %FALSE.
+ *
+ * Returns: %TRUE if @context has one or more accepted
+ * recipients, %FALSE otherwise.
+ */
+gboolean             milter_server_context_has_accepted_recipient
+                                                      (MilterServerContext *context);
 
 G_END_DECLS
 

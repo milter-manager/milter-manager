@@ -3156,6 +3156,30 @@ milter_server_context_set_message_result (MilterServerContext *context,
         g_object_ref(priv->message_result);
 }
 
+gboolean
+milter_server_context_has_accepted_recipient (MilterServerContext *context)
+{
+    MilterServerContextPrivate *priv;
+    GList *rejected_recipients, *temporary_failed_recipients;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+
+    if (!priv->message_result)
+        return TRUE;
+
+    rejected_recipients =
+        milter_message_result_get_rejected_recipients(priv->message_result);
+    temporary_failed_recipients =
+        milter_message_result_get_temporary_failed_recipients(priv->message_result);
+    if (rejected_recipients == NULL && temporary_failed_recipients == NULL) {
+        return TRUE;
+    } else {
+        GList *recipients;
+        recipients = milter_message_result_get_recipients(priv->message_result);
+        return recipients != NULL;
+    }
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

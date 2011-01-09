@@ -1,5 +1,9 @@
 2011-01-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.[ch],
+	test/server/test-server-context.c: add
+	milter_server_context_has_accepted_recipient().
+
 	* test/manager/test-leader.c: call MilterServerContext API with
 	blackhole writer instead of set internal state.
 

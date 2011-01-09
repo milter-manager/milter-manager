@@ -34,6 +34,8 @@
 
 void test_establish_connection (void);
 void test_establish_connection_failure (void);
+void test_negotiate (void);
+void test_connect (void);
 void test_helo (void);
 void test_envelope_from (void);
 void test_envelope_recipient (void);
@@ -47,6 +49,8 @@ void test_state (void);
 void test_last_state (void);
 void test_macro (void);
 void test_macros_hash_table (void);
+void data_has_accepted_recipient (void);
+void test_has_accepted_recipient (gconstpointer data);
 
 static MilterEventLoop *loop;
 
@@ -55,6 +59,8 @@ static MilterTestClient *client;
 
 static MilterReplyEncoder *encoder;
 static MilterDecoder *decoder;
+
+static MilterOption *option;
 
 static MilterStatus reply_status;
 static gboolean command_received;
@@ -131,6 +137,23 @@ send_accept (void)
 }
 
 static void
+cb_negotiate_received (MilterDecoder *decoder, gpointer user_data)
+{
+    gsize packet_size;
+    MilterMacrosRequests *macros_requests;
+
+    command_received = TRUE;
+
+    if (packet)
+        g_free(packet);
+    macros_requests = milter_macros_requests_new();
+    milter_reply_encoder_encode_negotiate(encoder, &packet, &packet_size,
+                                          option, macros_requests);
+    g_object_unref(macros_requests);
+    write_data(packet, packet_size);
+}
+
+static void
 cb_command_received (MilterDecoder *decoder, gpointer user_data)
 {
     command_received = TRUE;
@@ -190,6 +213,7 @@ setup_server_context_signals (MilterServerContext *context)
 #define CONNECT(name)                                                   \
     g_signal_connect(context, #name, G_CALLBACK(cb_reply_received), NULL)
 
+    CONNECT(negotiate_reply);
     CONNECT(continue);
     CONNECT(temporary_failure);
     CONNECT(reject);
@@ -213,10 +237,12 @@ setup_server_context_signals (MilterServerContext *context)
 static void
 setup_command_signals (MilterDecoder *decoder)
 {
+    g_signal_connect(decoder, "negotiate", G_CALLBACK(cb_negotiate_received),
+                     NULL);
+
 #define CONNECT(name)                                                   \
     g_signal_connect(decoder, #name, G_CALLBACK(cb_command_received), NULL)
 
-    CONNECT(negotiate);
     CONNECT(define_macro);
     CONNECT(connect);
     CONNECT(helo);
@@ -236,11 +262,10 @@ setup_command_signals (MilterDecoder *decoder)
 void
 cut_setup (void)
 {
-    MilterOption *option;
-
     loop = milter_glib_event_loop_new(NULL);
 
     context = milter_server_context_new();
+    milter_server_context_set_name(context, "test-server-context");
     milter_agent_set_event_loop(MILTER_AGENT(context), loop);
     setup_server_context_signals(context);
 
@@ -256,7 +281,6 @@ cut_setup (void)
                                MILTER_ACTION_SET_SYMBOL_LIST,
                                MILTER_STEP_SKIP);
     milter_server_context_set_option(context, option);
-    g_object_unref(option);
 
     client = NULL;
 
@@ -280,6 +304,9 @@ cut_teardown (void)
 {
     if (packet)
         g_free(packet);
+
+    if (option)
+        g_object_unref(option);
 
     if (client)
         g_object_unref(client);
@@ -414,11 +441,61 @@ wait_for_receiving_reply (void)
 }
 
 void
+test_negotiate (void)
+{
+    cut_trace(test_establish_connection());
+
+    milter_server_context_negotiate(context, option);
+    cut_assert_false(milter_server_context_is_negotiated(context));
+
+    wait_for_receiving_command();
+    cut_assert_false(milter_server_context_is_negotiated(context));
+
+    wait_for_receiving_reply();
+    cut_assert_true(milter_server_context_is_negotiated(context));
+
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_NOT_CHANGE,
+                           milter_server_context_get_status(context));
+}
+
+void
+test_connect (void)
+{
+    struct sockaddr_in address;
+    const gchar host_name[] = "mx.example.com";
+    const gchar ip_address[] = "192.168.123.123";
+    guint16 port;
+
+    cut_trace(test_negotiate());
+
+    port = g_htons(50443);
+    address.sin_family = AF_INET;
+    address.sin_port = port;
+    inet_pton(AF_INET, ip_address, &(address.sin_addr));
+
+    milter_server_context_connect(context, host_name,
+                                  (struct sockaddr *)&address,
+                                  sizeof(address));
+    cut_assert_true(milter_server_context_is_processing(context));
+
+    wait_for_receiving_command();
+    cut_assert_true(milter_server_context_is_processing(context));
+
+    wait_for_receiving_reply();
+    cut_assert_false(milter_server_context_is_processing(context));
+
+    gcut_assert_equal_enum(MILTER_TYPE_STATUS,
+                           MILTER_STATUS_NOT_CHANGE,
+                           milter_server_context_get_status(context));
+}
+
+void
 test_helo (void)
 {
     const gchar fqdn[] = "delian";
 
-    cut_trace(test_establish_connection());
+    cut_trace(test_connect());
 
     milter_server_context_helo(context, fqdn);
     cut_assert_true(milter_server_context_is_processing(context));
@@ -730,6 +807,82 @@ test_macros_hash_table (void)
                                           "if_addr", "IPv6:::1",
                                           NULL),
         milter_protocol_agent_get_available_macros(agent));
+}
+
+void
+data_has_accepted_recipient (void)
+{
+#define ADD(label, expected, recipients)                         \
+    gcut_add_datum(label " - [" #expected "] <" recipients ">",  \
+                   "expected", G_TYPE_BOOLEAN, expected,         \
+                   "recipients", G_TYPE_STRING, recipients,      \
+                   NULL)
+
+    ADD("no message result", TRUE, "");
+    ADD("all accepted", TRUE,
+        "alice@example.com,"
+        "bob@example.com");
+    ADD("one accepted - no unaccepted", TRUE,
+        "alice@example.com");
+    ADD("one accepted - one rejected", TRUE,
+        "alice@example.com,"
+        "bob@example.com:reject");
+    ADD("one accepted - one temporary failed", TRUE,
+        "alice@example.com,"
+        "bob@example.com:temporary-failure");
+    ADD("no accepted - one rejected", FALSE,
+        "alice@example.com:reject");
+    ADD("no accepted - one temporary failed", FALSE,
+        "alice@example.com:temporary-failure");
+    ADD("all unaccepted", FALSE,
+        "alice@example.com:temporary-failure,"
+        "bob@example.com:reject");
+
+#undef ADD
+}
+
+void
+test_has_accepted_recipient (gconstpointer data)
+{
+    const gchar *recipients_text;
+    const gchar **recipients;
+
+    cut_trace(test_envelope_from());
+
+    recipients_text = gcut_data_get_string(data, "recipients");
+    recipients = cut_take_string_array(g_strsplit(recipients_text, ",", 0));
+    for (; *recipients; recipients++) {
+        gchar **recipient_and_action;
+        const gchar *recipient, *action = NULL;
+
+        recipient_and_action = g_strsplit(*recipients, ":", 2);
+        recipient = cut_take_strdup(recipient_and_action[0]);
+        if (recipient_and_action[1])
+            action = cut_take_strdup(recipient_and_action[1]);
+        g_strfreev(recipient_and_action);
+
+        if (cut_equal_string(action, "reject")) {
+            reply_status = MILTER_STATUS_REJECT;
+        } else if (cut_equal_string(action, "temporary-failure")) {
+            reply_status = MILTER_STATUS_TEMPORARY_FAILURE;
+        } else {
+            reply_status = MILTER_STATUS_CONTINUE;
+        }
+        milter_server_context_envelope_recipient(context, recipient);
+        cut_assert_true(milter_server_context_is_processing(context));
+
+        wait_for_receiving_command();
+        cut_assert_true(milter_server_context_is_processing(context));
+
+        wait_for_receiving_reply();
+        cut_assert_false(milter_server_context_is_processing(context));
+    }
+
+    if (gcut_data_get_boolean(data, "expected")) {
+        cut_assert_true(milter_server_context_has_accepted_recipient(context));
+    } else {
+        cut_assert_false(milter_server_context_has_accepted_recipient(context));
+    }
 }
 
 /*
