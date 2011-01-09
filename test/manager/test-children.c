@@ -58,8 +58,10 @@ void test_header (void);
 void test_header_with_protocol_version2 (void);
 void test_header_no_reply (void);
 void test_end_of_header (void);
+void test_end_of_header_with_protocol_version2 (void);
 void test_end_of_header_no_reply (void);
 void test_body (void);
+void test_body_with_protocol_version2 (void);
 void test_body_no_reply (void);
 void data_important_status (void);
 void test_important_status (gconstpointer data);
@@ -69,6 +71,7 @@ void test_reading_timeout (void);
 void test_connection_timeout (void);
 void test_end_of_message_timeout (void);
 void test_writing_timeout (void);
+void test_end_of_message_with_protocol_version2 (void);
 
 static gchar *scenario_dir;
 static MilterManagerTestScenario *main_scenario;
@@ -128,6 +131,11 @@ static struct sockaddr *actual_address;
 
 static MilterLogLevelFlags original_log_level;
 static gboolean default_handler_disconnected;
+
+#define collect_n_received(event)                                       \
+    milter_manager_test_clients_collect_n_received(                     \
+        test_clients,                                                   \
+        milter_manager_test_client_get_n_ ## event ## _received)
 
 void
 cut_startup (void)
@@ -1500,8 +1508,10 @@ test_header_with_protocol_version2 (void)
 
     cut_trace(test_envelope_recipient());
 
+    cut_assert_equal_uint(0, collect_n_received(data));
     milter_manager_children_header(children, name, value);
-    wait_reply(6, n_continue_emitted);
+    wait_reply(5, n_continue_emitted);
+    cut_assert_equal_uint(1, collect_n_received(data));
 }
 
 void
@@ -1533,6 +1543,21 @@ test_end_of_header (void)
 }
 
 void
+test_end_of_header_with_protocol_version2 (void)
+{
+    arguments_append(arguments1,
+                     "--negotiate-version", "2",
+                     NULL);
+
+    cut_trace(test_envelope_recipient());
+
+    cut_assert_equal_uint(0, collect_n_received(data));
+    milter_manager_children_end_of_header(children);
+    wait_reply(5, n_continue_emitted);
+    cut_assert_equal_uint(1, collect_n_received(data));
+}
+
+void
 test_end_of_header_no_reply (void)
 {
     step |= MILTER_STEP_NO_REPLY_END_OF_HEADER;
@@ -1557,6 +1582,23 @@ test_body (void)
 
     milter_manager_children_body(children, chunk, strlen(chunk));
     wait_reply(8, n_continue_emitted);
+}
+
+void
+test_body_with_protocol_version2 (void)
+{
+    const gchar chunk[] = "message body";
+
+    arguments_append(arguments1,
+                     "--negotiate-version", "2",
+                     NULL);
+
+    cut_trace(test_envelope_recipient());
+
+    cut_assert_equal_uint(0, collect_n_received(data));
+    milter_manager_children_body(children, chunk, strlen(chunk));
+    wait_reply(5, n_continue_emitted);
+    cut_assert_equal_uint(1, collect_n_received(data));
 }
 
 void
@@ -2040,6 +2082,21 @@ test_reading_timeout (void)
                         milter_manager_children_get_tag(children),
                         milter_agent_get_tag(MILTER_AGENT(child))),
         error_message->str);
+}
+
+void
+test_end_of_message_with_protocol_version2 (void)
+{
+    arguments_append(arguments1,
+                     "--negotiate-version", "2",
+                     NULL);
+
+    cut_trace(test_envelope_recipient());
+
+    cut_assert_equal_uint(0, collect_n_received(data));
+    milter_manager_children_end_of_message(children, NULL, 0);
+    wait_reply(5, n_continue_emitted);
+    cut_assert_equal_uint(1, collect_n_received(data));
 }
 
 /*

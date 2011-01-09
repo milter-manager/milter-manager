@@ -1,5 +1,11 @@
 2011-01-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c,
+	test/lib/milter-test-client.rb, test/manager/test-children.c:
+	support data command emuration for milter protocol version < 4
+	SMTP server on all message command (header, end-of-header, body and
+	end-of-message).
+
 	* test/lib/milter-test-client.rb: fix a typo.
 
 	* milter/manager/milter-manager-children.c,

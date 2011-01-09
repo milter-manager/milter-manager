@@ -37,6 +37,26 @@
                                  MILTER_TYPE_MANAGER_CHILDREN,      \
                                  MilterManagerChildrenPrivate))
 
+typedef struct _PendingMessageRequest PendingMessageRequest;
+struct _PendingMessageRequest
+{
+    MilterCommand command;
+    union {
+        struct _HeaderArguments {
+            gchar *name;
+            gchar *value;
+        } header;
+        struct _BodyArguments {
+            gchar *chunk;
+            gsize size;
+        } body;
+        struct _EndOfMessageArguments {
+            gchar *chunk;
+            gsize size;
+        } end_of_message;
+    } arguments;
+};
+
 typedef struct _MilterManagerChildrenPrivate	MilterManagerChildrenPrivate;
 struct _MilterManagerChildrenPrivate
 {
@@ -44,6 +64,7 @@ struct _MilterManagerChildrenPrivate
     GQueue *reply_queue;
     GList *command_waiting_child_queue; /* storing child milters which is waiting for commands after DATA command */
     GList *command_queue; /* storing commands after DATA command */
+    PendingMessageRequest *pending_message_request;
     GHashTable *try_negotiate_ids;
     MilterManagerConfiguration *configuration;
     MilterMacrosRequests *macros_requests;
@@ -237,6 +258,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->reply_queue = g_queue_new();
     priv->command_waiting_child_queue = NULL;
     priv->command_queue = NULL;
+    priv->pending_message_request = NULL;
     priv->try_negotiate_ids =
         g_hash_table_new_full(g_direct_hash, g_direct_equal,
                               negotiate_data_hash_key_free,
@@ -286,6 +308,92 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->event_loop = NULL;
 }
 
+static PendingMessageRequest *
+pending_message_request_new (MilterCommand command)
+{
+    PendingMessageRequest *request;
+
+    request = g_new0(PendingMessageRequest, 1);
+    request->command = command;
+
+    return request;
+}
+
+static PendingMessageRequest *
+pending_header_request_new (const gchar *name, const gchar *value)
+{
+    PendingMessageRequest *request;
+
+    request = pending_message_request_new(MILTER_COMMAND_HEADER);
+    request->arguments.header.name = g_strdup(name);
+    request->arguments.header.value = g_strdup(value);
+
+    return request;
+}
+
+static PendingMessageRequest *
+pending_end_of_header_request_new (void)
+{
+    PendingMessageRequest *request;
+
+    request = pending_message_request_new(MILTER_COMMAND_END_OF_HEADER);
+
+    return request;
+}
+
+static PendingMessageRequest *
+pending_body_request_new (const gchar *chunk, gsize size)
+{
+    PendingMessageRequest *request;
+
+    request = pending_message_request_new(MILTER_COMMAND_BODY);
+    request->arguments.body.chunk = g_strndup(chunk, size);
+    request->arguments.body.size = size;
+
+    return request;
+}
+
+static PendingMessageRequest *
+pending_end_of_message_request_new (const gchar *chunk, gsize size)
+{
+    PendingMessageRequest *request;
+
+    request = pending_message_request_new(MILTER_COMMAND_END_OF_MESSAGE);
+    request->arguments.end_of_message.chunk = g_strndup(chunk, size);
+    request->arguments.end_of_message.size = size;
+
+    return request;
+}
+
+static void
+pending_message_request_free (PendingMessageRequest *request)
+{
+    switch (request->command) {
+    case MILTER_COMMAND_HEADER:
+        g_free(request->arguments.header.name);
+        g_free(request->arguments.header.value);
+        break;
+    case MILTER_COMMAND_BODY:
+        g_free(request->arguments.body.chunk);
+        break;
+    case MILTER_COMMAND_END_OF_MESSAGE:
+        g_free(request->arguments.end_of_message.chunk);
+        break;
+    default:
+        break;
+    }
+    g_free(request);
+}
+
+static void
+dispose_pending_message_request (MilterManagerChildrenPrivate *priv)
+{
+    if (priv->pending_message_request) {
+        pending_message_request_free(priv->pending_message_request);
+        priv->pending_message_request = NULL;
+    }
+}
+
 static void
 dispose_body_related_data (MilterManagerChildrenPrivate *priv)
 {
@@ -327,6 +435,8 @@ dispose_reply_related_data (MilterManagerChildrenPrivate *priv)
 static void
 dispose_message_related_data (MilterManagerChildrenPrivate *priv)
 {
+    dispose_pending_message_request(priv);
+
     if (priv->command_waiting_child_queue) {
         g_list_free(priv->command_waiting_child_queue);
         priv->command_waiting_child_queue = NULL;
@@ -852,6 +962,66 @@ milter_manager_children_is_waiting_reply (MilterManagerChildren *children)
     }
 }
 
+static gboolean
+process_pending_message_request (MilterManagerChildren *children)
+{
+    gboolean processed = FALSE;
+    MilterManagerChildrenPrivate *priv;
+    PendingMessageRequest *request;
+    gchar *command_name = NULL;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+    request = priv->pending_message_request;
+
+    if (milter_need_debug_log()) {
+        command_name = milter_utils_get_enum_nick_name(
+            MILTER_TYPE_COMMAND, request->command);
+        milter_debug("[%u] [children][pending-message-request][%s][process]",
+                     priv->tag, command_name);
+    }
+
+    switch (request->command) {
+    case MILTER_COMMAND_HEADER:
+        processed =
+            milter_manager_children_header(children,
+                                           request->arguments.header.name,
+                                           request->arguments.header.value);
+        break;
+    case MILTER_COMMAND_END_OF_HEADER:
+        processed = milter_manager_children_end_of_header(children);
+        break;
+    case MILTER_COMMAND_BODY:
+        processed =
+            milter_manager_children_body(children,
+                                         request->arguments.body.chunk,
+                                         request->arguments.body.size);
+        break;
+    case MILTER_COMMAND_END_OF_MESSAGE:
+        processed =
+            milter_manager_children_end_of_message(
+                children,
+                request->arguments.end_of_message.chunk,
+                request->arguments.end_of_message.size);
+        break;
+    default:
+        if (milter_need_error_log()) {
+            if (!command_name) {
+                command_name = milter_utils_get_enum_nick_name(
+                    MILTER_TYPE_COMMAND, request->command);
+            }
+            milter_error("[%u] [children][error][pending-message-request] "
+                         "unknown command: <%s>(%d)",
+                         priv->tag, command_name, request->command);
+        }
+        break;
+    }
+
+    if (command_name)
+        g_free(command_name);
+
+    return processed;
+}
+
 static MilterStatus
 remove_child_from_queue (MilterManagerChildren *children,
                          MilterServerContext *context)
@@ -863,25 +1033,34 @@ remove_child_from_queue (MilterManagerChildren *children,
 
     g_queue_remove(priv->reply_queue, context);
 
-    if (g_queue_is_empty(priv->reply_queue)) {
+    if (!g_queue_is_empty(priv->reply_queue))
+        return status;
 
-        status = get_reply_status_for_state(children, priv->processing_state);
-        emit_reply_status_of_state(children, priv->processing_state);
-
-        switch (status) {
-        case MILTER_STATUS_REJECT:
-        case MILTER_STATUS_TEMPORARY_FAILURE:
-            if (priv->processing_state !=
-                MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT) {
-                expire_all_children(children);
-            }
-            break;
-        case MILTER_STATUS_DISCARD:
-            expire_all_children(children);
-            break;
-        default:
-            break;
+    status = get_reply_status_for_state(children, priv->processing_state);
+    if (priv->pending_message_request) {
+        if (status == MILTER_STATUS_CONTINUE &&
+            process_pending_message_request(children)) {
+            status = MILTER_STATUS_PROGRESS;
         }
+        dispose_pending_message_request(priv);
+        if (status == MILTER_STATUS_PROGRESS)
+            return status;
+    }
+    emit_reply_status_of_state(children, priv->processing_state);
+
+    switch (status) {
+    case MILTER_STATUS_REJECT:
+    case MILTER_STATUS_TEMPORARY_FAILURE:
+        if (priv->processing_state !=
+            MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT) {
+            expire_all_children(children);
+        }
+        break;
+    case MILTER_STATUS_DISCARD:
+        expire_all_children(children);
+        break;
+    default:
+        break;
     }
 
     return status;
@@ -3277,6 +3456,13 @@ send_next_header_to_child (MilterManagerChildren *children, MilterServerContext 
     }
 }
 
+static gboolean
+need_data_commmand_emulation (MilterManagerChildrenPrivate *priv)
+{
+    return (priv->state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT &&
+            milter_option_get_version(priv->option) >= 4);
+}
+
 gboolean
 milter_manager_children_header (MilterManagerChildren *children,
                                 const gchar           *name,
@@ -3289,9 +3475,20 @@ milter_manager_children_header (MilterManagerChildren *children,
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    if (priv->state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT &&
-        milter_option_get_version(priv->option) >= 4) {
-        milter_manager_children_data(children);
+    if (need_data_commmand_emulation(priv)) {
+        gboolean success;
+        milter_debug("[%u] [children][data-command-emulation][header] "
+                     "<%s>=<%s>", priv->tag, name, value);
+        success = milter_manager_children_data(children);
+        if (success) {
+            milter_debug("[%u] [children][pending-message-request][header]"
+                         "[keep] <%s>=<%s>",
+                         priv->tag, name, value);
+            dispose_pending_message_request(priv);
+            priv->pending_message_request =
+                pending_header_request_new(name, value);
+        }
+        return success;
     }
 
     priv->state = MILTER_SERVER_CONTEXT_STATE_HEADER;
@@ -3314,6 +3511,22 @@ milter_manager_children_end_of_header (MilterManagerChildren *children)
         return FALSE;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    if (need_data_commmand_emulation(priv)) {
+        gboolean success;
+        milter_debug("[%u] [children][data-command-emulation][end-of-header]",
+                     priv->tag);
+        success = milter_manager_children_data(children);
+        if (success) {
+            milter_debug("[%u] [children][pending-message-request]"
+                         "[end-of-header][keep]",
+                         priv->tag);
+            dispose_pending_message_request(priv);
+            priv->pending_message_request =
+                pending_end_of_header_request_new();
+        }
+        return success;
+    }
 
     priv->state = MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER;
     priv->processing_state = priv->state;
@@ -3445,6 +3658,25 @@ milter_manager_children_body (MilterManagerChildren *children,
     if (!milter_manager_children_check_processing_message(children))
         return FALSE;
 
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    if (need_data_commmand_emulation(priv)) {
+        gboolean success;
+        milter_debug("[%u] [children][data-command-emulation][body] "
+                     "size=%" G_GSIZE_FORMAT,
+                     priv->tag, size);
+        success = milter_manager_children_data(children);
+        if (success) {
+            milter_debug("[%u] [children][pending-message-request][body][keep] "
+                         "size=%" G_GSIZE_FORMAT,
+                         priv->tag, size);
+            dispose_pending_message_request(priv);
+            priv->pending_message_request =
+                pending_body_request_new(chunk, size);
+        }
+        return success;
+    }
+
     init_command_waiting_child_queue(children, MILTER_COMMAND_BODY);
 
     first_child = get_first_child_in_command_waiting_child_queue(children);
@@ -3454,7 +3686,6 @@ milter_manager_children_body (MilterManagerChildren *children,
     if (!write_body(children, chunk, size))
         return FALSE;
 
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     priv->state = state;
     priv->processing_state = state;
     priv->replaced_body_for_each_child = FALSE;
@@ -3666,10 +3897,27 @@ milter_manager_children_end_of_message (MilterManagerChildren *children,
 {
     MilterManagerChildrenPrivate *priv;
 
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-
     if (!milter_manager_children_check_processing_message(children))
         return FALSE;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    if (need_data_commmand_emulation(priv)) {
+        gboolean success;
+        milter_debug("[%u] [children][data-command-emulation][end-of-message] "
+                     "size=%" G_GSIZE_FORMAT,
+                     priv->tag, size);
+        success = milter_manager_children_data(children);
+        if (success) {
+            milter_debug("[%u] [children][pending-message-request]"
+                         "[end-of-message][keep] size=%" G_GSIZE_FORMAT,
+                         priv->tag, size);
+            dispose_pending_message_request(priv);
+            priv->pending_message_request =
+                pending_end_of_message_request_new(chunk, size);
+        }
+        return success;
+    }
 
     init_command_waiting_child_queue(children, MILTER_COMMAND_END_OF_MESSAGE);
 

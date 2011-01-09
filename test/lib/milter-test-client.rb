@@ -401,11 +401,13 @@ class MilterTestClient
     when :header
       [:envelope_recipient_received, :data, :header].include?(@state)
     when :end_of_header
-      [:data, :header].include?(@state)
+      [:envelope_recipient_received, :data, :header].include?(@state)
     when :body
-      [:end_of_header, :body].include?(@state)
+      valid_states = [:envelope_recipient_received, :data, :end_of_header, :body]
+      valid_states.include?(@state)
     when :end_of_message
-      [:end_of_header, :body].include?(@state)
+      valid_states = [:envelope_recipient_received, :data, :end_of_header, :body]
+      valid_states.include?(@state)
     else
       info("unknown state: #{@state}")
       false
