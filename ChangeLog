@@ -1,5 +1,9 @@
 2011-01-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client.h, milter/client/milter-client-objects.h: move
+	MilterClient related declarations to ...
+	* milter/client/milter-client.h: ... here.
+
 	* milter/client.h,
 	milter/client/milter-client-objects.h,
 	milter/client/milter-client.c,

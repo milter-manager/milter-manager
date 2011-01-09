@@ -21,6 +21,7 @@ MAINTAINERCLEANFILES =
 BUILT_SOURCES =
 
 milter_client_public_headers =		\
+	milter-client.h			\
 	milter-client-context.h		\
 	milter-client-objects.h
 

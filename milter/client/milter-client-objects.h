@@ -27,17 +27,6 @@ G_BEGIN_DECLS
 typedef struct _MilterClient         MilterClient;
 typedef struct _MilterClientContext  MilterClientContext;
 
-/**
- * MilterClientEventLoopBackend:
- * @MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB: Let main loop use GLib.
- * @MILTER_CLIENT_EVENT_LOOP_BACKEND_LIBEV: Let main loop use libev.
- */
-typedef enum
-{
-    MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB,
-    MILTER_CLIENT_EVENT_LOOP_BACKEND_LIBEV,
-} MilterClientEventLoopBackend;
-
 G_END_DECLS
 
 #endif /* __MILTER_CLIENT_OBJECTS_H__ */
