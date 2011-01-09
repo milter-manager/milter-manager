@@ -1,5 +1,8 @@
 2011-01-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-manager-test-client.c: milter-test-client.rb is
+	in source directory.
+
 	* test/lib/milter-test-utils.[ch], test/run-test.sh: support
 	source directory using in test.
 

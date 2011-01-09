@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -740,7 +740,8 @@ milter_manager_test_client_set_arguments (MilterManagerTestClient *client,
 
     ruby_path = g_strdup(g_getenv("RUBY"));
     g_array_append_val(priv->command, ruby_path);
-    test_client_path = g_build_filename(milter_test_get_base_dir(),
+    test_client_path = g_build_filename(milter_test_get_source_dir(),
+                                        "test",
                                         "lib",
                                         "milter-test-client.rb",
                                         NULL);
