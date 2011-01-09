@@ -76,6 +76,32 @@ milter_test_get_build_dir (void)
     return build_dir;
 }
 
+static gchar *source_dir = NULL;
+const gchar *
+milter_test_get_source_dir (void)
+{
+    const gchar *dir;
+
+    if (source_dir)
+        return source_dir;
+
+    dir = g_getenv("SOURCE_DIR");
+    if (!dir)
+        dir = ".";
+
+    if (g_path_is_absolute(dir)) {
+        source_dir = g_strdup(dir);
+    } else {
+        gchar *current_dir;
+
+        current_dir = g_get_current_dir();
+        source_dir = g_build_filename(current_dir, dir, NULL);
+        g_free(current_dir);
+    }
+
+    return source_dir;
+}
+
 gchar *
 milter_test_get_tmp_dir (void)
 {

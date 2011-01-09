@@ -33,6 +33,7 @@ if test -z "$abs_top_srcdir"; then
 fi
 
 export BASE_DIR="$abs_top_builddir/test"
+export SOURCE_DIR="$abs_top_srcdir"
 export BUILD_DIR="$abs_top_builddir"
 
 if test x"$NO_MAKE" != x"yes"; then

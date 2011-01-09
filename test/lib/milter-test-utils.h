@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -38,6 +38,7 @@ typedef enum
 
 const gchar   *milter_test_get_base_dir    (void);
 const gchar   *milter_test_get_build_dir   (void);
+const gchar   *milter_test_get_source_dir  (void);
 gchar         *milter_test_get_tmp_dir     (void);
 
 void           milter_test_write_data_to_io_channel
