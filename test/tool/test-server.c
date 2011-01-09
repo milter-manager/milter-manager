@@ -115,7 +115,8 @@ typedef struct _TestData
 void
 cut_startup (void)
 {
-    fixtures_path = g_build_filename(milter_test_get_base_dir(),
+    fixtures_path = g_build_filename(milter_test_get_source_dir(),
+                                     "test",
                                      "tool",
                                      "fixtures",
                                      NULL);
