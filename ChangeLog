@@ -1,5 +1,8 @@
 2011-01-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-client.rb: use an empty flag object instead
+	of 0.
+
 	* test/suite-milter-manager-test.c: accept MILTER_LOG_LEVEL
 	environment variable for debug.
 

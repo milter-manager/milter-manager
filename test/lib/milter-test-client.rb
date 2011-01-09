@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -598,7 +598,7 @@ class MilterTestClient
 
   def resolve_flags(flags_class, flags)
     values = flags_class.values
-    flags.inject(0) do |result, flag|
+    flags.inject(flags_class.new) do |result, flag|
       flag_value = values.find {|value| value.nick == flag}
       if flag_value.nil?
         raise "unknown flag name for #{flags_class.name}: #{flag}"
