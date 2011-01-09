@@ -74,6 +74,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
   manager.custom_configuration_directory = nil
   manager.fallback_status = "accept"
   manager.fallback_status_at_disconnect = "temporary-failure"
+  manager.event_loop_backend = "glib"
   manager.connection_check_interval = 0
 
   controller.connection_spec = nil
@@ -496,6 +497,34 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
    既定値:
      manager.fallback_status_at_disconnect = "reject"
+
+: manager.event_loop_backend
+
+   1.6.3から使用可能。
+
+   イベントループのバックエンドを指定します。100メール/秒以
+   下のメール流量を処理するような中小規模のメールシステムで
+   はこの値を変更する必要はありません。100メール/秒以上のメー
+   ル流量を処理するような大規模のメールシステムではこの値を
+   "libev"に設定する必要があります。
+
+   指定できる値は以下のいずれかの値です。
+
+     * "glib": GLibのイベントループを使います。GLibのイベン
+       トループではI/O多重化にpoll(2)を使っています。既定値
+       です。
+     * "libev": I/O多重化に
+       ((<libev|URL:http://libev.schmorp.de/>))を使います。
+       システムによってepoll、kqueueまたはevent portsを使い
+       ます。
+
+   ((*注意: この項目は実験的な機能扱いです。*))
+
+   例:
+     manager.event_loop_backend = "libev"
+
+   既定値:
+     manager.event_loop_backend = "glib"
 
 : manager.use_netstat_connection_checker
 

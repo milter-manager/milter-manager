@@ -69,8 +69,8 @@ current configuration is shown.
   manager.custom_configuration_directory = nil
   manager.fallback_status = "accept"
   manager.fallback_status_at_disconnect = "temporary-failure"
+  manager.event_loop_backend = "glib"
   manager.connection_check_interval = 0
-  manager.event_loop_backend_mode = "glib"
 
   controller.connection_spec = nil
   controller.unix_socket_mode = 0660
@@ -505,6 +505,31 @@ Here are descriptions of configuration items.
    Default:
      manager.fallback_status_at_disconnect = "discard"
 
+: manager.event_loop_backend
+
+   Since 1.6.3.
+
+   Specifies a backend for event loop. For non-large
+   mail system which processes 100 or less mails per second,
+   we doesn't need to change it. For large mail system which
+   processes 100 or more mails per seconds, we need to
+   change it to "libev".
+
+   Here are availble values:
+
+     * "glib": Uses GLib's event loop that uses poll(2) as
+       I/O multiplexer. It's the default.
+     * "libev": Uses libev that uses epoll, kqueue or event
+       ports as I/O multiplexer.
+
+   ((*NOTE: This item is an experimental feature.*))
+
+   Example:
+     manager.event_loop_backend = "libev"
+
+   Default:
+     manager.event_loop_backend = "glib"
+
 : manager.use_netstat_connection_checker
 
    Since 1.5.0.
@@ -552,23 +577,6 @@ Here are descriptions of configuration items.
 
    Default:
      manager.connection_check_interval = 0
-
-: manager.event_loop_backend_mode
-
-   ((*Normally, this item doesn't need to be used directly.*))
-
-   Since 1.6.3.
-
-   Specifies an backend for event loop.  Valid values are "glib" and
-   "libev".
-
-   ((*NOTE: This item is an experimental feature.*))
-
-   Example:
-     manager.event_loop_backend_mode = "libev" # Run with libev.
-
-   Default:
-     manager.connection_check_interval = "glib"
 
 : manager.define_connection_checker(name) {|context| ... # -> true/false}
 

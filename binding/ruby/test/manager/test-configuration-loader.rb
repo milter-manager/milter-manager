@@ -193,6 +193,14 @@ class TestConfigurationLoader < Test::Unit::TestCase
                  @configuration.fallback_status_at_disconnect)
   end
 
+  def test_manager_event_loop_backend
+    assert_equal(Milter::Manager::EventLoopBackendMode::GLIB,
+                 @configuration.event_loop_backend_mode)
+    @loader.manager.event_loop_backend = "libev"
+    assert_equal(Milter::Manager::EventLoopBackendMode::LIBEV,
+                 @configuration.event_loop_backend_mode)
+  end
+
   def test_to_xml
     assert_equal(<<-EOX, @configuration.to_xml)
 <configuration>

@@ -255,9 +255,9 @@ manager.fallback_status = "accept"
 # default
 manager.fallback_status_at_disconnect = "temporary-failure"
 # default
-manager.connection_check_interval = 0
+manager.event_loop_backend = "glib"
 # default
-manager.event_loop_backend_mode = "glib"
+manager.connection_check_interval = 0
 
 # default
 controller.connection_spec = nil
@@ -363,9 +363,9 @@ manager.fallback_status = "accept"
 # default
 manager.fallback_status_at_disconnect = "temporary-failure"
 # default
-manager.connection_check_interval = 0
+manager.event_loop_backend = "glib"
 # default
-manager.event_loop_backend_mode = "glib"
+manager.connection_check_interval = 0
 
 # #{__FILE__}:#{controller_connection_spec}
 controller.connection_spec = "inet:10025"
@@ -468,14 +468,6 @@ EOD
 
     @configuration.reset_location("security.privilege_mode")
     assert_equal({}, @configuration.locations)
-  end
-
-  def test_event_loop_backend_mode
-    mode = @configuration.event_loop_backend_mode
-    assert_equal(Milter::Manager::EventLoopBackendMode::GLIB, mode)
-    @configuration.event_loop_backend_mode = :libev
-    mode = @configuration.event_loop_backend_mode
-    assert_equal(Milter::Manager::EventLoopBackendMode::LIBEV, mode)
   end
 
   private
