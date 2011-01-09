@@ -250,8 +250,8 @@ setup_client_context_signals (MilterClientContext *context)
 void
 cut_setup (void)
 {
-    GIOChannel *channel;
-    MilterWriter *writer;
+    GIOChannel *channel, *null_channel;
+    MilterWriter *writer, *null_writer;
     MilterReader *reader;
     GError *error = NULL;
 
@@ -283,9 +283,17 @@ cut_setup (void)
     milter_agent_start(MILTER_AGENT(client_context), &error);
     gcut_assert_error(error);
 
+    null_channel = gcut_string_io_channel_new(NULL);
+    g_io_channel_set_encoding(null_channel, NULL, NULL);
+    g_io_channel_set_flags(null_channel, G_IO_FLAG_NONBLOCK, NULL);
+    null_writer = milter_writer_io_channel_new(null_channel);
+    g_io_channel_unref(null_channel);
+
     server = milter_manager_test_server_new();
     milter_agent_set_reader(MILTER_AGENT(server), reader);
     g_object_unref(reader);
+    milter_agent_set_writer(MILTER_AGENT(server), null_writer);
+    g_object_unref(null_writer);
     milter_agent_set_event_loop(MILTER_AGENT(server), loop);
     milter_agent_start(MILTER_AGENT(server), &error);
     gcut_assert_error(error);
@@ -802,8 +810,6 @@ do_negotiate (MilterManagerTestScenario *scenario, const gchar *group)
     MilterOption *option;
     const GList *options;
 
-    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
-                                    MILTER_SERVER_CONTEXT_STATE_NEGOTIATE);
     option = milter_manager_test_scenario_get_option(scenario, group,
                                                      main_scenario);
     gcut_take_object(G_OBJECT(option));
@@ -859,8 +865,6 @@ do_connect (MilterManagerTestScenario *scenario, const gchar *group)
     const GList *expected_connect_infos;
     const GList *actual_connect_infos;
 
-    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
-                                    MILTER_SERVER_CONTEXT_STATE_CONNECT);
     host = get_string(scenario, group, "host");
     address_spec = get_string(scenario, group, "address");
 
@@ -869,6 +873,8 @@ do_connect (MilterManagerTestScenario *scenario, const gchar *group)
                                  &error);
     gcut_assert_error(error);
 
+    milter_server_context_connect(MILTER_SERVER_CONTEXT(server),
+                                  host, address, address_size);
     define_macro(scenario, group, MILTER_COMMAND_CONNECT);
     milter_manager_leader_connect(leader, host, address, address_size);
     g_free(address);
@@ -894,9 +900,8 @@ do_helo (MilterManagerTestScenario *scenario, const gchar *group)
     const gchar *fqdn;
     const GList *expected_fqdns;
 
-    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
-                                    MILTER_SERVER_CONTEXT_STATE_HELO);
     fqdn = get_string(scenario, group, "fqdn");
+    milter_server_context_helo(MILTER_SERVER_CONTEXT(server), fqdn);
     milter_manager_leader_helo(leader, fqdn);
 
     assert_response(scenario, group);
@@ -914,9 +919,8 @@ do_envelope_from (MilterManagerTestScenario *scenario, const gchar *group)
     const gchar *from;
     const GList *expected_froms;
 
-    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
-                                    MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM);
     from = get_string(scenario, group, "from");
+    milter_server_context_envelope_from(MILTER_SERVER_CONTEXT(server), from);
     define_macro(scenario, group, MILTER_COMMAND_ENVELOPE_FROM);
     milter_manager_leader_envelope_from(leader, from);
 
@@ -937,10 +941,10 @@ do_envelope_recipient (MilterManagerTestScenario *scenario, const gchar *group)
     const gchar *recipient;
     const GList *expected_recipients;
 
-    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
-                                    MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT);
     recipient = get_string(scenario, group, "recipient");
     n_envelope_recipient_responses = 0;
+    milter_server_context_envelope_recipient(MILTER_SERVER_CONTEXT(server),
+                                             recipient);
     milter_manager_leader_envelope_recipient(leader, recipient);
 
     assert_response(scenario, group);
@@ -955,8 +959,7 @@ do_envelope_recipient (MilterManagerTestScenario *scenario, const gchar *group)
 static void
 do_data (MilterManagerTestScenario *scenario, const gchar *group)
 {
-    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
-                                    MILTER_SERVER_CONTEXT_STATE_DATA);
+    milter_server_context_data(MILTER_SERVER_CONTEXT(server));
     milter_manager_leader_data(leader);
 
     assert_response(scenario, group);
@@ -969,11 +972,10 @@ do_header (MilterManagerTestScenario *scenario, const gchar *group)
     const GList *actual_headers;
     const gchar *name, *value;
 
-    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
-                                    MILTER_SERVER_CONTEXT_STATE_HEADER);
     name = get_string(scenario, group, "name");
     value = get_string(scenario, group, "value");
     n_header_responses = 0;
+    milter_server_context_header(MILTER_SERVER_CONTEXT(server), name, value);
     milter_manager_leader_header(leader, name, value);
 
     milter_manager_test_server_add_header(server, name, value);
@@ -995,8 +997,7 @@ do_header (MilterManagerTestScenario *scenario, const gchar *group)
 static void
 do_end_of_header (MilterManagerTestScenario *scenario, const gchar *group)
 {
-    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
-                                    MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER);
+    milter_server_context_end_of_header(MILTER_SERVER_CONTEXT(server));
     milter_manager_leader_end_of_header(leader);
 
     assert_response(scenario, group);
@@ -1072,9 +1073,9 @@ do_body (MilterManagerTestScenario *scenario, const gchar *group)
     gsize chunk_size = 0;
     const GList *expected_chunks, *actual_chunks;
 
-    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
-                                    MILTER_SERVER_CONTEXT_STATE_BODY);
     get_chunk(scenario, group, &chunk, &chunk_size);
+    milter_server_context_body(MILTER_SERVER_CONTEXT(server),
+                               chunk, chunk_size);
     n_body_responses = 0;
     milter_manager_leader_body(leader, chunk, chunk_size);
 
@@ -1094,10 +1095,10 @@ do_end_of_message (MilterManagerTestScenario *scenario, const gchar *group)
     gsize chunk_size = 0;
     const GList *expected_chunks, *actual_chunks;
 
-    milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
-                                    MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE);
     get_chunk(scenario, group, &chunk, &chunk_size);
 
+    milter_server_context_end_of_message(MILTER_SERVER_CONTEXT(server),
+                                         chunk, chunk_size);
     milter_client_context_set_state(client_context,
                                     MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE);
     milter_manager_leader_end_of_message(leader, chunk, chunk_size);

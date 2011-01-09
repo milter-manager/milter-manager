@@ -1,5 +1,8 @@
 2011-01-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/manager/test-leader.c: call MilterServerContext API with
+	blackhole writer instead of set internal state.
+
 	* test/lib/milter-test-client.rb: use an empty flag object instead
 	of 0.
 
