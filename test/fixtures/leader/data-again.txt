@@ -13,7 +13,7 @@ port=10027
 command=data
 
 response=data
-n_received=1
+n_received=2
 status=continue
 
 n_alive=2

@@ -583,7 +583,9 @@ wait_reply_helper (guint expected, guint *actual)
     }
     milter_event_loop_remove(loop, timeout_waiting_id);
 
-    cut_assert_true(timeout_waiting);
+    cut_assert_true(timeout_waiting,
+                    cut_message("timeout: expect:<%u> actual:<%u>",
+                                expected, *actual));
     cut_assert_equal_uint(expected, *actual);
 }
 

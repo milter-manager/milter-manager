@@ -25,7 +25,7 @@ recipients=kou+receiver2@example.com;kou+receiver2@example.com
 command=data
 
 response=data
-n_received=1
+n_received=2
 status=continue
 
 n_alive=2

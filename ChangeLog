@@ -1,5 +1,10 @@
 2011-01-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-children.c,
+	test/manager/test-children.c, test/fixtures/leader/: don't delay
+	data event.
+	Reported by Kenji Shiono. Thanks!!!
+
 	* test/tool/test-server.c, test/manager/test-children.c,
 	test/manager/test-leader.c, test/manager/test-manager.c: use source
 	directory instead of base directory for fxiture.

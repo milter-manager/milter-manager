@@ -14,7 +14,7 @@ port=10027
 command=data
 
 response=data
-n_received=1
+n_received=2
 status=reject
 reply_codes=554 5.5.4 Spam: pgrishin
 
