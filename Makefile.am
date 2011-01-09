@@ -107,5 +107,11 @@ tag:
 echo-abs-top-srcdir:
 	@echo $(abs_top_srcdir)
 
+echo-abs-top-builddir:
+	@echo $(abs_top_builddir)
+
+echo-cutter:
+	@echo $(CUTTER)
+
 echo-ruby:
 	@echo $(RUBY)

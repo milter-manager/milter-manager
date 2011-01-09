@@ -15,11 +15,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-export BASE_DIR="`dirname $0`"
-top_srcdir="$BASE_DIR/.."
-top_srcdir="`cd $top_srcdir; pwd`"
-top_dir=.
-export BUILD_DIR="`cd $top_dir; pwd`"
+unset MAKELEVEL
+unset MAKEFLAGS
 
 if gmake --version > /dev/null 2>&1; then
     MAKE=${MAKE:-"gmake"}
@@ -27,21 +24,32 @@ else
     MAKE=${MAKE:-"make"}
 fi
 
+if test -z "$abs_top_builddir"; then
+    abs_top_builddir="$(${MAKE} -s echo-abs-top-builddir)"
+fi
+
+if test -z "$abs_top_srcdir"; then
+    abs_top_srcdir="$(${MAKE} -s -C "$abs_top_builddir" echo-abs-top-srcdir)"
+fi
+
+export BASE_DIR="$abs_top_builddir/test"
+export BUILD_DIR="$abs_top_builddir"
+
 if test x"$NO_MAKE" != x"yes"; then
-    $MAKE -C $top_dir/ > /dev/null || exit 1
+    $MAKE -C "$abs_top_builddir" > /dev/null || exit 1
 fi
 
 if test -z "$CUTTER"; then
-    CUTTER="$(${MAKE} -s -C $top_dir echo-cutter)"
+    CUTTER="$(${MAKE} -s -C "$abs_top_builddir" echo-cutter)"
 fi
 
 CUTTER_ARGS=
 CUTTER_WRAPPER=
 if test x"$CUTTER_DEBUG" = x"yes"; then
-    CUTTER_WRAPPER="$top_dir/libtool --mode=execute gdb --args"
+    CUTTER_WRAPPER="$abs_top_builddir/libtool --mode=execute gdb --args"
     CUTTER_ARGS="--keep-opening-modules"
 elif test x"$CUTTER_CHECK_LEAK" = x"yes"; then
-    CUTTER_WRAPPER="$top_dir/libtool --mode=execute valgrind "
+    CUTTER_WRAPPER="$abs_top_builddir/libtool --mode=execute valgrind "
     CUTTER_WRAPPER="$CUTTER_WRAPPER --leak-check=full --show-reachable=yes -v"
     CUTTER_ARGS="--keep-opening-modules"
 fi
@@ -52,20 +60,20 @@ CUTTER_ARGS="$CUTTER_ARGS -s $BASE_DIR --exclude-directory fixtures"
 if echo "$@" | grep -- --mode=analyze > /dev/null; then
     :
 else
-    CUTTER_ARGS="$CUTTER_ARGS --stream=xml --stream-log-directory $top_dir/log"
+    CUTTER_ARGS="$CUTTER_ARGS --stream=xml --stream-log-directory $abs_top_builddir/log"
 fi
 if test x"$USE_GTK" = x"yes"; then
     CUTTER_ARGS="-u gtk $CUTTER_ARGS"
 fi
 
 if test -z "$RUBY"; then
-    RUBY="$(${MAKE} -s -C $top_dir echo-ruby)"
+    RUBY="$(${MAKE} -s -C "$abs_top_builddir" echo-ruby)"
 fi
 
 export RUBY
 
-ruby_dir=$top_dir/binding/ruby
-ruby_srcdir=$top_srcdir/binding/ruby
+ruby_dir=$abs_top_builddir/binding/ruby
+ruby_srcdir=$abs_top_srcdir/binding/ruby
 MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_srcdir/lib
 MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_dir/src/toolkit/.libs
 MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_dir/src/manager/.libs
@@ -91,7 +99,7 @@ fi
 RUBYLIB=$MILTER_MANAGER_RUBYLIB:$RUBYLIB
 export MILTER_MANAGER_RUBYLIB
 export RUBYLIB
-export MILTER_MANAGER_CONFIGURATION_MODULE_DIR=$top_dir/module/configuration/ruby/.libs
-export MILTER_MANAGER_CONFIG_DIR=$top_dir/test/fixtures/configuration
+export MILTER_MANAGER_CONFIGURATION_MODULE_DIR=$abs_top_builddir/module/configuration/ruby/.libs
+export MILTER_MANAGER_CONFIG_DIR=$abs_top_srcdir/test/fixtures/configuration
 
 $CUTTER_WRAPPER $CUTTER $CUTTER_ARGS "$@" $BASE_DIR

@@ -40,8 +40,5 @@ LIBS =								\
 
 suite_milter_manager_test_la_SOURCES = suite-milter-manager-test.c
 
-echo-cutter:
-	@echo $(CUTTER)
-
-echo-ruby:
-	@echo $(RUBY)
+echo-abs-top-builddir:
+	@echo $(abs_top_builddir)

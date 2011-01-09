@@ -1,5 +1,8 @@
 2011-01-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/run-test.sh, Makefile.am, test/Makefile.am: re-support
+	in-place build test.
+
 	* binding/ruby/lib/milter/manager.rb,
 	binding/ruby/test/manager/test-configuration-loader.rb,
 	binding/ruby/test/manager/test-configuration.rb,
