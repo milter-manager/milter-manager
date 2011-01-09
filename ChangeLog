@@ -1,6 +1,7 @@
 2011-01-09  Kouhei Sutou  <kou@cozmixng.org>
 
-	* test/tool/test-server.c, test/manager/test-children.c: use source
+	* test/tool/test-server.c, test/manager/test-children.c,
+	test/manager/test-leader.c, test/manager/test-manager.c: use source
 	directory instead of base directory for fxiture.
 
 	* test/lib/milter-manager-test-client.c: milter-test-client.rb is

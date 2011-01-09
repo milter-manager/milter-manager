@@ -255,7 +255,8 @@ cut_setup (void)
     MilterReader *reader;
     GError *error = NULL;
 
-    scenario_dir = g_build_filename(milter_test_get_base_dir(),
+    scenario_dir = g_build_filename(milter_test_get_source_dir(),
+                                    "test",
                                     "fixtures",
                                     "leader",
                                     NULL);
