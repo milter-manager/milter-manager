@@ -1,3 +1,16 @@
+2011-01-10  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/client.h,
+	milter/client/milter-client-objects.h,
+	milter/client/milter-client.c,
+	milter/manager/milter-manager-configuration.[ch],
+	test/client/test-client.c, test/manager/test-configuration.c,
+	binding/ruby/lib/milter/manager.rb,
+	binding/ruby/src/manager/rb-milter-manager-configuration.c,
+	binding/ruby/test/manager/test-configuration-loader.rb,
+	binding/ruby/test/toolkit/test-client.rb:
+	MilterClientEventLoopBackendMode -> MilterClientEventLoopBackend.
+
 2011-01-09  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/lib/milter/manager.rb,

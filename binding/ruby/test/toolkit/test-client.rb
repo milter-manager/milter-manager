@@ -58,11 +58,11 @@ class TestClient < Test::Unit::TestCase
     end
   end
 
-  def test_event_loop_backend_mode
-    mode = @client.event_loop_backend_mode
-    assert_equal(Milter::Manager::EventLoopBackendMode::GLIB, mode)
-    @client.event_loop_backend_mode = :libev
-    mode = @client.event_loop_backend_mode
-    assert_equal(Milter::Manager::EventLoopBackendMode::LIBEV, mode)
+  def test_event_loop_backend
+    assert_equal(Milter::Manager::EventLoopBackend::GLIB,
+                 @client.event_loop_backend)
+    @client.event_loop_backend = "libev"
+    assert_equal(Milter::Manager::EventLoopBackend::LIBEV,
+                 @client.event_loop_backend)
   end
 end

@@ -123,7 +123,7 @@ module Milter::Manager
       dump_item("manager.fallback_status_at_disconnect",
                 c.fallback_status_at_disconnect.nick.dump)
       dump_item("manager.event_loop_backend",
-                c.event_loop_backend_mode.nick.dump)
+                c.event_loop_backend.nick.dump)
       dump_item("manager.connection_check_interval",
                 c.connection_check_interval.inspect)
       @result << "\n"
@@ -872,12 +872,12 @@ module Milter::Manager
       end
 
       def event_loop_backend
-        @configuration.event_loop_backend_mode
+        @configuration.event_loop_backend
       end
 
       def event_loop_backend=(backend)
         update_location("event_loop_backend", backend.nil?)
-        @configuration.event_loop_backend_mode = backend
+        @configuration.event_loop_backend = backend
       end
 
       def fallback_status

@@ -51,6 +51,7 @@ void test_fallback_status (void);
 void test_fallback_status_at_disconnect (void);
 void test_package_platform (void);
 void test_package_options (void);
+void test_event_loop_backend (void);
 void test_connection_check_interval (void);
 void test_egg (void);
 void test_find_egg (void);
@@ -65,7 +66,6 @@ void test_save_custom (void);
 void test_to_xml_full (void);
 void test_to_xml_signal (void);
 void test_location (void);
-void test_event_loop_backend_mode (void);
 
 static MilterManagerConfiguration *config;
 static MilterEventLoop *loop;
@@ -513,6 +513,24 @@ test_package_options (void)
         milter_manager_configuration_get_package_options(config);
     cut_assert_equal_string("prefix=/etc",
                             actual_package_options);
+}
+
+void
+test_event_loop_backend (void)
+{
+    MilterClientEventLoopBackend backend;
+
+    gcut_assert_equal_enum(
+        MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND,
+        MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB,
+        milter_manager_configuration_get_event_loop_backend(config));
+
+    backend = MILTER_CLIENT_EVENT_LOOP_BACKEND_LIBEV;
+    milter_manager_configuration_set_event_loop_backend(config, backend);
+    gcut_assert_equal_enum(
+        MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND,
+        backend,
+        milter_manager_configuration_get_event_loop_backend(config));
 }
 
 void
@@ -1034,26 +1052,6 @@ test_location (void)
     milter_assert_equal_location_keys(NULL);
 }
 
-void
-test_event_loop_backend_mode (void)
-{
-    MilterClientEventLoopBackendMode mode;
-    MilterClientEventLoopBackendMode actual_mode;
-
-    mode = MILTER_CLIENT_EVENT_LOOP_BACKEND_LIBEV;
-    milter_manager_configuration_set_event_loop_backend_mode(config,
-                                                             mode);
-    actual_mode =
-        milter_manager_configuration_get_event_loop_backend_mode(config);
-    cut_assert_equal_uint(mode, actual_mode); 
-
-    mode = MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
-    milter_manager_configuration_set_event_loop_backend_mode(config,
-                                                             mode);
-    actual_mode =
-        milter_manager_configuration_get_event_loop_backend_mode(config);
-    cut_assert_equal_uint(mode, actual_mode);
-}
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

@@ -194,11 +194,11 @@ class TestConfigurationLoader < Test::Unit::TestCase
   end
 
   def test_manager_event_loop_backend
-    assert_equal(Milter::Manager::EventLoopBackendMode::GLIB,
-                 @configuration.event_loop_backend_mode)
+    assert_equal(Milter::Manager::EventLoopBackend::GLIB,
+                 @configuration.event_loop_backend)
     @loader.manager.event_loop_backend = "libev"
-    assert_equal(Milter::Manager::EventLoopBackendMode::LIBEV,
-                 @configuration.event_loop_backend_mode)
+    assert_equal(Milter::Manager::EventLoopBackend::LIBEV,
+                 @configuration.event_loop_backend)
   end
 
   def test_to_xml

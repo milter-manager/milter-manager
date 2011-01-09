@@ -333,11 +333,12 @@ guint         milter_manager_configuration_get_connection_check_interval
 void          milter_manager_configuration_set_connection_check_interval
                                      (MilterManagerConfiguration *configuration,
                                       guint                       interval_in_seconds);
-MilterClientEventLoopBackendMode milter_manager_configuration_get_event_loop_backend_mode
+MilterClientEventLoopBackend
+              milter_manager_configuration_get_event_loop_backend
                                      (MilterManagerConfiguration *configuration);
-void          milter_manager_configuration_set_event_loop_backend_mode
+void          milter_manager_configuration_set_event_loop_backend
                                      (MilterManagerConfiguration      *configuration,
-                                      MilterClientEventLoopBackendMode mode);
+                                      MilterClientEventLoopBackend     backend);
 
 G_END_DECLS
 

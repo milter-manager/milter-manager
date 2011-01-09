@@ -51,6 +51,7 @@ void test_suspend_time_on_unacceptable (void);
 void test_max_connections (void);
 void test_effective_user (void);
 void test_effective_group (void);
+void test_event_loop_backend (void);
 void test_maintenance_interval (void);
 void test_connection_spec (void);
 void test_need_maintain (void);
@@ -840,6 +841,21 @@ test_effective_group (void)
     milter_client_set_effective_group(client, "nogroup");
     cut_assert_equal_string(
         "nogroup", milter_client_get_effective_group(client));
+}
+
+void
+test_event_loop_backend (void)
+{
+    gcut_assert_equal_enum(
+        MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND,
+        MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB,
+        milter_client_get_event_loop_backend(client));
+    milter_client_set_event_loop_backend(client,
+                                         MILTER_CLIENT_EVENT_LOOP_BACKEND_LIBEV);
+    gcut_assert_equal_enum(
+        MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND,
+        MILTER_CLIENT_EVENT_LOOP_BACKEND_LIBEV,
+        milter_client_get_event_loop_backend(client));
 }
 
 void

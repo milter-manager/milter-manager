@@ -75,7 +75,7 @@ struct _MilterManagerConfigurationPrivate
     gchar *custom_configuration_directory;
     GHashTable *locations;
     guint connection_check_interval;
-    MilterClientEventLoopBackendMode event_loop_backend_mode;
+    MilterClientEventLoopBackend event_loop_backend;
 };
 
 enum
@@ -106,7 +106,7 @@ enum
     PROP_MAX_FILE_DESCRIPTORS,
     PROP_CUSTOM_CONFIGURATION_DIRECTORY,
     PROP_CONNECTION_CHECK_INTERVAL,
-    PROP_EVENT_LOOP_BACKEND_MODE,
+    PROP_EVENT_LOOP_BACKEND
 };
 
 enum
@@ -387,14 +387,14 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                     spec);
 
 
-    spec = g_param_spec_enum("event-loop-backend-mode",
-                             "Event loop backend mode",
-                             "The mode of client event loop",
-                             MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND_MODE,
+    spec = g_param_spec_enum("event-loop-backend",
+                             "Event loop backend",
+                             "The event loop backend of the configuration",
+                             MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND,
                              MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class,
-                                    PROP_EVENT_LOOP_BACKEND_MODE,
+                                    PROP_EVENT_LOOP_BACKEND,
                                     spec);
 
 
@@ -593,8 +593,8 @@ set_property (GObject      *object,
         milter_manager_configuration_set_connection_check_interval(
             config, g_value_get_uint(value));
         break;
-    case PROP_EVENT_LOOP_BACKEND_MODE:
-        milter_manager_configuration_set_event_loop_backend_mode(
+    case PROP_EVENT_LOOP_BACKEND:
+        milter_manager_configuration_set_event_loop_backend(
             config, g_value_get_enum(value));
         break;
     default:
@@ -688,8 +688,8 @@ get_property (GObject    *object,
     case PROP_CONNECTION_CHECK_INTERVAL:
         g_value_set_uint(value, priv->connection_check_interval);
         break;
-    case PROP_EVENT_LOOP_BACKEND_MODE:
-        g_value_set_enum(value, priv->event_loop_backend_mode);
+    case PROP_EVENT_LOOP_BACKEND:
+        g_value_set_enum(value, priv->event_loop_backend);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -2068,23 +2068,23 @@ milter_manager_configuration_set_connection_check_interval (MilterManagerConfigu
     priv->connection_check_interval = interval_in_seconds;
 }
 
-MilterClientEventLoopBackendMode
-milter_manager_configuration_get_event_loop_backend_mode (MilterManagerConfiguration *configuration)
+MilterClientEventLoopBackend
+milter_manager_configuration_get_event_loop_backend (MilterManagerConfiguration *configuration)
 {
     MilterManagerConfigurationPrivate *priv;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-    return priv->event_loop_backend_mode;
+    return priv->event_loop_backend;
 }
 
 void
-milter_manager_configuration_set_event_loop_backend_mode (MilterManagerConfiguration *configuration,
-                                                          MilterClientEventLoopBackendMode mode)
+milter_manager_configuration_set_event_loop_backend (MilterManagerConfiguration *configuration,
+                                                     MilterClientEventLoopBackend backend)
 {
     MilterManagerConfigurationPrivate *priv;
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
-    priv->event_loop_backend_mode = mode;
+    priv->event_loop_backend = backend;
 }
 
 /*

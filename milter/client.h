@@ -259,10 +259,10 @@ struct _MilterClientClass
     void   (*maintain)                    (MilterClient *client);
     void   (*sessions_finished)           (MilterClient *client,
                                            guint         n_finished_sessions);
-    MilterClientEventLoopBackendMode (*get_event_loop_backend_mode)
-                                          (MilterClient *client);
-    void   (*set_event_loop_backend_mode) (MilterClient *client,
-                                           MilterClientEventLoopBackendMode mode);
+    MilterClientEventLoopBackend
+           (*get_event_loop_backend)      (MilterClient *client);
+    void   (*set_event_loop_backend)      (MilterClient *client,
+                                           MilterClientEventLoopBackend backend);
 };
 
 GQuark               milter_client_error_quark       (void);
@@ -807,27 +807,27 @@ void                 milter_client_set_fd_passing_fd (MilterClient *client, gint
 MilterEventLoop     *milter_client_get_process_loop  (MilterClient  *client);
 
 /**
- * milter_client_get_event_loop_backend_mode:
+ * milter_client_get_event_loop_backend:
  * @client: a %MilterClient.
  *
- * Gets the %MilterClientEventLoopBackendMode of @client.
+ * Gets the %MilterClientEventLoopBackend of @client.
  *
- * Returns: the %MilterClientEventLoopBackendMode of @client.
+ * Returns: the %MilterClientEventLoopBackend of @client.
  */
-MilterClientEventLoopBackendMode milter_client_get_event_loop_backend_mode
+MilterClientEventLoopBackend
+                     milter_client_get_event_loop_backend
                                                      (MilterClient  *client);
 
 /**
- * milter_client_set_event_loop_backend_mode:
+ * milter_client_set_event_loop_backend:
  * @client: a %MilterClient.
+ * @backend: a %MilterClinetEventLoopBackend
  *
- * Sets the %MilterClientEventLoopBackendMode of @client.
- *
- * Returns: the %MilterClientEventLoopBackendMode of @client.
+ * Sets the %MilterClientEventLoopBackend of @client.
  */
-void                             milter_client_set_event_loop_backend_mode
+void                 milter_client_set_event_loop_backend
                                                      (MilterClient  *client,
-                                                      MilterClientEventLoopBackendMode mode);
+                                                      MilterClientEventLoopBackend backend);
 
 G_END_DECLS
 

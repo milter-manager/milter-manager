@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -305,9 +305,8 @@ Init_milter_manager_configuration (void)
 				 mark,
 				 NULL);
 
-    G_DEF_CLASS(MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND_MODE,
-		"EventLoopBackendMode",
-		rb_mMilterManager);
+    G_DEF_CLASS(MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND,
+		"EventLoopBackend", rb_mMilterManager);
 
     G_DEF_SIGNAL_FUNC(rb_cMilterManagerConfiguration,
                       "to-xml", rb_milter_manager_gstring_handle_to_xml_signal);

@@ -67,7 +67,7 @@ milter_client_quit (void)
 enum
 {
     PROP_0,
-    PROP_EVENT_LOOP_BACKEND_MODE,
+    PROP_EVENT_LOOP_BACKEND,
     PROP_LAST
 };
 
@@ -127,7 +127,7 @@ struct _MilterClientPrivate
     GList *finished_data;
 
     MilterSyslogLogger *syslog_logger;
-    MilterClientEventLoopBackendMode event_loop_backend_mode;
+    MilterClientEventLoopBackend event_loop_backend;
 };
 
 typedef struct _MilterClientProcessData
@@ -178,13 +178,13 @@ _milter_client_class_init (MilterClientClass *klass)
     client_class->get_default_connection_spec = get_default_connection_spec;
     client_class->listen_started = listen_started;
 
-    spec = g_param_spec_enum("event-loop-backend-mode",
-                             "Event loop backend mode",
-                             "The mode of client event loop",
-                             MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND_MODE,
+    spec = g_param_spec_enum("event-loop-backend",
+                             "Event loop backend",
+                             "The event loop backend of the client",
+                             MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND,
                              MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB,
                              G_PARAM_READWRITE);
-    g_object_class_install_property(gobject_class, PROP_EVENT_LOOP_BACKEND_MODE, spec);
+    g_object_class_install_property(gobject_class, PROP_EVENT_LOOP_BACKEND, spec);
 
     signals[CONNECTION_ESTABLISHED] =
         g_signal_new("connection-established",
@@ -287,7 +287,7 @@ _milter_client_init (MilterClient *client)
 
     priv->syslog_logger = NULL;
 
-    priv->event_loop_backend_mode = MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
+    priv->event_loop_backend = MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
 }
 
 static void
@@ -547,10 +547,10 @@ set_property (GObject      *object,
     client = MILTER_CLIENT(object);
     priv = MILTER_CLIENT_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_EVENT_LOOP_BACKEND_MODE:
-        milter_client_set_event_loop_backend_mode(client, g_value_get_enum(value));
+    case PROP_EVENT_LOOP_BACKEND:
+        milter_client_set_event_loop_backend(client, g_value_get_enum(value));
         break;
-      default:
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -566,10 +566,10 @@ get_property (GObject    *object,
 
     priv = MILTER_CLIENT_GET_PRIVATE(object);
     switch (prop_id) {
-      case PROP_EVENT_LOOP_BACKEND_MODE:
-        g_value_set_enum(value, priv->event_loop_backend_mode);
+    case PROP_EVENT_LOOP_BACKEND:
+        g_value_set_enum(value, priv->event_loop_backend);
         break;
-      default:
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -2170,37 +2170,30 @@ milter_client_get_process_loop (MilterClient *client)
     }
 }
 
-MilterClientEventLoopBackendMode
-milter_client_get_event_loop_backend_mode (MilterClient  *client)
+MilterClientEventLoopBackend
+milter_client_get_event_loop_backend (MilterClient  *client)
 {
     MilterClientClass *klass;
 
     klass = MILTER_CLIENT_GET_CLASS(client);
-    if (klass->get_event_loop_backend_mode)
-        return klass->get_event_loop_backend_mode(client);
-    return MILTER_CLIENT_GET_PRIVATE(client)->event_loop_backend_mode;
+    if (klass->get_event_loop_backend)
+        return klass->get_event_loop_backend(client);
+    return MILTER_CLIENT_GET_PRIVATE(client)->event_loop_backend;
 }
 
 void
-milter_client_set_event_loop_backend_mode (MilterClient  *client,
-                                           MilterClientEventLoopBackendMode mode)
+milter_client_set_event_loop_backend (MilterClient  *client,
+                                      MilterClientEventLoopBackend backend)
 {
     MilterClientPrivate *priv;
     MilterClientClass *klass;
 
     klass = MILTER_CLIENT_GET_CLASS(client);
-    if (klass->set_event_loop_backend_mode)
-        return klass->set_event_loop_backend_mode(client, mode);
+    if (klass->set_event_loop_backend)
+        return klass->set_event_loop_backend(client, backend);
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
-    switch (mode) {
-      case MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB:
-      case MILTER_CLIENT_EVENT_LOOP_BACKEND_LIBEV:
-        priv->event_loop_backend_mode = mode;
-        break;
-      default:
-        break;
-    }
+    priv->event_loop_backend = backend;
 }
 
 /*
