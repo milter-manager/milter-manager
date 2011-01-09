@@ -1,3 +1,8 @@
+2011-01-09  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/lib/milter/manager.rb (Milter::ConfigurationDumper#dump):
+	use "%#o" instead of "0#o".
+
 2011-01-08  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/lib/milter/manager/netstat-connection-checker.rb:

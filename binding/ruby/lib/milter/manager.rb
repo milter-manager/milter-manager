@@ -102,7 +102,7 @@ module Milter::Manager
       @result << "\n"
 
       dump_item("manager.connection_spec", c.manager_connection_spec.inspect)
-      dump_item("manager.unix_socket_mode", "0%o" % c.manager_unix_socket_mode)
+      dump_item("manager.unix_socket_mode", "#%o" % c.manager_unix_socket_mode)
       dump_item("manager.unix_socket_group", c.manager_unix_socket_group.inspect)
       dump_item("manager.remove_unix_socket_on_create",
                 c.remove_manager_unix_socket_on_create?)
