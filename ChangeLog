@@ -1,5 +1,8 @@
 2011-01-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/suite-milter-manager-test.c: accept MILTER_LOG_LEVEL
+	environment variable for debug.
+
 	* test/fixtures/leader/negotiate.txt: add no-data steps flag
 	because no-data-second-client.txt uses no-data flag.
 
