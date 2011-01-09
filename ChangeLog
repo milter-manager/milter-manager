@@ -1,5 +1,7 @@
 2011-01-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/lib/milter-test-client.rb: fix a typo.
+
 	* milter/manager/milter-manager-children.c,
 	test/manager/test-children.c, test/fixtures/leader/: don't delay
 	data event.

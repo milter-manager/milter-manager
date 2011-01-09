@@ -261,7 +261,7 @@ class MilterTestClient
   def initialize_options
     @host = "127.0.0.1"
     @port = 9999
-    @print_ready = false
+    @print_status = false
     @timeout = 3
     @wait_second = 0
     @debug = false
