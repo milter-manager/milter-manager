@@ -378,7 +378,8 @@ clear_n_emitted (void)
 void
 cut_setup (void)
 {
-    scenario_dir = g_build_filename(milter_test_get_base_dir(),
+    scenario_dir = g_build_filename(milter_test_get_source_dir(),
+                                    "test",
                                     "fixtures",
                                     "children",
                                     NULL);
