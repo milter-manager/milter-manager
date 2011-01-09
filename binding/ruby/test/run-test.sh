@@ -40,6 +40,11 @@ if test -z "$RUBY"; then
     RUBY="$(${MAKE} -s -C "$abs_top_builddir" echo-ruby)"
 fi
 
+if test -z "$TEST_UNIT_MAX_DIFF_TARGET_STRING_SIZE"; then
+    TEST_UNIT_MAX_DIFF_TARGET_STRING_SIZE=5000
+    export TEST_UNIT_MAX_DIFF_TARGET_STRING_SIZE
+fi
+
 RUBY_WRAPPER=
 if test x"$RUBY_DEBUG" = x"yes"; then
     RUBY_WRAPPER="gdb --args"

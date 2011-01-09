@@ -1,5 +1,7 @@
 2011-01-09  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/test/run-test.sh: expand default diff target limit.
+
 	* binding/ruby/lib/milter/manager.rb (Milter::ConfigurationDumper#dump):
 	use "%#o" instead of "0#o".
 
