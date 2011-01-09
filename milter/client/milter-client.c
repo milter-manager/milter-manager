@@ -37,38 +37,10 @@
 #include "../client.h"
 #include "milter-client-private.h"
 
-static gboolean initialized = FALSE;
-static guint milter_client_log_handler_id = 0;
-
-void
-milter_client_init (void)
-{
-    if (initialized)
-        return;
-
-    initialized = TRUE;
-
-    milter_client_log_handler_id = MILTER_GLIB_LOG_DELEGATE("milter-client");
-}
-
-void
-milter_client_quit (void)
-{
-    if (!initialized)
-        return;
-
-    g_log_remove_handler("milter-client", milter_client_log_handler_id);
-
-    milter_client_log_handler_id = 0;
-    initialized = FALSE;
-}
-
-
 enum
 {
     PROP_0,
-    PROP_EVENT_LOOP_BACKEND,
-    PROP_LAST
+    PROP_EVENT_LOOP_BACKEND
 };
 
 enum
