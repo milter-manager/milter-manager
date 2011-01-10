@@ -124,10 +124,14 @@ html-build.stamp: sgml.stamp $(CATALOGS) $(MAIN_SGML_FILE) $(content_files) $(HT
 	rm -rf html
 	mkdir -p html
 	cd html && gtkdoc-mkhtml $(DOC_MODULE) ../$(MAIN_SGML_FILE)
-	if test "x$(HTML_IMAGES)" != "x"; then	\
-	  for image in $(HTML_IMAGES); do	\
-	    cp $(srcdir)/$$image html/;		\
-	  done;					\
+	if test "x$(HTML_IMAGES)" != "x"; then		\
+	  for image in $(HTML_IMAGES); do		\
+	    if test -r "$(srcdir)/$$image"; then	\
+	      cp $(srcdir)/$$image html/;		\
+	    else					\
+	      cp $(builddir)/$$image html/;		\
+	    fi						\
+	  done;						\
 	fi
 	echo 'gtk-doc: Fixing cross-references'
 	gtkdoc-fixxref --module-dir=html		\
