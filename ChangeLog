@@ -1,5 +1,8 @@
 2011-01-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/run-test.sh (MILTER_MANAGER_RUBYLIB): remove a garbage at
+	the first element.
+
 	* yum/build-in-chroot.sh: support parallel build.
 
 	* yum/gpg-uid.sh: use always 1c837f31 key.
