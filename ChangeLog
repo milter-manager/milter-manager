@@ -1,5 +1,7 @@
 2011-01-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* yum/build-in-chroot.sh: support parallel build.
+
 	* yum/gpg-uid.sh: use always 1c837f31 key.
 
 	* ./: 1.6.3 will be released at 2011-01-21.
