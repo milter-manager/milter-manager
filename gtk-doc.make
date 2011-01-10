@@ -100,7 +100,7 @@ tmpl/*.sgml:
 $(MAIN_SGML_FILE): $(srcdir)/$(DOC_MAIN_SGML_FILE)
 	cp $(srcdir)/$(DOC_MAIN_SGML_FILE) $(MAIN_SGML_FILE)
 
-sgml-build.stamp: tmpl.stamp $(HFILE_GLOB) $(CFILE_GLOB) $(MAIN_SGML_FILE) $(DOC_MODULE)-sections.txt $(srcdir)/tmpl/*.sgml $(expand_content_files)
+sgml-build.stamp: tmpl.stamp $(HFILE_GLOB) $(CFILE_GLOB) $(MAIN_SGML_FILE) $(DOC_MODULE)-sections.txt $(builddir)/tmpl/*.sgml $(expand_content_files)
 	@echo 'gtk-doc: Building XML'
 	gtkdoc-mkdb --module=$(DOC_MODULE)			\
 	  `for dir in $(DOC_SOURCE_DIR); do			\

@@ -1,5 +1,8 @@
 2011-01-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* gtk-doc.make: template files are in build directory not source
+	directory.
+
 	* libev-4.01/Makefile.am: don't install libev related files.
 
 	* milter/client/milter-client.c: move milter-client initialize
