@@ -2903,8 +2903,20 @@ connect_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
         dispose_client_channel(priv);
     } else {
         if (prepare_reader(context) && prepare_writer(context)) {
-            milter_agent_start(MILTER_AGENT(context), NULL);
-            g_signal_emit(context, signals[READY], 0);
+            GError *error = NULL;
+            milter_agent_start(MILTER_AGENT(context), &error);
+            if (error) {
+                milter_error("[server][error][connected][start] %s: %s",
+                             error->message,
+                             milter_server_context_get_name(context));
+                milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context),
+                                            error);
+                g_error_free(error);
+
+                dispose_client_channel(priv);
+            } else {
+                g_signal_emit(context, signals[READY], 0);
+            }
         } else {
             dispose_client_channel(priv);
         }
