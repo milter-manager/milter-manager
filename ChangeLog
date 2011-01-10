@@ -1,5 +1,8 @@
 2011-01-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c (connect_watch_func):
+	dispose connection watch callback before disposing client channel.
+
 	* test/run-test.sh (MILTER_MANAGER_RUBYLIB): remove a garbage at
 	the first element.
 

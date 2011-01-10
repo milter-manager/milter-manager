@@ -2878,6 +2878,7 @@ connect_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
     disable_timeout(context);
+    dispose_connect_watch(context);
 
     option_length = sizeof(socket_errno);
     if (getsockopt(g_io_channel_unix_get_fd(priv->client_channel),
