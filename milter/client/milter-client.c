@@ -1590,7 +1590,9 @@ milter_client_prepare (MilterClient *client, GIOFunc func, GError **error)
     GError *local_error = NULL;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
-    priv->accept_loop = event_loop_new(client, FALSE);
+
+    if (!priv->accept_loop)
+        priv->accept_loop = event_loop_new(client, FALSE);
 
     if (priv->listening_channel || priv->n_processing_sessions > 0) {
         local_error = g_error_new(MILTER_CLIENT_ERROR,
@@ -1710,6 +1712,8 @@ milter_client_run_master (MilterClient *client, GError **error)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
+    if (!priv->accept_loop)
+        priv->accept_loop = event_loop_new(client, TRUE);
     if (!milter_client_prepare(client, master_server_watch_func, error))
         return FALSE;
     single_thread_accept_loop_run(client, priv->accept_loop);
