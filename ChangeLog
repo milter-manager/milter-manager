@@ -1,5 +1,7 @@
 2011-01-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* ./: 1.6.3 will be released at 2011-01-21.
+
 	* gtk-doc.make: search image files both source and build directory.
 
 	* gtk-doc.make: template files are in build directory not source
