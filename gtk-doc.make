@@ -164,7 +164,11 @@ html-build.stamp: sgml.stamp $(CATALOGS) $(MAIN_SGML_FILE) $(content_files) $(HT
 	  sed -i'' -e "s,/,/$$lang/,g" $$lang/html/index.sgml;		\
 	  if test "x$(HTML_IMAGES)" != "x"; then			\
 	    for image in $(HTML_IMAGES); do				\
-	      cp $(srcdir)/$$image $$lang/html/;			\
+	      if test -r "$(srcdir)/$$image"; then			\
+	        cp $(srcdir)/$$image $$lang/html/;			\
+	      else							\
+	        cp $(builddir)/$$image $$lang/html/;			\
+	      fi							\
 	    done;							\
 	  fi;								\
 	  echo 'gtk-doc: Fixing cross-references';			\
