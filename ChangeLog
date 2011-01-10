@@ -1,5 +1,8 @@
 2011-01-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-performance-check (MilterPerformanceTool#send_mail):
+	also handle SystamCallError.
+
 	* tool/milter-report-statistics: support target process filter by
 	regexp.
 
