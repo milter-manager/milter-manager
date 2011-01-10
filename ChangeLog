@@ -1,5 +1,8 @@
 2011-01-10  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-report-statistics: support target process filter by
+	regexp.
+
 	* milter/client/milter-client.c (milter_client_run_master): master
 	process uses default loop context for accept loop.
 

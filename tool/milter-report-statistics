@@ -57,7 +57,7 @@ class MilterStatus
   end
 
   def n_file_descriptors
-    @n_file_descriptors ||= (@proc_path + "fd").entries.size
+    @n_file_descriptors ||= entries("fd").size
   end
 
   def command_line
@@ -70,6 +70,14 @@ class MilterStatus
       (@proc_path + type).read
     rescue SystemCallError
       ""
+    end
+  end
+
+  def entries(type)
+    begin
+      (@proc_path + type).entries
+    rescue SystemCallError
+      []
     end
   end
 
@@ -107,8 +115,30 @@ class MilterStatus
 end
 
 class MilterStatisticsReporter
-  def initialize(targets)
-    @targets = targets
+  def initialize
+    @targets = []
+    @filters = []
+    @interval = 1
+  end
+
+  def parse(argv=ARGV)
+    @targets = option_parser.parse!(argv)
+    if @targets.empty?
+      puts option_parser
+      exit(false)
+    end
+  end
+
+  def run
+    show_header
+    loop do
+      begin
+        report
+        sleep(@interval)
+      rescue Interrupt
+        break
+      end
+    end
   end
 
   def show_header
@@ -119,50 +149,61 @@ class MilterStatisticsReporter
     reported = false
     Pathname.glob("/proc/[0-9]*") do |proc_path|
       status = MilterStatus.new(proc_path)
+      next if status.pid.to_i == Process.pid
       next unless status.target?(@targets)
+      command_line = status.command_line.join(" ")
+      next unless @filters.all? {|filter| filter =~ command_line}
       reported = true
-      show(Time.now.strftime("%H:%M:%S"),
+      show(time_stamp,
            status.pid,
            status.vss,
            status.rss,
            status.cpu_percent,
            status.cpu_time,
            status.n_file_descriptors,
-           status.command_line.join(" "))
+           command_line)
     end
     unless reported
-      puts "not-found"
-      exit(false)
+      puts("%8s not found" % time_stamp)
     end
   end
 
   private
+  def option_parser
+    @option_parser ||= create_option_parser
+  end
+
+  def create_option_parser
+    OptionParser.new do |parser|
+      parser.banner += " TARGET1 TARGET2 ..."
+
+      parser.on("--filter=REGEXP",
+                "Filter report targets by REGEXP.",
+                "Multiple --filter options are accepted.") do |regexp|
+        @filters << /#{regexp}/i
+      end
+
+      parser.on("--interval=INTERVAL", Integer,
+                "Report each INTERVAL second.") do |interval|
+        @interval = interval
+      end
+    end
+  end
+
   def show(time, pid, vss, rss, cpu_percent, cpu_time, n_fds, command_line)
     items = [time, pid, vss, rss, cpu_percent, cpu_time, n_fds, command_line]
     puts("%8s %6s %9s %9s %4s %8s %5s %s" % items)
   end
+
+  def time_stamp
+    Time.now.strftime("%H:%M:%S")
+  end
 end
 
 if __FILE__ == $0
-  options = OptionParser.new do |_options|
-    _options.banner += " TARGET1 TARGET2 ..."
-  end
-  targets = options.parse!(ARGV)
-  if targets.empty?
-    puts options
-    exit(false)
-  end
-
-  reporter = MilterStatisticsReporter.new(ARGV)
-  reporter.show_header
-  loop do
-    begin
-      reporter.report
-      sleep(1)
-    rescue Interrupt
-      break
-    end
-  end
+  reporter = MilterStatisticsReporter.new
+  reporter.parse(ARGV)
+  reporter.run
 end
 
 # vi:ts=2:nowrap:ai:expandtab:sw=2
