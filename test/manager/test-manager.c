@@ -170,7 +170,7 @@ cut_setup (void)
 {
     gchar *lt_milter_manager;
 
-    loop = milter_glib_event_loop_new(NULL);
+    loop = milter_test_event_loop_new();
 
     original_lang = g_strdup(g_getenv("LANG"));
     g_setenv("LANG", "C", TRUE);

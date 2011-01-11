@@ -1,3 +1,9 @@
+2011-01-11  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* test/lib/milter-test-utils.c (milter_test_event_loop_new):
+	switch event loop backend by environment variable
+	MILTER_EVENT_LOOP_BACKEND.
+
 2011-01-10  Kouhei Sutou  <kou@cozmixng.org>
 
 	* tool/milter-performance-check (MilterPerformanceTool#send_mail):

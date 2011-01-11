@@ -28,6 +28,7 @@
 
 #include <milter/client.h>
 #include <milter-assertions.h>
+#include "milter-test-utils.h"
 
 #include <gcutter.h>
 
@@ -524,7 +525,7 @@ cut_setup (void)
 {
     GError *error = NULL;
 
-    loop = milter_glib_event_loop_new(NULL);
+    loop = milter_test_event_loop_new();
 
     context = milter_client_context_new(NULL);
     milter_agent_set_event_loop(MILTER_AGENT(context), loop);

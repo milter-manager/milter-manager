@@ -393,7 +393,7 @@ cut_setup (void)
                                     NULL);
     main_scenario = NULL;
 
-    loop = milter_glib_event_loop_new(NULL);
+    loop = milter_test_event_loop_new();
 
     config = milter_manager_configuration_new(NULL);
     children = milter_manager_children_new(config, loop);

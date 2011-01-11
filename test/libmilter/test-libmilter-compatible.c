@@ -82,7 +82,7 @@ cut_setup (void)
 
     idle_id = 0;
 
-    loop = milter_glib_event_loop_new(NULL);
+    loop = milter_test_event_loop_new();
 }
 
 void

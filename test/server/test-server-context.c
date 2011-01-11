@@ -262,7 +262,7 @@ setup_command_signals (MilterDecoder *decoder)
 void
 cut_setup (void)
 {
-    loop = milter_glib_event_loop_new(NULL);
+    loop = milter_test_event_loop_new();
 
     context = milter_server_context_new();
     milter_server_context_set_name(context, "test-server-context");

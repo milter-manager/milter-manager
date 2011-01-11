@@ -89,7 +89,7 @@ void
 cut_setup (void)
 {
     config = milter_manager_configuration_new(NULL);
-    loop = milter_glib_event_loop_new(NULL);
+    loop = milter_test_event_loop_new();
 
     egg = NULL;
     another_egg = NULL;

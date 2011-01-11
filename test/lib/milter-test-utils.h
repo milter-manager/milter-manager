@@ -65,6 +65,8 @@ gchar         *milter_test_inspect_symbols_table
                                            (GHashTable *table);
 void           milter_test_pump_all_events (MilterEventLoop *loop);
 
+MilterEventLoop *milter_test_event_loop_new(void);
+
 G_END_DECLS
 
 #endif /* __MILTER_TEST_UTILS_H__ */

@@ -121,7 +121,7 @@ cut_setup (void)
 {
     MilterEncoder *encoder;
 
-    loop = milter_glib_event_loop_new(NULL);
+    loop = milter_test_event_loop_new();
     launcher = milter_manager_process_launcher_new();
     milter_agent_set_event_loop(MILTER_AGENT(launcher), loop);
 

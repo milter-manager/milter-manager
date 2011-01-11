@@ -259,7 +259,7 @@ cut_setup (void)
 
     smfi_register(smfilter);
 
-    loop = milter_glib_event_loop_new(NULL);
+    loop = milter_test_event_loop_new();
 
     client_context = milter_client_context_new(NULL);
     milter_agent_set_event_loop(MILTER_AGENT(client_context), loop);

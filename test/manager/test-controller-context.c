@@ -108,7 +108,7 @@ cut_setup (void)
     MilterManagerConfiguration *config;
     MilterEncoder *encoder;
 
-    loop = milter_glib_event_loop_new(NULL);
+    loop = milter_test_event_loop_new();
 
     config = milter_manager_configuration_new(NULL);
     manager = milter_manager_new(config);

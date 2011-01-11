@@ -393,7 +393,7 @@ setup_server_command (void)
 void
 cut_setup (void)
 {
-    loop = milter_glib_event_loop_new(NULL);
+    loop = milter_test_event_loop_new();
 
     client = NULL;
     server = NULL;

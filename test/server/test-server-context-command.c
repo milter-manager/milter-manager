@@ -133,7 +133,7 @@ setup (void)
     channel = gcut_string_io_channel_new(NULL);
     g_io_channel_set_encoding(channel, NULL, NULL);
 
-    loop = milter_glib_event_loop_new(NULL);
+    loop = milter_test_event_loop_new();
     milter_agent_set_event_loop(MILTER_AGENT(context), loop);
     writer = milter_writer_io_channel_new(channel);
     milter_agent_set_writer(MILTER_AGENT(context), writer);

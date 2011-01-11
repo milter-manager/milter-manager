@@ -393,7 +393,7 @@ setup_signals (MilterServerContext *context)
 void
 cut_setup (void)
 {
-    loop = milter_glib_event_loop_new(NULL);
+    loop = milter_test_event_loop_new();
 
     context = milter_server_context_new();
     milter_agent_set_event_loop(MILTER_AGENT(context), loop);

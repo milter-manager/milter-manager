@@ -312,6 +312,17 @@ milter_test_pump_all_events (MilterEventLoop *loop)
     }
 }
 
+MilterEventLoop *
+milter_test_event_loop_new (void)
+{
+    const gchar *env = g_getenv("MILTER_EVENT_LOOP_BACKEND");
+    if (env && strcmp(env, "libev") == 0) {
+        return milter_libev_event_loop_new();
+    } else {
+        return milter_glib_event_loop_new(NULL);
+    }
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

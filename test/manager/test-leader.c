@@ -263,7 +263,7 @@ cut_setup (void)
 
     main_scenario = NULL;
 
-    loop = milter_glib_event_loop_new(NULL);
+    loop = milter_test_event_loop_new();
 
     config = milter_manager_configuration_new(NULL);
     milter_manager_configuration_load(config, "milter-manager.conf", &error);

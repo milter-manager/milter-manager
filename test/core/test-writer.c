@@ -44,7 +44,7 @@ cut_setup (void)
 {
     writer = NULL;
 
-    loop = milter_glib_event_loop_new(NULL);
+    loop = milter_test_event_loop_new();
 
     channel = gcut_string_io_channel_new(NULL);
     g_io_channel_set_encoding(channel, NULL, NULL);
