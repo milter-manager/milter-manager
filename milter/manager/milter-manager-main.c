@@ -374,15 +374,17 @@ prepare_process_launcher_pipes_for_manager (gint *command_pipe,
     *read_channel = create_read_io_channel(reply_pipe[READ_PIPE]);
 }
 
-static void
+static gboolean
 start_process_launcher (GIOChannel *read_channel, GIOChannel *write_channel,
                         gboolean daemon)
 {
+    gboolean success = TRUE;
     MilterManagerProcessLauncher *launcher;
     MilterReader *reader;
     MilterWriter *writer;
     gchar *error_message = NULL;
     MilterSyslogLogger *logger;
+    GError *error = NULL;
 
     logger = milter_syslog_logger_new("milter-manager-process-launcher");
 
@@ -397,19 +399,28 @@ start_process_launcher (GIOChannel *read_channel, GIOChannel *write_channel,
     g_object_unref(reader);
     g_object_unref(writer);
 
-    milter_agent_start(MILTER_AGENT(launcher), NULL);
+    if (!milter_agent_start(MILTER_AGENT(launcher), &error)) {
+        milter_error("[process-launcher][error][start] %s",
+                     error->message);
+        g_error_free(error);
+        success = FALSE;
+    }
 
-    if (daemon && !milter_utils_detach_io(&error_message)) {
+    if (success && daemon && !milter_utils_detach_io(&error_message)) {
         milter_error("[process-launcher][error] failed to detach IO: %s",
                      error_message);
         g_free(error_message);
+        success = FALSE;
     }
 
-    milter_manager_process_launcher_run(launcher);
+    if (success)
+        milter_manager_process_launcher_run(launcher);
 
     g_object_unref(launcher);
 
     g_object_unref(logger);
+
+    return success;
 }
 
 static gboolean
@@ -442,8 +453,11 @@ start_process_launcher_process (MilterManager *manager)
                                                             reply_pipe_p,
                                                             &read_channel,
                                                             &write_channel);
-        start_process_launcher(read_channel, write_channel, daemon);
-        _exit(EXIT_FAILURE);
+        if (start_process_launcher(read_channel, write_channel, daemon)) {
+            _exit(EXIT_SUCCESS);
+        } else {
+            _exit(EXIT_FAILURE);
+        }
         break;
     case -1:
         milter_manager_error("failed to fork process launcher process: %s",
