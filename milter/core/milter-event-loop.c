@@ -23,12 +23,6 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "milter-event-loop.h"
-#include "milter-glib-event-loop.h"
-#include "milter-libev-event-loop.h"
-
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
 
 #define MILTER_EVENT_LOOP_GET_PRIVATE(obj)              \
   (G_TYPE_INSTANCE_GET_PRIVATE((obj),                   \
@@ -90,22 +84,6 @@ GQuark
 milter_event_loop_error_quark (void)
 {
     return g_quark_from_static_string("milter-event-loop-error-quark");
-}
-
-MilterEventLoop *
-milter_event_loop_new (void)
-{
-    const gchar *env = g_getenv("MILTER_EVENT_LOOP_BACKEND");
-    GType event_loop_type = MILTER_TYPE_GLIB_EVENT_LOOP;
-
-    if (env) {
-        if (strcasecmp(env, "libev") == 0) {
-            event_loop_type = MILTER_TYPE_LIBEV_EVENT_LOOP;
-        } else if (strcasecmp(env, "glib") != 0) {
-            g_warning("unknown event loop backend `%s', using \"glib\"", env);
-        }
-    }
-    return g_object_new(event_loop_type, NULL);
 }
 
 void
