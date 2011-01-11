@@ -384,6 +384,7 @@ start_process_launcher (GIOChannel *read_channel, GIOChannel *write_channel,
     MilterWriter *writer;
     gchar *error_message = NULL;
     MilterSyslogLogger *logger;
+    MilterEventLoop *loop;
     GError *error = NULL;
 
     logger = milter_syslog_logger_new("milter-manager-process-launcher");
@@ -398,6 +399,10 @@ start_process_launcher (GIOChannel *read_channel, GIOChannel *write_channel,
     milter_agent_set_writer(MILTER_AGENT(launcher), writer);
     g_object_unref(reader);
     g_object_unref(writer);
+
+    loop = milter_glib_event_loop_new(NULL);
+    milter_agent_set_event_loop(MILTER_AGENT(launcher), loop);
+    g_object_unref(loop);
 
     if (!milter_agent_start(MILTER_AGENT(launcher), &error)) {
         milter_error("[process-launcher][error][start] %s",

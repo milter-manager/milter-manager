@@ -43,7 +43,6 @@ typedef struct _MilterManagerProcessLauncherPrivate MilterManagerProcessLauncher
 struct _MilterManagerProcessLauncherPrivate
 {
     GList *processes;
-    MilterEventLoop *main_loop;
 };
 
 enum
@@ -452,7 +451,6 @@ milter_manager_process_launcher_init (MilterManagerProcessLauncher *launcher)
     priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
 
     priv->processes = NULL;
-    priv->main_loop = milter_glib_event_loop_new(NULL);
 }
 
 static void
@@ -466,11 +464,6 @@ dispose (GObject *object)
         g_list_foreach(priv->processes, (GFunc)process_data_free, NULL);
         g_list_free(priv->processes);
         priv->processes = NULL;
-    }
-
-    if (priv->main_loop) {
-        g_object_unref(priv->main_loop);
-        priv->main_loop = NULL;
     }
 
     G_OBJECT_CLASS(milter_manager_process_launcher_parent_class)->dispose(object);
@@ -516,7 +509,6 @@ finished (MilterFinishedEmittable *emittable)
 
     launcher = MILTER_MANAGER_PROCESS_LAUNCHER(emittable);
     priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
-    milter_event_loop_quit(priv->main_loop);
 
     if (finished_emittable_parent->finished)
         finished_emittable_parent->finished(emittable);
@@ -538,10 +530,10 @@ milter_manager_process_launcher_new (void)
 void
 milter_manager_process_launcher_run (MilterManagerProcessLauncher *launcher)
 {
-    MilterManagerProcessLauncherPrivate *priv;
+    MilterEventLoop *loop;
 
-    priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
-    milter_event_loop_run(priv->main_loop);
+    loop = milter_agent_get_event_loop(MILTER_AGENT(launcher));
+    milter_event_loop_run(loop);
 }
 
 /*
