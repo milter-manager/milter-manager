@@ -1,5 +1,8 @@
 2011-01-11  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/manager/milter-manager.c (get_event_loop_backend)
+	(set_event_loop_backend): overrode.
+
 	* milter/client/milter-client.c (event_loop_new): switch event
 	loop backend by event_loop_backend property.
 

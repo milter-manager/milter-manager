@@ -104,6 +104,10 @@ static void   sessions_finished           (MilterClient *client,
                                            guint         n_finished_sessions);
 static void   cb_leader_finished          (MilterFinishedEmittable *emittable,
                                            gpointer user_data);
+static MilterClientEventLoopBackend get_event_loop_backend
+                                          (MilterClient *client);
+static void   set_event_loop_backend      (MilterClient *client,
+                                           MilterClientEventLoopBackend backend);
 
 static void
 milter_manager_class_init (MilterManagerClass *klass)
@@ -136,6 +140,8 @@ milter_manager_class_init (MilterManagerClass *klass)
     client_class->set_effective_group = set_effective_group;
     client_class->get_maintenance_interval = get_maintenance_interval;
     client_class->set_maintenance_interval = set_maintenance_interval;
+    client_class->get_event_loop_backend = get_event_loop_backend;
+    client_class->set_event_loop_backend = set_event_loop_backend;
     client_class->maintain = maintain;
     client_class->sessions_finished = sessions_finished;
 
@@ -1016,6 +1022,31 @@ sessions_finished (MilterClient *client, guint n_finished_sessions)
 
     priv = MILTER_MANAGER_GET_PRIVATE(client);
     dispose_finished_leaders(priv);
+}
+
+static MilterClientEventLoopBackend
+get_event_loop_backend (MilterClient *client)
+{
+    MilterManagerPrivate *priv;
+
+    priv = MILTER_MANAGER_GET_PRIVATE(client);
+    return milter_manager_configuration_get_event_loop_backend(priv->configuration);
+}
+
+static void
+set_event_loop_backend (MilterClient *client,
+                        MilterClientEventLoopBackend backend)
+{
+    MilterManagerPrivate *priv;
+    MilterClientClass *client_class;
+
+    priv = MILTER_MANAGER_GET_PRIVATE(client);
+    milter_manager_configuration_set_event_loop_backend(priv->configuration,
+                                                        backend);
+    backend = milter_manager_configuration_get_event_loop_backend(priv->configuration);
+
+    client_class = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+    client_class->set_event_loop_backend(client, backend);
 }
 
 MilterManagerConfiguration *
