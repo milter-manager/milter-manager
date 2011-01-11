@@ -147,7 +147,7 @@ constructed (GObject *object)
 
     loop = MILTER_LIBEV_EVENT_LOOP(object);
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
-    priv->base = ev_default_loop(0);
+    priv->base = ev_loop_new(0);
     priv->callbacks = g_hash_table_new_full(g_direct_hash, g_direct_equal,
                                             NULL, destroy_callback);
 }
