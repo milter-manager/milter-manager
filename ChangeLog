@@ -1,5 +1,8 @@
 2011-01-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* TODO: add: [1.7.x] support MAIL FROM parameters and RCPT TO
+	parameters.
+
 	* tool/milter-test-client-libmilter.c: show all envelope information.
 
 	* tool/milter-test-server.c, test/tool/test-server.c: move elpased
