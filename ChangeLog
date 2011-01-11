@@ -1,7 +1,11 @@
 2011-01-11  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/client/milter-client.c (get_property): get property using
+	property method.
+
 	* milter/manager/milter-manager.c (get_event_loop_backend)
 	(set_event_loop_backend): overrode.
+	(set_event_loop_backend): ignore private property of MilterClient.
 
 	* milter/client/milter-client.c (event_loop_new): switch event
 	loop backend by event_loop_backend property.

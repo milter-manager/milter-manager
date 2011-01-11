@@ -1038,15 +1038,10 @@ set_event_loop_backend (MilterClient *client,
                         MilterClientEventLoopBackend backend)
 {
     MilterManagerPrivate *priv;
-    MilterClientClass *client_class;
 
     priv = MILTER_MANAGER_GET_PRIVATE(client);
     milter_manager_configuration_set_event_loop_backend(priv->configuration,
                                                         backend);
-    backend = milter_manager_configuration_get_event_loop_backend(priv->configuration);
-
-    client_class = MILTER_CLIENT_CLASS(milter_manager_parent_class);
-    client_class->set_event_loop_backend(client, backend);
 }
 
 MilterManagerConfiguration *
