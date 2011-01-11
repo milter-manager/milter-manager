@@ -23,6 +23,11 @@ require 'net/smtp'
 require 'digest/sha2'
 require 'thread'
 
+# for ruby 1.8.5 on CentOS.
+unless Digest.const_defined?(:SHA2)
+  Digest::SHA2 = Digest::SHA256
+end
+
 class MilterPerformanceTool
   def initialize
     @smtp_server = "localhost"
