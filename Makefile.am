@@ -30,6 +30,10 @@ pkgconfig_DATA =				\
 	milter-manager.pc			\
 	libmilter.pc
 
+if WITH_RUBY_MILTER
+pkgconfig_DATA += ruby-milter.pc
+endif
+
 EXTRA_DIST =					\
 	autogen.sh				\
 	ChangeLog.toolkit			\

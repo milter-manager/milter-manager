@@ -770,6 +770,7 @@ AC_CONFIG_FILES([Makefile
 		 libmilter.pc
 		 milter-server.pc
 		 milter-manager.pc
+		 ruby-milter.pc
 		 rpm/centos/milter-manager.spec
 		 gio-unix-compatible/Makefile
 		 gio-unix-compatible/gio/Makefile
