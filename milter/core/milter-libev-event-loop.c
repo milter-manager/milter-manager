@@ -382,8 +382,7 @@ timer_func (struct ev_loop *loop, ev_timer *watcher, int revents)
 {
     struct timer_callback_data *cb = (struct timer_callback_data *)watcher;
     if (!cb->function(cb->user_data)) {
-        ev_timer_stop(loop, watcher);
-        g_free(cb);
+        remove_callback(cb);
     }
 }
 
@@ -423,8 +422,7 @@ idle_func (struct ev_loop *loop, ev_idle *watcher, int revents)
 {
     struct idle_callback_data *cb = (struct idle_callback_data *)watcher;
     if (!cb->function(cb->user_data)) {
-        ev_idle_stop(loop, watcher);
-        g_free(cb);
+        remove_callback(cb);
     }
 }
 
