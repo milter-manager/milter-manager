@@ -254,22 +254,39 @@ setup_child (gpointer user_data)
 {
     struct passwd *password = user_data;
 
-    if (!password)
+    if (!password) {
+        milter_debug("[launcher][child][authority][not-set]");
         return;
+    }
 
     if (setgid(password->pw_gid) == -1) {
-        milter_error("failed to change GID: %s", g_strerror(errno));
+        milter_error("[launcher][error][child][authority][group] "
+                     "failed to change GID: <%d>: %s",
+                     password->pw_gid, g_strerror(errno));
         return;
+    } else {
+        milter_debug("[launcher][child][authority][group] <%d>",
+                     password->pw_gid);
     }
 
     if (initgroups(password->pw_name, password->pw_gid) == -1) {
-        milter_error("failed to initialize group access: %s", g_strerror(errno));
+        milter_error("[launcher][error][child][authority][groups] "
+                     "failed to initialize group access: <%s>:<%d>: %s",
+                     password->pw_name, password->pw_gid, g_strerror(errno));
         return;
+    } else {
+        milter_debug("[launcher][child][authority][groups] <%s>:<%d>",
+                     password->pw_name, password->pw_gid);
     }
 
     if (setuid(password->pw_uid) == -1) {
-        milter_error("failed to change UID: %s", g_strerror(errno));
+        milter_error("[launcher][error][child][authority][user] "
+                     "failed to change UID: <%d>: %s",
+                     password->pw_uid, g_strerror(errno));
         return;
+    } else {
+        milter_debug("[launcher][child][authority][user] <%d>",
+                     password->pw_uid);
     }
 }
 
