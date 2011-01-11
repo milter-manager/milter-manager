@@ -1,5 +1,8 @@
 2011-01-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-main.c (start_process_launcher_process):
+	log pipe FD for process launcher.
+
 	* milter/manager/milter-manager-main.c (start_process_launcher):
 	add error check.
 

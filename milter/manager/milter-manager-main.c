@@ -440,6 +440,11 @@ start_process_launcher_process (MilterManager *manager)
     if (!create_process_launcher_pipes(&command_pipe_p, &reply_pipe_p))
         return FALSE;
 
+    milter_debug("[manager][process-launcher][pipe] "
+                 "command:<%d:%d>, reply:<%d:%d>",
+                 command_pipe[READ_PIPE], command_pipe[WRITE_PIPE],
+                 reply_pipe[READ_PIPE], reply_pipe[WRITE_PIPE]);
+
     switch (fork()) {
     case 0:
         /* FIXME: change process name to
