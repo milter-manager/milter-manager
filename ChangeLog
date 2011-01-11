@@ -1,5 +1,8 @@
 2011-01-11  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/core/milter-libev-event-loop.c (add_callback): set tag in
+	the callback header.
+
 	* configure.ac (rb_errinfo): needs RUBY_LDFLAGS.
 
 	* test/lib/milter-test-utils.c (milter_test_event_loop_new):

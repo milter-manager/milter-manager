@@ -184,6 +184,9 @@ static guint
 add_callback (MilterLibevEventLoopPrivate *priv, gpointer data)
 {
     guint tag = ++priv->tag;
+    callback_header *header = data;
+    --header;
+    header->header.tag = tag;
     g_hash_table_insert(priv->callbacks, GUINT_TO_POINTER(tag), data);
     return tag;
 }
