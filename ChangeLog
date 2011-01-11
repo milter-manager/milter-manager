@@ -1,3 +1,8 @@
+2011-01-12  Kouhei Sutou  <kou@cozmixng.org>
+
+	* TODO: add more examples for MAIL FROM parameters and RCPT TO
+	parameters.
+
 2011-01-11  Kouhei Sutou  <kou@cozmixng.org>
 
 	* TODO: add: [1.7.x] support MAIL FROM parameters and RCPT TO
