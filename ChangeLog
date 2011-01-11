@@ -8,6 +8,9 @@
 
 2011-01-11  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/sample/milter-test-client.rb (Session#abort): show
+	readable status.
+
 	* tool/milter-performance-check: work on CentOS 5.
 
 2011-01-11  Nobuyoshi Nakada  <nakada@clear-code.com>
