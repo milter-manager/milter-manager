@@ -14,9 +14,11 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 class TestConfiguration < Test::Unit::TestCase
+  include MilterEventLoopTestUtils
+
   def setup
     @configuration = Milter::Manager::Configuration.new
-    @loop = Milter::GLibEventLoop.new
+    @loop = create_event_loop
   end
 
   def test_controller_connection_spec
@@ -62,6 +64,14 @@ class TestConfiguration < Test::Unit::TestCase
     assert_equal(0, @configuration.connection_check_interval)
     @configuration.connection_check_interval = 10
     assert_equal(10, @configuration.connection_check_interval)
+  end
+
+  def test_event_loop_backend
+    assert_equal("glib", @configuration.event_loop_backend.nick)
+    @configuration.event_loop_backend = "libev"
+    assert_equal("libev", @configuration.event_loop_backend.nick)
+    @configuration.event_loop_backend = "glib"
+    assert_equal("glib", @configuration.event_loop_backend.nick)
   end
 
   def test_package

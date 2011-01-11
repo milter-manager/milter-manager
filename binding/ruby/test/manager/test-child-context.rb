@@ -14,13 +14,15 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 class TestChildContext < Test::Unit::TestCase
+  include MilterEventLoopTestUtils
+
   def setup
     @clamav = Milter::Manager::Child.new("clamav-milter")
     @greylist = Milter::Manager::Child.new("milter-greylist")
     @spamass = Milter::Manager::Child.new("spamass-milter")
 
     @configuration = Milter::Manager::Configuration.new
-    @loop = Milter::GLibEventLoop.new
+    @loop = create_event_loop
     @children = Milter::Manager::Children.new(@configuration, @loop)
     @children << @clamav
     @children << @greylist

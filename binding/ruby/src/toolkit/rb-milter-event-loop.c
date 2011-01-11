@@ -35,10 +35,20 @@ glib_initialize (int argc, VALUE *argv, VALUE self)
     return Qnil;
 }
 
+static VALUE
+libev_initialize (VALUE self)
+{
+    MilterEventLoop *event_loop;
+
+    event_loop = milter_libev_event_loop_new();
+    G_INITIALIZE(self, event_loop);
+    return Qnil;
+}
+
 void
 Init_milter_event_loop (void)
 {
-    VALUE rb_cMilterEventLoop, rb_cMilterGLibEventLoop;
+    VALUE rb_cMilterEventLoop, rb_cMilterGLibEventLoop, rb_cMilterLibevEventLoop;
 
     rb_cMilterEventLoop = G_DEF_CLASS(MILTER_TYPE_EVENT_LOOP,
                                       "EventLoop", rb_mMilter);
@@ -49,6 +59,13 @@ Init_milter_event_loop (void)
                                           "GLibEventLoop", rb_mMilter);
 
     rb_define_method(rb_cMilterGLibEventLoop, "initialize", glib_initialize, -1);
+
+    G_DEF_SETTERS(rb_cMilterGLibEventLoop);
+
+    rb_cMilterLibevEventLoop = G_DEF_CLASS(MILTER_TYPE_LIBEV_EVENT_LOOP,
+                                          "LibevEventLoop", rb_mMilter);
+
+    rb_define_method(rb_cMilterLibevEventLoop, "initialize", libev_initialize, 0);
 
     G_DEF_SETTERS(rb_cMilterGLibEventLoop);
 }
