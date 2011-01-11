@@ -1,5 +1,8 @@
 2011-01-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-server.c, test/tool/test-server.c: normalize
+	input recipients.
+
 	* ruby-milter.pc.in, configure.ac, Makefile.am: install ruby-milter.pc.
 
 	* milter/manager/milter-manager-process-launcher.c (setup_child):

@@ -1359,16 +1359,18 @@ option_test_assert_helo_fqdn (void)
 static void
 option_test_assert_from (void)
 {
-    cut_assert_equal_string("from@example.com", actual_envelope_from);
+    cut_assert_equal_string("<from@example.com>", actual_envelope_from);
 }
 
 static void
 option_test_assert_recipients (void)
 {
-    cut_assert_equal_int(3, g_list_length(actual_recipients));
-    cut_assert_equal_string("recipient1@example.com", actual_recipients->data);
-    cut_assert_equal_string("recipient2@example.com", g_list_next(actual_recipients)->data);
-    cut_assert_equal_string("recipient3@example.com", g_list_last(actual_recipients)->data);
+    gcut_assert_equal_list_string(
+        gcut_take_new_list_string("<recipient1@example.com>",
+                                  "<recipient2@example.com>",
+                                  "<recipient3@example.com>",
+                                  NULL),
+        actual_recipients);
 }
 
 static void
@@ -1411,8 +1413,10 @@ option_test_assert_mail_file (void)
                                       "\n <mailto:milter-manager-commit-request@lists.sourceforge.net?subject=help>"};
 
     cut_assert_equal_string("<test-from@example.com>", actual_envelope_from);
-    cut_assert_equal_int(1, g_list_length(actual_recipients));
-    cut_assert_equal_string("<test-to@example.com>", actual_recipients->data);
+    gcut_assert_equal_list_string(
+        gcut_take_new_list_string("<test-to@example.com>",
+                                  NULL),
+        actual_recipients);
 
     cut_assert_equal_uint(10, milter_headers_length(actual_headers));
     milter_assert_equal_header(&expected_header1,

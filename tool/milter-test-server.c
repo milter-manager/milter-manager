@@ -592,7 +592,7 @@ static gchar *
 normalize_envelope_address (const gchar *address)
 {
     if (g_str_has_prefix(address, "<") &&
-        g_str_has_prefix(address, ">")) {
+        g_str_has_suffix(address, ">")) {
         return g_strdup(address);
     } else {
         return g_strdup_printf("<%s>", address);
@@ -1397,16 +1397,33 @@ post_option_parse (GOptionContext *option_context,
                    gpointer data,
                    GError **error)
 {
+    guint i, n_recipients;
+    gchar **normalized_recipients;
+
     if (!helo_host)
         helo_host = g_strdup("delian");
+
     if (!envelope_from)
-        envelope_from = g_strdup("<sender@example.com>");
+        envelope_from = "sender@example.com";
+    envelope_from = normalize_envelope_address(envelope_from);
+
     if (!recipients)
-        recipients = g_strsplit("<receiver@example.org>", ",", -1);
+        recipients = g_strsplit("receiver@example.org", ",", -1);
+    n_recipients = g_strv_length(recipients);
+    normalized_recipients = g_new0(gchar *, n_recipients + 1);
+    for (i = 0; i < n_recipients; i++) {
+        normalized_recipients[i] = normalize_envelope_address(recipients[i]);
+    }
+    normalized_recipients[i] = NULL;
+    g_strfreev(recipients);
+    recipients = normalized_recipients;
+
     if (!milter_headers_lookup_by_name(option_headers, "From"))
         milter_headers_add_header(option_headers, "From", envelope_from);
+
     if (!milter_headers_lookup_by_name(option_headers, "To"))
         milter_headers_add_header(option_headers, "To", recipients[0]);
+
     if (!body_chunks) {
         const gchar body[] =
             "La de da de da 1.\n"
