@@ -71,6 +71,7 @@ static GError *error;
 static gboolean reaped;
 static gint exit_status;
 static GString *output_string;
+static GString *normalized_output_string;
 static GString *error_string;
 static MilterStatus actual_status;
 
@@ -420,6 +421,7 @@ cut_setup (void)
     error = NULL;
     reaped = FALSE;
     output_string = g_string_new(NULL);
+    normalized_output_string = g_string_new(NULL);
     error_string = g_string_new(NULL);
 
     actual_status = MILTER_STATUS_DEFAULT;
@@ -452,6 +454,8 @@ cut_teardown (void)
 
     if (output_string)
         g_string_free(output_string, TRUE);
+    if (normalized_output_string)
+        g_string_free(normalized_output_string, TRUE);
     if (error_string)
         g_string_free(error_string, TRUE);
     if (error)
@@ -570,6 +574,11 @@ wait_for_reaping (gboolean check_success)
     }
     milter_event_loop_remove(loop, timeout_waiting_id);
     cut_assert_true(timeout_waiting, cut_message("timeout"));
+
+    g_string_assign(normalized_output_string,
+                    cut_take_replace(output_string->str,
+                                     "elapsed-time: [\\d.]+ seconds",
+                                     "elapsed-time: XXX seconds"));
 
     if (!check_success)
         return;
@@ -1431,29 +1440,31 @@ option_test_assert_mail_file (void)
                             actual_body_string->str);
 }
 
+#define RED_COLOR "\033[01;31m"
+#define GREEN_COLOR "\033[01;32m"
 #define NORMAL_COLOR "\033[00m"
 
 static void
 option_test_assert_output_message (void)
 {
-    const gchar *normalized_output;
-
-    normalized_output = cut_take_replace(output_string->str,
-                                         "elapsed-time: [\\d.]+ seconds",
-                                         "elapsed-time: XXX seconds");
     cut_assert_equal_string(
         "status: pass\n"
         "\n"
+        "Envelope:------------------------------\n"
+        NORMAL_COLOR "  MAIL FROM:<sender@example.com>" NORMAL_COLOR "\n"
+        NORMAL_COLOR "  RCPT TO:<receiver@example.org>" NORMAL_COLOR "\n"
+        "Header:--------------------------------\n"
         NORMAL_COLOR "  From: <sender@example.com>" NORMAL_COLOR "\n"
         NORMAL_COLOR "  To: <receiver@example.org>" NORMAL_COLOR "\n"
-        "---------------------------------------\n"
+        "Body:----------------------------------\n"
         "La de da de da 1.\n"
         "La de da de da 2.\n"
         "La de da de da 3.\n"
         "La de da de da 4.\n"
+        "---------------------------------------\n"
         "\n"
         "elapsed-time: XXX seconds\n",
-        normalized_output);
+        normalized_output_string->str);
 }
 
 static void
@@ -1647,7 +1658,7 @@ change_from_function (void)
     packet_free();
 
     milter_reply_encoder_encode_change_from(encoder, &packet, &packet_size,
-                                            "changed-from@example.com", NULL);
+                                            "sender+changed@example.com", NULL);
 
     write_data(packet, packet_size);
 }
@@ -1655,10 +1666,25 @@ change_from_function (void)
 static void
 end_of_message_action_assert_change_from (void)
 {
-    cut_assert_match("(.*\n)*- From: <sender@example\\.com>"
-                     "(.*\n)*", output_string->str);
-    cut_assert_match("(.*\n)*\\+ From: changed-from@example\\.com"
-                     "(.*\n)*", output_string->str);
+    cut_assert_equal_string(
+        "status: pass\n"
+        "\n"
+        "Envelope:------------------------------\n"
+        RED_COLOR "- MAIL FROM:<sender@example.com>" NORMAL_COLOR "\n"
+        GREEN_COLOR "+ MAIL FROM:<sender+changed@example.com>" NORMAL_COLOR "\n"
+        NORMAL_COLOR "  RCPT TO:<receiver@example.org>" NORMAL_COLOR "\n"
+        "Header:--------------------------------\n"
+        NORMAL_COLOR "  From: <sender@example.com>" NORMAL_COLOR "\n"
+        NORMAL_COLOR "  To: <receiver@example.org>" NORMAL_COLOR "\n"
+        "Body:----------------------------------\n"
+        "La de da de da 1.\n"
+        "La de da de da 2.\n"
+        "La de da de da 3.\n"
+        "La de da de da 4.\n"
+        "---------------------------------------\n"
+        "\n"
+        "elapsed-time: XXX seconds\n",
+        normalized_output_string->str);
 }
 
 static void
@@ -1666,8 +1692,9 @@ add_recipient_function (void)
 {
     packet_free();
 
-    milter_reply_encoder_encode_add_recipient(encoder, &packet, &packet_size, 
-                                              "added-to@example.com", NULL);
+    milter_reply_encoder_encode_add_recipient(encoder, &packet, &packet_size,
+                                              "receiver+added@example.org",
+                                              NULL);
 
     write_data(packet, packet_size);
 }
@@ -1675,10 +1702,25 @@ add_recipient_function (void)
 static void
 end_of_message_action_assert_add_recipient (void)
 {
-    cut_assert_match("(.*\n)*- To: <receiver@example\\.org>"
-                     "(.*\n)*", output_string->str);
-    cut_assert_match("(.*\n)*\\+ To: <receiver@example\\.org>, added-to@example\\.com"
-                     "(.*\n)*", output_string->str);
+    cut_assert_equal_string(
+        "status: pass\n"
+        "\n"
+        "Envelope:------------------------------\n"
+        NORMAL_COLOR "  MAIL FROM:<sender@example.com>" NORMAL_COLOR "\n"
+        NORMAL_COLOR "  RCPT TO:<receiver@example.org>" NORMAL_COLOR "\n"
+        GREEN_COLOR "+ RCPT TO:<receiver+added@example.org>" NORMAL_COLOR "\n"
+        "Header:--------------------------------\n"
+        NORMAL_COLOR "  From: <sender@example.com>" NORMAL_COLOR "\n"
+        NORMAL_COLOR "  To: <receiver@example.org>" NORMAL_COLOR "\n"
+        "Body:----------------------------------\n"
+        "La de da de da 1.\n"
+        "La de da de da 2.\n"
+        "La de da de da 3.\n"
+        "La de da de da 4.\n"
+        "---------------------------------------\n"
+        "\n"
+        "elapsed-time: XXX seconds\n",
+        normalized_output_string->str);
 }
 
 static void
@@ -1695,8 +1737,24 @@ delete_recipient_function (void)
 static void
 end_of_message_action_assert_delete_recipient (void)
 {
-    cut_assert_match("(.*\n)*- To: <receiver@example\\.org>"
-                     "(.*\n)*", output_string->str);
+    cut_assert_equal_string(
+        "status: pass\n"
+        "\n"
+        "Envelope:------------------------------\n"
+        NORMAL_COLOR "  MAIL FROM:<sender@example.com>" NORMAL_COLOR "\n"
+        RED_COLOR "- RCPT TO:<receiver@example.org>" NORMAL_COLOR "\n"
+        "Header:--------------------------------\n"
+        NORMAL_COLOR "  From: <sender@example.com>" NORMAL_COLOR "\n"
+        NORMAL_COLOR "  To: <receiver@example.org>" NORMAL_COLOR "\n"
+        "Body:----------------------------------\n"
+        "La de da de da 1.\n"
+        "La de da de da 2.\n"
+        "La de da de da 3.\n"
+        "La de da de da 4.\n"
+        "---------------------------------------\n"
+        "\n"
+        "elapsed-time: XXX seconds\n",
+        normalized_output_string->str);
 }
 
 static void
@@ -1713,8 +1771,25 @@ add_header_function (void)
 static void
 end_of_message_action_assert_add_header (void)
 {
-    cut_assert_match("(.*\n)*\\+ X-Test-Header1: TestHeader1Value"
-                     "(.*\n)*", output_string->str);
+    cut_assert_equal_string(
+        "status: pass\n"
+        "\n"
+        "Envelope:------------------------------\n"
+        NORMAL_COLOR "  MAIL FROM:<sender@example.com>" NORMAL_COLOR "\n"
+        NORMAL_COLOR "  RCPT TO:<receiver@example.org>" NORMAL_COLOR "\n"
+        "Header:--------------------------------\n"
+        NORMAL_COLOR "  From: <sender@example.com>" NORMAL_COLOR "\n"
+        NORMAL_COLOR "  To: <receiver@example.org>" NORMAL_COLOR "\n"
+        GREEN_COLOR "+ X-Test-Header1: TestHeader1Value" NORMAL_COLOR "\n"
+        "Body:----------------------------------\n"
+        "La de da de da 1.\n"
+        "La de da de da 2.\n"
+        "La de da de da 3.\n"
+        "La de da de da 4.\n"
+        "---------------------------------------\n"
+        "\n"
+        "elapsed-time: XXX seconds\n",
+        normalized_output_string->str);
 }
 
 static void
@@ -1723,7 +1798,8 @@ insert_header_function (void)
     packet_free();
 
     milter_reply_encoder_encode_insert_header(encoder, &packet, &packet_size,
-                                              1, "X-Test-Header1", "TestHeader1Value");
+                                              1, "To",
+                                              "<receiver+added@example.org>");
 
     write_data(packet, packet_size);
 }
@@ -1731,8 +1807,25 @@ insert_header_function (void)
 static void
 end_of_message_action_assert_insert_header (void)
 {
-    cut_assert_match("(.*\n)*\\+ X-Test-Header1: TestHeader1Value"
-                     "(.*\n)*", output_string->str);
+    cut_assert_equal_string(
+        "status: pass\n"
+        "\n"
+        "Envelope:------------------------------\n"
+        NORMAL_COLOR "  MAIL FROM:<sender@example.com>" NORMAL_COLOR "\n"
+        NORMAL_COLOR "  RCPT TO:<receiver@example.org>" NORMAL_COLOR "\n"
+        "Header:--------------------------------\n"
+        NORMAL_COLOR "  From: <sender@example.com>" NORMAL_COLOR "\n"
+        GREEN_COLOR "+ To: <receiver+added@example.org>" NORMAL_COLOR "\n"
+        NORMAL_COLOR "  To: <receiver@example.org>" NORMAL_COLOR "\n"
+        "Body:----------------------------------\n"
+        "La de da de da 1.\n"
+        "La de da de da 2.\n"
+        "La de da de da 3.\n"
+        "La de da de da 4.\n"
+        "---------------------------------------\n"
+        "\n"
+        "elapsed-time: XXX seconds\n",
+        normalized_output_string->str);
 }
 
 static void
@@ -1741,7 +1834,8 @@ change_header_function (void)
     packet_free();
 
     milter_reply_encoder_encode_change_header(encoder, &packet, &packet_size,
-                                              "To", 1, "changed-to@example.com");
+                                              "To", 1,
+                                              "<receiver+changed@example.org>");
 
     write_data(packet, packet_size);
 }
@@ -1749,10 +1843,25 @@ change_header_function (void)
 static void
 end_of_message_action_assert_change_header (void)
 {
-    cut_assert_match("(.*\n)*- To: <receiver@example\\.org>"
-                     "(.*\n)*", output_string->str);
-    cut_assert_match("(.*\n)*\\+ To: changed-to@example\\.com"
-                     "(.*\n)*", output_string->str);
+    cut_assert_equal_string(
+        "status: pass\n"
+        "\n"
+        "Envelope:------------------------------\n"
+        NORMAL_COLOR "  MAIL FROM:<sender@example.com>" NORMAL_COLOR "\n"
+        NORMAL_COLOR "  RCPT TO:<receiver@example.org>" NORMAL_COLOR "\n"
+        "Header:--------------------------------\n"
+        NORMAL_COLOR "  From: <sender@example.com>" NORMAL_COLOR "\n"
+        GREEN_COLOR "+ To: <receiver+changed@example.org>" NORMAL_COLOR "\n"
+        RED_COLOR "- To: <receiver@example.org>" NORMAL_COLOR "\n"
+        "Body:----------------------------------\n"
+        "La de da de da 1.\n"
+        "La de da de da 2.\n"
+        "La de da de da 3.\n"
+        "La de da de da 4.\n"
+        "---------------------------------------\n"
+        "\n"
+        "elapsed-time: XXX seconds\n",
+        normalized_output_string->str);
 }
 
 static void
@@ -1769,8 +1878,24 @@ delete_header_function (void)
 static void
 end_of_message_action_assert_delete_header (void)
 {
-    cut_assert_match("(.*\n)*- To: <receiver@example\\.org>"
-                     "(.*\n)*", output_string->str);
+    cut_assert_equal_string(
+        "status: pass\n"
+        "\n"
+        "Envelope:------------------------------\n"
+        NORMAL_COLOR "  MAIL FROM:<sender@example.com>" NORMAL_COLOR "\n"
+        NORMAL_COLOR "  RCPT TO:<receiver@example.org>" NORMAL_COLOR "\n"
+        "Header:--------------------------------\n"
+        NORMAL_COLOR "  From: <sender@example.com>" NORMAL_COLOR "\n"
+        RED_COLOR "- To: <receiver@example.org>" NORMAL_COLOR "\n"
+        "Body:----------------------------------\n"
+        "La de da de da 1.\n"
+        "La de da de da 2.\n"
+        "La de da de da 3.\n"
+        "La de da de da 4.\n"
+        "---------------------------------------\n"
+        "\n"
+        "elapsed-time: XXX seconds\n",
+        normalized_output_string->str);
 }
 
 static void
@@ -1792,9 +1917,21 @@ replace_body_function (void)
 static void
 end_of_message_action_assert_replace_body (void)
 {
-    cut_assert_match("(.*\n)*-*"
-                     "This is the replaced message.",
-                     output_string->str);
+    cut_assert_equal_string(
+        "status: pass\n"
+        "\n"
+        "Envelope:------------------------------\n"
+        NORMAL_COLOR "  MAIL FROM:<sender@example.com>" NORMAL_COLOR "\n"
+        NORMAL_COLOR "  RCPT TO:<receiver@example.org>" NORMAL_COLOR "\n"
+        "Header:--------------------------------\n"
+        NORMAL_COLOR "  From: <sender@example.com>" NORMAL_COLOR "\n"
+        NORMAL_COLOR "  To: <receiver@example.org>" NORMAL_COLOR "\n"
+        "Body:----------------------------------\n"
+        "This is the replaced message.\n"
+        "---------------------------------------\n"
+        "\n"
+        "elapsed-time: XXX seconds\n",
+        normalized_output_string->str);
 }
 
 void

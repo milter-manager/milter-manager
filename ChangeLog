@@ -1,3 +1,8 @@
+2011-01-11  Kouhei Sutou  <kou@clear-code.com>
+
+	* tool/milter-test-server.c, test/tool/test-server.c: show
+	also envelope information.
+
 2011-01-11  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/client/milter-client.c (get_property): get property using

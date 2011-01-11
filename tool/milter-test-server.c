@@ -74,10 +74,12 @@ typedef enum
 
 typedef struct _Message
 {
+    gchar *envelope_from;
+    gchar *original_envelope_from;
+    GList *recipients;
+    GList *original_recipients;
     MilterHeaders *headers;
     MilterHeaders *original_headers;
-    gchar *envelope_from;
-    GList *recipients;
     GString *body_string;
     GString *replaced_body_string;
 } Message;
@@ -586,6 +588,17 @@ cb_delete_header (MilterServerContext *context,
     milter_headers_delete_header(data->message->headers, name, index);
 }
 
+static gchar *
+normalize_envelope_address (const gchar *address)
+{
+    if (g_str_has_prefix(address, "<") &&
+        g_str_has_prefix(address, ">")) {
+        return g_strdup(address);
+    } else {
+        return g_strdup_printf("<%s>", address);
+    }
+}
+
 static void
 cb_change_from (MilterServerContext *context,
                 const gchar *from, const gchar *parameters,
@@ -595,8 +608,7 @@ cb_change_from (MilterServerContext *context,
 
     if (data->message->envelope_from)
         g_free(data->message->envelope_from);
-    data->message->envelope_from = g_strdup(from);
-    milter_headers_change_header(data->message->headers, "From", 1, from);
+    data->message->envelope_from = normalize_envelope_address(from);
 }
 
 static void
@@ -605,23 +617,10 @@ cb_add_recipient (MilterServerContext *context,
                   gpointer user_data)
 {
     ProcessData *data = user_data;
-    MilterHeader *header;
-    gchar *old_value;
 
-    data->message->recipients = g_list_append(data->message->recipients,
-                                              g_strdup(recipient));
-    header = milter_headers_lookup_by_name(data->message->headers, "To");
-    if (!header) {
-        milter_headers_add_header(data->message->headers, "To", recipient);
-        return;
-    }
-
-    old_value = header->value;
-    if (strlen(header->value) == 0)
-        header->value = g_strdup(recipient);
-    else
-        header->value = g_strdup_printf("%s, %s", header->value, recipient);
-    g_free(old_value);
+    data->message->recipients =
+        g_list_append(data->message->recipients,
+                      normalize_envelope_address(recipient));
 }
 
 static void
@@ -629,40 +628,11 @@ cb_delete_recipient (MilterServerContext *context, const gchar *recipient,
                      gpointer user_data)
 {
     ProcessData *data = user_data;
-    MilterHeader *header;
-    gchar *old_value;
+    gchar *normalized_recipient;
 
-    remove_recipient(&(data->message->recipients), recipient);
-
-    header = milter_headers_lookup_by_name(data->message->headers, "To");
-    if (!header)
-        return;
-
-    if (strstr(header->value, recipient)) {
-        gchar **recipients, **new_recipients;
-        gint i, n_recipients, new_pos;
-
-        recipients = g_strsplit(header->value, ", ", -1);
-        n_recipients = g_strv_length(recipients);
-        new_recipients = g_new0(gchar *, n_recipients);
-
-        for (i = 0, new_pos = 0; i < n_recipients; i++) {
-            if (!strcmp(recipients[i], recipient))
-                continue;
-            new_recipients[new_pos] = recipients[i];
-            new_pos++;
-        }
-        new_recipients[n_recipients - 1] = NULL;
-
-        g_free(recipients);
-        old_value = header->value;
-        if (new_pos > 0)
-            header->value = g_strjoinv(", ", new_recipients);
-        else
-            header->value = g_strdup("");
-        g_strfreev(new_recipients);
-        g_free(old_value);
-    }
+    normalized_recipient = normalize_envelope_address(recipient);
+    remove_recipient(&(data->message->recipients), normalized_recipient);
+    g_free(normalized_recipient);
 }
 
 static void
@@ -892,7 +862,7 @@ print_version (const gchar *option_name,
                gpointer data,
                GError **error)
 {
-    g_printf("%s %s\n", g_get_prgname(), VERSION);
+    g_print("%s %s\n", g_get_prgname(), VERSION);
     exit(EXIT_SUCCESS);
     return TRUE;
 }
@@ -1320,8 +1290,15 @@ message_new (void)
 
     message = g_new0(Message, 1);
     message->envelope_from = g_strdup(envelope_from);
-    for (i = 0; i < g_strv_length(recipients); i++)
-        message->recipients = g_list_append(message->recipients, g_strdup(recipients[i]));
+    message->original_envelope_from = g_strdup(envelope_from);
+    message->recipients = NULL;
+    message->original_recipients = NULL;
+    for (i = 0; i < g_strv_length(recipients); i++) {
+        message->recipients = \
+            g_list_append(message->recipients, g_strdup(recipients[i]));
+        message->original_recipients = \
+            g_list_append(message->original_recipients, g_strdup(recipients[i]));
+    }
     message->headers = milter_headers_copy(option_headers);
     message->original_headers = milter_headers_copy(option_headers);
 
@@ -1338,9 +1315,15 @@ free_message (Message *message)
 {
     if (message->envelope_from)
         g_free(message->envelope_from);
+    if (message->original_envelope_from)
+        g_free(message->original_envelope_from);
     if (message->recipients) {
         g_list_foreach(message->recipients, (GFunc)g_free, NULL);
         g_list_free(message->recipients);
+    }
+    if (message->original_recipients) {
+        g_list_foreach(message->original_recipients, (GFunc)g_free, NULL);
+        g_list_free(message->original_recipients);
     }
     if (message->headers)
         g_object_unref(message->headers);
@@ -1444,6 +1427,95 @@ free_option_values (void)
 }
 
 static void
+print_envelope_item (const gchar *prefix, const gchar *label,
+                     const gchar *address)
+{
+    const gchar *color_starter = NO_COLOR;
+    const gchar *color_finisher = NO_COLOR;
+
+    if (use_color) {
+        if (g_str_has_prefix(prefix, "+"))
+            color_starter = GREEN_COLOR;
+        else if (g_str_has_prefix(prefix, "-"))
+            color_starter = RED_COLOR;
+        else
+            color_starter = NORMAL_COLOR;
+        color_finisher = NORMAL_COLOR;
+    }
+
+    g_print("%s%s %s:%s%s\n",
+            color_starter,
+            prefix, label, address,
+            color_finisher);
+}
+
+static void
+print_envelope_from (Message *message)
+{
+    const gchar *label = "MAIL FROM";
+    const gchar *original_envelope_from = message->original_envelope_from;
+    const gchar *result_envelope_from = message->envelope_from;
+
+    if (milter_utils_strcmp0(original_envelope_from,
+                             result_envelope_from) == 0) {
+        print_envelope_item(" ", label, original_envelope_from);
+    } else {
+        print_envelope_item("-", label, original_envelope_from);
+        print_envelope_item("+", label, result_envelope_from);
+    }
+}
+
+static void
+print_envelope_recipients (Message *message)
+{
+    const gchar *label = "RCPT TO";
+    const GList *original_node, *result_node;
+
+    original_node = message->original_recipients;
+    result_node = message->recipients;
+    while (original_node && result_node) {
+        const gchar *original_recipient = original_node->data;
+        const gchar *result_recipient = result_node->data;
+
+        if (milter_utils_strcmp0(original_recipient, result_recipient) == 0) {
+            print_envelope_item(" ", label, original_recipient);
+            result_node = g_list_next(result_node);
+            original_node = g_list_next(original_node);
+        } else if (milter_utils_strcmp0(original_recipient, result_recipient) != 0) {
+            print_envelope_item("-", label, original_recipient);
+            print_envelope_item("+", label, result_recipient);
+            result_node = g_list_next(result_node);
+            original_node = g_list_next(original_node);
+        } else if (!g_list_find_custom((GList*)result_node,
+                                       original_recipient,
+                                       (GCompareFunc)milter_utils_strcmp0)){
+            print_envelope_item("-", label, original_recipient);
+            original_node = g_list_next(original_node);
+        } else {
+            print_envelope_item("+", label, result_recipient);
+            result_node = g_list_next(result_node);
+        }
+    }
+
+    for (; original_node; original_node = g_list_next(original_node)) {
+        const gchar *original_recipient = original_node->data;
+        print_envelope_item("-", label, original_recipient);
+    }
+
+    for (; result_node; result_node = g_list_next(result_node)) {
+        const gchar *result_recipient = result_node->data;
+        print_envelope_item("+", label, result_recipient);
+    }
+}
+
+static void
+print_envelope (Message *message)
+{
+    print_envelope_from(message);
+    print_envelope_recipients(message);
+}
+
+static void
 print_header (const gchar *prefix, MilterHeader *header)
 {
     gchar **value_lines, **first_line;
@@ -1464,25 +1536,25 @@ print_header (const gchar *prefix, MilterHeader *header)
     first_line = value_lines;
 
     if (!*value_lines) {
-        g_printf("%s%s %s:%s\n",
-                 color_starter,
-                 prefix, header->name,
-                 color_finisher);
+        g_print("%s%s %s:%s\n",
+                color_starter,
+                prefix, header->name,
+                color_finisher);
         g_strfreev(value_lines);
         return;
     }
 
-    g_printf("%s%s %s: %s%s\n",
-             color_starter,
-             prefix, header->name, *value_lines,
-             color_finisher);
+    g_print("%s%s %s: %s%s\n",
+            color_starter,
+            prefix, header->name, *value_lines,
+            color_finisher);
     value_lines++;
 
     while (*value_lines) {
-        g_printf("%s%s %s%s\n",
-                 color_starter,
-                 prefix, *value_lines,
-                 color_finisher);
+        g_print("%s%s %s%s\n",
+                color_starter,
+                prefix, *value_lines,
+                color_finisher);
         value_lines++;
     }
 
@@ -1505,15 +1577,20 @@ print_headers (Message *message)
             print_header(" ", original_header);
             result_node = g_list_next(result_node);
             node = g_list_next(node);
-        } else if (g_str_equal(original_header->name, result_header->name)){
+        } else if (!g_list_find_custom((GList*)node,
+                                       result_header,
+                                       (GCompareFunc)milter_header_compare)) {
+            print_header("+", result_header);
+            result_node = g_list_next(result_node);
+        } else if (!g_list_find_custom((GList*)result_node,
+                                       original_header,
+                                       (GCompareFunc)milter_header_compare)) {
+            print_header("-", original_header);
+            node = g_list_next(node);
+        } else if (g_str_equal(original_header->name, result_header->name)) {
             print_header("-", original_header);
             print_header("+", result_header);
             result_node = g_list_next(result_node);
-            node = g_list_next(node);
-        } else if (!g_list_find_custom((GList*)result_node,
-                                       original_header,
-                                       (GCompareFunc)milter_header_compare)){
-            print_header("-", original_header);
             node = g_list_next(node);
         } else {
             print_header("+", result_header);
@@ -1543,7 +1620,7 @@ get_charset (const gchar *value)
         return NULL;
 
     pos += strlen("charset=");
-    
+
     if (pos[0] == '"' || pos[0] == '\'') {
         end_pos = strchr(pos + 1, pos[0]);
         if (!end_pos)
@@ -1600,23 +1677,27 @@ print_body (Message *message)
                                     &bytes_written,
                                     &error);
         if (!translated_body)
-            g_printf("%s\n", body_string);
+            g_print("%s\n", body_string);
         else
-            g_printf("%s\n", translated_body);
+            g_print("%s\n", translated_body);
 
         if (charset)
             g_free(charset);
     } else {
-        g_printf("%s\n", body_string);
+        g_print("%s\n", body_string);
     }
 }
 
 static void
 print_message (Message *message)
 {
+    g_print("Envelope:------------------------------\n");
+    print_envelope(message);
+    g_print("Header:--------------------------------\n");
     print_headers(message);
-    g_printf("---------------------------------------\n");
+    g_print("Body:----------------------------------\n");
     print_body(message);
+    g_print("---------------------------------------\n");
 }
 
 static void
@@ -1638,30 +1719,30 @@ print_status (MilterServerContext *context, ProcessData *data)
         g_type_class_unref(enum_class);
     }
 
-    g_printf("status: %s\n", status_name);
+    g_print("status: %s\n", status_name);
 }
 
 static void
 print_result (MilterServerContext *context, ProcessData *data)
 {
     if (data->error) {
-        g_printf("%s\n", data->error->message);
+        g_print("%s\n", data->error->message);
         return;
     }
 
     print_status(context, data);
     if (data->quarantine_reason) {
-        g_printf("The message was quarantined.: %s\n",
-                 data->quarantine_reason);
+        g_print("The message was quarantined.: %s\n",
+                data->quarantine_reason);
     }
 
     if (output_message) {
-        g_printf("\n");
+        g_print("\n");
         print_message(data->message);
-        g_printf("\n");
+        g_print("\n");
     }
 
-    g_printf("elapsed-time: %g seconds\n", g_timer_elapsed(data->timer, NULL));
+    g_print("elapsed-time: %g seconds\n", g_timer_elapsed(data->timer, NULL));
 }
 
 static void
@@ -1692,7 +1773,7 @@ start_process (MilterServerContext *context, ProcessData *process_data)
         success = milter_server_context_establish_connection(context, &error);
 
     if (!success) {
-        g_printf("%s\n", error->message);
+        g_print("%s\n", error->message);
         g_error_free(error);
         return FALSE;
     }
@@ -1740,7 +1821,7 @@ main (int argc, char *argv[])
                                    post_option_parse);
 
     if (!g_option_context_parse(option_context, &argc, &argv, &error)) {
-        g_printf("%s\n", error->message);
+        g_print("%s\n", error->message);
         g_error_free(error);
         g_option_context_free(option_context);
         free_option_values();
