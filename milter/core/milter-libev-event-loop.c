@@ -220,6 +220,19 @@ destroy_callback (gpointer data)
 }
 
 static void
+remove_callback (gpointer data)
+{
+    MilterLibevEventLoopPrivate *priv;
+    callback_header *header = data;
+    guint tag;
+
+    --header;
+    tag = header->header.tag;
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(header->header.loop);
+    g_hash_table_remove(priv->callbacks, GUINT_TO_POINTER(tag));
+}
+
+static void
 run (MilterEventLoop *loop)
 {
     MilterLibevEventLoopPrivate *priv;
@@ -287,8 +300,7 @@ io_func (struct ev_loop *loop, ev_io *watcher, int revents)
     struct io_callback_data *cb = (struct io_callback_data *)watcher;
 
     if (!cb->function(cb->channel, evcond_to_g_io_condition(revents), cb->user_data)) {
-        ev_io_stop(loop, watcher);
-        g_free(cb);
+        remove_callback(cb);
     }
 }
 
@@ -331,8 +343,7 @@ child_func (struct ev_loop *loop, ev_child *watcher, int revents)
     struct child_callback_data *cb = (struct child_callback_data *)watcher;
 
     cb->function((GPid)watcher->rpid, watcher->rstatus, cb->user_data);
-    ev_child_stop(loop, watcher);
-    g_free(cb);
+    remove_callback(cb);
 }
 
 static const struct callback_funcs child_callback_funcs = {

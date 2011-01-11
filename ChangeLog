@@ -2,6 +2,7 @@
 
 	* milter/core/milter-libev-event-loop.c (add_callback): set tag in
 	the callback header.
+	(remove_callback): remove callback from event loop.
 
 	* configure.ac (rb_errinfo): needs RUBY_LDFLAGS.
 
