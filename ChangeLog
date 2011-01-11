@@ -1,3 +1,8 @@
+2011-01-11  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* milter/client/milter-client.c (event_loop_new): switch event
+	loop backend by event_loop_backend property.
+
 2011-01-11  Kouhei Sutou  <kou@clear-code.com>
 
 	* tool/milter-performance-check: work on CentOS 5.

@@ -202,13 +202,20 @@ event_loop_new (MilterClient *client, gboolean use_default_context)
 {
     MilterEventLoop *loop;
 
-    if (use_default_context) {
-        loop = milter_glib_event_loop_new(NULL);
-    } else {
-        GMainContext *context;
-        context = g_main_context_new();
-        loop = milter_glib_event_loop_new(context);
-        g_main_context_unref(context);
+    switch (milter_client_get_event_loop_backend(client)) {
+    case MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB:
+        if (use_default_context) {
+            loop = milter_glib_event_loop_new(NULL);
+        } else {
+            GMainContext *context;
+            context = g_main_context_new();
+            loop = milter_glib_event_loop_new(context);
+            g_main_context_unref(context);
+        }
+        break;
+    case MILTER_CLIENT_EVENT_LOOP_BACKEND_LIBEV:
+        loop = milter_libev_event_loop_new();
+        break;
     }
 
     return loop;
