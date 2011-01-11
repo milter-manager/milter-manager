@@ -150,7 +150,15 @@ static sfsistat
 mlfi_envfrom (SMFICTX *context, char **arguments)
 {
     if (report_request) {
-        g_print("envelope-from: <%s>\n", arguments[0]);
+        gint i;
+        GString *envelope_from;
+
+        envelope_from = g_string_new(NULL);
+        for (i = 0; arguments[i]; i++) {
+            g_string_append_printf(envelope_from, " <%s>", arguments[i]);
+        }
+        g_print("envelope-from:%s\n", envelope_from->str);
+        g_string_free(envelope_from, TRUE);
     }
 
     return SMFIS_NOREPLY;
@@ -160,7 +168,15 @@ static sfsistat
 mlfi_envrcpt (SMFICTX *context, char **arguments)
 {
     if (report_request) {
-        g_print("envelope-recipient: <%s>\n", arguments[0]);
+        gint i;
+        GString *envelope_recipient;
+
+        envelope_recipient = g_string_new(NULL);
+        for (i = 0; arguments[i]; i++) {
+            g_string_append_printf(envelope_recipient, " <%s>", arguments[i]);
+        }
+        g_print("envelope-recipient:%s\n", envelope_recipient->str);
+        g_string_free(envelope_recipient, TRUE);
     }
 
     return SMFIS_CONTINUE;
