@@ -1,5 +1,8 @@
 2011-01-11  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/core/milter-event-loop.c (milter_event_loop_new): moved
+	from milter_test_event_loop_new in test/lib/milter-test-utils.c.
+
 	* milter/core/milter-libev-event-loop.c (remove_callback):
 	callback might be removed in callback function, so need to store
 	MilterLibevEventLoop and tag previously.
