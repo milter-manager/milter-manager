@@ -304,7 +304,7 @@ cb_continue (MilterServerContext *context, gpointer user_data)
             if (connect_host)
                 host_name = connect_host;
             else
-                host_name = "mx.local.net";
+                host_name = "mx.example.net";
 
             if (connect_address) {
                 milter_server_context_connect(context,
@@ -1417,9 +1417,9 @@ post_option_parse (GOptionContext *option_context,
     if (!helo_host)
         helo_host = g_strdup("delian");
     if (!envelope_from)
-        envelope_from = g_strdup("<kou+send@example.com>");
+        envelope_from = g_strdup("<sender@example.com>");
     if (!recipients)
-        recipients = g_strsplit("<kou+receive@example.com>", ",", -1);
+        recipients = g_strsplit("<receiver@example.org>", ",", -1);
     if (!milter_headers_lookup_by_name(option_headers, "From"))
         milter_headers_add_header(option_headers, "From", envelope_from);
     if (!milter_headers_lookup_by_name(option_headers, "To"))

@@ -1330,7 +1330,7 @@ option_test_assert_connect_host (void)
 static void
 option_test_assert_connect_address (void)
 {
-    cut_assert_equal_string("mx.local.net", actual_connect_host);
+    cut_assert_equal_string("mx.example.net", actual_connect_host);
     cut_assert_equal_string("inet:12345@192.168.1.1", actual_connect_address);
 }
 
@@ -1444,8 +1444,8 @@ option_test_assert_output_message (void)
     cut_assert_equal_string(
         "status: pass\n"
         "\n"
-        NORMAL_COLOR "  From: <kou+send@example.com>" NORMAL_COLOR "\n"
-        NORMAL_COLOR "  To: <kou+receive@example.com>" NORMAL_COLOR "\n"
+        NORMAL_COLOR "  From: <sender@example.com>" NORMAL_COLOR "\n"
+        NORMAL_COLOR "  To: <receiver@example.org>" NORMAL_COLOR "\n"
         "---------------------------------------\n"
         "La de da de da 1.\n"
         "La de da de da 2.\n"
@@ -1655,7 +1655,7 @@ change_from_function (void)
 static void
 end_of_message_action_assert_change_from (void)
 {
-    cut_assert_match("(.*\n)*- From: <kou\\+send@example\\.com>"
+    cut_assert_match("(.*\n)*- From: <sender@example\\.com>"
                      "(.*\n)*", output_string->str);
     cut_assert_match("(.*\n)*\\+ From: changed-from@example\\.com"
                      "(.*\n)*", output_string->str);
@@ -1675,9 +1675,9 @@ add_recipient_function (void)
 static void
 end_of_message_action_assert_add_recipient (void)
 {
-    cut_assert_match("(.*\n)*- To: <kou\\+receive@example\\.com>"
+    cut_assert_match("(.*\n)*- To: <receiver@example\\.org>"
                      "(.*\n)*", output_string->str);
-    cut_assert_match("(.*\n)*\\+ To: <kou\\+receive@example\\.com>, added-to@example\\.com"
+    cut_assert_match("(.*\n)*\\+ To: <receiver@example\\.org>, added-to@example\\.com"
                      "(.*\n)*", output_string->str);
 }
 
@@ -1687,7 +1687,7 @@ delete_recipient_function (void)
     packet_free();
 
     milter_reply_encoder_encode_delete_recipient(encoder, &packet, &packet_size,
-                                                 "kou+receive@example.com");
+                                                 "receiver@example.org");
 
     write_data(packet, packet_size);
 }
@@ -1695,7 +1695,7 @@ delete_recipient_function (void)
 static void
 end_of_message_action_assert_delete_recipient (void)
 {
-    cut_assert_match("(.*\n)*- To: <kou\\+receive@example\\.com>"
+    cut_assert_match("(.*\n)*- To: <receiver@example\\.org>"
                      "(.*\n)*", output_string->str);
 }
 
@@ -1704,7 +1704,7 @@ add_header_function (void)
 {
     packet_free();
 
-    milter_reply_encoder_encode_add_header(encoder, &packet, &packet_size, 
+    milter_reply_encoder_encode_add_header(encoder, &packet, &packet_size,
                                            "X-Test-Header1", "TestHeader1Value");
 
     write_data(packet, packet_size);
@@ -1722,7 +1722,7 @@ insert_header_function (void)
 {
     packet_free();
 
-    milter_reply_encoder_encode_insert_header(encoder, &packet, &packet_size, 
+    milter_reply_encoder_encode_insert_header(encoder, &packet, &packet_size,
                                               1, "X-Test-Header1", "TestHeader1Value");
 
     write_data(packet, packet_size);
@@ -1749,7 +1749,7 @@ change_header_function (void)
 static void
 end_of_message_action_assert_change_header (void)
 {
-    cut_assert_match("(.*\n)*- To: <kou\\+receive@example\\.com>"
+    cut_assert_match("(.*\n)*- To: <receiver@example\\.org>"
                      "(.*\n)*", output_string->str);
     cut_assert_match("(.*\n)*\\+ To: changed-to@example\\.com"
                      "(.*\n)*", output_string->str);
@@ -1769,7 +1769,7 @@ delete_header_function (void)
 static void
 end_of_message_action_assert_delete_header (void)
 {
-    cut_assert_match("(.*\n)*- To: <kou\\+receive@example\\.com>"
+    cut_assert_match("(.*\n)*- To: <receiver@example\\.org>"
                      "(.*\n)*", output_string->str);
 }
 
@@ -1951,7 +1951,7 @@ create_expected_default_macros_table (void)
                         GINT_TO_POINTER(MILTER_COMMAND_ENVELOPE_RECIPIENT),
                         create_macro_hash_table("rcpt_mailer", "rcpt_mailer",
                                                 "rcpt_host", "rcpt_host",
-                                                "rcpt_addr", "<kou+receive@example.com>",
+                                                "rcpt_addr", "<receiver@example.org>",
                                                 NULL));
     g_hash_table_insert(expected_macros_table,
                         GINT_TO_POINTER(MILTER_COMMAND_END_OF_MESSAGE),
