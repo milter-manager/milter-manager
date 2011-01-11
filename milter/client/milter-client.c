@@ -200,7 +200,7 @@ _milter_client_class_init (MilterClientClass *klass)
 static MilterEventLoop *
 event_loop_new (MilterClient *client, gboolean use_default_context)
 {
-    MilterEventLoop *loop;
+    MilterEventLoop *loop = NULL;
 
     switch (milter_client_get_event_loop_backend(client)) {
     case MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB:
