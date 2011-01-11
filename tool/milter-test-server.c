@@ -1451,13 +1451,13 @@ print_envelope_item (const gchar *prefix, const gchar *label,
     const gchar *color_finisher = NO_COLOR;
 
     if (use_color) {
-        if (g_str_has_prefix(prefix, "+"))
+        if (g_str_has_prefix(prefix, "+")) {
             color_starter = GREEN_COLOR;
-        else if (g_str_has_prefix(prefix, "-"))
+            color_finisher = NORMAL_COLOR;
+        } else if (g_str_has_prefix(prefix, "-")) {
             color_starter = RED_COLOR;
-        else
-            color_starter = NORMAL_COLOR;
-        color_finisher = NORMAL_COLOR;
+            color_finisher = NORMAL_COLOR;
+        };
     }
 
     g_print("%s%s %s:%s%s\n",
@@ -1540,13 +1540,13 @@ print_header (const gchar *prefix, MilterHeader *header)
     const gchar *color_finisher = NO_COLOR;
 
     if (use_color) {
-        if (g_str_has_prefix(prefix, "+"))
+        if (g_str_has_prefix(prefix, "+")) {
             color_starter = GREEN_COLOR;
-        else if (g_str_has_prefix(prefix, "-"))
+            color_finisher = NORMAL_COLOR;
+        } else if (g_str_has_prefix(prefix, "-")) {
             color_starter = RED_COLOR;
-        else
-            color_starter = NORMAL_COLOR;
-        color_finisher = NORMAL_COLOR;
+            color_finisher = NORMAL_COLOR;
+        }
     }
 
     value_lines = g_strsplit(header->value, "\n", -1);
@@ -1714,7 +1714,6 @@ print_message (Message *message)
     print_headers(message);
     g_print("Body:----------------------------------\n");
     print_body(message);
-    g_print("---------------------------------------\n");
 }
 
 static void
@@ -1748,6 +1747,7 @@ print_result (MilterServerContext *context, ProcessData *data)
     }
 
     print_status(context, data);
+    g_print("elapsed-time: %g seconds\n", g_timer_elapsed(data->timer, NULL));
     if (data->quarantine_reason) {
         g_print("The message was quarantined.: %s\n",
                 data->quarantine_reason);
@@ -1756,10 +1756,7 @@ print_result (MilterServerContext *context, ProcessData *data)
     if (output_message) {
         g_print("\n");
         print_message(data->message);
-        g_print("\n");
     }
-
-    g_print("elapsed-time: %g seconds\n", g_timer_elapsed(data->timer, NULL));
 }
 
 static void
