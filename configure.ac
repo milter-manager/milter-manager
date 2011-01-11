@@ -286,6 +286,7 @@ if test "$ruby_available" = "yes"; then
 
   _SAVE_CFLAGS=$CFLAGS
   _SAVE_LIBS=$LIBS
+  _SAVE_LDFLAGS=$LDFLAGS
   ruby_undef_package_macros="
 #undef PACKAGE_NAME
 #undef PACKAGE_TARNAME
@@ -294,6 +295,7 @@ if test "$ruby_available" = "yes"; then
 #undef PACKAGE_BUGREPORT
 "
   CFLAGS="$CFLAGS $RUBY_CFLAGS"
+  LDFLAGS="$LDFLAGS $RUBY_LDFLAGS"
   AC_CHECK_HEADERS(ruby.h, [],
                    [ruby_available="no"],
                    [$ruby_undef_package_macros])
@@ -426,6 +428,7 @@ EOM
   AC_CHECK_FUNCS(rb_errinfo)
   CFLAGS=$_SAVE_CFLAGS
   LIBS=$_SAVE_LIBS
+  LDFLAGS=$_SAVE_LDFLAGS
 fi
 
 AC_ARG_ENABLE([ruby-milter],
