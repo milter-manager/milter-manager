@@ -1,3 +1,9 @@
+2011-01-11  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* milter/core/milter-libev-event-loop.c (remove_callback):
+	callback might be removed in callback function, so need to store
+	MilterLibevEventLoop and tag previously.
+
 2011-01-11  Kouhei Sutou  <kou@clear-code.com>
 
 	* tool/milter-test-server.c, test/tool/test-server.c,

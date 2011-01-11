@@ -203,8 +203,9 @@ alloc_callback (MilterEventLoop *loop,
 }
 
 #define new_callback(type) alloc_callback((loop), &type##_callback_funcs, sizeof(struct type##_callback_data))
-#define callback_get_private(data) (((const callback_header *)(data)-1)->header.loop)
+#define callback_get_loop(data) (((const callback_header *)(data)-1)->header.loop)
 #define callback_get_funcs(data) (((const callback_header *)(data)-1)->header.funcs)
+#define callback_get_tag(data) (((const callback_header *)(data)-1)->header.tag)
 
 static void
 destroy_callback (gpointer data)
@@ -220,15 +221,11 @@ destroy_callback (gpointer data)
 }
 
 static void
-remove_callback (gpointer data)
+remove_callback (MilterLibevEventLoop *loop, guint tag)
 {
     MilterLibevEventLoopPrivate *priv;
-    callback_header *header = data;
-    guint tag;
 
-    --header;
-    tag = header->header.tag;
-    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(header->header.loop);
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
     g_hash_table_remove(priv->callbacks, GUINT_TO_POINTER(tag));
 }
 
@@ -298,9 +295,11 @@ static void
 io_func (struct ev_loop *loop, ev_io *watcher, int revents)
 {
     struct io_callback_data *cb = (struct io_callback_data *)watcher;
+    MilterLibevEventLoop *milter_event_loop = callback_get_loop(cb);
+    guint tag = callback_get_tag(cb);
 
     if (!cb->function(cb->channel, evcond_to_g_io_condition(revents), cb->user_data)) {
-        remove_callback(cb);
+        remove_callback(milter_event_loop, tag);
     }
 }
 
@@ -341,9 +340,11 @@ static void
 child_func (struct ev_loop *loop, ev_child *watcher, int revents)
 {
     struct child_callback_data *cb = (struct child_callback_data *)watcher;
+    MilterLibevEventLoop *milter_event_loop = callback_get_loop(cb);
+    guint tag = callback_get_tag(cb);
 
     cb->function((GPid)watcher->rpid, watcher->rstatus, cb->user_data);
-    remove_callback(cb);
+    remove_callback(milter_event_loop, tag);
 }
 
 static const struct callback_funcs child_callback_funcs = {
@@ -381,8 +382,11 @@ static void
 timer_func (struct ev_loop *loop, ev_timer *watcher, int revents)
 {
     struct timer_callback_data *cb = (struct timer_callback_data *)watcher;
+    MilterLibevEventLoop *milter_event_loop = callback_get_loop(cb);
+    guint tag = callback_get_tag(cb);
+
     if (!cb->function(cb->user_data)) {
-        remove_callback(cb);
+        remove_callback(milter_event_loop, tag);
     }
 }
 
@@ -421,8 +425,11 @@ static void
 idle_func (struct ev_loop *loop, ev_idle *watcher, int revents)
 {
     struct idle_callback_data *cb = (struct idle_callback_data *)watcher;
+    MilterLibevEventLoop *milter_event_loop = callback_get_loop(cb);
+    guint tag = callback_get_tag(cb);
+
     if (!cb->function(cb->user_data)) {
-        remove_callback(cb);
+        remove_callback(milter_event_loop, tag);
     }
 }
 
