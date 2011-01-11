@@ -305,7 +305,7 @@ cb_idle_shutdown (gpointer data)
 {
     MilterManagerProcessLauncher *launcher = data;
 
-    milter_agent_shutdown(MILTER_AGENT(launcher));
+    milter_manager_process_launcher_shutdown(launcher);
 
     return FALSE;
 }

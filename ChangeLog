@@ -1,5 +1,9 @@
 2011-01-11  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-process-launcher.[ch],
+	test/manager/test-process-launcher.c: add
+	milter_manager_process_launcher_shutdown().
+
 	* tool/milter-test-server.c, test/tool/test-server.c: normalize
 	input recipients.
 

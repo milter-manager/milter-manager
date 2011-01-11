@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -66,6 +66,7 @@ GType                         milter_manager_process_launcher_get_type (void) G_
 MilterManagerProcessLauncher *milter_manager_process_launcher_new      (void);
 
 void                          milter_manager_process_launcher_run      (MilterManagerProcessLauncher *launcher);
+void                          milter_manager_process_launcher_shutdown (MilterManagerProcessLauncher *launcher);
 
 G_END_DECLS
 

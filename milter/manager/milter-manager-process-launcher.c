@@ -553,6 +553,15 @@ milter_manager_process_launcher_run (MilterManagerProcessLauncher *launcher)
     milter_event_loop_run(loop);
 }
 
+void
+milter_manager_process_launcher_shutdown (MilterManagerProcessLauncher *launcher)
+{
+    MilterEventLoop *loop;
+
+    loop = milter_agent_get_event_loop(MILTER_AGENT(launcher));
+    milter_event_loop_quit(loop);
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
