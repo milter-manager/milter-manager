@@ -1,5 +1,8 @@
 2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/client/milter-client.c (milter_client_run): run in
+	multi-process mode if n_workers is greater than 0.
+
 	* binding/ruby/src/toolkit/rb-milter-client.c (client_custom_fork):
 	use fork method of ruby.
 	(client_initialize): initialize.

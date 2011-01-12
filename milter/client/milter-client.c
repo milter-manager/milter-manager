@@ -88,6 +88,7 @@ struct _MilterClientPrivate
     gboolean multi_thread_mode;
     GThreadPool *worker_threads;
     struct {
+        GIOChannel *control;
         guint n_process;
     } workers;
     struct sockaddr *address;
@@ -271,6 +272,7 @@ _milter_client_init (MilterClient *client)
     priv->multi_thread_mode = FALSE;
     priv->worker_threads = NULL;
     priv->workers.n_process = 0;
+    priv->workers.control = NULL;
     priv->address = NULL;
     priv->address_size = 0;
     priv->effective_user = NULL;
@@ -439,11 +441,23 @@ dispose_finished_data (MilterClient *client)
 }
 
 static void
+watch_worker_process (GPid     pid,
+                      gint     status,
+                      gpointer data)
+{
+}
+
+static void
 dispose (GObject *object)
 {
     MilterClientPrivate *priv;
 
     priv = MILTER_CLIENT_GET_PRIVATE(object);
+
+    if (priv->workers.control) {
+        g_io_channel_unref(priv->workers.control);
+        priv->workers.control = NULL;
+    }
 
     if (priv->listening_channel) {
         g_io_channel_unref(priv->listening_channel);
@@ -1606,15 +1620,84 @@ milter_client_cleanup (MilterClient *client)
     }
 }
 
+static gboolean
+worker_watch_master (GIOChannel   *source,
+                     GIOCondition  condition,
+                     gpointer      data)
+{
+    gchar buf[1];
+    gsize count;
+
+    if (g_io_channel_read_chars(source, buf, 1, &count, NULL) == G_IO_STATUS_EOF) {
+        MilterClient *client = data;
+        milter_client_shutdown(client);
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+static gboolean
+client_invoke_workers (MilterClient *client, guint n_workers, GError **error)
+{
+    guint i;
+    int pipe_fds[2];
+    MilterClientPrivate *priv;
+    MilterEventLoop *loop;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+
+    loop = milter_client_get_process_loop(client);
+    milter_client_listen(client, error);
+
+    if (pipe(pipe_fds) == -1) {
+        g_set_error(error,
+                    MILTER_CLIENT_ERROR,
+                    MILTER_CLIENT_ERROR_PROCESS,
+                    "%s",
+                    g_strerror(errno));
+        return FALSE;
+    }
+    priv->workers.control = setup_client_channel(pipe_fds[1]);
+    for (i = 0; i < n_workers; ++i) {
+        GPid pid = milter_client_fork(client);
+        if (pid == 0) {
+            close(pipe_fds[0]);
+            milter_client_run_worker(client, error);
+            milter_client_shutdown(client);
+            _exit(EXIT_SUCCESS);
+        } else if (pid != -1) {
+            milter_event_loop_watch_io(loop, priv->workers.control,
+                                       G_IO_IN, worker_watch_master, client);
+            milter_event_loop_watch_child(loop, pid, watch_worker_process, NULL);
+        } else {
+            g_set_error(error,
+                        MILTER_CLIENT_ERROR,
+                        MILTER_CLIENT_ERROR_PROCESS,
+                        "%s",
+                        g_strerror(errno));
+            close(pipe_fds[0]);
+            g_io_channel_unref(priv->workers.control);
+            return FALSE;
+        }
+    }
+        g_io_channel_unref(priv->workers.control);
+    priv->workers.control = setup_client_channel(pipe_fds[0]);
+    return milter_client_run_master(client, error);
+}
+
 gboolean
 milter_client_run (MilterClient *client, GError **error)
 {
     MilterClientPrivate *priv;
     gboolean success;
+    guint n_workers;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
-
-    if (priv->multi_thread_mode) {
+    n_workers = milter_client_get_n_workers(client);
+    if (n_workers > 0) {
+        success = client_invoke_workers(client, n_workers, error);
+    } else if (priv->multi_thread_mode) {
         if (!milter_client_prepare(client, multi_thread_server_watch_func,
                                    error))
             return FALSE;
@@ -1770,10 +1853,16 @@ milter_client_shutdown (MilterClient *client)
     g_mutex_lock(priv->quit_mutex);
     if (!priv->quitting) {
         priv->quitting = TRUE;
-        milter_event_loop_quit(priv->accept_loop);
+
+        if (priv->accept_loop)
+            milter_event_loop_quit(priv->accept_loop);
         if (priv->server_watch_id > 0) {
             milter_event_loop_remove(priv->accept_loop, priv->server_watch_id);
             priv->server_watch_id = 0;
+        }
+        if (priv->workers.control) {
+            g_io_channel_unref(priv->workers.control);
+            priv->workers.control = NULL;
         }
         if (priv->listening_channel) {
             g_io_channel_unref(priv->listening_channel);
