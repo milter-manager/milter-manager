@@ -70,7 +70,14 @@ class TestClient < Test::Unit::TestCase
     assert_equal(0, @client.n_workers)
     @client.n_workers = 10
     assert_equal(10, @client.n_workers)
-    assert_raise(TypeError) {@client.n_workers = nil}
-    assert_raise(TypeError) {@client.n_workers = "foo"}
+  end
+
+  def test_n_workers_invalid
+    assert_raise(TypeError) do
+      @client.n_workers = nil
+    end
+    assert_raise(TypeError) do
+      @client.n_workers = "foo"
+    end
   end
 end
