@@ -66,6 +66,7 @@ void test_save_custom (void);
 void test_to_xml_full (void);
 void test_to_xml_signal (void);
 void test_location (void);
+void test_n_workers (void);
 
 static MilterManagerConfiguration *config;
 static MilterEventLoop *loop;
