@@ -183,7 +183,7 @@ class MilterStatisticsReporter
         @filters << /#{regexp}/i
       end
 
-      parser.on("--interval=INTERVAL", Integer,
+      parser.on("--interval=INTERVAL", Float,
                 "Report each INTERVAL second.") do |interval|
         @interval = interval
       end

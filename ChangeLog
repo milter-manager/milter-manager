@@ -1,3 +1,7 @@
+2011-01-12  Kouhei Sutou  <kou@clear-code.com>
+
+	* tool/milter-report-statistics: accept float value as --interval value.
+
 2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/client/milter-client.c (set_property, get_property): deal
