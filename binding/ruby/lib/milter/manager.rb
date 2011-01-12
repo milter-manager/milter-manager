@@ -126,6 +126,8 @@ module Milter::Manager
                 c.event_loop_backend.nick.dump)
       dump_item("manager.connection_check_interval",
                 c.connection_check_interval.inspect)
+      dump_item("manager.n_workers",
+                c.n_workers)
       @result << "\n"
 
       dump_item("controller.connection_spec",

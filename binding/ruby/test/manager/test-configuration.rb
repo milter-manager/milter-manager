@@ -274,6 +274,8 @@ manager.fallback_status_at_disconnect = "temporary-failure"
 manager.event_loop_backend = "glib"
 # default
 manager.connection_check_interval = 0
+# default
+manager.n_workers = 0
 
 # default
 controller.connection_spec = nil
@@ -382,6 +384,8 @@ manager.fallback_status_at_disconnect = "temporary-failure"
 manager.event_loop_backend = "glib"
 # default
 manager.connection_check_interval = 0
+# default
+manager.n_workers = 0
 
 # #{__FILE__}:#{controller_connection_spec}
 controller.connection_spec = "inet:10025"

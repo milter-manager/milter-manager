@@ -6,6 +6,7 @@
 	add accessors.
 	(Milter::ConfigurationLoader::ManagerConfiguration#n_workers):
 	n_workers is always Integer.
+	(Milter::ConfigurationDumper#dump): dump n_workers.
 
 	* binding/ruby/test/toolkit/test-client.rb (TestClient#test_n_workers):
 	add test.
