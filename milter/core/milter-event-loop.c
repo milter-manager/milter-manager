@@ -175,6 +175,29 @@ milter_event_loop_run_without_custom (MilterEventLoop *loop)
     loop_class->run(loop);
 }
 
+void
+milter_event_loop_set_custom_run_func (MilterEventLoop             *loop,
+                                       MilterEventLoopCustomRunFunc custom_run)
+{
+    MilterEventLoopPrivate *priv;
+
+    g_return_if_fail(loop != NULL);
+
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(loop);
+    priv->custom_run = custom_run;
+}
+
+MilterEventLoopCustomRunFunc
+milter_event_loop_get_custom_run_func (MilterEventLoop *loop)
+{
+    MilterEventLoopPrivate *priv;
+
+    g_return_val_if_fail(loop != NULL, NULL);
+
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(loop);
+    return priv->custom_run;
+}
+
 gboolean
 milter_event_loop_iterate (MilterEventLoop *loop, gboolean may_block)
 {

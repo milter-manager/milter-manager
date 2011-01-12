@@ -2,6 +2,8 @@
 
 	* milter/core/milter-event-loop.c (milter_event_loop_run_without_custom):
 	replaced "hook" with "custom".
+	(milter_event_loop_set_custom_run_func)
+	(milter_event_loop_get_custom_run_func): add accessors.
 
 	* milter/client/milter-client.c (milter_client_get_n_workers)
 	(milter_client_set_n_workers): add new property.
