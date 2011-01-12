@@ -23,6 +23,25 @@
 
 VALUE rb_cMilterClient;
 
+static GPid
+client_custom_fork (MilterClient *client)
+{
+#ifdef HAVE_RB_FORK
+    int status;
+    return (GPid)rb_fork(&status, NULL, NULL, Qnil);
+#else
+    VALUE pid = rb_funcall2(rb_mKernel, rb_intern("fork"), 0, 0);
+    return (GPid)NUM2INT(pid);
+#endif
+}
+
+static VALUE
+client_initialize (VALUE self)
+{
+    milter_client_set_custom_fork_func(SELF(self), client_custom_fork);
+    return Qnil;
+}
+
 static VALUE
 client_run (VALUE self)
 {
@@ -237,6 +256,7 @@ Init_milter_client (void)
 		    "DEFAULT_MAX_CONNECTIONS",
 		    UINT2NUM(MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS));
 
+    rb_define_method(rb_cMilterClient, "initialize", client_initialize, 0);
     rb_define_method(rb_cMilterClient, "run", client_run, 0);
     rb_define_method(rb_cMilterClient, "main", client_main, 0);
     rb_define_method(rb_cMilterClient, "run_master", client_run_master, 0);

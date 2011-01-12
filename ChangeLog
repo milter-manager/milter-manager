@@ -1,5 +1,8 @@
 2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* binding/ruby/src/toolkit/rb-milter-client.c (client_custom_fork):
+	use fork method of ruby.
+
 	* module/configuration/ruby/milter-manager-ruby-configuration.c
 	(init_ruby): use ruby_process_options to initialize encoding etc.
 
