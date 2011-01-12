@@ -1,3 +1,8 @@
+2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* milter/client/milter-client.c (milter_client_get_n_workers)
+	(milter_client_set_n_workers): add new property.
+
 2011-01-12  Kouhei Sutou  <kou@clear-code.com>
 
 	* binding/ruby/lib/milter/client/command-line.rb: show unix domain

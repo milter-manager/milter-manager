@@ -162,6 +162,9 @@ struct _MilterClientClass
            (*get_event_loop_backend)      (MilterClient *client);
     void   (*set_event_loop_backend)      (MilterClient *client,
                                            MilterClientEventLoopBackend backend);
+    guint  (*get_n_workers)               (MilterClient *client);
+    void   (*set_n_workers)               (MilterClient *client,
+                                           guint         n_workers);
 };
 
 GQuark               milter_client_error_quark       (void);
@@ -727,6 +730,26 @@ MilterClientEventLoopBackend
 void                 milter_client_set_event_loop_backend
                                                      (MilterClient  *client,
                                                       MilterClientEventLoopBackend backend);
+
+/**
+ * milter_client_get_n_workers:
+ * @client: a %MilterClient.
+ *
+ * Gets the number of worker processes of @client.
+ *
+ * Returns the number of worker processes of @client.
+ */
+guint                milter_client_get_n_workers     (MilterClient  *client);
+
+/**
+ * milter_client_get_n_workers:
+ * @client: a %MilterClient.
+ * @n_workers: the number of worker processes.
+ *
+ * Sets the number of worker processes of @client.
+ */
+void                 milter_client_set_n_workers     (MilterClient  *client,
+                                                      guint          n_workers);
 
 G_END_DECLS
 

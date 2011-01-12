@@ -61,6 +61,7 @@ void test_need_maintain_never (void);
 void test_need_maintain_no_processing_sessions (void);
 void test_need_maintain_no_processing_sessions_below_processed_sessions (void);
 void test_need_maintain_no_processing_sessions_no_interval (void);
+void test_n_workers (void);
 
 static MilterEventLoop *loop;
 
@@ -955,6 +956,16 @@ test_need_maintain_no_processing_sessions_no_interval (void)
     milter_client_set_n_processing_sessions(client, 0);
     cut_assert_false(milter_client_need_maintain(client, 0));
     cut_assert_true(milter_client_need_maintain(client, 1));
+}
+
+void
+test_n_workers (void)
+{
+    cut_assert_equal_uint(
+        0, milter_client_get_n_workers(client));
+    milter_client_set_n_workers(client, 10);
+    cut_assert_equal_uint(
+        10, milter_client_get_n_workers(client));
 }
 
 /*

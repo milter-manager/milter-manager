@@ -40,7 +40,8 @@
 enum
 {
     PROP_0,
-    PROP_EVENT_LOOP_BACKEND
+    PROP_EVENT_LOOP_BACKEND,
+    PROP_N_WORKER_PROCESSES,
 };
 
 enum
@@ -86,8 +87,8 @@ struct _MilterClientPrivate
     guint max_connections;
     gboolean multi_thread_mode;
     GThreadPool *worker_threads;
-    gboolean multi_process_mode;
     struct {
+        guint n_process;
         GSocket *control;
     } workers;
     struct sockaddr *address;
@@ -111,6 +112,8 @@ typedef struct _MilterClientProcessData
 } MilterClientProcessData;
 
 typedef gboolean (*AcceptConnectionFunction) (MilterClient *client, gint fd);
+
+#define MAX_N_WORKER_PROCESSES 1000
 
 #define _milter_client_get_type milter_client_get_type
 MILTER_DEFINE_ERROR_EMITTABLE_TYPE(MilterClient, _milter_client, G_TYPE_OBJECT)
@@ -157,6 +160,13 @@ _milter_client_class_init (MilterClientClass *klass)
                              MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_EVENT_LOOP_BACKEND, spec);
+
+    spec = g_param_spec_uint("n-workers",
+                             "Number of worker processes",
+                             "The Number of worker processes of the client",
+                             0, MAX_N_WORKER_PROCESSES, 0,
+                             G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_N_WORKER_PROCESSES, spec);
 
     signals[CONNECTION_ESTABLISHED] =
         g_signal_new("connection-established",
@@ -254,7 +264,7 @@ _milter_client_init (MilterClient *client)
     priv->max_connections = MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS;
     priv->multi_thread_mode = FALSE;
     priv->worker_threads = NULL;
-    priv->multi_process_mode = FALSE;
+    priv->workers.n_process = 0;
     priv->workers.control = NULL;
     priv->address = NULL;
     priv->address_size = 0;
@@ -2180,6 +2190,34 @@ milter_client_set_event_loop_backend (MilterClient  *client,
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
     priv->event_loop_backend = backend;
+}
+
+guint
+milter_client_get_n_workers (MilterClient  *client)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->get_n_workers)
+        return klass->get_n_workers(client);
+    return MILTER_CLIENT_GET_PRIVATE(client)->workers.n_process;
+}
+
+void
+milter_client_set_n_workers (MilterClient  *client,
+                             guint          n_workers)
+{
+    MilterClientPrivate *priv;
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->set_n_workers) {
+        klass->set_n_workers(client, n_workers);
+        return;
+    }
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    priv->workers.n_process = n_workers;
 }
 
 /*
