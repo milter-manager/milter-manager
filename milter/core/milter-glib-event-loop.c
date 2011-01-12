@@ -46,6 +46,10 @@ enum
     PROP_LAST
 };
 
+static GObject *constructor      (GType                  type,
+                                  guint                  n_props,
+                                  GObjectConstructParam *props);
+
 static void     dispose          (GObject         *object);
 static void     set_property     (GObject         *object,
                                   guint            prop_id,
@@ -55,7 +59,6 @@ static void     get_property     (GObject         *object,
                                   guint            prop_id,
                                   GValue          *value,
                                   GParamSpec      *pspec);
-static void     constructed      (GObject         *object);
 
 static void     run              (MilterEventLoop *loop);
 static gboolean iterate          (MilterEventLoop *loop,
@@ -99,10 +102,10 @@ milter_glib_event_loop_class_init (MilterGLibEventLoopClass *klass)
 
     gobject_class = G_OBJECT_CLASS(klass);
 
+    gobject_class->constructor  = constructor;
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
-    gobject_class->constructed  = constructed;
 
     klass->parent_class.run = run;
     klass->parent_class.iterate = iterate;
@@ -120,6 +123,24 @@ milter_glib_event_loop_class_init (MilterGLibEventLoopClass *klass)
     g_object_class_install_property(gobject_class, PROP_CONTEXT, spec);
 
     g_type_class_add_private(gobject_class, sizeof(MilterGLibEventLoopPrivate));
+}
+
+static GObject *
+constructor (GType type, guint n_props, GObjectConstructParam *props)
+{
+    GObject *object;
+    GObjectClass *klass;
+    MilterGLibEventLoop *loop;
+    MilterGLibEventLoopPrivate *priv;
+
+    klass = G_OBJECT_CLASS(milter_glib_event_loop_parent_class);
+    object = klass->constructor(type, n_props, props);
+
+    loop = MILTER_GLIB_EVENT_LOOP(object);
+    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
+    priv->loop = g_main_loop_new(priv->context, FALSE);
+
+    return object;
 }
 
 static void
@@ -194,17 +215,6 @@ get_property (GObject    *object,
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
-}
-
-static void
-constructed (GObject *object)
-{
-    MilterGLibEventLoop *loop;
-    MilterGLibEventLoopPrivate *priv;
-
-    loop = MILTER_GLIB_EVENT_LOOP(object);
-    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
-    priv->loop = g_main_loop_new(priv->context, FALSE);
 }
 
 MilterEventLoop *

@@ -48,7 +48,6 @@ enum
 };
 
 static void     dispose          (GObject         *object);
-static void     constructed      (GObject         *object);
 
 static void     destroy_callback (gpointer         callback);
 
@@ -94,7 +93,6 @@ milter_libev_event_loop_class_init (MilterLibevEventLoopClass *klass)
     gobject_class = G_OBJECT_CLASS(klass);
 
     gobject_class->dispose      = dispose;
-    gobject_class->constructed  = constructed;
 
     klass->parent_class.run = run;
     klass->parent_class.iterate = iterate;
@@ -114,9 +112,10 @@ milter_libev_event_loop_init (MilterLibevEventLoop *loop)
     MilterLibevEventLoopPrivate *priv;
 
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
-    priv->base = NULL;
+    priv->base = ev_loop_new(0);
     priv->tag = 0;
-    priv->callbacks = NULL;
+    priv->callbacks = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+                                            NULL, destroy_callback);
 }
 
 static void
@@ -137,19 +136,6 @@ dispose (GObject *object)
     }
 
     G_OBJECT_CLASS(milter_libev_event_loop_parent_class)->dispose(object);
-}
-
-static void
-constructed (GObject *object)
-{
-    MilterLibevEventLoop *loop;
-    MilterLibevEventLoopPrivate *priv;
-
-    loop = MILTER_LIBEV_EVENT_LOOP(object);
-    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
-    priv->base = ev_loop_new(0);
-    priv->callbacks = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-                                            NULL, destroy_callback);
 }
 
 MilterEventLoop *

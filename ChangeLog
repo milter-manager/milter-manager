@@ -5,6 +5,10 @@
 
 2011-01-12  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/core/milter-libev-event-loop.c,
+	milter/core/milter-glib-event-loop.c: don't use constructed class
+	method because GLib 2.12 bundled on CentOS doesn't support it.
+
 	* test/client/test-client.c (test_custom_fork): use common test
 	style.
 	- move static variable declarations to the top.
