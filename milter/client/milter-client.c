@@ -552,16 +552,17 @@ get_property (GObject    *object,
               GValue     *value,
               GParamSpec *pspec)
 {
+    MilterClient *client;
     MilterClientPrivate *priv;
 
+    client = MILTER_CLIENT(object);
     priv = MILTER_CLIENT_GET_PRIVATE(object);
     switch (prop_id) {
     case PROP_EVENT_LOOP_BACKEND:
-        g_value_set_enum(value,
-                         milter_client_get_event_loop_backend((MilterClient *)priv));
+        g_value_set_enum(value, milter_client_get_event_loop_backend(client));
         break;
     case PROP_N_WORKER_PROCESSES:
-        g_value_set_uint(value, milter_client_get_n_workers((MilterClient *)priv));
+        g_value_set_uint(value, milter_client_get_n_workers(client));
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
