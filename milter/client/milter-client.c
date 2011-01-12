@@ -563,7 +563,7 @@ get_property (GObject    *object,
                          milter_client_get_event_loop_backend((MilterClient *)priv));
         break;
     case PROP_N_WORKER_PROCESSES:
-        g_value_set_uint(value, milter_client_get_n_workers(client));
+        g_value_set_uint(value, milter_client_get_n_workers((MilterClient *)priv));
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
