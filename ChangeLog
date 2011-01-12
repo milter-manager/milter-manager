@@ -1,3 +1,8 @@
+2011-01-12  Kouhei Sutou  <kou@clear-code.com>
+
+	* binding/ruby/src/toolkit/rb-milter-core-private.h (GERROR2RVAL):
+	define for Ruby/GLib2 0.15.0.
+
 2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/client/milter-client.c (default_fork): use wrapper

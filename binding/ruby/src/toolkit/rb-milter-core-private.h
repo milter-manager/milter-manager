@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -61,6 +61,10 @@ void Init_milter_event_loop (void);
 
 #ifndef RVAL2CSTR_ACCEPT_NIL
 #  define RVAL2CSTR_ACCEPT_NIL(string) RVAL2CSTR2(string)
+#endif
+
+#ifndef GERROR2RVAL
+#  define GERROR2RVAL(error) (rbgerr_gerror2exception(error))
 #endif
 
 
