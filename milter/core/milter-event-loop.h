@@ -86,7 +86,7 @@ GQuark               milter_event_loop_error_quark       (void);
 GType                milter_event_loop_get_type          (void) G_GNUC_CONST;
 
 void                 milter_event_loop_run               (MilterEventLoop *loop);
-void                 milter_event_loop_run_without_hook  (MilterEventLoop *loop);
+void                 milter_event_loop_run_without_custom(MilterEventLoop *loop);
 gboolean             milter_event_loop_iterate           (MilterEventLoop *loop,
                                                           gboolean         may_block);
 void                 milter_event_loop_quit              (MilterEventLoop *loop);

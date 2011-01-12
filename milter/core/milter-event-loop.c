@@ -165,7 +165,7 @@ milter_event_loop_run (MilterEventLoop *loop)
 }
 
 void
-milter_event_loop_run_without_hook (MilterEventLoop *loop)
+milter_event_loop_run_without_custom (MilterEventLoop *loop)
 {
     MilterEventLoopClass *loop_class;
 

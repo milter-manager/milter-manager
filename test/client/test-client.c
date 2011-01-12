@@ -299,7 +299,7 @@ static void
 loop_run (MilterEventLoop *loop)
 {
     loop_run_count++;
-    milter_event_loop_run_without_hook(loop);
+    milter_event_loop_run_without_custom(loop);
 }
 
 static void
