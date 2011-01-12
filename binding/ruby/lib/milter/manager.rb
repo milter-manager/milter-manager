@@ -885,7 +885,7 @@ module Milter::Manager
       end
 
       def n_workers=(n_workers)
-        update_location("n_workers", n_workers.nil?)
+        update_location("n_workers", n_workers.zero?)
         @configuration.n_workers = n_workers
       end
 
