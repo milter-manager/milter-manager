@@ -79,7 +79,7 @@ string_equal (const gchar *string1, const gchar *string2)
     if (string1 == NULL || string2 == NULL)
         return FALSE;
 
-    return g_strcmp0(string1, string2) == 0;
+    return strcmp(string1, string2) == 0;
 }
 
 gboolean

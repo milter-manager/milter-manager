@@ -1,5 +1,8 @@
 2011-01-12  Kouhei Sutou  <kou@clear-code.com>
 
+	* test/lib/milter-manager-test-utils.c (string_equal): use
+	strcmp() instead of g_strcmp0() because both strings aren't NULL.
+
 	* binding/ruby/src/toolkit/rb-milter-core-private.h (GERROR2RVAL):
 	define for Ruby/GLib2 0.15.0.
 
