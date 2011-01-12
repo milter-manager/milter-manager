@@ -2173,8 +2173,10 @@ milter_client_set_event_loop_backend (MilterClient  *client,
     MilterClientClass *klass;
 
     klass = MILTER_CLIENT_GET_CLASS(client);
-    if (klass->set_event_loop_backend)
-        return klass->set_event_loop_backend(client, backend);
+    if (klass->set_event_loop_backend) {
+        klass->set_event_loop_backend(client, backend);
+        return;
+    }
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
     priv->event_loop_backend = backend;

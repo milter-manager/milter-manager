@@ -1,5 +1,8 @@
 2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/client/milter-client.c (milter_client_set_event_loop_backend):
+	should not returnn void expression.
+
 	* milter/core/milter-event-loop.c (MilterEventLoopPrivate): add
 	custom run hook.
 
