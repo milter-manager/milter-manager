@@ -133,6 +133,7 @@ static void   listen_started
                            (MilterClient    *client,
                             struct sockaddr *address,
                             socklen_t        address_size);
+static GPid   default_fork (MilterClient    *client);
 
 static void
 _milter_client_class_init (MilterClientClass *klass)
@@ -150,7 +151,7 @@ _milter_client_class_init (MilterClientClass *klass)
 
     client_class->get_default_connection_spec = get_default_connection_spec;
     client_class->listen_started = listen_started;
-    client_class->fork = (MilterClientCustomForkFunc)fork;
+    client_class->fork = default_fork;
 
     spec = g_param_spec_enum("event-loop-backend",
                              "Event loop backend",
@@ -2174,6 +2175,12 @@ milter_client_set_n_workers (MilterClient  *client,
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
     priv->workers.n_process = n_workers;
+}
+
+static GPid
+default_fork (MilterClient    *client)
+{
+    return fork();
 }
 
 GPid

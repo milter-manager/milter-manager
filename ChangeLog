@@ -1,3 +1,8 @@
+2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* milter/client/milter-client.c (default_fork): use wrapper
+	function.
+
 2011-01-12  Kouhei Sutou  <kou@clear-code.com>
 
 	* test/client/test-client.c (test_custom_fork): use common test
