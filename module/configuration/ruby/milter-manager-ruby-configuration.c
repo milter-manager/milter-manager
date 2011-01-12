@@ -317,21 +317,26 @@ static void
 init_ruby (void)
 {
     int argc;
-    char *argv[] = {"milter-manager"};
+    static char args[sizeof "milter-manager\0-e;\0"];
+    char *argv[3], *arg;
     const gchar *milter_manager_rubylib;
 
-    argc = sizeof(argv) / sizeof(*argv);
+    argc = 0;
+    arg = args;
+    argv[argc++] = arg;
+    arg += strlen(strcpy(arg, "milter-manager")) + 1;
+    argv[argc++] = arg;
+    arg += strlen(strcpy(arg, "-e;")) + 1;
+    *arg = '\0';
+    argv[argc] = NULL;
     ruby_init_without_signal_change();
-    ruby_script(argv[0]);
-    ruby_set_argv(argc, argv);
-    rb_argv0 = rb_gv_get("$PROGRAM_NAME");
     milter_manager_rubylib = g_getenv("MILTER_MANAGER_RUBYLIB");
     if (milter_manager_rubylib) {
         ruby_incpush(milter_manager_rubylib);
     }
     ruby_incpush(BINDING_LIB_DIR);
     ruby_incpush(BINDING_EXT_DIR);
-    ruby_init_loadpath();
+    ruby_process_options(argc, argv);
     load_libraries();
 #if RBGLIB_MINOR_VERSION <= 16
     g_main_context_set_poll_func(NULL, NULL);

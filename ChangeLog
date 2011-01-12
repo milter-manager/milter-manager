@@ -1,3 +1,8 @@
+2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* module/configuration/ruby/milter-manager-ruby-configuration.c
+	(init_ruby): use ruby_process_options to initialize encoding etc.
+
 2011-01-12  Kouhei Sutou  <kou@clear-code.com>
 
 	* binding/ruby/lib/milter/client/command-line.rb: use signal
