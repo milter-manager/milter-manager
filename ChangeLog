@@ -1,7 +1,12 @@
+2011-01-12  Kouhei Sutou  <kou@clear-code.com>
+
+	* binding/ruby/lib/milter/client/command-line.rb: show unix domain
+	socket mode in octal.
+
 2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/client/milter-client.c (milter_client_set_event_loop_backend):
-	should not returnn void expression.
+	should not return void expression.
 
 	* milter/core/milter-event-loop.c (MilterEventLoopPrivate): add
 	custom run hook.

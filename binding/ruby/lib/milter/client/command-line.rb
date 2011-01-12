@@ -148,7 +148,7 @@ module Milter
         client = Milter::Client.new
         @option_parser.on("--unix-socket-mode=MODE",
                           "Change UNIX domain socket mode to MODE",
-                          "(#{client.default_unix_socket_mode})") do |mode|
+                          "(%o)" % client.default_unix_socket_mode) do |mode|
           client.unix_socket_mode = mode
           @options.unix_socket_mode = mode
         end
