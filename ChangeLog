@@ -1,3 +1,8 @@
+2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* milter/core/milter-event-loop.c (MilterEventLoopPrivate): add
+	custom run hook.
+
 2011-01-12  Kouhei Sutou  <kou@clear-code.com>
 
 	* html/index.html, doc/install-to-centos.rd*: update

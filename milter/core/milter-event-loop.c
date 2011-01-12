@@ -35,24 +35,37 @@ typedef struct _MilterEventLoopPrivate	MilterEventLoopPrivate;
 struct _MilterEventLoopPrivate
 {
     gboolean new_context;
+    void     (*custom_run)       (MilterEventLoop *loop);
 };
 
 enum
 {
     PROP_0,
+    PROP_CUSTOM_RUN,
     PROP_LAST
 };
 
 static void     dispose        (GObject         *object);
+static void     set_property   (GObject         *object,
+                                guint            prop_id,
+                                const GValue    *value,
+                                GParamSpec      *pspec);
+static void     get_property   (GObject         *object,
+                                guint            prop_id,
+                                GValue          *value,
+                                GParamSpec      *pspec);
 
 static void
 milter_event_loop_class_init (MilterEventLoopClass *klass)
 {
     GObjectClass *gobject_class;
+    GParamSpec *spec;
 
     gobject_class = G_OBJECT_CLASS(klass);
 
     gobject_class->dispose      = dispose;
+    gobject_class->set_property = set_property;
+    gobject_class->get_property = get_property;
 
     klass->run = NULL;
     klass->quit = NULL;
@@ -61,6 +74,12 @@ milter_event_loop_class_init (MilterEventLoopClass *klass)
     klass->add_timeout_full = NULL;
     klass->add_idle_full = NULL;
     klass->remove = NULL;
+
+    spec = g_param_spec_pointer("custom-run",
+                                "Custom run",
+                                "The custom run",
+                                G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_CUSTOM_RUN, spec);
 
     g_type_class_add_private(gobject_class, sizeof(MilterEventLoopPrivate));
 }
@@ -80,6 +99,48 @@ dispose (GObject *object)
     G_OBJECT_CLASS(milter_event_loop_parent_class)->dispose(object);
 }
 
+static void
+set_property (GObject      *object,
+              guint         prop_id,
+              const GValue *value,
+              GParamSpec   *pspec)
+{
+    MilterEventLoop *loop;
+    MilterEventLoopPrivate *priv;
+
+    loop = MILTER_EVENT_LOOP(object);
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(loop);
+    switch (prop_id) {
+    case PROP_CUSTOM_RUN:
+        priv->custom_run = g_value_get_pointer(value);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
+get_property (GObject    *object,
+              guint       prop_id,
+              GValue     *value,
+              GParamSpec *pspec)
+{
+    MilterEventLoop *loop;
+    MilterEventLoopPrivate *priv;
+
+    loop = MILTER_EVENT_LOOP(object);
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(loop);
+    switch (prop_id) {
+    case PROP_CUSTOM_RUN:
+        g_value_set_pointer(value, priv->custom_run);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
+}
+
 GQuark
 milter_event_loop_error_quark (void)
 {
@@ -88,6 +149,23 @@ milter_event_loop_error_quark (void)
 
 void
 milter_event_loop_run (MilterEventLoop *loop)
+{
+    MilterEventLoopClass *loop_class;
+    MilterEventLoopPrivate *priv;
+
+    g_return_if_fail(loop != NULL);
+
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(loop);
+    loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
+    if (priv->custom_run) {
+        priv->custom_run(loop);
+        return;
+    }
+    loop_class->run(loop);
+}
+
+void
+milter_event_loop_run_without_hook (MilterEventLoop *loop)
 {
     MilterEventLoopClass *loop_class;
 

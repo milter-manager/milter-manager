@@ -126,6 +126,8 @@ static socklen_t actual_address_size;
 
 static gchar *tmp_dir;
 
+static guint loop_run_count;
+
 static void
 cb_negotiate (MilterClientContext *context, MilterOption *option,
               MilterMacrosRequests *macros_requests, gpointer user_data)
@@ -293,6 +295,13 @@ cb_error (MilterErrorEmittable *emittable, GError *error,
 }
 
 static void
+loop_run (MilterEventLoop *loop)
+{
+    loop_run_count++;
+    milter_event_loop_run_without_hook(loop);
+}
+
+static void
 setup_client_signals (void)
 {
 #define CONNECT(name)                                                   \
@@ -311,8 +320,10 @@ cut_setup (void)
     spec = "inet:9999@127.0.0.1";
 
     client = milter_client_new();
+    loop_run_count = 0;
     loop = milter_client_get_process_loop(client);
     g_object_ref(loop);
+    g_object_set(loop, "custom-run", loop_run, NULL);
     setup_client_signals();
     server = NULL;
 
@@ -530,6 +541,7 @@ test_negotiate (void)
     macros_requests = milter_macros_requests_new();
     milter_assert_equal_macros_requests(macros_requests,
                                         negotiate_macros_requests);
+    cut_assert_true(loop_run_count > 0);
 }
 
 static gboolean
@@ -557,6 +569,7 @@ test_helo (void)
     gcut_assert_error(error);
 
     cut_assert_equal_string(fqdn, helo_fqdn);
+    cut_assert_true(loop_run_count > 0);
 }
 
 void
