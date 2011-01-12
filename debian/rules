@@ -75,20 +75,33 @@ install/milter-manager::
 		debian/milter-manager/usr/lib/milter-manager/binding/lib/milter/
 	cp -ar debian/tmp/usr/lib/milter-manager/module/configuration/* \
 		debian/milter-manager/usr/lib/milter-manager/module/configuration/
-	cp -ar debian/tmp/usr/bin/milter-performance-check debian/milter-manager/usr/bin/
+	cp -ar debian/tmp/usr/bin/milter-performance-check \
+		debian/milter-manager/usr/bin/
+	cp -ar debian/tmp/usr/bin/milter-report-statistics \
+		debian/milter-manager/usr/bin/
 	cp -ar debian/tmp/usr/bin/milter-manager-* debian/milter-manager/usr/bin/
 	cp -ar debian/tmp/usr/sbin/* debian/milter-manager/usr/sbin/
+
 	cp -ar debian/tmp/usr/share/man/man1/milter-manager* \
 		debian/milter-manager/usr/share/man/man1/
 	cp -ar debian/tmp/usr/share/man/man1/milter-performance-check* \
 		debian/milter-manager/usr/share/man/man1/
+	cp -ar debian/tmp/usr/share/man/man1/milter-report-statistics* \
+		debian/milter-manager/usr/share/man/man1/
+
 	cp -ar debian/tmp/usr/share/man/ja/man1/milter-manager* \
 		debian/milter-manager/usr/share/man/ja/man1/
 	cp -ar debian/tmp/usr/share/man/ja/man1/milter-performance-check* \
 		debian/milter-manager/usr/share/man/ja/man1/
-	cp -ar debian/tmp/etc/milter-manager/applicable-conditions/ debian/milter-manager/etc/milter-manager/
-	cp -ar debian/tmp/etc/milter-manager/defaults/ debian/milter-manager/etc/milter-manager/
-	cp -ar debian/tmp/etc/milter-manager/milter-manager.conf debian/milter-manager/etc/milter-manager/
+	cp -ar debian/tmp/usr/share/man/ja/man1/milter-report-statistics* \
+		debian/milter-manager/usr/share/man/ja/man1/
+
+	cp -ar debian/tmp/etc/milter-manager/applicable-conditions/ \
+		debian/milter-manager/etc/milter-manager/
+	cp -ar debian/tmp/etc/milter-manager/defaults/ \
+		debian/milter-manager/etc/milter-manager/
+	cp -ar debian/tmp/etc/milter-manager/milter-manager.conf \
+		debian/milter-manager/etc/milter-manager/
 
 install/milter-manager-doc::
 	cp -ar debian/tmp/usr/share/gtk-doc/html/milter-manager/* \

@@ -1,3 +1,12 @@
+2011-01-12  Kouhei Sutou  <kou@clear-code.com>
+
+	* rpm/centos/milter-manager.spec.in:
+	- install milter-report-statistics.
+	- move milter-performance-check to milter-manager from
+	libmilter-toolkit because it requires Ruby.
+
+	* debian/rules: install milter-report-statistics.
+
 2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* binding/ruby/lib/milter/manager.rb

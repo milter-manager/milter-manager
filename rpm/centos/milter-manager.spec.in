@@ -182,6 +182,8 @@ fi
 %doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO
 %doc %{_datadir}/milter-manager/license/
 %doc %{_datadir}/gtk-doc/html/milter-manager/
+%{_bindir}/milter-performance-check
+%{_bindir}/milter-report-statistics
 %{_bindir}/milter-manager-log-analyzer
 %{_sbindir}/milter-manager
 %{_includedir}/milter-manager/milter/manager.h
@@ -192,8 +194,12 @@ fi
 %{_libdir}/milter-manager/binding/lib/milter/manager/
 %{_libdir}/milter-manager/module/
 %{_libdir}/pkgconfig/milter-manager.pc
+%{_mandir}/man1/milter-performance-check.*
+%{_mandir}/man1/milter-report-statistics.*
 %{_mandir}/man1/milter-manager.*
 %{_mandir}/man1/milter-manager-log-analyzer.*
+%{_mandir}/ja/man1/milter-performance-check.*
+%{_mandir}/ja/man1/milter-report-statistics.*
 %{_mandir}/ja/man1/milter-manager.*
 %{_mandir}/ja/man1/milter-manager-log-analyzer.*
 %{_initrddir}/milter-manager
@@ -216,14 +222,11 @@ fi
 %doc ChangeLog ChangeLog.toolkit README README.ja NEWS NEWS.ja TODO
 %doc %{_datadir}/milter-manager/license/
 %{_bindir}/milter-test-*
-%{_bindir}/milter-performance-check
 %{_libdir}/libmilter-core.so.*
 %{_libdir}/libmilter-client.so.*
 %{_libdir}/libmilter-server.so.*
 %{_mandir}/man1/milter-test-*
-%{_mandir}/man1/milter-performance-check.*
 %{_mandir}/ja/man1/milter-test-*
-%{_mandir}/ja/man1/milter-performance-check.*
 
 %files -n libmilter-toolkit-devel
 %defattr(-,root,root)
