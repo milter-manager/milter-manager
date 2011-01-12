@@ -545,6 +545,18 @@ test_connection_check_interval (void)
         milter_manager_configuration_get_connection_check_interval(config));
 }
 
+void
+test_n_workers (void)
+{
+    cut_assert_equal_uint(
+        0,
+        milter_manager_configuration_get_n_workers(config));
+    milter_manager_configuration_set_n_workers(config, 5);
+    cut_assert_equal_uint(
+        5,
+        milter_manager_configuration_get_n_workers(config));
+}
+
 static void
 milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
 {

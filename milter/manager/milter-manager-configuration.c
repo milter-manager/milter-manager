@@ -76,6 +76,7 @@ struct _MilterManagerConfigurationPrivate
     GHashTable *locations;
     guint connection_check_interval;
     MilterClientEventLoopBackend event_loop_backend;
+    guint n_workers;
 };
 
 enum
@@ -106,7 +107,8 @@ enum
     PROP_MAX_FILE_DESCRIPTORS,
     PROP_CUSTOM_CONFIGURATION_DIRECTORY,
     PROP_CONNECTION_CHECK_INTERVAL,
-    PROP_EVENT_LOOP_BACKEND
+    PROP_EVENT_LOOP_BACKEND,
+    PROP_N_WORKER_PROCESSES,
 };
 
 enum
@@ -397,6 +399,13 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                     PROP_EVENT_LOOP_BACKEND,
                                     spec);
 
+    spec = g_param_spec_uint("n-workers",
+                             "Number of worker processes",
+                             "The Number of worker processes of the client",
+                             0, MILTER_CLIENT_MAX_N_WORKER_PROCESSES, 0,
+                             G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_N_WORKER_PROCESSES, spec);
+
 
     signals[CONNECTED] =
         g_signal_new("connected",
@@ -447,6 +456,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
                                             g_free,
                                             (GDestroyNotify)g_dataset_destroy);
     priv->connection_check_interval = DEFAULT_CONNECTION_CHECK_INTERVAL;
+    priv->n_workers = 0;
 
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
     if (config_dir_env)
@@ -597,6 +607,9 @@ set_property (GObject      *object,
         milter_manager_configuration_set_event_loop_backend(
             config, g_value_get_enum(value));
         break;
+    case PROP_N_WORKER_PROCESSES:
+        milter_manager_configuration_set_n_workers(config, g_value_get_uint(value));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -690,6 +703,9 @@ get_property (GObject    *object,
         break;
     case PROP_EVENT_LOOP_BACKEND:
         g_value_set_enum(value, priv->event_loop_backend);
+        break;
+    case PROP_N_WORKER_PROCESSES:
+        g_value_set_uint(value, priv->n_workers);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -2085,6 +2101,25 @@ milter_manager_configuration_set_event_loop_backend (MilterManagerConfiguration 
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
     priv->event_loop_backend = backend;
+}
+
+guint
+milter_manager_configuration_get_n_workers (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->n_workers;
+}
+
+void
+milter_manager_configuration_set_n_workers (MilterManagerConfiguration *configuration,
+                                            guint                       n_workers)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->n_workers = n_workers;
 }
 
 /*

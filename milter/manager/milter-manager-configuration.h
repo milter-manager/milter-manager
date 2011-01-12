@@ -340,6 +340,12 @@ void          milter_manager_configuration_set_event_loop_backend
                                      (MilterManagerConfiguration      *configuration,
                                       MilterClientEventLoopBackend     backend);
 
+guint         milter_manager_configuration_get_n_workers
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_n_workers
+                                     (MilterManagerConfiguration *configuration,
+                                      guint                       n_workers);
+
 G_END_DECLS
 
 #endif /* __MILTER_MANAGER_CONFIGURATION_H__ */

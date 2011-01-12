@@ -1,5 +1,9 @@
 2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/manager/milter-manager-configuration.c
+	(milter_manager_configuration_get_n_workers)
+	(milter_manager_configuration_set_n_workers): add new property.
+
 	* milter/client/milter-client.c (get_property): fix wrong object.
 
 2011-01-12  Kouhei Sutou  <kou@clear-code.com>
