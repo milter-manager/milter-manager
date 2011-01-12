@@ -1,7 +1,6 @@
 ACLOCAL_AMFLAGS = $$ACLOCAL_OPTIONS
 
 SUBDIRS =					\
-	gio-unix-compatible			\
 	libev-4.03				\
 	milter					\
 	libmilter				\

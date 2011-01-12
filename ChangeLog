@@ -1,5 +1,8 @@
 2011-01-12  Kouhei Sutou  <kou@clear-code.com>
 
+	* Makefile.am, configure.ac, gio-unix-compatible/: remove needless
+	bundled GIO.
+
 	* milter/client/milter-client.[ch], milter/client/Makefile.am,
 	binding/ruby/src/toolkit/rb-milter-client.c: remove needless GIO
 	related code.
