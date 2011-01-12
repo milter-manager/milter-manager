@@ -1,7 +1,7 @@
 Summary: milter manager RPM repository configuration
 Name: milter-manager-repository
 Version: 1.0.0
-Release: 0
+Release: 1
 License: GPLv3+
 URL: http://milter-manager.sourceforge.net/
 Source: milter-manager-repository.tar.gz
@@ -27,10 +27,6 @@ milter manager RPM repository configuration.
 %clean
 %{__rm} -rf %{buildroot}
 
-%post
-rpm -q gpg-pubkey-1c837f31-4a2b9c3f &>/dev/null || \
-    rpm --import %{_sysconfdir}/pki/rpm-gpg/RPM-GPG-KEY-milter-manager
-
 %files
 %defattr(-, root, root, 0755)
 %doc *
@@ -41,6 +37,9 @@ rpm -q gpg-pubkey-1c837f31-4a2b9c3f &>/dev/null || \
 %{_sysconfdir}/pki/rpm-gpg/RPM-GPG-KEY-milter-manager
 
 %changelog
+* Wed Jan 12 2011 Kouhei Sutou <kou@clear-code.com> - 1.0.0-1
+- Do not install GPG key for RPM by hand.
+
 * Sat Feb 06 2010 Kouhei Sutou <kou@clear-code.com>
 - (1.0.0-0)
 - Initial package.

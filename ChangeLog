@@ -1,3 +1,8 @@
+2011-01-12  Kouhei Sutou  <kou@clear-code.com>
+
+	* yum/milter-manager-repository.spec: don't install GPG key for
+	RPM by hand.
+
 2011-01-12  Kouhei Sutou  <kou@cozmixng.org>
 
 	* TODO: add more examples for MAIL FROM parameters and RCPT TO
