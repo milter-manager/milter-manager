@@ -65,4 +65,10 @@ class TestClient < Test::Unit::TestCase
     assert_equal(Milter::Manager::EventLoopBackend::LIBEV,
                  @client.event_loop_backend)
   end
+
+  def test_n_workers
+    assert_equal(0, @client.n_workers)
+    @client.n_workers = 10
+    assert_equal(10, @client.n_workers)
+  end
 end

@@ -1,5 +1,8 @@
 2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* binding/ruby/test/toolkit/test-client.rb (TestClient#test_n_workers):
+	add test.
+
 	* libev-4.03: imported.
 
 	* milter/client/milter-client.h (MILTER_CLIENT_MAX_N_WORKERS):
