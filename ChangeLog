@@ -1,5 +1,8 @@
 2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/client/milter-client.c (set_property, get_property): deal
+	with PROP_N_WORKER_PROCESSES.
+
 	* milter/core/milter-event-loop.c (milter_event_loop_run_without_custom):
 	replaced "hook" with "custom".
 	(milter_event_loop_set_custom_run_func)

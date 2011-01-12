@@ -539,6 +539,9 @@ set_property (GObject      *object,
     case PROP_EVENT_LOOP_BACKEND:
         milter_client_set_event_loop_backend(client, g_value_get_enum(value));
         break;
+    case PROP_N_WORKER_PROCESSES:
+        milter_client_set_n_workers(client, g_value_get_uint(value));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -558,6 +561,9 @@ get_property (GObject    *object,
     case PROP_EVENT_LOOP_BACKEND:
         g_value_set_enum(value,
                          milter_client_get_event_loop_backend((MilterClient *)priv));
+        break;
+    case PROP_N_WORKER_PROCESSES:
+        g_value_set_uint(value, milter_client_get_n_workers(client));
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
