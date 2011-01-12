@@ -31,7 +31,6 @@
 #include <errno.h>
 
 #include <glib/gstdio.h>
-#include <gio/gunixfdmessage.h>
 
 #include <milter/core/milter-marshalers.h>
 #include "../client.h"
@@ -90,7 +89,6 @@ struct _MilterClientPrivate
     GThreadPool *worker_threads;
     struct {
         guint n_process;
-        GSocket *control;
     } workers;
     struct sockaddr *address;
     socklen_t address_size;
@@ -272,7 +270,6 @@ _milter_client_init (MilterClient *client)
     priv->multi_thread_mode = FALSE;
     priv->worker_threads = NULL;
     priv->workers.n_process = 0;
-    priv->workers.control = NULL;
     priv->address = NULL;
     priv->address_size = 0;
     priv->effective_user = NULL;
@@ -501,11 +498,6 @@ dispose (GObject *object)
     if (priv->worker_threads) {
         g_thread_pool_free(priv->worker_threads, TRUE, FALSE);
         priv->worker_threads = NULL;
-    }
-
-    if (priv->workers.control) {
-        g_object_unref(priv->workers.control);
-        priv->workers.control = NULL;
     }
 
     dispose_address(priv);
@@ -2099,20 +2091,6 @@ milter_client_get_n_processing_sessions (MilterClient *client)
     return MILTER_CLIENT_GET_PRIVATE(client)->n_processing_sessions;
 }
 
-static GSocket *
-unix_socket_from_fd(gint fd, GError **error)
-{
-    GSocket *socket;
-    socket = g_socket_new_from_fd(fd, error);
-    if (!socket) return FALSE;
-    if (g_socket_get_family(socket) != G_SOCKET_FAMILY_UNIX ||
-        g_socket_get_socket_type(socket) != G_SOCKET_TYPE_DATAGRAM) {
-        g_object_unref(socket);
-        return FALSE;
-    }
-    return socket;
-}
-
 void
 milter_client_start_syslog (MilterClient *client, const gchar *identify)
 {
@@ -2124,22 +2102,6 @@ milter_client_start_syslog (MilterClient *client, const gchar *identify)
         g_object_unref(priv->syslog_logger);
     }
     priv->syslog_logger = milter_syslog_logger_new(identify);
-}
-
-void
-milter_client_set_fd_passing_fd (MilterClient *client, gint fd)
-{
-    MilterClientPrivate *priv;
-
-    priv = MILTER_CLIENT_GET_PRIVATE(client);
-
-    if (priv->workers.control) {
-        g_object_unref(priv->workers.control);
-        priv->workers.control = NULL;
-    }
-    if (fd != -1) {
-        priv->workers.control = unix_socket_from_fd(fd, NULL);
-    }
 }
 
 MilterEventLoop *

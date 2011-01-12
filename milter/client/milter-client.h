@@ -701,15 +701,6 @@ void                 milter_client_start_syslog      (MilterClient  *client,
                                                       const gchar   *identify);
 
 /**
- * milter_client_set_fd_passing_fd:
- * @client: a %MilterClient.
- * @fd: UNIX domain socket.
- *
- * Sets fd for fd passing between parent and children processes.
- */
-void                 milter_client_set_fd_passing_fd (MilterClient *client, gint fd);
-
-/**
  * milter_client_get_process_loop:
  * @client: a %MilterClient.
  *

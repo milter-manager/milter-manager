@@ -1,5 +1,9 @@
 2011-01-12  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/client/milter-client.[ch], milter/client/Makefile.am,
+	binding/ruby/src/toolkit/rb-milter-client.c: remove needless GIO
+	related code.
+
 	* binding/ruby/lib/milter/client/command-line.rb: share the
 	listening channel with each workers.
 
