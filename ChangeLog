@@ -10,6 +10,7 @@
 
 	* doc/configuration.rd*: fix examples and default value of
 	manager.fallback_status and manager.fallback_status_at_disconnect.
+	Reported by Kenji Shiono. Thanks!!!
 
 	* tool/milter-report-statistics: accept float value as --interval value.
 
