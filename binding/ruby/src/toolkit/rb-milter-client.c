@@ -38,7 +38,11 @@ client_custom_fork (MilterClient *client)
 static VALUE
 client_initialize (VALUE self)
 {
-    milter_client_set_custom_fork_func(SELF(self), client_custom_fork);
+    MilterClient *client;
+
+    client = milter_client_new();
+    G_INITIALIZE(self, client);
+    milter_client_set_custom_fork_func(client, client_custom_fork);
     return Qnil;
 }
 
