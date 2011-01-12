@@ -1,5 +1,8 @@
 2011-01-12  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/client/command-line.rb: share the
+	listening channel with each workers.
+
 	* binding/ruby/src/toolkit/rb-milter-client.c,
 	binding/ruby/test/toolkit/test-client.rb: bind milter_client_listen().
 

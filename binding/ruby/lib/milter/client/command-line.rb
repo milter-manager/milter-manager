@@ -198,11 +198,9 @@ module Milter
       end
 
       def run_worker(client, n)
-        i, o = UNIXSocket.pair(Socket::SOCK_DGRAM)
+        client.listen
         children = (1..n).map do
           child = fork do
-            i.close
-            client.fd_passing_io = o
             begin
               client.run_worker
             rescue SignalException
@@ -211,8 +209,6 @@ module Milter
           Process.detach(child)
           child
         end
-        o.close
-        client.fd_passing_io = i
         begin
           signal = "SIGTERM"
           client.run_master
