@@ -1,5 +1,9 @@
 2011-01-12  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/client/command-line.rb: use signal
+	number isntead of signal name because signal name isn't supported
+	in Ruby 1.8.5.
+
 	* test/lib/milter-manager-test-utils.c (string_equal): use
 	strcmp() instead of g_strcmp0() because both strings aren't NULL.
 

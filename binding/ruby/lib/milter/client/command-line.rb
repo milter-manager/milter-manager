@@ -213,7 +213,7 @@ module Milter
           signal = "SIGTERM"
           client.run_master
         rescue SignalException => e
-          signal = e.signm
+          signal = e.signo
           signal = "SIGINT" if signal.empty?
           raise
         ensure
