@@ -1,5 +1,8 @@
 2011-01-12  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/src/toolkit/rb-milter-client.c,
+	binding/ruby/test/toolkit/test-client.rb: bind milter_client_listen().
+
 	* milter/client/milter-client.[ch]: master process doesn't accept
 	and pass accepted FD to worker processes. Worker processes accept
 	the listening FD with block in accept thread.

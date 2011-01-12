@@ -1,5 +1,5 @@
 # Copyright (C) 2009  Yuto Hayamizu <y.hayamizu@gmail.com>
-# Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2010-2011  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -78,6 +78,18 @@ class TestClient < Test::Unit::TestCase
     end
     assert_raise(TypeError) do
       @client.n_workers = "foo"
+    end
+  end
+
+  def test_listen
+    port = 12345
+    @client.connection_spec = "inet:#{port}"
+    assert_raise(Errno::ECONNREFUSED) do
+      TCPSocket.new("localhost", port)
+    end
+    @client.listen
+    assert_nothing_raised do
+      TCPSocket.new("localhost", port)
     end
   end
 end

@@ -88,6 +88,17 @@ client_start_syslog (VALUE self, VALUE identify)
 }
 
 static VALUE
+client_listen (VALUE self)
+{
+    GError *error = NULL;
+
+    if (!milter_client_listen(SELF(self), &error))
+	RAISE_GERROR(error);
+
+    return Qnil;
+}
+
+static VALUE
 client_get_connection_spec (VALUE self)
 {
     return CSTR2RVAL(milter_client_get_connection_spec(SELF(self)));
@@ -257,6 +268,7 @@ Init_milter_client (void)
     rb_define_method(rb_cMilterClient, "run_worker", client_run_worker, 0);
     rb_define_method(rb_cMilterClient, "shutdown", client_shutdown, 0);
     rb_define_method(rb_cMilterClient, "start_syslog", client_start_syslog, 1);
+    rb_define_method(rb_cMilterClient, "listen", client_listen, 0);
     rb_define_method(rb_cMilterClient, "connection_spec",
                      client_get_connection_spec, 0);
     rb_define_method(rb_cMilterClient, "set_connection_spec",
