@@ -1,7 +1,7 @@
 /*
  * loop member variable declarations
  *
- * Copyright (c) 2007,2008,2009,2010 Marc Alexander Lehmann <libev@schmorp.de>
+ * Copyright (c) 2007,2008,2009,2010,2011 Marc Alexander Lehmann <libev@schmorp.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modifica-
@@ -102,6 +102,9 @@ VARx(int, pollidxmax)
 #if EV_USE_EPOLL || EV_GENWRAP
 VARx(struct epoll_event *, epoll_events)
 VARx(int, epoll_eventmax)
+VARx(int *, epoll_eperms)
+VARx(int, epoll_epermcnt)
+VARx(int, epoll_epermmax)
 #endif
 
 #if EV_USE_KQUEUE || EV_GENWRAP
@@ -177,11 +180,14 @@ VAR (fs_hash, ANFS fs_hash [EV_INOTIFY_HASHSIZE])
 #endif
 
 VARx(EV_ATOMIC_T, sig_pending)
+VARx(int, nosigmask)
 #if EV_USE_SIGNALFD || EV_GENWRAP
 VARx(int, sigfd)
 VARx(ev_io, sigfd_w)
 VARx(sigset_t, sigfd_set)
 #endif
+
+VARx(unsigned int, origflags) /* original loop flags */
 
 #if EV_FEATURE_API || EV_GENWRAP
 VARx(unsigned int, loop_count) /* total number of loop iterations/blocks */

@@ -124,7 +124,7 @@
 .\" ========================================================================
 .\"
 .IX Title "LIBEV 3"
-.TH LIBEV 3 "2010-11-03" "libev-4.01" "libev - high performance full featured event loop"
+.TH LIBEV 3 "2011-01-11" "libev-4.03" "libev - high performance full featured event loop"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -423,6 +423,18 @@ Example: This is basically the same thing that libev does internally, too.
 \&   ...
 \&   ev_set_syserr_cb (fatal_error);
 .Ve
+.IP "ev_feed_signal (int signum)" 4
+.IX Item "ev_feed_signal (int signum)"
+This function can be used to \*(L"simulate\*(R" a signal receive. It is completely
+safe to call this function at any time, from any context, including signal
+handlers or random threads.
+.Sp
+Its main use is to customise signal handling in your process, especially
+in the presence of threads. For example, you could block signals
+by default in all threads (and specifying \f(CW\*(C`EVFLAG_NOSIGMASK\*(C'\fR when
+creating any loops), and in one thread, use \f(CW\*(C`sigwait\*(C'\fR or any other
+mechanism to wait for signals, then \*(L"deliver\*(R" them to libev by calling
+\&\f(CW\*(C`ev_feed_signal\*(C'\fR.
 .SH "FUNCTIONS CONTROLLING EVENT LOOPS"
 .IX Header "FUNCTIONS CONTROLLING EVENT LOOPS"
 An event loop is described by a \f(CW\*(C`struct ev_loop *\*(C'\fR (the \f(CW\*(C`struct\*(C'\fR is
@@ -477,9 +489,9 @@ environment settings to be taken into account:
 This will create and initialise a new event loop object. If the loop
 could not be initialised, returns false.
 .Sp
-Note that this function \fIis\fR thread-safe, and one common way to use
-libev with threads is indeed to create one loop per thread, and using the
-default loop in the \*(L"main\*(R" or \*(L"initial\*(R" thread.
+This function is thread-safe, and one common way to use libev with
+threads is indeed to create one loop per thread, and using the default
+loop in the \*(L"main\*(R" or \*(L"initial\*(R" thread.
 .Sp
 The flags argument can be used to specify special behaviour or specific
 backends to use, and is usually specified as \f(CW0\fR (or \f(CW\*(C`EVFLAG_AUTO\*(C'\fR).
@@ -539,6 +551,18 @@ threads that are not interested in handling them.
 Signalfd will not be used by default as this changes your signal mask, and
 there are a lot of shoddy libraries and programs (glib's threadpool for
 example) that can't properly initialise their signal masks.
+.ie n .IP """EVFLAG_NOSIGMASK""" 4
+.el .IP "\f(CWEVFLAG_NOSIGMASK\fR" 4
+.IX Item "EVFLAG_NOSIGMASK"
+When this flag is specified, then libev will avoid to modify the signal
+mask. Specifically, this means you ahve to make sure signals are unblocked
+when you want to receive them.
+.Sp
+This behaviour is useful when you want to do your own signal handling, or
+want to handle signals only in specific threads and want to avoid libev
+unblocking the signals.
+.Sp
+This flag's behaviour will become the default in future versions of libev.
 .ie n .IP """EVBACKEND_SELECT""  (value 1, portable select backend)" 4
 .el .IP "\f(CWEVBACKEND_SELECT\fR  (value 1, portable select backend)" 4
 .IX Item "EVBACKEND_SELECT  (value 1, portable select backend)"
@@ -602,7 +626,9 @@ events to filter out spurious ones, recreating the set when required. Last
 not least, it also refuses to work with some file descriptors which work
 perfectly fine with \f(CW\*(C`select\*(C'\fR (files, many character devices...).
 .Sp
-Epoll is truly the train wreck analog among event poll mechanisms.
+Epoll is truly the train wreck analog among event poll mechanisms,
+a frankenpoll, cobbled together in a hurry, no thought to design or
+interaction with others.
 .Sp
 While stopping, setting and starting an I/O watcher in the same iteration
 will result in some caching, there is still a system call per such
@@ -678,19 +704,25 @@ immensely.
 This uses the Solaris 10 event port mechanism. As with everything on Solaris,
 it's really slow, but it still scales very well (O(active_fds)).
 .Sp
-Please note that Solaris event ports can deliver a lot of spurious
-notifications, so you need to use non-blocking I/O or other means to avoid
-blocking when no data (or space) is available.
-.Sp
 While this backend scales well, it requires one system call per active
 file descriptor per loop iteration. For small and medium numbers of file
 descriptors a \*(L"slow\*(R" \f(CW\*(C`EVBACKEND_SELECT\*(C'\fR or \f(CW\*(C`EVBACKEND_POLL\*(C'\fR backend
 might perform better.
 .Sp
-On the positive side, with the exception of the spurious readiness
-notifications, this backend actually performed fully to specification
-in all tests and is fully embeddable, which is a rare feat among the
-OS-specific backends (I vastly prefer correctness over speed hacks).
+On the positive side, this backend actually performed fully to
+specification in all tests and is fully embeddable, which is a rare feat
+among the OS-specific backends (I vastly prefer correctness over speed
+hacks).
+.Sp
+On the negative side, the interface is \fIbizarre\fR \- so bizarre that
+even sun itself gets it wrong in their code examples: The event polling
+function sometimes returning events to the caller even though an error
+occurred, but with no indication whether it has done so or not (yes, it's
+even documented that way) \- deadly for edge-triggered interfaces where
+you absolutely have to know whether an event occurred or not because you
+have to re-arm the watcher.
+.Sp
+Fortunately libev seems to be able to work around these idiocies.
 .Sp
 This backend maps \f(CW\*(C`EV_READ\*(C'\fR and \f(CW\*(C`EV_WRITE\*(C'\fR in the same way as
 \&\f(CW\*(C`EVBACKEND_POLL\*(C'\fR.
@@ -701,7 +733,15 @@ Try all backends (even potentially broken ones that wouldn't be tried
 with \f(CW\*(C`EVFLAG_AUTO\*(C'\fR). Since this is a mask, you can do stuff such as
 \&\f(CW\*(C`EVBACKEND_ALL & ~EVBACKEND_KQUEUE\*(C'\fR.
 .Sp
-It is definitely not recommended to use this flag.
+It is definitely not recommended to use this flag, use whatever
+\&\f(CW\*(C`ev_recommended_backends ()\*(C'\fR returns, or simply do not specify a backend
+at all.
+.ie n .IP """EVBACKEND_MASK""" 4
+.el .IP "\f(CWEVBACKEND_MASK\fR" 4
+.IX Item "EVBACKEND_MASK"
+Not a backend at all, but a mask to select all backend bits from a
+\&\f(CW\*(C`flags\*(C'\fR value, in case you want to mask out any backends from a flags
+value (e.g. when modifying the \f(CW\*(C`LIBEV_FLAGS\*(C'\fR environment variable).
 .RE
 .RS 4
 .Sp
@@ -800,15 +840,16 @@ prepare and check phases.
 .IP "unsigned int ev_depth (loop)" 4
 .IX Item "unsigned int ev_depth (loop)"
 Returns the number of times \f(CW\*(C`ev_run\*(C'\fR was entered minus the number of
-times \f(CW\*(C`ev_run\*(C'\fR was exited, in other words, the recursion depth.
+times \f(CW\*(C`ev_run\*(C'\fR was exited normally, in other words, the recursion depth.
 .Sp
 Outside \f(CW\*(C`ev_run\*(C'\fR, this number is zero. In a callback, this number is
 \&\f(CW1\fR, unless \f(CW\*(C`ev_run\*(C'\fR was invoked recursively (or from another thread),
 in which case it is higher.
 .Sp
-Leaving \f(CW\*(C`ev_run\*(C'\fR abnormally (setjmp/longjmp, cancelling the thread
-etc.), doesn't count as \*(L"exit\*(R" \- consider this as a hint to avoid such
-ungentleman-like behaviour unless it's really convenient.
+Leaving \f(CW\*(C`ev_run\*(C'\fR abnormally (setjmp/longjmp, cancelling the thread,
+throwing an exception etc.), doesn't count as \*(L"exit\*(R" \- consider this
+as a hint to avoid such ungentleman-like behaviour unless it's really
+convenient, in which case it is fully supported.
 .IP "unsigned int ev_backend (loop)" 4
 .IX Item "unsigned int ev_backend (loop)"
 Returns one of the \f(CW\*(C`EVBACKEND_*\*(C'\fR flags indicating the event backend in
@@ -876,6 +917,11 @@ finished (especially in interactive programs), but having a program
 that automatically loops as long as it has to and no longer by virtue
 of relying on its watchers stopping correctly, that is truly a thing of
 beauty.
+.Sp
+This function is also \fImostly\fR exception-safe \- you can break out of
+a \f(CW\*(C`ev_run\*(C'\fR call by calling \f(CW\*(C`longjmp\*(C'\fR in a callback, throwing a \*(C+
+exception and so on. This does not decrement the \f(CW\*(C`ev_depth\*(C'\fR value, nor
+will it clear any outstanding \f(CW\*(C`EVBREAK_ONE\*(C'\fR breaks.
 .Sp
 A flags value of \f(CW\*(C`EVRUN_NOWAIT\*(C'\fR will look for new events, will handle
 those events and any already outstanding ones, but will not wait and
@@ -950,9 +996,10 @@ has processed all outstanding events). The \f(CW\*(C`how\*(C'\fR argument must b
 \&\f(CW\*(C`EVBREAK_ONE\*(C'\fR, which will make the innermost \f(CW\*(C`ev_run\*(C'\fR call return, or
 \&\f(CW\*(C`EVBREAK_ALL\*(C'\fR, which will make all nested \f(CW\*(C`ev_run\*(C'\fR calls return.
 .Sp
-This \*(L"break state\*(R" will be cleared when entering \f(CW\*(C`ev_run\*(C'\fR again.
+This \*(L"break state\*(R" will be cleared on the next call to \f(CW\*(C`ev_run\*(C'\fR.
 .Sp
-It is safe to call \f(CW\*(C`ev_break\*(C'\fR from outside any \f(CW\*(C`ev_run\*(C'\fR calls, too.
+It is safe to call \f(CW\*(C`ev_break\*(C'\fR from outside any \f(CW\*(C`ev_run\*(C'\fR calls, too, in
+which case it will have no effect.
 .IP "ev_ref (loop)" 4
 .IX Item "ev_ref (loop)"
 .PD 0
@@ -985,7 +1032,7 @@ running when nothing else is active.
 \&   ev_signal exitsig;
 \&   ev_signal_init (&exitsig, sig_cb, SIGINT);
 \&   ev_signal_start (loop, &exitsig);
-\&   evf_unref (loop);
+\&   ev_unref (loop);
 .Ve
 .Sp
 Example: For some weird reason, unregister the above signal handler again.
@@ -1109,12 +1156,12 @@ document.
 .IP "ev_set_userdata (loop, void *data)" 4
 .IX Item "ev_set_userdata (loop, void *data)"
 .PD 0
-.IP "ev_userdata (loop)" 4
-.IX Item "ev_userdata (loop)"
+.IP "void *ev_userdata (loop)" 4
+.IX Item "void *ev_userdata (loop)"
 .PD
 Set and retrieve a single \f(CW\*(C`void *\*(C'\fR associated with a loop. When
 \&\f(CW\*(C`ev_set_userdata\*(C'\fR has never been called, then \f(CW\*(C`ev_userdata\*(C'\fR returns
-\&\f(CW0.\fR
+\&\f(CW0\fR.
 .Sp
 These two functions can be used to associate arbitrary data with a loop,
 and are intended solely for the \f(CW\*(C`invoke_pending_cb\*(C'\fR, \f(CW\*(C`release\*(C'\fR and
@@ -1430,78 +1477,9 @@ not started in the first place.
 .Sp
 See also \f(CW\*(C`ev_feed_fd_event\*(C'\fR and \f(CW\*(C`ev_feed_signal_event\*(C'\fR for related
 functions that do not need a watcher.
-.SS "\s-1ASSOCIATING\s0 \s-1CUSTOM\s0 \s-1DATA\s0 \s-1WITH\s0 A \s-1WATCHER\s0"
-.IX Subsection "ASSOCIATING CUSTOM DATA WITH A WATCHER"
-Each watcher has, by default, a member \f(CW\*(C`void *data\*(C'\fR that you can change
-and read at any time: libev will completely ignore it. This can be used
-to associate arbitrary data with your watcher. If you need more data and
-don't want to allocate memory and store a pointer to it in that data
-member, you can also \*(L"subclass\*(R" the watcher type and provide your own
-data:
 .PP
-.Vb 7
-\&   struct my_io
-\&   {
-\&     ev_io io;
-\&     int otherfd;
-\&     void *somedata;
-\&     struct whatever *mostinteresting;
-\&   };
-\&
-\&   ...
-\&   struct my_io w;
-\&   ev_io_init (&w.io, my_cb, fd, EV_READ);
-.Ve
-.PP
-And since your callback will be called with a pointer to the watcher, you
-can cast it back to your own type:
-.PP
-.Vb 5
-\&   static void my_cb (struct ev_loop *loop, ev_io *w_, int revents)
-\&   {
-\&     struct my_io *w = (struct my_io *)w_;
-\&     ...
-\&   }
-.Ve
-.PP
-More interesting and less C\-conformant ways of casting your callback type
-instead have been omitted.
-.PP
-Another common scenario is to use some data structure with multiple
-embedded watchers:
-.PP
-.Vb 6
-\&   struct my_biggy
-\&   {
-\&     int some_data;
-\&     ev_timer t1;
-\&     ev_timer t2;
-\&   }
-.Ve
-.PP
-In this case getting the pointer to \f(CW\*(C`my_biggy\*(C'\fR is a bit more
-complicated: Either you store the address of your \f(CW\*(C`my_biggy\*(C'\fR struct
-in the \f(CW\*(C`data\*(C'\fR member of the watcher (for woozies), or you need to use
-some pointer arithmetic using \f(CW\*(C`offsetof\*(C'\fR inside your watchers (for real
-programmers):
-.PP
-.Vb 1
-\&   #include <stddef.h>
-\&
-\&   static void
-\&   t1_cb (EV_P_ ev_timer *w, int revents)
-\&   {
-\&     struct my_biggy big = (struct my_biggy *)
-\&       (((char *)w) \- offsetof (struct my_biggy, t1));
-\&   }
-\&
-\&   static void
-\&   t2_cb (EV_P_ ev_timer *w, int revents)
-\&   {
-\&     struct my_biggy big = (struct my_biggy *)
-\&       (((char *)w) \- offsetof (struct my_biggy, t2));
-\&   }
-.Ve
+See also the \*(L"\s-1ASSOCIATING\s0 \s-1CUSTOM\s0 \s-1DATA\s0 \s-1WITH\s0 A \s-1WATCHER\s0\*(R" and \*(L"\s-1BUILDING\s0 \s-1YOUR\s0
+\&\s-1OWN\s0 \s-1COMPOSITE\s0 \s-1WATCHERS\s0\*(R" idioms.
 .SS "\s-1WATCHER\s0 \s-1STATES\s0"
 .IX Subsection "WATCHER STATES"
 There are various watcher states mentioned throughout this manual \-
@@ -1686,26 +1664,19 @@ fd as you want (as long as you don't confuse yourself). Setting all file
 descriptors to non-blocking mode is also usually a good idea (but not
 required if you know what you are doing).
 .PP
-If you cannot use non-blocking mode, then force the use of a
-known-to-be-good backend (at the time of this writing, this includes only
-\&\f(CW\*(C`EVBACKEND_SELECT\*(C'\fR and \f(CW\*(C`EVBACKEND_POLL\*(C'\fR). The same applies to file
-descriptors for which non-blocking operation makes no sense (such as
-files) \- libev doesn't guarantee any specific behaviour in that case.
-.PP
 Another thing you have to watch out for is that it is quite easy to
-receive \*(L"spurious\*(R" readiness notifications, that is your callback might
+receive \*(L"spurious\*(R" readiness notifications, that is, your callback might
 be called with \f(CW\*(C`EV_READ\*(C'\fR but a subsequent \f(CW\*(C`read\*(C'\fR(2) will actually block
-because there is no data. Not only are some backends known to create a
-lot of those (for example Solaris ports), it is very easy to get into
-this situation even with a relatively standard program structure. Thus
-it is best to always use non-blocking I/O: An extra \f(CW\*(C`read\*(C'\fR(2) returning
-\&\f(CW\*(C`EAGAIN\*(C'\fR is far preferable to a program hanging until some data arrives.
+because there is no data. It is very easy to get into this situation even
+with a relatively standard program structure. Thus it is best to always
+use non-blocking I/O: An extra \f(CW\*(C`read\*(C'\fR(2) returning \f(CW\*(C`EAGAIN\*(C'\fR is far
+preferable to a program hanging until some data arrives.
 .PP
 If you cannot run the fd in non-blocking mode (for example you should
 not play around with an Xlib connection), then you have to separately
 re-test whether a file descriptor is really ready with a known-to-be good
-interface such as poll (fortunately in our Xlib example, Xlib already
-does this on its own, so its quite safe to use). Some people additionally
+interface such as poll (fortunately in the case of Xlib, it already does
+this on its own, so its quite safe to use). Some people additionally
 use \f(CW\*(C`SIGALRM\*(C'\fR and an interval timer, just to be sure you won't block
 indefinitely.
 .PP
@@ -1745,17 +1716,50 @@ There is no workaround possible except not registering events
 for potentially \f(CW\*(C`dup ()\*(C'\fR'ed file descriptors, or to resort to
 \&\f(CW\*(C`EVBACKEND_SELECT\*(C'\fR or \f(CW\*(C`EVBACKEND_POLL\*(C'\fR.
 .PP
+\fIThe special problem of files\fR
+.IX Subsection "The special problem of files"
+.PP
+Many people try to use \f(CW\*(C`select\*(C'\fR (or libev) on file descriptors
+representing files, and expect it to become ready when their program
+doesn't block on disk accesses (which can take a long time on their own).
+.PP
+However, this cannot ever work in the \*(L"expected\*(R" way \- you get a readiness
+notification as soon as the kernel knows whether and how much data is
+there, and in the case of open files, that's always the case, so you
+always get a readiness notification instantly, and your read (or possibly
+write) will still block on the disk I/O.
+.PP
+Another way to view it is that in the case of sockets, pipes, character
+devices and so on, there is another party (the sender) that delivers data
+on its own, but in the case of files, there is no such thing: the disk
+will not send data on its own, simply because it doesn't know what you
+wish to read \- you would first have to request some data.
+.PP
+Since files are typically not-so-well supported by advanced notification
+mechanism, libev tries hard to emulate \s-1POSIX\s0 behaviour with respect
+to files, even though you should not use it. The reason for this is
+convenience: sometimes you want to watch \s-1STDIN\s0 or \s-1STDOUT\s0, which is
+usually a tty, often a pipe, but also sometimes files or special devices
+(for example, \f(CW\*(C`epoll\*(C'\fR on Linux works with \fI/dev/random\fR but not with
+\&\fI/dev/urandom\fR), and even though the file might better be served with
+asynchronous I/O instead of with non-blocking I/O, it is still useful when
+it \*(L"just works\*(R" instead of freezing.
+.PP
+So avoid file descriptors pointing to files when you know it (e.g. use
+libeio), but use them when it is convenient, e.g. for \s-1STDIN/STDOUT\s0, or
+when you rarely read from a file instead of from a socket, and want to
+reuse the same code path.
+.PP
 \fIThe special problem of fork\fR
 .IX Subsection "The special problem of fork"
 .PP
 Some backends (epoll, kqueue) do not support \f(CW\*(C`fork ()\*(C'\fR at all or exhibit
 useless behaviour. Libev fully supports fork, but needs to be told about
-it in the child.
+it in the child if you want to continue to use it in the child.
 .PP
-To support fork in your programs, you either have to call
-\&\f(CW\*(C`ev_default_fork ()\*(C'\fR or \f(CW\*(C`ev_loop_fork ()\*(C'\fR after a fork in the child,
-enable \f(CW\*(C`EVFLAG_FORKCHECK\*(C'\fR, or resort to \f(CW\*(C`EVBACKEND_SELECT\*(C'\fR or
-\&\f(CW\*(C`EVBACKEND_POLL\*(C'\fR.
+To support fork in your child processes, you have to call \f(CW\*(C`ev_loop_fork
+()\*(C'\fR after a fork in the child, enable \f(CW\*(C`EVFLAG_FORKCHECK\*(C'\fR, or resort to
+\&\f(CW\*(C`EVBACKEND_SELECT\*(C'\fR or \f(CW\*(C`EVBACKEND_POLL\*(C'\fR.
 .PP
 \fIThe special problem of \s-1SIGPIPE\s0\fR
 .IX Subsection "The special problem of SIGPIPE"
@@ -2450,6 +2454,21 @@ the window of opportunity for problems, it will not go away, as libev
 So I can't stress this enough: \fIIf you do not reset your signal mask when
 you expect it to be empty, you have a race condition in your code\fR. This
 is not a libev-specific thing, this is true for most event libraries.
+.PP
+\fIThe special problem of threads signal handling\fR
+.IX Subsection "The special problem of threads signal handling"
+.PP
+\&\s-1POSIX\s0 threads has problematic signal handling semantics, specifically,
+a lot of functionality (sigfd, sigwait etc.) only really works if all
+threads in a process block signals, which is hard to achieve.
+.PP
+When you want to use sigwait (or mix libev signal handling with your own
+for the same signals), you can tackle this problem by globally blocking
+all signals before creating any threads (or creating them with a fully set
+sigprocmask) and also specifying the \f(CW\*(C`EVFLAG_NOSIGMASK\*(C'\fR when creating
+loops. Then designate one thread as \*(L"signal receiver thread\*(R" which handles
+these signals. You can pass on any signals that libev might be interested
+in by calling \f(CW\*(C`ev_feed_signal\*(C'\fR.
 .PP
 \fIWatcher-Specific Functions and Data Members\fR
 .IX Subsection "Watcher-Specific Functions and Data Members"
@@ -3302,7 +3321,10 @@ it by calling \f(CW\*(C`ev_async_send\*(C'\fR, which is thread\- and signal safe
 This functionality is very similar to \f(CW\*(C`ev_signal\*(C'\fR watchers, as signals,
 too, are asynchronous in nature, and signals, too, will be compressed
 (i.e. the number of callback invocations may be less than the number of
-\&\f(CW\*(C`ev_async_sent\*(C'\fR calls).
+\&\f(CW\*(C`ev_async_sent\*(C'\fR calls). In fact, you could use signal watchers as a kind
+of \*(L"global async watchers\*(R" by using a watcher on an otherwise unused
+signal, and \f(CW\*(C`ev_feed_signal\*(C'\fR to signal this watcher from another thread,
+even without knowing which loop owns the signal.
 .PP
 Unlike \f(CW\*(C`ev_signal\*(C'\fR watchers, \f(CW\*(C`ev_async\*(C'\fR works with any event loop, not
 just the default loop.
@@ -3475,12 +3497,352 @@ Feed an event on the given fd, as if a file descriptor backend detected
 the given events it.
 .IP "ev_feed_signal_event (loop, int signum)" 4
 .IX Item "ev_feed_signal_event (loop, int signum)"
-Feed an event as if the given signal occurred (\f(CW\*(C`loop\*(C'\fR must be the default
-loop!).
+Feed an event as if the given signal occurred. See also \f(CW\*(C`ev_feed_signal\*(C'\fR,
+which is async-safe.
+.SH "COMMON OR USEFUL IDIOMS (OR BOTH)"
+.IX Header "COMMON OR USEFUL IDIOMS (OR BOTH)"
+This section explains some common idioms that are not immediately
+obvious. Note that examples are sprinkled over the whole manual, and this
+section only contains stuff that wouldn't fit anywhere else.
+.SS "\s-1ASSOCIATING\s0 \s-1CUSTOM\s0 \s-1DATA\s0 \s-1WITH\s0 A \s-1WATCHER\s0"
+.IX Subsection "ASSOCIATING CUSTOM DATA WITH A WATCHER"
+Each watcher has, by default, a \f(CW\*(C`void *data\*(C'\fR member that you can read
+or modify at any time: libev will completely ignore it. This can be used
+to associate arbitrary data with your watcher. If you need more data and
+don't want to allocate memory separately and store a pointer to it in that
+data member, you can also \*(L"subclass\*(R" the watcher type and provide your own
+data:
+.PP
+.Vb 7
+\&   struct my_io
+\&   {
+\&     ev_io io;
+\&     int otherfd;
+\&     void *somedata;
+\&     struct whatever *mostinteresting;
+\&   };
+\&
+\&   ...
+\&   struct my_io w;
+\&   ev_io_init (&w.io, my_cb, fd, EV_READ);
+.Ve
+.PP
+And since your callback will be called with a pointer to the watcher, you
+can cast it back to your own type:
+.PP
+.Vb 5
+\&   static void my_cb (struct ev_loop *loop, ev_io *w_, int revents)
+\&   {
+\&     struct my_io *w = (struct my_io *)w_;
+\&     ...
+\&   }
+.Ve
+.PP
+More interesting and less C\-conformant ways of casting your callback
+function type instead have been omitted.
+.SS "\s-1BUILDING\s0 \s-1YOUR\s0 \s-1OWN\s0 \s-1COMPOSITE\s0 \s-1WATCHERS\s0"
+.IX Subsection "BUILDING YOUR OWN COMPOSITE WATCHERS"
+Another common scenario is to use some data structure with multiple
+embedded watchers, in effect creating your own watcher that combines
+multiple libev event sources into one \*(L"super-watcher\*(R":
+.PP
+.Vb 6
+\&   struct my_biggy
+\&   {
+\&     int some_data;
+\&     ev_timer t1;
+\&     ev_timer t2;
+\&   }
+.Ve
+.PP
+In this case getting the pointer to \f(CW\*(C`my_biggy\*(C'\fR is a bit more
+complicated: Either you store the address of your \f(CW\*(C`my_biggy\*(C'\fR struct in
+the \f(CW\*(C`data\*(C'\fR member of the watcher (for woozies or \*(C+ coders), or you need
+to use some pointer arithmetic using \f(CW\*(C`offsetof\*(C'\fR inside your watchers (for
+real programmers):
+.PP
+.Vb 1
+\&   #include <stddef.h>
+\&
+\&   static void
+\&   t1_cb (EV_P_ ev_timer *w, int revents)
+\&   {
+\&     struct my_biggy big = (struct my_biggy *)
+\&       (((char *)w) \- offsetof (struct my_biggy, t1));
+\&   }
+\&
+\&   static void
+\&   t2_cb (EV_P_ ev_timer *w, int revents)
+\&   {
+\&     struct my_biggy big = (struct my_biggy *)
+\&       (((char *)w) \- offsetof (struct my_biggy, t2));
+\&   }
+.Ve
+.SS "\s-1MODEL/NESTED\s0 \s-1EVENT\s0 \s-1LOOP\s0 \s-1INVOCATIONS\s0 \s-1AND\s0 \s-1EXIT\s0 \s-1CONDITIONS\s0"
+.IX Subsection "MODEL/NESTED EVENT LOOP INVOCATIONS AND EXIT CONDITIONS"
+Often (especially in \s-1GUI\s0 toolkits) there are places where you have
+\&\fImodal\fR interaction, which is most easily implemented by recursively
+invoking \f(CW\*(C`ev_run\*(C'\fR.
+.PP
+This brings the problem of exiting \- a callback might want to finish the
+main \f(CW\*(C`ev_run\*(C'\fR call, but not the nested one (e.g. user clicked \*(L"Quit\*(R", but
+a modal \*(L"Are you sure?\*(R" dialog is still waiting), or just the nested one
+and not the main one (e.g. user clocked \*(L"Ok\*(R" in a modal dialog), or some
+other combination: In these cases, \f(CW\*(C`ev_break\*(C'\fR will not work alone.
+.PP
+The solution is to maintain \*(L"break this loop\*(R" variable for each \f(CW\*(C`ev_run\*(C'\fR
+invocation, and use a loop around \f(CW\*(C`ev_run\*(C'\fR until the condition is
+triggered, using \f(CW\*(C`EVRUN_ONCE\*(C'\fR:
+.PP
+.Vb 2
+\&   // main loop
+\&   int exit_main_loop = 0;
+\&
+\&   while (!exit_main_loop)
+\&     ev_run (EV_DEFAULT_ EVRUN_ONCE);
+\&
+\&   // in a model watcher
+\&   int exit_nested_loop = 0;
+\&
+\&   while (!exit_nested_loop)
+\&     ev_run (EV_A_ EVRUN_ONCE);
+.Ve
+.PP
+To exit from any of these loops, just set the corresponding exit variable:
+.PP
+.Vb 2
+\&   // exit modal loop
+\&   exit_nested_loop = 1;
+\&
+\&   // exit main program, after modal loop is finished
+\&   exit_main_loop = 1;
+\&
+\&   // exit both
+\&   exit_main_loop = exit_nested_loop = 1;
+.Ve
+.SS "\s-1THREAD\s0 \s-1LOCKING\s0 \s-1EXAMPLE\s0"
+.IX Subsection "THREAD LOCKING EXAMPLE"
+Here is a fictitious example of how to run an event loop in a different
+thread from where callbacks are being invoked and watchers are
+created/added/removed.
+.PP
+For a real-world example, see the \f(CW\*(C`EV::Loop::Async\*(C'\fR perl module,
+which uses exactly this technique (which is suited for many high-level
+languages).
+.PP
+The example uses a pthread mutex to protect the loop data, a condition
+variable to wait for callback invocations, an async watcher to notify the
+event loop thread and an unspecified mechanism to wake up the main thread.
+.PP
+First, you need to associate some data with the event loop:
+.PP
+.Vb 6
+\&   typedef struct {
+\&     mutex_t lock; /* global loop lock */
+\&     ev_async async_w;
+\&     thread_t tid;
+\&     cond_t invoke_cv;
+\&   } userdata;
+\&
+\&   void prepare_loop (EV_P)
+\&   {
+\&      // for simplicity, we use a static userdata struct.
+\&      static userdata u;
+\&
+\&      ev_async_init (&u\->async_w, async_cb);
+\&      ev_async_start (EV_A_ &u\->async_w);
+\&
+\&      pthread_mutex_init (&u\->lock, 0);
+\&      pthread_cond_init (&u\->invoke_cv, 0);
+\&
+\&      // now associate this with the loop
+\&      ev_set_userdata (EV_A_ u);
+\&      ev_set_invoke_pending_cb (EV_A_ l_invoke);
+\&      ev_set_loop_release_cb (EV_A_ l_release, l_acquire);
+\&
+\&      // then create the thread running ev_loop
+\&      pthread_create (&u\->tid, 0, l_run, EV_A);
+\&   }
+.Ve
+.PP
+The callback for the \f(CW\*(C`ev_async\*(C'\fR watcher does nothing: the watcher is used
+solely to wake up the event loop so it takes notice of any new watchers
+that might have been added:
+.PP
+.Vb 5
+\&   static void
+\&   async_cb (EV_P_ ev_async *w, int revents)
+\&   {
+\&      // just used for the side effects
+\&   }
+.Ve
+.PP
+The \f(CW\*(C`l_release\*(C'\fR and \f(CW\*(C`l_acquire\*(C'\fR callbacks simply unlock/lock the mutex
+protecting the loop data, respectively.
+.PP
+.Vb 6
+\&   static void
+\&   l_release (EV_P)
+\&   {
+\&     userdata *u = ev_userdata (EV_A);
+\&     pthread_mutex_unlock (&u\->lock);
+\&   }
+\&
+\&   static void
+\&   l_acquire (EV_P)
+\&   {
+\&     userdata *u = ev_userdata (EV_A);
+\&     pthread_mutex_lock (&u\->lock);
+\&   }
+.Ve
+.PP
+The event loop thread first acquires the mutex, and then jumps straight
+into \f(CW\*(C`ev_run\*(C'\fR:
+.PP
+.Vb 4
+\&   void *
+\&   l_run (void *thr_arg)
+\&   {
+\&     struct ev_loop *loop = (struct ev_loop *)thr_arg;
+\&
+\&     l_acquire (EV_A);
+\&     pthread_setcanceltype (PTHREAD_CANCEL_ASYNCHRONOUS, 0);
+\&     ev_run (EV_A_ 0);
+\&     l_release (EV_A);
+\&
+\&     return 0;
+\&   }
+.Ve
+.PP
+Instead of invoking all pending watchers, the \f(CW\*(C`l_invoke\*(C'\fR callback will
+signal the main thread via some unspecified mechanism (signals? pipe
+writes? \f(CW\*(C`Async::Interrupt\*(C'\fR?) and then waits until all pending watchers
+have been called (in a while loop because a) spurious wakeups are possible
+and b) skipping inter-thread-communication when there are no pending
+watchers is very beneficial):
+.PP
+.Vb 4
+\&   static void
+\&   l_invoke (EV_P)
+\&   {
+\&     userdata *u = ev_userdata (EV_A);
+\&
+\&     while (ev_pending_count (EV_A))
+\&       {
+\&         wake_up_other_thread_in_some_magic_or_not_so_magic_way ();
+\&         pthread_cond_wait (&u\->invoke_cv, &u\->lock);
+\&       }
+\&   }
+.Ve
+.PP
+Now, whenever the main thread gets told to invoke pending watchers, it
+will grab the lock, call \f(CW\*(C`ev_invoke_pending\*(C'\fR and then signal the loop
+thread to continue:
+.PP
+.Vb 4
+\&   static void
+\&   real_invoke_pending (EV_P)
+\&   {
+\&     userdata *u = ev_userdata (EV_A);
+\&
+\&     pthread_mutex_lock (&u\->lock);
+\&     ev_invoke_pending (EV_A);
+\&     pthread_cond_signal (&u\->invoke_cv);
+\&     pthread_mutex_unlock (&u\->lock);
+\&   }
+.Ve
+.PP
+Whenever you want to start/stop a watcher or do other modifications to an
+event loop, you will now have to lock:
+.PP
+.Vb 2
+\&   ev_timer timeout_watcher;
+\&   userdata *u = ev_userdata (EV_A);
+\&
+\&   ev_timer_init (&timeout_watcher, timeout_cb, 5.5, 0.);
+\&
+\&   pthread_mutex_lock (&u\->lock);
+\&   ev_timer_start (EV_A_ &timeout_watcher);
+\&   ev_async_send (EV_A_ &u\->async_w);
+\&   pthread_mutex_unlock (&u\->lock);
+.Ve
+.PP
+Note that sending the \f(CW\*(C`ev_async\*(C'\fR watcher is required because otherwise
+an event loop currently blocking in the kernel will have no knowledge
+about the newly added timer. By waking up the loop it will pick up any new
+watchers in the next event loop iteration.
+.SS "\s-1THREADS\s0, \s-1COROUTINES\s0, \s-1CONTINUATIONS\s0, \s-1QUEUES\s0... \s-1INSTEAD\s0 \s-1OF\s0 \s-1CALLBACKS\s0"
+.IX Subsection "THREADS, COROUTINES, CONTINUATIONS, QUEUES... INSTEAD OF CALLBACKS"
+While the overhead of a callback that e.g. schedules a thread is small, it
+is still an overhead. If you embed libev, and your main usage is with some
+kind of threads or coroutines, you might want to customise libev so that
+doesn't need callbacks anymore.
+.PP
+Imagine you have coroutines that you can switch to using a function
+\&\f(CW\*(C`switch_to (coro)\*(C'\fR, that libev runs in a coroutine called \f(CW\*(C`libev_coro\*(C'\fR
+and that due to some magic, the currently active coroutine is stored in a
+global called \f(CW\*(C`current_coro\*(C'\fR. Then you can build your own \*(L"wait for libev
+event\*(R" primitive by changing \f(CW\*(C`EV_CB_DECLARE\*(C'\fR and \f(CW\*(C`EV_CB_INVOKE\*(C'\fR (note
+the differing \f(CW\*(C`;\*(C'\fR conventions):
+.PP
+.Vb 2
+\&   #define EV_CB_DECLARE(type)   struct my_coro *cb;
+\&   #define EV_CB_INVOKE(watcher) switch_to ((watcher)\->cb)
+.Ve
+.PP
+That means instead of having a C callback function, you store the
+coroutine to switch to in each watcher, and instead of having libev call
+your callback, you instead have it switch to that coroutine.
+.PP
+A coroutine might now wait for an event with a function called
+\&\f(CW\*(C`wait_for_event\*(C'\fR. (the watcher needs to be started, as always, but it doesn't
+matter when, or whether the watcher is active or not when this function is
+called):
+.PP
+.Vb 6
+\&   void
+\&   wait_for_event (ev_watcher *w)
+\&   {
+\&     ev_cb_set (w) = current_coro;
+\&     switch_to (libev_coro);
+\&   }
+.Ve
+.PP
+That basically suspends the coroutine inside \f(CW\*(C`wait_for_event\*(C'\fR and
+continues the libev coroutine, which, when appropriate, switches back to
+this or any other coroutine. I am sure if you sue this your own :)
+.PP
+You can do similar tricks if you have, say, threads with an event queue \-
+instead of storing a coroutine, you store the queue object and instead of
+switching to a coroutine, you push the watcher onto the queue and notify
+any waiters.
+.PP
+To embed libev, see \s-1EMBEDDING\s0, but in short, it's easiest to create two
+files, \fImy_ev.h\fR and \fImy_ev.c\fR that include the respective libev files:
+.PP
+.Vb 4
+\&   // my_ev.h
+\&   #define EV_CB_DECLARE(type)   struct my_coro *cb;
+\&   #define EV_CB_INVOKE(watcher) switch_to ((watcher)\->cb);
+\&   #include "../libev/ev.h"
+\&
+\&   // my_ev.c
+\&   #define EV_H "my_ev.h"
+\&   #include "../libev/ev.c"
+.Ve
+.PP
+And then use \fImy_ev.h\fR when you would normally use \fIev.h\fR, and compile
+\&\fImy_ev.c\fR into your project. When properly specifying include paths, you
+can even use \fIev.h\fR as header file name directly.
 .SH "LIBEVENT EMULATION"
 .IX Header "LIBEVENT EMULATION"
 Libev offers a compatibility emulation layer for libevent. It cannot
 emulate the internals of libevent, so here are some usage hints:
+.IP "\(bu" 4
+Only the libevent\-1.4.1\-beta \s-1API\s0 is being emulated.
+.Sp
+This was the newest libevent version available when libev was implemented,
+and is still mostly unchanged in 2010.
 .IP "\(bu" 4
 Use it by including <event.h>, as usual.
 .IP "\(bu" 4
@@ -3496,7 +3858,7 @@ will fail and all watchers will have the same priority, even though there
 is an ev_pri field.
 .IP "\(bu" 4
 In libevent, the last base created gets the signals, in libev, the
-first base created (== the default loop) gets the signals.
+base that registered the signal gets the signals.
 .IP "\(bu" 4
 Other members are not supported.
 .IP "\(bu" 4
@@ -3524,11 +3886,11 @@ classes add (compared to plain C\-style watchers) is the event loop pointer
 that the watcher is associated with (or no additional members at all if
 you disable \f(CW\*(C`EV_MULTIPLICITY\*(C'\fR when embedding libev).
 .PP
-Currently, functions, and static and non-static member functions can be
-used as callbacks. Other types should be easy to add as long as they only
-need one additional pointer for context. If you need support for other
-types of functors please contact the author (preferably after implementing
-it).
+Currently, functions, static and non-static member functions and classes
+with \f(CW\*(C`operator ()\*(C'\fR can be used as callbacks. Other types should be easy
+to add as long as they only need one additional pointer for context. If
+you need support for other types of functors please contact the author
+(preferably after implementing it).
 .PP
 Here is a list of things available in the \f(CW\*(C`ev\*(C'\fR namespace:
 .ie n .IP """ev::READ"", ""ev::WRITE"" etc." 4
@@ -4376,8 +4738,8 @@ And a \fIev_cpp.C\fR implementation file that contains libev proper and is compi
 \&   #include "ev_cpp.h"
 \&   #include "ev.c"
 .Ve
-.SH "INTERACTION WITH OTHER PROGRAMS OR LIBRARIES"
-.IX Header "INTERACTION WITH OTHER PROGRAMS OR LIBRARIES"
+.SH "INTERACTION WITH OTHER PROGRAMS, LIBRARIES OR THE ENVIRONMENT"
+.IX Header "INTERACTION WITH OTHER PROGRAMS, LIBRARIES OR THE ENVIRONMENT"
 .SS "\s-1THREADS\s0 \s-1AND\s0 \s-1COROUTINES\s0"
 .IX Subsection "THREADS AND COROUTINES"
 \fI\s-1THREADS\s0\fR
@@ -4434,158 +4796,7 @@ work in the default loop by registering the signal watcher with the
 default loop and triggering an \f(CW\*(C`ev_async\*(C'\fR watcher from the default loop
 watcher callback into the event loop interested in the signal.
 .PP
-\s-1THREAD\s0 \s-1LOCKING\s0 \s-1EXAMPLE\s0
-.IX Subsection "THREAD LOCKING EXAMPLE"
-.PP
-Here is a fictitious example of how to run an event loop in a different
-thread than where callbacks are being invoked and watchers are
-created/added/removed.
-.PP
-For a real-world example, see the \f(CW\*(C`EV::Loop::Async\*(C'\fR perl module,
-which uses exactly this technique (which is suited for many high-level
-languages).
-.PP
-The example uses a pthread mutex to protect the loop data, a condition
-variable to wait for callback invocations, an async watcher to notify the
-event loop thread and an unspecified mechanism to wake up the main thread.
-.PP
-First, you need to associate some data with the event loop:
-.PP
-.Vb 6
-\&   typedef struct {
-\&     mutex_t lock; /* global loop lock */
-\&     ev_async async_w;
-\&     thread_t tid;
-\&     cond_t invoke_cv;
-\&   } userdata;
-\&
-\&   void prepare_loop (EV_P)
-\&   {
-\&      // for simplicity, we use a static userdata struct.
-\&      static userdata u;
-\&
-\&      ev_async_init (&u\->async_w, async_cb);
-\&      ev_async_start (EV_A_ &u\->async_w);
-\&
-\&      pthread_mutex_init (&u\->lock, 0);
-\&      pthread_cond_init (&u\->invoke_cv, 0);
-\&
-\&      // now associate this with the loop
-\&      ev_set_userdata (EV_A_ u);
-\&      ev_set_invoke_pending_cb (EV_A_ l_invoke);
-\&      ev_set_loop_release_cb (EV_A_ l_release, l_acquire);
-\&
-\&      // then create the thread running ev_loop
-\&      pthread_create (&u\->tid, 0, l_run, EV_A);
-\&   }
-.Ve
-.PP
-The callback for the \f(CW\*(C`ev_async\*(C'\fR watcher does nothing: the watcher is used
-solely to wake up the event loop so it takes notice of any new watchers
-that might have been added:
-.PP
-.Vb 5
-\&   static void
-\&   async_cb (EV_P_ ev_async *w, int revents)
-\&   {
-\&      // just used for the side effects
-\&   }
-.Ve
-.PP
-The \f(CW\*(C`l_release\*(C'\fR and \f(CW\*(C`l_acquire\*(C'\fR callbacks simply unlock/lock the mutex
-protecting the loop data, respectively.
-.PP
-.Vb 6
-\&   static void
-\&   l_release (EV_P)
-\&   {
-\&     userdata *u = ev_userdata (EV_A);
-\&     pthread_mutex_unlock (&u\->lock);
-\&   }
-\&
-\&   static void
-\&   l_acquire (EV_P)
-\&   {
-\&     userdata *u = ev_userdata (EV_A);
-\&     pthread_mutex_lock (&u\->lock);
-\&   }
-.Ve
-.PP
-The event loop thread first acquires the mutex, and then jumps straight
-into \f(CW\*(C`ev_run\*(C'\fR:
-.PP
-.Vb 4
-\&   void *
-\&   l_run (void *thr_arg)
-\&   {
-\&     struct ev_loop *loop = (struct ev_loop *)thr_arg;
-\&
-\&     l_acquire (EV_A);
-\&     pthread_setcanceltype (PTHREAD_CANCEL_ASYNCHRONOUS, 0);
-\&     ev_run (EV_A_ 0);
-\&     l_release (EV_A);
-\&
-\&     return 0;
-\&   }
-.Ve
-.PP
-Instead of invoking all pending watchers, the \f(CW\*(C`l_invoke\*(C'\fR callback will
-signal the main thread via some unspecified mechanism (signals? pipe
-writes? \f(CW\*(C`Async::Interrupt\*(C'\fR?) and then waits until all pending watchers
-have been called (in a while loop because a) spurious wakeups are possible
-and b) skipping inter-thread-communication when there are no pending
-watchers is very beneficial):
-.PP
-.Vb 4
-\&   static void
-\&   l_invoke (EV_P)
-\&   {
-\&     userdata *u = ev_userdata (EV_A);
-\&
-\&     while (ev_pending_count (EV_A))
-\&       {
-\&         wake_up_other_thread_in_some_magic_or_not_so_magic_way ();
-\&         pthread_cond_wait (&u\->invoke_cv, &u\->lock);
-\&       }
-\&   }
-.Ve
-.PP
-Now, whenever the main thread gets told to invoke pending watchers, it
-will grab the lock, call \f(CW\*(C`ev_invoke_pending\*(C'\fR and then signal the loop
-thread to continue:
-.PP
-.Vb 4
-\&   static void
-\&   real_invoke_pending (EV_P)
-\&   {
-\&     userdata *u = ev_userdata (EV_A);
-\&
-\&     pthread_mutex_lock (&u\->lock);
-\&     ev_invoke_pending (EV_A);
-\&     pthread_cond_signal (&u\->invoke_cv);
-\&     pthread_mutex_unlock (&u\->lock);
-\&   }
-.Ve
-.PP
-Whenever you want to start/stop a watcher or do other modifications to an
-event loop, you will now have to lock:
-.PP
-.Vb 2
-\&   ev_timer timeout_watcher;
-\&   userdata *u = ev_userdata (EV_A);
-\&
-\&   ev_timer_init (&timeout_watcher, timeout_cb, 5.5, 0.);
-\&
-\&   pthread_mutex_lock (&u\->lock);
-\&   ev_timer_start (EV_A_ &timeout_watcher);
-\&   ev_async_send (EV_A_ &u\->async_w);
-\&   pthread_mutex_unlock (&u\->lock);
-.Ve
-.PP
-Note that sending the \f(CW\*(C`ev_async\*(C'\fR watcher is required because otherwise
-an event loop currently blocking in the kernel will have no knowledge
-about the newly added timer. By waking up the loop it will pick up any new
-watchers in the next event loop iteration.
+See also \*(L"\s-1THREAD\s0 \s-1LOCKING\s0 \s-1EXAMPLE\s0\*(R".
 .PP
 \fI\s-1COROUTINES\s0\fR
 .IX Subsection "COROUTINES"

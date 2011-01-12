@@ -1,7 +1,7 @@
 /*
  * libev event processing core, watcher management
  *
- * Copyright (c) 2007,2008,2009,2010 Marc Alexander Lehmann <libev@schmorp.de>
+ * Copyright (c) 2007,2008,2009,2010,2011 Marc Alexander Lehmann <libev@schmorp.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modifica-
@@ -1371,19 +1371,28 @@ pipecb (EV_P_ ev_io *iow, int revents)
 
 /*****************************************************************************/
 
-static void
-ev_sighandler (int signum)
+void
+ev_feed_signal (int signum)
 {
 #if EV_MULTIPLICITY
   EV_P = signals [signum - 1].loop;
-#endif
 
-#ifdef _WIN32
-  signal (signum, ev_sighandler);
+  if (!EV_A)
+    return;
 #endif
 
   signals [signum - 1].pending = 1;
   evpipe_write (EV_A_ &sig_pending);
+}
+
+static void
+ev_sighandler (int signum)
+{
+#ifdef _WIN32
+  signal (signum, ev_sighandler);
+#endif
+
+  ev_feed_signal (signum);
 }
 
 void noinline
@@ -1645,6 +1654,8 @@ loop_init (EV_P_ unsigned int flags)
 {
   if (!backend)
     {
+      origflags = flags;
+
 #if EV_USE_REALTIME
       if (!have_realtime)
         {
@@ -1699,7 +1710,7 @@ loop_init (EV_P_ unsigned int flags)
       sigfd             = flags & EVFLAG_SIGNALFD  ? -2 : -1;
 #endif
 
-      if (!(flags & 0x0000ffffU))
+      if (!(flags & EVBACKEND_MASK))
         flags |= ev_recommended_backends ();
 
 #if EV_USE_IOCP
@@ -2101,9 +2112,6 @@ ev_invoke_pending (EV_P)
     while (pendingcnt [pri])
       {
         ANPENDING *p = pendings [pri] + --pendingcnt [pri];
-
-        /*assert (("libev: non-pending watcher on pending list", p->w->pending));*/
-        /* ^ this is no longer true, as pending_w could be here */
 
         p->w->pending = 0;
         EV_CB_INVOKE (p->w, p->events);
@@ -2881,9 +2889,12 @@ ev_signal_start (EV_P_ ev_signal *w)
         sa.sa_flags = SA_RESTART; /* if restarting works we save one iteration */
         sigaction (w->signum, &sa, 0);
 
-        sigemptyset (&sa.sa_mask);
-        sigaddset (&sa.sa_mask, w->signum);
-        sigprocmask (SIG_UNBLOCK, &sa.sa_mask, 0);
+        if (origflags & EVFLAG_NOSIGMASK)
+          {
+            sigemptyset (&sa.sa_mask);
+            sigaddset (&sa.sa_mask, w->signum);
+            sigprocmask (SIG_UNBLOCK, &sa.sa_mask, 0);
+          }
 #endif
       }
 

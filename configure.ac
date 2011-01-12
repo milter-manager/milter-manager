@@ -551,10 +551,10 @@ if test "x$with_libev" != "xno"; then
   if test "$libev_available" = no; then
     libev_available=yes
     libev_prefix=bundled
-    m4_include([libev-4.01/libev.m4])
+    m4_include([libev-4.03/libev.m4])
     AC_DEFINE(HAVE_LIBEV, [1], [Define to 1 if libev is available.])
-    LIBEV_CFLAGS='-I$(top_srcdir)/libev-4.01'
-    LIBEV_LIBS='$(top_builddir)/libev-4.01/libev.la'
+    LIBEV_CFLAGS='-I$(top_srcdir)/libev-4.03'
+    LIBEV_LIBS='$(top_builddir)/libev-4.03/libev.la'
   fi
   AC_DEFINE(HAVE_LIBEV, [1], [Define to 1 if libev is available.])
 fi
@@ -774,7 +774,7 @@ AC_CONFIG_FILES([Makefile
 		 rpm/centos/milter-manager.spec
 		 gio-unix-compatible/Makefile
 		 gio-unix-compatible/gio/Makefile
-		 libev-4.01/Makefile
+		 libev-4.03/Makefile
 		 milter/Makefile
 		 milter/core/Makefile
 		 milter/core/milter-version.h

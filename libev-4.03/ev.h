@@ -1,7 +1,7 @@
 /*
  * libev native API header
  *
- * Copyright (c) 2007,2008,2009,2010 Marc Alexander Lehmann <libev@schmorp.de>
+ * Copyright (c) 2007,2008,2009,2010,2011 Marc Alexander Lehmann <libev@schmorp.de>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modifica-
@@ -193,7 +193,7 @@ struct ev_loop;
 /*****************************************************************************/
 
 #define EV_VERSION_MAJOR 4
-#define EV_VERSION_MINOR 1
+#define EV_VERSION_MINOR 3
 
 /* eventmask, revents, events... */
 enum {
@@ -491,7 +491,8 @@ enum {
 #if EV_COMPAT3
   EVFLAG_NOSIGFD   = 0, /* compatibility to pre-3.9 */
 #endif
-  EVFLAG_SIGNALFD  = 0x00200000U  /* attempt to use signalfd */
+  EVFLAG_SIGNALFD  = 0x00200000U, /* attempt to use signalfd */
+  EVFLAG_NOSIGMASK = 0x00400000U  /* avoid modifying the signal mask */
 };
 
 /* method bits to be ored together */
@@ -502,7 +503,8 @@ enum {
   EVBACKEND_KQUEUE  = 0x00000008U, /* bsd */
   EVBACKEND_DEVPOLL = 0x00000010U, /* solaris 8 */ /* NYI */
   EVBACKEND_PORT    = 0x00000020U, /* solaris 10 */
-  EVBACKEND_ALL     = 0x0000003FU
+  EVBACKEND_ALL     = 0x0000003FU, /* all known backends */
+  EVBACKEND_MASK    = 0x0000FFFFU  /* all future backends */
 };
 
 #if EV_PROTOTYPES
@@ -720,6 +722,7 @@ void ev_resume  (EV_P);
 void ev_feed_event     (EV_P_ void *w, int revents);
 void ev_feed_fd_event  (EV_P_ int fd, int revents);
 #if EV_SIGNAL_ENABLE
+void ev_feed_signal    (int signum);
 void ev_feed_signal_event (EV_P_ int signum);
 #endif
 void ev_invoke         (EV_P_ void *w, int revents);

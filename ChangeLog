@@ -1,5 +1,7 @@
 2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* libev-4.03: imported.
+
 	* milter/client/milter-client.h (MILTER_CLIENT_MAX_N_WORKERS):
 	renamed
 
