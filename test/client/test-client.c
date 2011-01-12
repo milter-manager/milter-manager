@@ -130,6 +130,8 @@ static gchar *tmp_dir;
 
 static guint loop_run_count;
 
+static guint n_worker_forks;
+
 static void
 cb_negotiate (MilterClientContext *context, MilterOption *option,
               MilterMacrosRequests *macros_requests, gpointer user_data)
@@ -385,6 +387,8 @@ cut_setup (void)
     actual_address_size = 0;
 
     tmp_dir = milter_test_get_tmp_dir();
+
+    n_worker_forks = 0;
 }
 
 void
@@ -969,23 +973,19 @@ test_n_workers (void)
         10, milter_client_get_n_workers(client));
 }
 
-static guint worker_fork_count;
 static GPid
 worker_fork (MilterClient *loop)
 {
-    return worker_fork_count++;
+    n_worker_forks++;
+    return 29;
 }
 
 void
 test_custom_fork (void)
 {
-    GPid count;
-
-    worker_fork_count = 0;
     milter_client_set_custom_fork_func(client, worker_fork);
-    count = milter_client_fork(client);
-    cut_assert_equal_uint(0, (guint)count);
-    cut_assert_equal_uint(1, worker_fork_count);
+    cut_assert_equal_uint(29, milter_client_fork(client));
+    cut_assert_equal_uint(1, n_worker_forks);
 }
 
 /*

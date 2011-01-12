@@ -1,5 +1,11 @@
 2011-01-12  Kouhei Sutou  <kou@clear-code.com>
 
+	* test/client/test-client.c (test_custom_fork): use common test
+	style.
+	- move static variable declarations to the top.
+	- initialize static variable in cut_setup().
+	- use meaningful value for test value.
+
 	* milter/client/milter-client.c: PROP_N_WORKER_PROCESSES ->
 	PROP_N_WORKERS.
 
