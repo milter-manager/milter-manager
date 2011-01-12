@@ -162,7 +162,7 @@ _milter_client_class_init (MilterClientClass *klass)
     spec = g_param_spec_uint("n-workers",
                              "Number of worker processes",
                              "The Number of worker processes of the client",
-                             0, MILTER_CLIENT_MAX_N_WORKER_PROCESSES, 0,
+                             0, MILTER_CLIENT_MAX_N_WORKERS, 0,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_N_WORKER_PROCESSES, spec);
 
