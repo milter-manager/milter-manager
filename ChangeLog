@@ -4,6 +4,9 @@
 
 2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/client/milter-client.h (MILTER_CLIENT_MAX_N_WORKER_PROCESSES):
+	moved from milter-client.h
+
 	* milter/client/milter-client.c (set_property, get_property): deal
 	with PROP_N_WORKER_PROCESSES.
 

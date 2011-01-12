@@ -113,8 +113,6 @@ typedef struct _MilterClientProcessData
 
 typedef gboolean (*AcceptConnectionFunction) (MilterClient *client, gint fd);
 
-#define MAX_N_WORKER_PROCESSES 1000
-
 #define _milter_client_get_type milter_client_get_type
 MILTER_DEFINE_ERROR_EMITTABLE_TYPE(MilterClient, _milter_client, G_TYPE_OBJECT)
 #undef _milter_client_get_type
@@ -164,7 +162,7 @@ _milter_client_class_init (MilterClientClass *klass)
     spec = g_param_spec_uint("n-workers",
                              "Number of worker processes",
                              "The Number of worker processes of the client",
-                             0, MAX_N_WORKER_PROCESSES, 0,
+                             0, MILTER_CLIENT_MAX_N_WORKER_PROCESSES, 0,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_N_WORKER_PROCESSES, spec);
 

@@ -58,6 +58,13 @@ G_BEGIN_DECLS
 #define MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS 0
 
 /**
+ * MILTER_CLIENT_MAX_N_WORKER_PROCESSES:
+ *
+ * The maximum number of worker processes.
+ */
+#define MILTER_CLIENT_MAX_N_WORKER_PROCESSES 1000
+
+/**
  * MILTER_CLIENT_ERROR:
  *
  * Used to get the #GError quark for #MilterClient errors.
