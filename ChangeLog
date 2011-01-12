@@ -3,6 +3,7 @@
 	* binding/ruby/src/toolkit/rb-milter-client.c (client_custom_fork):
 	use fork method of ruby.
 	(client_initialize): initialize.
+	(client_main): fix typo in warning message.
 
 	* module/configuration/ruby/milter-manager-ruby-configuration.c
 	(init_ruby): use ruby_process_options to initialize encoding etc.

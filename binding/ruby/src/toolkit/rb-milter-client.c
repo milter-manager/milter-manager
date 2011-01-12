@@ -60,7 +60,7 @@ client_run (VALUE self)
 static VALUE
 client_main (VALUE self)
 {
-    milter_warning("[ruby][client][deprecatd] Milter::Client#run is deprecated. "
+    milter_warning("[ruby][client][deprecatd] Milter::Client#main is deprecated. "
 		   "Use Milter::Client#run instead.");
     milter_client_main(SELF(self));
     return Qnil;
