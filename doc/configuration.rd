@@ -530,6 +530,28 @@ Here are descriptions of configuration items.
    Default:
      manager.event_loop_backend = "glib"
 
+: manager.n_workers
+
+   Since 1.6.3.
+
+   Specifies the number of processes which process mails. For non-large
+   mail system which processes 100 or less mails per second, and mail
+   system which doesn't use very heavy milter,
+   we doesn't need to change it. For large mail system which
+   processes 100 or more mails per seconds using very heavy milters,
+   we need to increase it.
+
+   Availble value is between 0 and 1000.
+   If it is 0, no worker processes will be used.
+
+   ((*NOTE: This item is an experimental feature.*))
+
+   Example:
+     manager.n_workers = 10
+
+   Default:
+     manager.n_workers = 0 # no worker processes.
+
 : manager.use_netstat_connection_checker
 
    Since 1.5.0.

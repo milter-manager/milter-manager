@@ -9,6 +9,8 @@
 
 2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* doc/configuration.rd (manager.n_workers): documented.
+
 	* binding/ruby/lib/milter/manager.rb
 	(Milter::ConfigurationLoader::ManagerConfiguration#n_workers)
 	(Milter::ConfigurationLoader::ManagerConfiguration#n_workers=):
