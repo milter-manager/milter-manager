@@ -1,3 +1,9 @@
+2011-01-12  Kouhei Sutou  <kou@clear-code.com>
+
+	* milter/client/milter-client.[ch]: master process doesn't accept
+	and pass accepted FD to worker processes. Worker processes accept
+	the listening FD with block in accept thread.
+
 2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/client/milter-client.c (milter_client_fork): new method.
