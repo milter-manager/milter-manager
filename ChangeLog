@@ -13,6 +13,10 @@
 2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/client/milter-client.c (milter_client_fork): new method.
+	(milter_client_daemonize): use milter_client_fork.
+
+	* milter/manager/milter-manager-main.c (start_process_launcher_process):
+	ditto.
 
 	* milter/core/milter-event-loop.c (MilterEventLoopPrivate): use
 	typedefed name.

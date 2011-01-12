@@ -450,7 +450,7 @@ start_process_launcher_process (MilterManager *manager)
                  command_pipe[READ_PIPE], command_pipe[WRITE_PIPE],
                  reply_pipe[READ_PIPE], reply_pipe[WRITE_PIPE]);
 
-    switch (fork()) {
+    switch (milter_client_fork(MILTER_CLIENT(manager))) {
     case 0:
         /* FIXME: change process name to
            'milter-manager: process-launcher' by

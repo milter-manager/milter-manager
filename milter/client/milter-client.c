@@ -1470,7 +1470,7 @@ milter_client_daemonize (MilterClient *client, GError **error)
 {
     gchar *error_message = NULL;
 
-    switch (fork()) {
+    switch (milter_client_fork(client)) {
     case 0:
         break;
     case -1:
@@ -1494,7 +1494,7 @@ milter_client_daemonize (MilterClient *client, GError **error)
         return FALSE;
     }
 
-    switch (fork()) {
+    switch (milter_client_fork(client)) {
     case 0:
         break;
     case -1:
