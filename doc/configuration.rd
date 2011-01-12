@@ -476,10 +476,10 @@ Here are descriptions of configuration items.
      * "discard": Discards a mail.
 
    Example:
-     manager.fallback_status = "accept"
+     manager.fallback_status = "reject"
 
    Default:
-     manager.fallback_status = "reject"
+     manager.fallback_status = "accept"
 
 : manager.fallback_status_at_disconnect
 
@@ -500,10 +500,10 @@ Here are descriptions of configuration items.
      * "discard": Discards a mail.
 
    Example:
-     manager.fallback_status_at_disconnect = "temporary-failure"
+     manager.fallback_status_at_disconnect = "discard"
 
    Default:
-     manager.fallback_status_at_disconnect = "discard"
+     manager.fallback_status_at_disconnect = "temporary-failure"
 
 : manager.event_loop_backend
 

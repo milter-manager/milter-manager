@@ -8,6 +8,9 @@
 
 2011-01-12  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/configuration.rd*: fix examples and default value of
+	manager.fallback_status and manager.fallback_status_at_disconnect.
+
 	* tool/milter-report-statistics: accept float value as --interval value.
 
 2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
