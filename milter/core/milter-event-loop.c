@@ -35,7 +35,7 @@ typedef struct _MilterEventLoopPrivate	MilterEventLoopPrivate;
 struct _MilterEventLoopPrivate
 {
     gboolean new_context;
-    void     (*custom_run)       (MilterEventLoop *loop);
+    MilterEventLoopCustomRunFunc custom_run;
 };
 
 enum
