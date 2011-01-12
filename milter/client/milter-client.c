@@ -40,7 +40,7 @@ enum
 {
     PROP_0,
     PROP_EVENT_LOOP_BACKEND,
-    PROP_N_WORKER_PROCESSES,
+    PROP_N_WORKERS,
     PROP_CUSTOM_FORK,
 };
 
@@ -165,7 +165,7 @@ _milter_client_class_init (MilterClientClass *klass)
                              "The Number of worker processes of the client",
                              0, MILTER_CLIENT_MAX_N_WORKERS, 0,
                              G_PARAM_READWRITE);
-    g_object_class_install_property(gobject_class, PROP_N_WORKER_PROCESSES, spec);
+    g_object_class_install_property(gobject_class, PROP_N_WORKERS, spec);
 
     spec = g_param_spec_pointer("custom-fork",
                                 "Custom fork",
@@ -538,7 +538,7 @@ set_property (GObject      *object,
     case PROP_EVENT_LOOP_BACKEND:
         milter_client_set_event_loop_backend(client, g_value_get_enum(value));
         break;
-    case PROP_N_WORKER_PROCESSES:
+    case PROP_N_WORKERS:
         milter_client_set_n_workers(client, g_value_get_uint(value));
         break;
     case PROP_CUSTOM_FORK:
@@ -565,7 +565,7 @@ get_property (GObject    *object,
     case PROP_EVENT_LOOP_BACKEND:
         g_value_set_enum(value, milter_client_get_event_loop_backend(client));
         break;
-    case PROP_N_WORKER_PROCESSES:
+    case PROP_N_WORKERS:
         g_value_set_uint(value, milter_client_get_n_workers(client));
         break;
     case PROP_CUSTOM_FORK:

@@ -1,5 +1,8 @@
 2011-01-12  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/client/milter-client.c: PROP_N_WORKER_PROCESSES ->
+	PROP_N_WORKERS.
+
 	* Makefile.am, configure.ac, gio-unix-compatible/: remove needless
 	bundled GIO.
 
