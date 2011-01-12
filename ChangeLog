@@ -1,5 +1,10 @@
 2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* binding/ruby/lib/milter/manager.rb
+	(Milter::ConfigurationLoader::ManagerConfiguration#n_workers)
+	(Milter::ConfigurationLoader::ManagerConfiguration#n_workers=):
+	add accessors.
+
 	* binding/ruby/test/toolkit/test-client.rb (TestClient#test_n_workers):
 	add test.
 

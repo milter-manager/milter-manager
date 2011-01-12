@@ -880,6 +880,15 @@ module Milter::Manager
         @configuration.event_loop_backend = backend
       end
 
+      def n_workers
+        @configuration.n_workers
+      end
+
+      def n_workers=(n_workers)
+        update_location("n_workers", n_workers.nil?)
+        @configuration.n_workers = n_workers
+      end
+
       def fallback_status
         @configuration.fallback_status
       end

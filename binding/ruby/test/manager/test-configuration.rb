@@ -74,6 +74,12 @@ class TestConfiguration < Test::Unit::TestCase
     assert_equal("glib", @configuration.event_loop_backend.nick)
   end
 
+  def test_n_workers
+    assert_equal(0, @configuration.n_workers)
+    @configuration.n_workers = 10
+    assert_equal(10, @configuration.n_workers)
+  end
+
   def test_package
     @configuration.package_platform = "pkgsrc"
     assert_equal("pkgsrc", @configuration.package_platform)
