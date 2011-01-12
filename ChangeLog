@@ -1,5 +1,7 @@
 2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/client/milter-client.c (milter_client_fork): new method.
+
 	* milter/core/milter-event-loop.c (MilterEventLoopPrivate): use
 	typedefed name.
 

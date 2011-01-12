@@ -62,6 +62,7 @@ void test_need_maintain_no_processing_sessions (void);
 void test_need_maintain_no_processing_sessions_below_processed_sessions (void);
 void test_need_maintain_no_processing_sessions_no_interval (void);
 void test_n_workers (void);
+void test_custom_fork (void);
 
 static MilterEventLoop *loop;
 
@@ -966,6 +967,25 @@ test_n_workers (void)
     milter_client_set_n_workers(client, 10);
     cut_assert_equal_uint(
         10, milter_client_get_n_workers(client));
+}
+
+static guint worker_fork_count;
+static GPid
+worker_fork (MilterClient *loop)
+{
+    return worker_fork_count++;
+}
+
+void
+test_custom_fork (void)
+{
+    GPid count;
+
+    worker_fork_count = 0;
+    milter_client_set_custom_fork_func(client, worker_fork);
+    count = milter_client_fork(client);
+    cut_assert_equal_uint(0, (guint)count);
+    cut_assert_equal_uint(1, worker_fork_count);
 }
 
 /*

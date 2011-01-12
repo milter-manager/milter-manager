@@ -116,6 +116,8 @@ typedef enum
 
 typedef struct _MilterClientClass    MilterClientClass;
 
+typedef GPid (*MilterClientCustomForkFunc) (MilterClient *client);
+
 /**
  * MilterClient:
  *
@@ -172,6 +174,7 @@ struct _MilterClientClass
     guint  (*get_n_workers)               (MilterClient *client);
     void   (*set_n_workers)               (MilterClient *client,
                                            guint         n_workers);
+    GPid   (*fork)                        (MilterClient *client);
 };
 
 GQuark               milter_client_error_quark       (void);
@@ -758,6 +761,18 @@ guint                milter_client_get_n_workers     (MilterClient  *client);
 void                 milter_client_set_n_workers     (MilterClient  *client,
                                                       guint          n_workers);
 
+/**
+ * milter_client_fork:
+ * @client: a %MilterClient.
+ *
+ * Forks new process.  If custom_fork is set, it will be called.
+ */
+GPid                 milter_client_fork                 (MilterClient *client);
+GPid                 milter_client_fork_without_custom  (MilterClient *client);
+void                 milter_client_set_custom_fork_func (MilterClient *client,
+                                                         MilterClientCustomForkFunc custom_fork);
+MilterClientCustomForkFunc milter_client_get_custom_fork_func
+                                                         (MilterClient *client);
 G_END_DECLS
 
 #endif /* __MILTER_CLIENT_CLIENT_H__ */

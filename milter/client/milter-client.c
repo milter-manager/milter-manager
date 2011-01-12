@@ -42,6 +42,7 @@ enum
     PROP_0,
     PROP_EVENT_LOOP_BACKEND,
     PROP_N_WORKER_PROCESSES,
+    PROP_CUSTOM_FORK,
 };
 
 enum
@@ -101,6 +102,7 @@ struct _MilterClientPrivate
 
     MilterSyslogLogger *syslog_logger;
     MilterClientEventLoopBackend event_loop_backend;
+    MilterClientCustomForkFunc custom_fork;
 };
 
 typedef struct _MilterClientProcessData
@@ -150,6 +152,7 @@ _milter_client_class_init (MilterClientClass *klass)
 
     client_class->get_default_connection_spec = get_default_connection_spec;
     client_class->listen_started = listen_started;
+    client_class->fork = (MilterClientCustomForkFunc)fork;
 
     spec = g_param_spec_enum("event-loop-backend",
                              "Event loop backend",
@@ -165,6 +168,12 @@ _milter_client_class_init (MilterClientClass *klass)
                              0, MILTER_CLIENT_MAX_N_WORKERS, 0,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_N_WORKER_PROCESSES, spec);
+
+    spec = g_param_spec_pointer("custom-fork",
+                                "Custom fork",
+                                "The custom fork",
+                                G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_CUSTOM_FORK, spec);
 
     signals[CONNECTION_ESTABLISHED] =
         g_signal_new("connection-established",
@@ -540,6 +549,9 @@ set_property (GObject      *object,
     case PROP_N_WORKER_PROCESSES:
         milter_client_set_n_workers(client, g_value_get_uint(value));
         break;
+    case PROP_CUSTOM_FORK:
+        priv->custom_fork = g_value_get_pointer(value);
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -563,6 +575,9 @@ get_property (GObject    *object,
         break;
     case PROP_N_WORKER_PROCESSES:
         g_value_set_uint(value, milter_client_get_n_workers(client));
+        break;
+    case PROP_CUSTOM_FORK:
+        g_value_set_pointer(value, priv->custom_fork);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -2223,6 +2238,56 @@ milter_client_set_n_workers (MilterClient  *client,
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
     priv->workers.n_process = n_workers;
+}
+
+GPid
+milter_client_fork (MilterClient *client)
+{
+    MilterClientClass *client_class;
+    MilterClientPrivate *priv;
+
+    g_return_val_if_fail(client != NULL, -1);
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    if (priv->custom_fork)
+        return priv->custom_fork(client);
+
+    client_class = MILTER_CLIENT_GET_CLASS(client);
+    return client_class->fork(client);
+}
+
+GPid
+milter_client_fork_without_custom (MilterClient *client)
+{
+    MilterClientClass *client_class;
+
+    g_return_val_if_fail(client != NULL, -1);
+
+    client_class = MILTER_CLIENT_GET_CLASS(client);
+    return client_class->fork(client);
+}
+
+void
+milter_client_set_custom_fork_func (MilterClient              *client,
+                                    MilterClientCustomForkFunc custom_fork)
+{
+    MilterClientPrivate *priv;
+
+    g_return_if_fail(client != NULL);
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    priv->custom_fork = custom_fork;
+}
+
+MilterClientCustomForkFunc
+milter_client_get_custom_fork_func (MilterClient *client)
+{
+    MilterClientPrivate *priv;
+
+    g_return_val_if_fail(client != NULL, NULL);
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    return priv->custom_fork;
 }
 
 /*
