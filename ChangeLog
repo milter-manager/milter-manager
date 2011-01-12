@@ -1,5 +1,8 @@
 2011-01-12  Kouhei Sutou  <kou@clear-code.com>
 
+	* html/index.html, doc/install-to-centos.rd*: update
+	milter-manager-repository version: 1.0.0-0 -> 1.0.0-1.
+
 	* yum/milter-manager-repository.spec: don't install GPG key for
 	RPM by hand.
 
