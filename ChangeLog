@@ -1,3 +1,12 @@
+2011-01-13  Kenji Okimoto  <okimoto@clear-code.com>
+
+	* binding/ruby/lib/milter/client/command-line.rb
+	(Milter::Client::CommandLine#remove run_worker): removed obsolete
+	method.
+
+	* binding/ruby/lib/milter/client/command-line.rb
+	(Milter::Client::CommandLine#run): follow the above change.
+
 2011-01-13  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* binding/ruby/src/toolkit/rb-milter-client.c (client_custom_fork):

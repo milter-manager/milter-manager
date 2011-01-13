@@ -53,18 +53,15 @@ module Milter
         end
         yield(client, options) if block_given?
         daemonize if @options.run_as_daemon
-        if @options.n_workers
-          run_worker(client, @options.n_workers)
-        else
-          client.run
-        end
+        client.n_workers = @options.n_workers if @options.n_workers
+        client.run
       end
 
       private
       def setup_options
         @options = OpenStruct.new
         @options.connection_spec = "inet:20025"
-	@options.status_on_error = "accept"
+        @options.status_on_error = "accept"
         @options.run_as_daemon = false
         @options.user = nil
         @options.group = nil
@@ -197,29 +194,6 @@ module Milter
         WEBrick::Daemon.start
       end
 
-      def run_worker(client, n)
-        client.listen
-        children = (1..n).map do
-          child = fork do
-            begin
-              client.run_worker
-            rescue SignalException
-            end
-          end
-          Process.detach(child)
-          child
-        end
-        begin
-          signal = "SIGTERM"
-          client.run_master
-        rescue SignalException => e
-          signal = e.signo
-          signal = "SIGINT" if signal.empty?
-          raise
-        ensure
-          Process.kill(signal, *children)
-        end
-      end
     end
   end
 end
