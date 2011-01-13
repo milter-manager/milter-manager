@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -29,6 +29,8 @@
 #include "../client.h"
 #include "milter-client-context.h"
 #include "milter-client-enum-types.h"
+
+#define PACKET_BUFFER_SIZE 4096
 
 enum
 {
@@ -104,6 +106,8 @@ struct _MilterClientContextPrivate
     gchar *quarantine_reason;
     MilterGenericSocketAddress address;
     MilterMessageResult *message_result;
+    GString *buffered_packets;
+    gboolean buffering;
 };
 
 static void         finished           (MilterFinishedEmittable *emittable);
@@ -127,6 +131,8 @@ static void get_property   (GObject         *object,
 
 static MilterDecoder *decoder_new    (MilterAgent *agent);
 static MilterEncoder *encoder_new    (MilterAgent *agent);
+static gboolean       flush          (MilterAgent *agent,
+                                      GError     **error);
 
 static MilterStatus default_negotiate  (MilterClientContext *context,
                                         MilterOption  *option,
@@ -207,6 +213,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
 
     agent_class->decoder_new   = decoder_new;
     agent_class->encoder_new   = encoder_new;
+    agent_class->flush = flush;
 
     klass->negotiate = default_negotiate;
     klass->connect = default_connect;
@@ -1544,6 +1551,8 @@ milter_client_context_init (MilterClientContext *context)
     memset(&(priv->address), '\0', sizeof(priv->address));
 
     priv->message_result = NULL;
+    priv->buffered_packets = g_string_new(NULL);
+    priv->buffering = FALSE;
 }
 
 static void
@@ -1619,6 +1628,11 @@ dispose (GObject *object)
     }
 
     dispose_message_result(priv);
+
+    if (priv->buffered_packets) {
+        g_string_free(priv->buffered_packets, TRUE);
+        priv->buffered_packets = NULL;
+    }
 
     G_OBJECT_CLASS(milter_client_context_parent_class)->dispose(object);
 }
@@ -1980,8 +1994,9 @@ cb_timeout (gpointer data)
 }
 
 static gboolean
-write_packet (MilterClientContext *context,
-              const gchar *packet, gsize packet_size)
+write_packet_without_error_handling (MilterClientContext *context,
+                                     const gchar *packet, gsize packet_size,
+                                     GError **error)
 {
     MilterClientContextPrivate *priv;
     MilterEventLoop *loop;
@@ -2003,12 +2018,27 @@ write_packet (MilterClientContext *context,
                                         packet, packet_size,
                                         &agent_error);
     if (agent_error) {
-        GError *error = NULL;
-        milter_utils_set_error_with_sub_error(&error,
-                                              MILTER_CLIENT_CONTEXT_ERROR,
-                                              MILTER_CLIENT_CONTEXT_ERROR_IO_ERROR,
-                                              agent_error,
-                                              "Failed to write to MTA");
+        milter_utils_set_error_with_sub_error(
+            error,
+            MILTER_CLIENT_CONTEXT_ERROR,
+            MILTER_CLIENT_CONTEXT_ERROR_IO_ERROR,
+            agent_error,
+            "Failed to write to MTA");
+    }
+
+    return success;
+}
+
+static gboolean
+write_packet (MilterClientContext *context,
+              const gchar *packet, gsize packet_size)
+{
+    gboolean success;
+    GError *error = NULL;
+
+    success = write_packet_without_error_handling(context, packet, packet_size,
+                                                  &error);
+    if (!success) {
         milter_error("[%u] [client][error][write] %s",
                      milter_agent_get_tag(MILTER_AGENT(context)),
                      error->message);
@@ -2089,6 +2119,44 @@ validate_action (const gchar *operation,
     return FALSE;
 }
 
+static gboolean
+write_packet_on_end_of_message (MilterClientContext *context,
+                                const gchar *packet, gsize packet_size)
+{
+    gboolean success = TRUE;
+    MilterClientContextPrivate *priv;
+
+    milter_debug("[%u] [client][buffered-packet][buffer]",
+                 milter_agent_get_tag(MILTER_AGENT(context)));
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    g_string_append_len(priv->buffered_packets, packet, packet_size);
+    priv->buffering = TRUE;
+
+    if (priv->buffered_packets->len > PACKET_BUFFER_SIZE) {
+        GError *agent_error = NULL;
+
+        success = milter_agent_flush(MILTER_AGENT(context), &agent_error);
+        if (!success) {
+            GError *error = NULL;
+            milter_utils_set_error_with_sub_error(
+                &error,
+                MILTER_CLIENT_CONTEXT_ERROR,
+                MILTER_CLIENT_CONTEXT_ERROR_IO_ERROR,
+                agent_error,
+                "Failed to auto flush buffered packets");
+            milter_error("[%u] [client][error][buffered-packets][write] %s",
+                         milter_agent_get_tag(MILTER_AGENT(context)),
+                         error->message);
+            milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context),
+                                        error);
+            g_error_free(error);
+        }
+    }
+
+    return success;
+}
+
 gboolean
 milter_client_context_add_header (MilterClientContext *context,
                                   const gchar *name, const gchar *value,
@@ -2129,7 +2197,7 @@ milter_client_context_add_header (MilterClientContext *context,
     milter_reply_encoder_encode_add_header(MILTER_REPLY_ENCODER(encoder),
                                            &packet, &packet_size,
                                            name, value);
-    return write_packet(context, packet, packet_size);
+    return write_packet_on_end_of_message(context, packet, packet_size);
 }
 
 gboolean
@@ -2174,7 +2242,7 @@ milter_client_context_insert_header (MilterClientContext *context,
     milter_reply_encoder_encode_insert_header(MILTER_REPLY_ENCODER(encoder),
                                               &packet, &packet_size,
                                               index, name, value);
-    return write_packet(context, packet, packet_size);
+    return write_packet_on_end_of_message(context, packet, packet_size);
 }
 
 gboolean
@@ -2218,7 +2286,7 @@ milter_client_context_change_header (MilterClientContext *context,
     milter_reply_encoder_encode_change_header(MILTER_REPLY_ENCODER(encoder),
                                               &packet, &packet_size,
                                               name, index, value);
-    return write_packet(context, packet, packet_size);
+    return write_packet_on_end_of_message(context, packet, packet_size);
 }
 
 gboolean
@@ -2261,7 +2329,7 @@ milter_client_context_delete_header (MilterClientContext *context,
     milter_reply_encoder_encode_delete_header(MILTER_REPLY_ENCODER(encoder),
                                               &packet, &packet_size,
                                               name, index);
-    return write_packet(context, packet, packet_size);
+    return write_packet_on_end_of_message(context, packet, packet_size);
 }
 
 gboolean
@@ -2306,7 +2374,7 @@ milter_client_context_change_from (MilterClientContext *context,
     milter_reply_encoder_encode_change_from(MILTER_REPLY_ENCODER(encoder),
                                             &packet, &packet_size,
                                             from, parameters);
-    return write_packet(context, packet, packet_size);
+    return write_packet_on_end_of_message(context, packet, packet_size);
 }
 
 gboolean
@@ -2352,7 +2420,7 @@ milter_client_context_add_recipient (MilterClientContext *context,
     milter_reply_encoder_encode_add_recipient(MILTER_REPLY_ENCODER(encoder),
                                               &packet, &packet_size,
                                               recipient, parameters);
-    return write_packet(context, packet, packet_size);
+    return write_packet_on_end_of_message(context, packet, packet_size);
 }
 
 gboolean
@@ -2394,7 +2462,7 @@ milter_client_context_delete_recipient (MilterClientContext *context,
     milter_reply_encoder_encode_delete_recipient(MILTER_REPLY_ENCODER(encoder),
                                                  &packet, &packet_size,
                                                  recipient);
-    return write_packet(context, packet, packet_size);
+    return write_packet_on_end_of_message(context, packet, packet_size);
 }
 
 gboolean
@@ -2440,7 +2508,7 @@ milter_client_context_replace_body (MilterClientContext *context,
         if (packed_size == 0)
             return FALSE;
 
-        if (!write_packet(context, packet, packet_size))
+        if (!write_packet_on_end_of_message(context, packet, packet_size))
             return FALSE;
     }
 
@@ -2569,10 +2637,23 @@ reply (MilterClientContext *context, MilterStatus status)
 static gboolean
 reply_on_end_of_message (MilterClientContext *context, MilterStatus status)
 {
+    MilterAgent *agent;
     MilterClientContextPrivate *priv;
     const gchar *packet = NULL;
     gsize packet_size;
+    GError *error = NULL;
     gboolean success;
+
+    agent = MILTER_AGENT(context);
+    if (!milter_agent_flush(agent, &error)) {
+        milter_error("[%u] [client][error][reply-on-end-of-message][flush] %s",
+                     milter_agent_get_tag(agent),
+                     error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context),
+                                    error);
+        g_error_free(error);
+        return FALSE;
+    }
 
     create_reply_packet(context, status, &packet, &packet_size);
 
@@ -2585,7 +2666,7 @@ reply_on_end_of_message (MilterClientContext *context, MilterStatus status)
         MilterReplyEncoder *reply_encoder;
         GString *concatenated_packet;
 
-        encoder = milter_agent_get_encoder(MILTER_AGENT(context));
+        encoder = milter_agent_get_encoder(agent);
         reply_encoder = MILTER_REPLY_ENCODER(encoder);
 
         concatenated_packet = g_string_new_len(packet, packet_size);
@@ -3463,6 +3544,55 @@ static MilterEncoder *
 encoder_new (MilterAgent *agent)
 {
     return milter_reply_encoder_new();
+}
+
+static gboolean
+flush (MilterAgent *agent, GError **error)
+{
+    gboolean success = TRUE;
+    MilterAgentClass *agent_class;
+    MilterClientContext *context;
+    MilterClientContextPrivate *priv;
+
+    context = MILTER_CLIENT_CONTEXT(agent);
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+
+    if (priv->buffering) {
+        GError *local_error = NULL;
+
+        milter_debug("[%u] [client][buffered-packets][flush]"
+                     "<%" G_GSIZE_FORMAT ">",
+                     milter_agent_get_tag(agent),
+                     priv->buffered_packets->len);
+        priv->buffering = FALSE;
+        success = write_packet_without_error_handling(
+            context,
+            priv->buffered_packets->str,
+            priv->buffered_packets->len,
+            &local_error);
+        if (!success) {
+            milter_error("[%u] [client][error][buffered-packets][write] %s",
+                         milter_agent_get_tag(agent),
+                         local_error->message);
+            milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(agent),
+                                        local_error);
+            g_propagate_error(error, local_error);
+        }
+        g_string_truncate(priv->buffered_packets, 0);
+    } else {
+        milter_debug("[%u] [client][buffered-packets][flush][needless]",
+                     milter_agent_get_tag(agent));
+    }
+
+    if (!success)
+        return success;
+
+    agent_class = MILTER_AGENT_CLASS(milter_client_context_parent_class);
+    if (agent_class->flush) {
+        return agent_class->flush(agent, error);
+    } else {
+        return success;
+    }
 }
 
 static gboolean

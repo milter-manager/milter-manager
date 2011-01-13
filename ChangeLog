@@ -1,5 +1,8 @@
 2011-01-13  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/client/milter-client-context.c: buffer packets on end of
+	message.
+
 	* milter/core/milter-agent.[ch]: make flush() method.
 
 2011-01-13  Nobuyoshi Nakada  <nakada@clear-code.com>
