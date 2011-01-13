@@ -470,6 +470,9 @@ milter_agent_write_packet (MilterAgent *agent,
 
     success = milter_writer_write(priv->writer, packet, packet_size,
                                   NULL, error);
+    if (success) {
+        success = milter_agent_flush(agent, error);
+    }
 
     return success;
 }

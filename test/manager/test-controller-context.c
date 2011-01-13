@@ -171,6 +171,17 @@ cut_teardown (void)
         g_free(custom_config_path);
 }
 
+static void
+write_packet (const gchar *packet, gsize packet_size)
+{
+    GError *error = NULL;
+
+    milter_writer_write(writer, packet, packet_size, NULL, &error);
+    gcut_assert_error(error);
+    milter_writer_flush(writer, &error);
+    gcut_assert_error(error);
+}
+
 void
 test_set_configuration (void)
 {
@@ -178,7 +189,6 @@ test_set_configuration (void)
     gsize packet_size;
     const gchar configuration[] = "XXX";
     GString *output;
-    GError *error = NULL;
 
     cut_assert_path_not_exist(custom_config_path);
 
@@ -186,8 +196,7 @@ test_set_configuration (void)
         command_encoder,
         &packet, &packet_size,
         configuration, strlen(configuration));
-    milter_writer_write(writer, packet, packet_size, NULL, &error);
-    gcut_assert_error(error);
+    cut_trace(write_packet(packet, packet_size));
     milter_test_pump_all_events(loop);
 
     cut_assert_path_exist(custom_config_path);
@@ -208,7 +217,6 @@ test_set_configuration_failed (void)
     const gchar configuration[] = "XXX";
     GString *output;
     guint packet_size_space;
-    GError *error = NULL;
 
     config = milter_manager_get_configuration(manager);
     milter_manager_configuration_clear_load_paths(config);
@@ -221,8 +229,7 @@ test_set_configuration_failed (void)
         command_encoder,
         &packet, &packet_size,
         configuration, strlen(configuration));
-    milter_writer_write(writer, packet, packet_size, NULL, &error);
-    gcut_assert_error(error);
+    cut_trace(write_packet(packet, packet_size));
     milter_test_pump_all_events(loop);
 
     cut_assert_path_not_exist(custom_config_path);
@@ -271,8 +278,7 @@ test_reload (void)
 
     milter_manager_control_command_encoder_encode_reload(command_encoder,
                                                          &packet, &packet_size);
-    milter_writer_write(writer, packet, packet_size, NULL, &error);
-    gcut_assert_error(error);
+    cut_trace(write_packet(packet, packet_size));
     milter_test_pump_all_events(loop);
     cut_assert_true(milter_manager_configuration_is_privilege_mode(config));
 

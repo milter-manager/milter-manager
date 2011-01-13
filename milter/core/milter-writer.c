@@ -224,7 +224,8 @@ write_to_io_channel (MilterWriter *writer, const gchar *chunk, gsize chunk_size,
             break;
         }
 
-        g_io_channel_flush(priv->io_channel, NULL);
+        if (current_written_size == 0)
+            g_io_channel_flush(priv->io_channel, NULL);
     }
 
     if (written_size)

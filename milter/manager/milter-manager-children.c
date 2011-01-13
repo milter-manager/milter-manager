@@ -2533,7 +2533,20 @@ milter_manager_children_start_child (MilterManagerChildren *children,
     g_object_unref(encoder);
 
     if (error) {
-        milter_error("[%u] [children][error][start-child] [%u] %s: %s",
+        milter_error("[%u] [children][error][start-child][write] [%u] %s: %s",
+                     priv->tag,
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     error->message,
+                     milter_server_context_get_name(context));
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
+                                    error);
+        g_error_free(error);
+        return FALSE;
+    }
+
+    milter_writer_flush(priv->launcher_writer, &error);
+    if (error) {
+        milter_error("[%u] [children][error][start-child][flush] [%u] %s: %s",
                      priv->tag,
                      milter_agent_get_tag(MILTER_AGENT(context)),
                      error->message,

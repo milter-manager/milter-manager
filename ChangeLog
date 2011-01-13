@@ -1,5 +1,12 @@
 2011-01-13  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/core/milter-writer.c (write_to_io_channel): don't flush.
+	flush manually.
+	* milter/core/milter-agent.c,
+	milter/manager/milter-manager-children.c,
+	test/core/test-writer.c, test/manager/test-controller-context.c,
+	test/manager/test-process-launcher.c: follow the above change.
+
 	* ./: suppress memory allocation for milter protocol packet
 	encoding but it doesn't affect speed. :<
 

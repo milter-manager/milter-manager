@@ -165,12 +165,22 @@ cut_teardown (void)
         g_object_unref(loop);
 }
 
+static void
+write_packet (const gchar *packet, gsize packet_size)
+{
+    GError *error = NULL;
+
+    milter_writer_write(writer, packet, packet_size, NULL, &error);
+    gcut_assert_error(error);
+    milter_writer_flush(writer, &error);
+    gcut_assert_error(error);
+}
+
 void
 test_launch (void)
 {
     const gchar *packet;
     gsize packet_size;
-    GError *error = NULL;
     GString *output;
     const gchar command_line[] = "/bin/echo -n";
     const gchar *user_name;
@@ -179,8 +189,7 @@ test_launch (void)
     milter_manager_launch_command_encoder_encode_launch(command_encoder,
                                                         &packet, &packet_size,
                                                         command_line, user_name);
-    milter_writer_write(writer, packet, packet_size, NULL, &error);
-    gcut_assert_error(error);
+    cut_trace(write_packet(packet, packet_size));
     milter_test_pump_all_events(loop);
 
     milter_manager_reply_encoder_encode_success(reply_encoder,
@@ -197,7 +206,6 @@ test_already_launched (void)
     gsize packet_size;
     GString *output;
     GString *expected_packet;
-    GError *error = NULL;
     const gchar command_line[] = "/bin/cat";
     const gchar *user_name;
 
@@ -205,9 +213,8 @@ test_already_launched (void)
     milter_manager_launch_command_encoder_encode_launch(command_encoder,
                                                         &packet, &packet_size,
                                                         command_line, user_name);
-    milter_writer_write(writer, packet, packet_size, NULL, &error);
-    milter_writer_write(writer, packet, packet_size, NULL, &error);
-    gcut_assert_error(error);
+    cut_trace(write_packet(packet, packet_size));
+    cut_trace(write_packet(packet, packet_size));
     milter_test_pump_all_events(loop);
 
     milter_manager_reply_encoder_encode_success(reply_encoder,
@@ -268,7 +275,6 @@ test_launch_error (gconstpointer data)
     const gchar *packet;
     gsize packet_size;
     GString *output;
-    GError *error = NULL;
     const gchar *command;
     const gchar *user_name;
     const gchar *expected_error_message;
@@ -281,8 +287,7 @@ test_launch_error (gconstpointer data)
     milter_manager_launch_command_encoder_encode_launch(command_encoder,
                                                         &packet, &packet_size,
                                                         command, user_name);
-    milter_writer_write(writer, packet, packet_size, NULL, &error);
-    gcut_assert_error(error);
+    cut_trace(write_packet(packet, packet_size));
     milter_test_pump_all_events(loop);
 
     milter_manager_reply_encoder_encode_error(reply_encoder,
