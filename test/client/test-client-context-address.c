@@ -33,14 +33,18 @@ void data_change_from (void);
 void test_change_from (gconstpointer data);
 void data_change_from_error_no_from (void);
 void test_change_from_error_no_from (gconstpointer data);
+void data_change_from_error_empty_from (void);
+void test_change_from_error_empty_from (gconstpointer data);
 void data_add_recipient (void);
 void test_add_recipient (gconstpointer data);
 void data_add_recipient_error_no_recipient (void);
 void test_add_recipient_error_no_recipient (gconstpointer data);
+void data_add_recipient_error_empty_recipient (void);
+void test_add_recipient_error_empty_recipient (gconstpointer data);
 void data_delete_recipient (void);
 void test_delete_recipient (gconstpointer data);
-void data_delete_recipient_error_no_recipient (void);
-void test_delete_recipient_error_no_recipient (gconstpointer data);
+void test_delete_recipient_error_no_recipient (void);
+void test_delete_recipient_error_empty_recipient (void);
 
 static MilterEventLoop *loop;
 
@@ -305,6 +309,40 @@ test_change_from_error_no_from (gconstpointer data)
 }
 
 void
+data_change_from_error_empty_from (void)
+{
+    cut_add_data("parameters",
+                 address_test_data_new("", "XXX"),
+                 address_test_data_free,
+                 "no parameters",
+                 address_test_data_new("", NULL),
+                 address_test_data_free,
+                 NULL);
+}
+
+void
+test_change_from_error_empty_from (gconstpointer data)
+{
+    const AddressTestData *test_data = data;
+    const gchar *packet;
+    gsize packet_size;
+
+    do_change_from = TRUE;
+
+    change_from = g_strdup(test_data->address);
+    change_from_parameters = g_strdup(test_data->parameters);
+    milter_command_encoder_encode_end_of_message(command_encoder,
+                                                 &packet, &packet_size,
+                                                 NULL, 0);
+    g_set_error(&expected_error_in_callback,
+                MILTER_CLIENT_CONTEXT_ERROR,
+                MILTER_CLIENT_CONTEXT_ERROR_EMPTY,
+                "from should not be empty: parameters=<%s>",
+                test_data->parameters ? test_data->parameters : "NULL");
+    gcut_assert_error(feed(packet, packet_size));
+}
+
+void
 data_add_recipient (void)
 {
     cut_add_data("recipient",
@@ -379,10 +417,44 @@ test_add_recipient_error_no_recipient (gconstpointer data)
 }
 
 void
+data_add_recipient_error_empty_recipient (void)
+{
+    cut_add_data("no recipient",
+                 address_test_data_new("", NULL),
+                 address_test_data_free,
+                 "no recipient - parameters",
+                 address_test_data_new("", "XXX"),
+                 address_test_data_free,
+                 NULL);
+}
+
+void
+test_add_recipient_error_empty_recipient (gconstpointer data)
+{
+    const AddressTestData *test_data = data;
+    const gchar *packet;
+    gsize packet_size;
+
+    do_add_recipient = TRUE;
+
+    add_recipient = g_strdup(test_data->address);
+    add_recipient_parameters = g_strdup(test_data->parameters);
+    milter_command_encoder_encode_end_of_message(command_encoder,
+                                                 &packet, &packet_size,
+                                                 NULL, 0);
+
+    g_set_error(&expected_error_in_callback,
+                MILTER_CLIENT_CONTEXT_ERROR,
+                MILTER_CLIENT_CONTEXT_ERROR_EMPTY,
+                "added recipient should not be empty: parameters=<%s>",
+                test_data->parameters ? test_data->parameters : "NULL");
+    gcut_assert_error(feed(packet, packet_size));
+}
+
+void
 data_delete_recipient (void)
 {
     cut_add_data("valid", g_strdup("kou@localhost"), g_free,
-                 "empty", g_strdup(""), g_free,
                  NULL);
 }
 
@@ -412,22 +484,14 @@ test_delete_recipient (gconstpointer data)
 }
 
 void
-data_delete_recipient_error_no_recipient (void)
+test_delete_recipient_error_no_recipient (void)
 {
-    cut_add_data("NULL", NULL, NULL,
-                 NULL);
-}
-
-void
-test_delete_recipient_error_no_recipient (gconstpointer data)
-{
-    const gchar *recipient = data;
     const gchar *packet;
     gsize packet_size;
 
     do_delete_recipient = TRUE;
 
-    delete_recipient = g_strdup(recipient);
+    delete_recipient = NULL;
     milter_command_encoder_encode_end_of_message(command_encoder,
                                                  &packet, &packet_size,
                                                  NULL, 0);
@@ -436,6 +500,26 @@ test_delete_recipient_error_no_recipient (gconstpointer data)
                 MILTER_CLIENT_CONTEXT_ERROR,
                 MILTER_CLIENT_CONTEXT_ERROR_NULL,
                 "deleted recipient should not be NULL");
+    gcut_assert_error(feed(packet, packet_size));
+}
+
+void
+test_delete_recipient_error_empty_recipient (void)
+{
+    const gchar *packet;
+    gsize packet_size;
+
+    do_delete_recipient = TRUE;
+
+    delete_recipient = g_strdup("");
+    milter_command_encoder_encode_end_of_message(command_encoder,
+                                                 &packet, &packet_size,
+                                                 NULL, 0);
+
+    g_set_error(&expected_error_in_callback,
+                MILTER_CLIENT_CONTEXT_ERROR,
+                MILTER_CLIENT_CONTEXT_ERROR_EMPTY,
+                "deleted recipient should not be empty");
     gcut_assert_error(feed(packet, packet_size));
 }
 

@@ -227,6 +227,8 @@ G_BEGIN_DECLS
  * @MILTER_CLIENT_CONTEXT_ERROR_INVALID_ACTION: Indicates
  * unexpected operation is requested on the context's
  * %MilterActionFlags.
+ * @MILTER_CLIENT_CONTEXT_ERROR_NULL: Indicates unexpected
+ * empty value is passed.
  *
  * These identify the variable errors that can occur while
  * calling %MilterClientContext functions.
@@ -237,7 +239,8 @@ typedef enum
     MILTER_CLIENT_CONTEXT_ERROR_IO_ERROR,
     MILTER_CLIENT_CONTEXT_ERROR_NULL,
     MILTER_CLIENT_CONTEXT_ERROR_INVALID_STATE,
-    MILTER_CLIENT_CONTEXT_ERROR_INVALID_ACTION
+    MILTER_CLIENT_CONTEXT_ERROR_INVALID_ACTION,
+    MILTER_CLIENT_CONTEXT_ERROR_EMPTY
 } MilterClientContextError;
 
 /**

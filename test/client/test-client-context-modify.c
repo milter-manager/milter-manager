@@ -188,6 +188,9 @@ test_add_header (gconstpointer data)
 
         gcut_assert_error(actual_error);
 
+        milter_agent_flush(MILTER_AGENT(context), &actual_error);
+        gcut_assert_error(actual_error);
+
         actual_data = gcut_string_io_channel_get_string(channel);
         cut_assert_equal_memory(gcut_data_get_pointer(data, "packet"),
                                 gcut_data_get_uint(data, "packet-size"),
@@ -289,6 +292,9 @@ test_insert_header (gconstpointer data)
 
         gcut_assert_error(actual_error);
 
+        milter_agent_flush(MILTER_AGENT(context), &actual_error);
+        gcut_assert_error(actual_error);
+
         actual_data = gcut_string_io_channel_get_string(channel);
         cut_assert_equal_memory(gcut_data_get_pointer(data, "packet"),
                                 gcut_data_get_uint(data, "packet-size"),
@@ -385,6 +391,9 @@ test_change_header (gconstpointer data)
 
         gcut_assert_error(actual_error);
 
+        milter_agent_flush(MILTER_AGENT(context), &actual_error);
+        gcut_assert_error(actual_error);
+
         actual_data = gcut_string_io_channel_get_string(channel);
         cut_assert_equal_memory(gcut_data_get_pointer(data, "packet"),
                                 gcut_data_get_uint(data, "packet-size"),
@@ -474,6 +483,9 @@ test_delete_header (gconstpointer data)
     } else {
         GString *actual_data;
 
+        gcut_assert_error(actual_error);
+
+        milter_agent_flush(MILTER_AGENT(context), &actual_error);
         gcut_assert_error(actual_error);
 
         actual_data = gcut_string_io_channel_get_string(channel);

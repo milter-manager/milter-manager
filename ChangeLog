@@ -1,5 +1,10 @@
 2011-01-13  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/client/milter-client-context.[ch],
+	test/client/test-client-context-address.c,
+	test/client/test-client-context-modify.c: add empty input check to
+	add_recipient, delete_recipient and change_from.
+
 	* milter/client/milter-client-context.c: buffer packets on end of
 	message.
 

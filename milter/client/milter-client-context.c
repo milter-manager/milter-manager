@@ -2352,6 +2352,15 @@ milter_client_context_change_from (MilterClientContext *context,
         return FALSE;
     }
 
+    if (from[0] == '\0') {
+        g_set_error(error,
+                    MILTER_CLIENT_CONTEXT_ERROR,
+                    MILTER_CLIENT_CONTEXT_ERROR_EMPTY,
+                    "from should not be empty: parameters=<%s>",
+                    parameters ? parameters : "NULL");
+        return FALSE;
+    }
+
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     if (!validate_state("change-from",
                         MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE,
@@ -2397,6 +2406,15 @@ milter_client_context_add_recipient (MilterClientContext *context,
         return FALSE;
     }
 
+    if (recipient[0] == '\0') {
+        g_set_error(error,
+                    MILTER_CLIENT_CONTEXT_ERROR,
+                    MILTER_CLIENT_CONTEXT_ERROR_EMPTY,
+                    "added recipient should not be empty: parameters=<%s>",
+                    parameters ? parameters : "NULL");
+        return FALSE;
+    }
+
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     if (!validate_state("add-recipient",
                         MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE,
@@ -2438,6 +2456,14 @@ milter_client_context_delete_recipient (MilterClientContext *context,
                     MILTER_CLIENT_CONTEXT_ERROR,
                     MILTER_CLIENT_CONTEXT_ERROR_NULL,
                     "deleted recipient should not be NULL");
+        return FALSE;
+    }
+
+    if (recipient[0] == '\0') {
+        g_set_error(error,
+                    MILTER_CLIENT_CONTEXT_ERROR,
+                    MILTER_CLIENT_CONTEXT_ERROR_EMPTY,
+                    "deleted recipient should not be empty");
         return FALSE;
     }
 
