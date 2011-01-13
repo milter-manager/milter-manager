@@ -10,7 +10,9 @@ utils_files =					\
 	milter-encoder-test-utils.rb		\
 	milter-manager-encoder-test-utils.rb	\
 	milter-detector-test-utils.rb		\
-	milter-parse-test-utils.rb
+	milter-parse-test-utils.rb		\
+	milter-event-loop-test-utils.rb		\
+	milter-multiprocess-test-utils.rb
 
 EXTRA_DIST =		\
 	$(TESTS)	\
