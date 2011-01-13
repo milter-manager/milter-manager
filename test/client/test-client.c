@@ -327,7 +327,8 @@ cut_setup (void)
     client = milter_client_new();
     env = g_getenv("MILTER_N_WORKERS");
     if (env && (n_workers = g_ascii_strtoull(env, NULL, 10)) > 0) {
-        if (n_workers > UINT_MAX) n_workers = 0;
+        if (n_workers > UINT_MAX)
+            n_workers = 0;
         milter_client_set_n_workers(client, n_workers);
     }
     loop_run_count = 0;
