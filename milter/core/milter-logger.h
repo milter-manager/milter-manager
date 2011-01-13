@@ -120,13 +120,17 @@ typedef enum
     MILTER_LOG_ITEM_DOMAIN      = 1 << 1,
     MILTER_LOG_ITEM_LEVEL       = 1 << 2,
     MILTER_LOG_ITEM_LOCATION    = 1 << 3,
-    MILTER_LOG_ITEM_TIME        = 1 << 4
+    MILTER_LOG_ITEM_TIME        = 1 << 4,
+    MILTER_LOG_ITEM_NAME        = 1 << 5,
+    MILTER_LOG_ITEM_PID         = 1 << 6
 } MilterLogItemFlags;
 
 #define MILTER_LOG_ITEM_ALL (MILTER_LOG_ITEM_DOMAIN |   \
                              MILTER_LOG_ITEM_LEVEL |    \
                              MILTER_LOG_ITEM_LOCATION | \
-                             MILTER_LOG_ITEM_TIME)
+                             MILTER_LOG_ITEM_TIME |     \
+                             MILTER_LOG_ITEM_NAME |     \
+                             MILTER_LOG_ITEM_PID)
 
 typedef enum
 {

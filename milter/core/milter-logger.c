@@ -369,6 +369,18 @@ milter_logger_default_log_handler (MilterLogger *logger, const gchar *domain,
         g_free(time_string);
     }
 
+    if (target_item & MILTER_LOG_ITEM_NAME) {
+        if (log->len > 0)
+            g_string_append(log, " ");
+        g_string_append_printf(log, "[%s]", g_get_prgname());
+    }
+
+    if (target_item & MILTER_LOG_ITEM_PID) {
+        if (log->len > 0 && !(target_item & MILTER_LOG_ITEM_NAME))
+            g_string_append(log, " ");
+        g_string_append_printf(log, "[%u]", getpid());
+    }
+
     if (file && (target_item & MILTER_LOG_ITEM_LOCATION)) {
         if (log->len > 0)
             g_string_append(log, " ");

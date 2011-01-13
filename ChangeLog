@@ -1,5 +1,7 @@
 2011-01-13  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/core/milter-logger.[ch]: support program name and pid in log.
+
 	* milter/core/milter-writer.c (write_to_io_channel): don't flush.
 	flush manually.
 	* milter/core/milter-agent.c,
