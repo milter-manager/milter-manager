@@ -16,9 +16,11 @@
 
 class TestClient < Test::Unit::TestCase
   include MilterTestUtils
+  include MilterMultiprocessTestUtils
 
   def setup
     @client = Milter::Client.new
+    setup_workers(@client)
   end
 
   def test_connection_spec
@@ -67,7 +69,7 @@ class TestClient < Test::Unit::TestCase
   end
 
   def test_n_workers
-    assert_equal(0, @client.n_workers)
+    assert_equal(@n_workers, @client.n_workers)
     @client.n_workers = 10
     assert_equal(10, @client.n_workers)
   end

@@ -1,3 +1,12 @@
+2011-01-13  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* binding/ruby/test/milter-multiprocess-test-utils.rb
+	(MilterMultiprocessTestUtils): utility module for
+	MILTER_N_WORKERS.
+
+	* binding/ruby/test/toolkit/test-client.rb (TestClient#test_n_workers):
+	fix for MILTER_N_WORKERS.
+
 2011-01-13  Kouhei Sutou  <kou@clear-code.com>
 
 	* binding/ruby/test/toolkit/test-logger.rb
