@@ -522,7 +522,8 @@ test_negotiate (void)
     MilterStepFlags step;
     GError *error = NULL;
 
-    cut_omit("can't obtain the result from callbacks in child process");
+    if (n_workers > 0)
+        cut_omit("can't obtain the result from callbacks in child process");
 
     version = 2;
     action = MILTER_ACTION_ADD_HEADERS |
@@ -573,7 +574,8 @@ test_helo (void)
 {
     GError *error = NULL;
 
-    cut_omit("can't obtain the result from callbacks in child process");
+    if (n_workers > 0)
+        cut_omit("can't obtain the result from callbacks in child process");
 
     idle_id = milter_event_loop_add_idle(loop, cb_idle_helo, NULL);
 
