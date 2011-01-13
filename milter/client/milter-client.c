@@ -1816,7 +1816,11 @@ milter_client_run_worker (MilterClient *client, GError **error)
 {
     GThread *thread = run_worker(client, error);
 
-    if (!thread) return FALSE;
+    if (!thread) {
+        /* TODO: report error. */
+        return FALSE;
+    }
+
     g_thread_join(thread);
 
     return TRUE;
