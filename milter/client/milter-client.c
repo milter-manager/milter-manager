@@ -1636,7 +1636,9 @@ worker_watch_master (GIOChannel   *source,
 
     if (g_io_channel_read_chars(source, buf, 1, &count, NULL) == G_IO_STATUS_EOF) {
         MilterClient *client = data;
-        MilterClientPrivate *priv = MILTER_CLIENT_GET_PRIVATE(client);
+        MilterClientPrivate *priv;
+
+        priv = MILTER_CLIENT_GET_PRIVATE(client);
         if (priv->listening_channel) {
             GIOChannel *listening_channel = priv->listening_channel;
             priv->listening_channel = NULL;
