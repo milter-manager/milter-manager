@@ -22,6 +22,8 @@
 	(client_invoke_workers): do not wait accepting thread.
 	(worker_watch_master): force server_fd to close.
 	(worker_watch_master): should not close server_fd directly.
+	(client_invoke_workers): should not clean up client in master
+	processe twice.
 
 	* test/client/test-client.c (cut_setup): set n_workers from
 	environment variable MILTER_N_WORKERS.

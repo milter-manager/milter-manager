@@ -136,6 +136,8 @@ static void   listen_started
                             socklen_t        address_size);
 static GPid   default_fork (MilterClient    *client);
 
+static gboolean run_master (MilterClient *client,
+                            GError      **error);
 static GThread *run_worker (MilterClient *client,
                             GError      **error);
 
@@ -1700,7 +1702,7 @@ client_invoke_workers (MilterClient *client, guint n_workers, GError **error)
     }
     g_io_channel_unref(priv->workers.control);
     priv->workers.control = setup_client_channel(pipe_fds[MILTER_UTILS_WRITE_PIPE]);
-    return milter_client_run_master(client, error);
+    return run_master(client, error);
 }
 
 gboolean
@@ -1749,6 +1751,14 @@ milter_client_main (MilterClient *client)
 gboolean
 milter_client_run_master (MilterClient *client, GError **error)
 {
+    if (run_master(client, error)) return FALSE;
+    milter_client_cleanup(client);
+    return TRUE;
+}
+
+static gboolean
+run_master (MilterClient *client, GError **error)
+{
     MilterClientPrivate *priv;
     GError *local_error = NULL;
 
@@ -1769,8 +1779,6 @@ milter_client_run_master (MilterClient *client, GError **error)
     priv->quitting = FALSE;
 
     single_thread_accept_loop_run(client, priv->accept_loop);
-
-    milter_client_cleanup(client);
 
     return TRUE;
 }
