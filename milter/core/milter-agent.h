@@ -64,6 +64,8 @@ struct _MilterAgentClass
 
     MilterDecoder *(*decoder_new)   (MilterAgent *agent);
     MilterEncoder *(*encoder_new)   (MilterAgent *agent);
+    gboolean       (*flush)         (MilterAgent *agent,
+                                     GError     **error);
 };
 
 GQuark               milter_agent_error_quark       (void);

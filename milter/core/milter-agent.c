@@ -85,6 +85,9 @@ static void get_property   (GObject         *object,
                             GValue          *value,
                             GParamSpec      *pspec);
 
+static gboolean flush      (MilterAgent     *agent,
+                            GError         **error);
+
 static void
 milter_agent_class_init (MilterAgentClass *klass)
 {
@@ -100,6 +103,7 @@ milter_agent_class_init (MilterAgentClass *klass)
 
     klass->decoder_new = NULL;
     klass->encoder_new = NULL;
+    klass->flush = flush;
 
     spec = g_param_spec_object("reader",
                                "Reader",
@@ -203,24 +207,19 @@ milter_agent_init (MilterAgent *agent)
 static void
 dispose (GObject *object)
 {
+    MilterAgent *agent;
     MilterAgentPrivate *priv;
 
-    priv = MILTER_AGENT_GET_PRIVATE(object);
+    agent = MILTER_AGENT(object);
+    priv = MILTER_AGENT_GET_PRIVATE(agent);
 
     if (priv->timer) {
         g_timer_destroy(priv->timer);
         priv->timer = NULL;
     }
 
-    if (priv->reader) {
-        g_object_unref(priv->reader);
-        priv->reader = NULL;
-    }
-
-    if (priv->writer) {
-        g_object_unref(priv->writer);
-        priv->writer = NULL;
-    }
+    milter_agent_set_reader(agent, NULL);
+    milter_agent_set_writer(agent, NULL);
 
     if (priv->decoder) {
         g_object_unref(priv->decoder);
@@ -298,6 +297,22 @@ get_property (GObject    *object,
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
+}
+
+static gboolean
+flush (MilterAgent *agent, GError **error)
+{
+    MilterAgentPrivate *priv;
+    gboolean success;
+
+    priv = MILTER_AGENT_GET_PRIVATE(agent);
+
+    if (!priv->writer)
+        return TRUE;
+
+    success = milter_writer_flush(priv->writer, error);
+
+    return success;
 }
 
 static void
@@ -480,17 +495,10 @@ milter_agent_write_packet (MilterAgent *agent,
 gboolean
 milter_agent_flush (MilterAgent *agent, GError **error)
 {
-    MilterAgentPrivate *priv;
-    gboolean success;
+    MilterAgentClass *agent_class;
 
-    priv = MILTER_AGENT_GET_PRIVATE(agent);
-
-    if (!priv->writer)
-        return TRUE;
-
-    success = milter_writer_flush(priv->writer, error);
-
-    return success;
+    agent_class = MILTER_AGENT_GET_CLASS(agent);
+    return agent_class->flush(agent, error);
 }
 
 void
@@ -501,6 +509,15 @@ milter_agent_set_writer (MilterAgent *agent, MilterWriter *writer)
     priv = MILTER_AGENT_GET_PRIVATE(agent);
 
     if (priv->writer) {
+        if (milter_writer_is_watching(priv->writer)) {
+            GError *error = NULL;
+            if (!milter_agent_flush(agent, &error)) {
+                milter_error("[%u] [agent][error][set-writer][auto-flush] %s",
+                             priv->tag, error->message);
+                g_error_free(error);
+            }
+        }
+
         milter_writer_set_tag(priv->writer, 0);
 
 #define DISCONNECT(name)                                                \

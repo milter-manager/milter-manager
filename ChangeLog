@@ -1,3 +1,7 @@
+2011-01-13  Kouhei Sutou  <kou@clear-code.com>
+
+	* milter/core/milter-agent.[ch]: make flush() method.
+
 2011-01-13  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* binding/ruby/src/toolkit/rb-milter-client.c (client_run_master)
