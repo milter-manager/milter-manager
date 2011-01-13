@@ -129,6 +129,7 @@ static gchar *tmp_dir;
 static guint loop_run_count;
 
 static guint n_worker_fork_called;
+static guint64 n_workers;
 
 static void
 cb_negotiate (MilterClientContext *context, MilterOption *option,
@@ -320,13 +321,13 @@ void
 cut_setup (void)
 {
     const gchar *env;
-    guint64 n_workers;
 
     spec = "inet:9999@127.0.0.1";
 
     client = milter_client_new();
     env = g_getenv("MILTER_N_WORKERS");
     if (env && (n_workers = g_ascii_strtoull(env, NULL, 10)) > 0) {
+        if (n_workers > UINT_MAX) n_workers = 0;
         milter_client_set_n_workers(client, n_workers);
     }
     loop_run_count = 0;
@@ -520,6 +521,8 @@ test_negotiate (void)
     MilterStepFlags step;
     GError *error = NULL;
 
+    cut_omit("can't obtain the result from callbacks in child process");
+
     version = 2;
     action = MILTER_ACTION_ADD_HEADERS |
         MILTER_ACTION_CHANGE_BODY |
@@ -568,6 +571,8 @@ void
 test_helo (void)
 {
     GError *error = NULL;
+
+    cut_omit("can't obtain the result from callbacks in child process");
 
     idle_id = milter_event_loop_add_idle(loop, cb_idle_helo, NULL);
 
@@ -968,7 +973,7 @@ void
 test_n_workers (void)
 {
     cut_assert_equal_uint(
-        0, milter_client_get_n_workers(client));
+        n_workers, milter_client_get_n_workers(client));
     milter_client_set_n_workers(client, 10);
     cut_assert_equal_uint(
         10, milter_client_get_n_workers(client));

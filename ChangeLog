@@ -34,6 +34,8 @@
 	* test/client/test-client.c (cut_setup): set n_workers from
 	environment variable MILTER_N_WORKERS.
 	(cut_setup): use g_strtoull.
+	(test_negotiate, test_helo, test_n_workers): fix tests for
+	multi-process mode.
 
 2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
 
