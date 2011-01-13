@@ -4,6 +4,7 @@
 	result of listen.
 	(milter_client_run): invert pipe_fds.
 	(client_invoke_workers): do not wait accepting thread.
+	(worker_watch_master): force server_fd to close.
 
 	* test/client/test-client.c (cut_setup): set n_workers from
 	environment variable MILTER_N_WORKERS.

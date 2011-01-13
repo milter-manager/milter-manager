@@ -1633,6 +1633,19 @@ worker_watch_master (GIOChannel   *source,
 
     if (g_io_channel_read_chars(source, buf, 1, &count, NULL) == G_IO_STATUS_EOF) {
         MilterClient *client = data;
+        MilterClientPrivate *priv = MILTER_CLIENT_GET_PRIVATE(client);
+        if (priv->listening_channel) {
+            GIOChannel *listening_channel = priv->listening_channel;
+            gint fd = g_io_channel_unix_get_fd(listening_channel);
+            close(fd);
+            priv->listening_channel = NULL;
+            g_io_channel_unref(listening_channel);
+        }
+        if (priv->listen_channel) {
+            GIOChannel *listen_channel = priv->listen_channel;
+            priv->listen_channel = NULL;
+            g_io_channel_unref(listen_channel);
+        }
         milter_client_shutdown(client);
         return FALSE;
     }
