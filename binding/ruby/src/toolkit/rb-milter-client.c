@@ -17,6 +17,9 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#  include "../../../../config.h"
+#endif /* HAVE_CONFIG_H */
 #include "rb-milter-client-private.h"
 
 #define SELF(self) RVAL2GOBJ(self)
