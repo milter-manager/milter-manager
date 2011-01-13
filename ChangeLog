@@ -1,5 +1,7 @@
 2011-01-13  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/test/milter-multi-process-test-utils.rb: cleanup.
+
 	* binding/ruby/test/milter-multiprocess-test-utils.rb: rename to ...
 	* binding/ruby/test/milter-multi-process-test-utils.rb: ... this.
 
