@@ -400,16 +400,16 @@ cb_decoder_launch (MilterManagerLaunchCommandDecoder *decoder,
     MilterManagerProcessLauncherPrivate *priv;
     GError *error = NULL;
     MilterAgent *agent;
-    MilterEncoder *_encoder;
+    MilterEncoder *base_encoder;
     MilterManagerReplyEncoder *encoder;
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
 
     agent = MILTER_AGENT(launcher);
-    _encoder = milter_agent_get_encoder(agent);
-    encoder = MILTER_MANAGER_REPLY_ENCODER(_encoder);
+    base_encoder = milter_agent_get_encoder(agent);
+    encoder = MILTER_MANAGER_REPLY_ENCODER(base_encoder);
 
     if (!launch(launcher, command_line, user_name, &error)) {
         milter_error("[launcher][error][launch] <%s>@<%s>: %s",
