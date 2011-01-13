@@ -72,7 +72,6 @@ static MilterMessageResult *message_result;
 
 static GError *actual_error;
 static GError *expected_error;
-static gchar *packet;
 
 static void
 write_data (const gchar *data, gsize data_size)
@@ -84,10 +83,9 @@ write_data (const gchar *data, gsize data_size)
 static void
 send_continue (void)
 {
+    const gchar *packet;
     gsize packet_size;
 
-    if (packet)
-        g_free(packet);
     milter_reply_encoder_encode_continue(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
 }
@@ -95,10 +93,9 @@ send_continue (void)
 static void
 send_temporary_failure (void)
 {
+    const gchar *packet;
     gsize packet_size;
 
-    if (packet)
-        g_free(packet);
     milter_reply_encoder_encode_temporary_failure(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
 }
@@ -106,10 +103,9 @@ send_temporary_failure (void)
 static void
 send_reject (void)
 {
+    const gchar *packet;
     gsize packet_size;
 
-    if (packet)
-        g_free(packet);
     milter_reply_encoder_encode_reject(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
 }
@@ -117,10 +113,9 @@ send_reject (void)
 static void
 send_discard (void)
 {
+    const gchar *packet;
     gsize packet_size;
 
-    if (packet)
-        g_free(packet);
     milter_reply_encoder_encode_discard(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
 }
@@ -128,10 +123,9 @@ send_discard (void)
 static void
 send_accept (void)
 {
+    const gchar *packet;
     gsize packet_size;
 
-    if (packet)
-        g_free(packet);
     milter_reply_encoder_encode_accept(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
 }
@@ -139,13 +133,12 @@ send_accept (void)
 static void
 cb_negotiate_received (MilterDecoder *decoder, gpointer user_data)
 {
+    const gchar *packet;
     gsize packet_size;
     MilterMacrosRequests *macros_requests;
 
     command_received = TRUE;
 
-    if (packet)
-        g_free(packet);
     macros_requests = milter_macros_requests_new();
     milter_reply_encoder_encode_negotiate(encoder, &packet, &packet_size,
                                           option, macros_requests);
@@ -288,7 +281,6 @@ cut_setup (void)
     decoder = milter_command_decoder_new();
     setup_command_signals(decoder);
 
-    packet = NULL;
     actual_error = NULL;
     expected_error = NULL;
 
@@ -302,9 +294,6 @@ cut_setup (void)
 void
 cut_teardown (void)
 {
-    if (packet)
-        g_free(packet);
-
     if (option)
         g_object_unref(option);
 

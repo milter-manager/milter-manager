@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -58,7 +58,7 @@ milter_manager_control_reply_encoder_new (void)
 
 void
 milter_manager_control_reply_encoder_encode_success (MilterManagerControlReplyEncoder *encoder,
-                                                     gchar **packet,
+                                                     const gchar **packet,
                                                      gsize *packet_size)
 {
     MilterManagerReplyEncoder *reply_encoder = MILTER_MANAGER_REPLY_ENCODER(encoder);
@@ -68,7 +68,7 @@ milter_manager_control_reply_encoder_encode_success (MilterManagerControlReplyEn
 
 void
 milter_manager_control_reply_encoder_encode_failure (MilterManagerControlReplyEncoder *encoder,
-                                                     gchar **packet,
+                                                     const gchar **packet,
                                                      gsize *packet_size,
                                                      const gchar *message)
 {
@@ -80,7 +80,7 @@ milter_manager_control_reply_encoder_encode_failure (MilterManagerControlReplyEn
 
 void
 milter_manager_control_reply_encoder_encode_error (MilterManagerControlReplyEncoder *encoder,
-                                                   gchar **packet,
+                                                   const gchar **packet,
                                                    gsize *packet_size,
                                                    const gchar *message)
 {
@@ -93,37 +93,39 @@ milter_manager_control_reply_encoder_encode_error (MilterManagerControlReplyEnco
 void
 milter_manager_control_reply_encoder_encode_configuration (
     MilterManagerControlReplyEncoder *encoder,
-    gchar **packet, gsize *packet_size,
+    const gchar **packet, gsize *packet_size,
     const gchar *configuration, gsize configuration_size)
 {
-    MilterEncoder *_encoder;
+    MilterEncoder *base_encoder;
     GString *buffer;
 
-    _encoder = MILTER_ENCODER(encoder);
-    buffer = milter_encoder_get_buffer(_encoder);
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
 
     g_string_append(buffer, MILTER_MANAGER_CONTROL_REPLY_CONFIGURATION);
     g_string_append_c(buffer, '\0');
     g_string_append_len(buffer, configuration, configuration_size);
-    milter_encoder_pack(_encoder, packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 void
 milter_manager_control_reply_encoder_encode_status (
     MilterManagerControlReplyEncoder *encoder,
-    gchar **packet, gsize *packet_size,
+    const gchar **packet, gsize *packet_size,
     const gchar *status, gsize status_size)
 {
-    MilterEncoder *_encoder;
+    MilterEncoder *base_encoder;
     GString *buffer;
 
-    _encoder = MILTER_ENCODER(encoder);
-    buffer = milter_encoder_get_buffer(_encoder);
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
 
     g_string_append(buffer, MILTER_MANAGER_CONTROL_REPLY_STATUS);
     g_string_append_c(buffer, '\0');
     g_string_append_len(buffer, status, status_size);
-    milter_encoder_pack(_encoder, packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 /*

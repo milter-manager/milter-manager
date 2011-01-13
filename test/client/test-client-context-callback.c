@@ -69,9 +69,6 @@ static MilterReplyEncoder *reply_encoder;
 static MilterWriter *writer;
 static GIOChannel *channel;
 
-static gchar *packet;
-static gsize packet_size;
-
 static gint n_negotiates;
 static gint n_negotiate_responses;
 static gint n_negotiate_progresss;
@@ -533,8 +530,6 @@ cut_setup (void)
 
     encoder = MILTER_COMMAND_ENCODER(milter_command_encoder_new());
     reply_encoder = MILTER_REPLY_ENCODER(milter_reply_encoder_new());
-    packet = NULL;
-    packet_size = 0;
 
     channel = gcut_string_io_channel_new(NULL);
     g_io_channel_set_encoding(channel, NULL, NULL);
@@ -620,15 +615,6 @@ cut_setup (void)
 }
 
 static void
-packet_free (void)
-{
-    if (packet)
-        g_free(packet);
-    packet = NULL;
-    packet_size = 0;
-}
-
-static void
 expected_macros_free (void)
 {
     if (expected_macros)
@@ -655,7 +641,6 @@ expected_macro_value_free (void)
 static void
 clear_reuse_data (void)
 {
-    packet_free();
     expected_macros_free();
     macro_name_free();
     expected_macro_value_free();
@@ -689,8 +674,6 @@ cut_teardown (void)
 
     if (loop)
         g_object_unref(loop);
-
-    packet_free();
 
     if (negotiate_option)
         g_object_unref(negotiate_option);
@@ -752,7 +735,7 @@ cut_teardown (void)
 typedef void (*HookFunction) (void);
 
 static GError *
-feed (void)
+feed (const gchar *packet, gsize packet_size)
 {
     GError *error = NULL;
 
@@ -769,6 +752,8 @@ test_feed_negotiate (void)
     guint32 version;
     MilterActionFlags action;
     MilterStepFlags step;
+    const gchar *packet;
+    gsize packet_size;
 
     version = 2;
     action = MILTER_ACTION_ADD_HEADERS |
@@ -792,7 +777,7 @@ test_feed_negotiate (void)
                                             &packet, &packet_size,
                                             option);
 
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(1, n_negotiates);
     cut_assert_equal_int(1, n_negotiate_responses);
     milter_assert_equal_state(NEGOTIATE_REPLIED);
@@ -817,6 +802,8 @@ test_feed_negotiate_progress (void)
     guint32 version;
     MilterActionFlags action;
     MilterStepFlags step;
+    const gchar *packet;
+    gsize packet_size;
 
     version = 2;
     action = MILTER_ACTION_ADD_HEADERS |
@@ -842,7 +829,7 @@ test_feed_negotiate_progress (void)
 
     g_signal_connect(context, "negotiate",
                      G_CALLBACK(cb_negotiate_progress), NULL);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(1, n_negotiate_progresss);
     cut_assert_equal_int(0, n_negotiate_responses);
 
@@ -869,6 +856,8 @@ test_feed_connect_ipv4 (void)
     const gchar ip_address[] = "192.168.123.123";
     gchar actual_address_string[INET6_ADDRSTRLEN];
     guint16 port;
+    const gchar *packet;
+    gsize packet_size;
 
     port = g_htons(50443);
     address.sin_family = AF_INET;
@@ -880,7 +869,7 @@ test_feed_connect_ipv4 (void)
                                           host_name,
                                           (const struct sockaddr *)&address,
                                           sizeof(address));
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(1, n_connects);
     milter_assert_equal_state(CONNECT_REPLIED);
 
@@ -909,6 +898,8 @@ test_feed_connect_ipv6 (void)
     const gchar ipv6_address[] = "2001:c90:625:12e8:290:ccff:fee2:80c5";
     gchar connected_ipv6_address[INET6_ADDRSTRLEN];
     guint16 port;
+    const gchar *packet;
+    gsize packet_size;
 
     port = g_htons(50443);
     address.sin6_family = AF_INET6;
@@ -920,7 +911,7 @@ test_feed_connect_ipv6 (void)
                                           host_name,
                                           (const struct sockaddr *)&address,
                                           sizeof(address));
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(1, n_connects);
     cut_assert_equal_int(1, n_connect_responses);
     milter_assert_equal_state(CONNECT_REPLIED);
@@ -949,6 +940,8 @@ test_feed_connect_unix (void)
     struct sockaddr_un *connected_address;
     const gchar host_name[] = "mx.local.net";
     const gchar path[] = "/tmp/unix.sock";
+    const gchar *packet;
+    gsize packet_size;
 
     address.sun_family = AF_UNIX;
     strcpy(address.sun_path, path);
@@ -958,7 +951,7 @@ test_feed_connect_unix (void)
                                           host_name,
                                           (const struct sockaddr *)&address,
                                           sizeof(address));
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(1, n_connects);
     cut_assert_equal_int(1, n_connect_responses);
     milter_assert_equal_state(CONNECT_REPLIED);
@@ -984,6 +977,8 @@ test_feed_connect_with_macro (void)
     const gchar ip_address[] = "192.168.123.123";
     gchar actual_address_string[INET6_ADDRSTRLEN];
     guint16 port;
+    const gchar *packet;
+    gsize packet_size;
 
     test_feed_negotiate();
     clear_reuse_data();
@@ -997,8 +992,7 @@ test_feed_connect_with_macro (void)
                                                &packet, &packet_size,
                                                MILTER_COMMAND_CONNECT,
                                                expected_macros);
-    gcut_assert_error(feed());
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 
     port = g_htons(50443);
     address.sin_family = AF_INET;
@@ -1010,7 +1004,7 @@ test_feed_connect_with_macro (void)
                                           host_name,
                                           (const struct sockaddr *)&address,
                                           sizeof(address));
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(1, n_connects);
     cut_assert_equal_int(1, n_connect_responses);
     milter_assert_equal_state(CONNECT_REPLIED);
@@ -1038,13 +1032,15 @@ test_feed_connect_with_macro (void)
 static void
 feed_helo_pre_hook_with_macro (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     expected_macros = gcut_hash_table_string_string_new(NULL, NULL);
     milter_command_encoder_encode_define_macro(encoder,
                                                &packet, &packet_size,
                                                MILTER_COMMAND_HELO,
                                                expected_macros);
-    gcut_assert_error(feed());
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 
     macro_name = g_strdup("nonexistent");
 }
@@ -1061,6 +1057,8 @@ test_feed_helo (gconstpointer data)
 {
     const HookFunction pre_hook = data;
     const gchar fqdn[] = "delian";
+    const gchar *packet;
+    gsize packet_size;
 
     test_feed_connect_with_macro();
     clear_reuse_data();
@@ -1069,7 +1067,7 @@ test_feed_helo (gconstpointer data)
         pre_hook();
 
     milter_command_encoder_encode_helo(encoder, &packet, &packet_size, fqdn);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(1, n_helos);
     cut_assert_equal_int(1, n_helo_responses);
     milter_assert_equal_state(HELO_REPLIED);
@@ -1090,6 +1088,8 @@ static void
 feed_envelope_from_pre_hook_with_macro (void)
 {
     GHashTable *macros;
+    const gchar *packet;
+    gsize packet_size;
 
     macro_name = g_strdup("mail_addr");
     expected_macro_value = g_strdup("kou@example.com");
@@ -1104,8 +1104,7 @@ feed_envelope_from_pre_hook_with_macro (void)
                                        MILTER_COMMAND_ENVELOPE_FROM,
                                        macros);
     g_hash_table_unref(macros);
-    gcut_assert_error(feed());
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 }
 
 void
@@ -1120,6 +1119,8 @@ test_feed_envelope_from (gconstpointer data)
 {
     const HookFunction pre_hook = data;
     const gchar from[] = "<kou@example.com>";
+    const gchar *packet;
+    gsize packet_size;
 
     test_feed_helo(feed_helo_pre_hook_with_macro);
     clear_reuse_data();
@@ -1129,7 +1130,7 @@ test_feed_envelope_from (gconstpointer data)
 
     milter_command_encoder_encode_envelope_from(encoder,
                                                 &packet, &packet_size, from);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(1, n_envelope_froms);
     cut_assert_equal_int(1, n_envelope_from_responses);
     milter_assert_equal_state(ENVELOPE_FROM_REPLIED);
@@ -1150,6 +1151,8 @@ static void
 feed_envelope_recipient_pre_hook_with_macro (void)
 {
     GHashTable *macros;
+    const gchar *packet;
+    gsize packet_size;
 
     macro_name = g_strdup("{rcpt_addr}");
     expected_macro_value = g_strdup("kou@example.com");
@@ -1164,8 +1167,7 @@ feed_envelope_recipient_pre_hook_with_macro (void)
                                                MILTER_COMMAND_ENVELOPE_RECIPIENT,
                                                macros);
     g_hash_table_unref(macros);
-    gcut_assert_error(feed());
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 }
 
 void
@@ -1182,6 +1184,8 @@ test_feed_envelope_recipient (gconstpointer data)
 {
     const HookFunction pre_hook = data;
     const gchar to[] = "<kou@example.com>";
+    const gchar *packet;
+    gsize packet_size;
 
     test_feed_envelope_from(feed_envelope_from_pre_hook_with_macro);
     clear_reuse_data();
@@ -1191,7 +1195,7 @@ test_feed_envelope_recipient (gconstpointer data)
 
     milter_command_encoder_encode_envelope_recipient(encoder,
                                                      &packet, &packet_size, to);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(1, n_envelope_recipients);
     cut_assert_equal_int(1, n_envelope_recipient_responses);
     milter_assert_equal_state(ENVELOPE_RECIPIENT_REPLIED);
@@ -1211,11 +1215,14 @@ test_feed_envelope_recipient (gconstpointer data)
 void
 test_feed_unknown (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     test_feed_envelope_recipient(feed_envelope_recipient_pre_hook_with_macro);
     clear_reuse_data();
 
     milter_command_encoder_encode_unknown(encoder, &packet, &packet_size, "!");
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(1, n_unknowns);
     cut_assert_equal_int(1, n_unknown_responses);
     cut_assert_equal_string("!", unknown_command);
@@ -1228,6 +1235,8 @@ static void
 feed_data_pre_hook_with_macro (void)
 {
     GHashTable *macros;
+    const gchar *packet;
+    gsize packet_size;
 
     macro_name = g_strdup("{auth_type}");
     expected_macro_value = g_strdup("CRAM-MD5");
@@ -1242,8 +1251,7 @@ feed_data_pre_hook_with_macro (void)
                                                MILTER_COMMAND_DATA,
                                                macros);
     g_hash_table_unref(macros);
-    gcut_assert_error(feed());
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 }
 
 void
@@ -1258,6 +1266,8 @@ test_feed_data (gconstpointer data)
 {
     const HookFunction pre_hook = data;
     GString *string;
+    const gchar *packet;
+    gsize packet_size;
 
     test_feed_envelope_recipient(feed_envelope_recipient_pre_hook_with_macro);
     clear_reuse_data();
@@ -1266,12 +1276,11 @@ test_feed_data (gconstpointer data)
         pre_hook();
 
     milter_command_encoder_encode_data(encoder, &packet, &packet_size);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(1, n_datas);
     cut_assert_equal_int(1, n_data_responses);
     milter_assert_equal_state(DATA_REPLIED);
 
-    packet_free();
     milter_reply_encoder_encode_continue(reply_encoder, &packet, &packet_size);
     string = gcut_string_io_channel_get_string(channel);
     cut_assert_equal_memory(packet, packet_size, string->str, string->len);
@@ -1289,6 +1298,9 @@ test_feed_data (gconstpointer data)
 static void
 feed_header_pre_hook_with_macro (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     macro_name = g_strdup("i");
     expected_macro_value = g_strdup("69FDD42DF4A");
     expected_macros =
@@ -1297,8 +1309,7 @@ feed_header_pre_hook_with_macro (void)
                                        &packet, &packet_size,
                                        MILTER_COMMAND_HEADER,
                                        expected_macros);
-    gcut_assert_error(feed());
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 }
 
 void
@@ -1313,6 +1324,8 @@ test_feed_header (gconstpointer data)
 {
     const HookFunction pre_hook = data;
     const gchar date[] = "Fri,  5 Sep 2008 09:19:56 +0900 (JST)";
+    const gchar *packet;
+    gsize packet_size;
 
     test_feed_data(feed_data_pre_hook_with_macro);
     clear_reuse_data();
@@ -1322,7 +1335,7 @@ test_feed_header (gconstpointer data)
 
     milter_command_encoder_encode_header(encoder, &packet, &packet_size,
                                          "Date", date);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(1, n_headers);
     cut_assert_equal_int(1, n_header_responses);
     milter_assert_equal_state(HEADER_REPLIED);
@@ -1343,6 +1356,9 @@ test_feed_header (gconstpointer data)
 static void
 feed_end_of_header_pre_hook_with_macro (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     macro_name = g_strdup("i");
     expected_macro_value = g_strdup("69FDD42DF4A");
     expected_macros =
@@ -1351,8 +1367,7 @@ feed_end_of_header_pre_hook_with_macro (void)
                                        &packet, &packet_size,
                                        MILTER_COMMAND_END_OF_HEADER,
                                        expected_macros);
-    gcut_assert_error(feed());
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 }
 
 void
@@ -1366,6 +1381,8 @@ void
 test_feed_end_of_header (gconstpointer data)
 {
     const HookFunction pre_hook = data;
+    const gchar *packet;
+    gsize packet_size;
 
     test_feed_header(feed_header_pre_hook_with_macro);
     clear_reuse_data();
@@ -1374,7 +1391,7 @@ test_feed_end_of_header (gconstpointer data)
         pre_hook();
 
     milter_command_encoder_encode_end_of_header(encoder, &packet, &packet_size);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(1, n_end_of_headers);
     cut_assert_equal_int(1, n_end_of_header_responses);
     milter_assert_equal_state(END_OF_HEADER_REPLIED);
@@ -1392,6 +1409,9 @@ test_feed_end_of_header (gconstpointer data)
 static void
 feed_body_pre_hook_with_macro (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     macro_name = g_strdup("i");
     expected_macro_value = g_strdup("69FDD42DF4A");
     expected_macros =
@@ -1400,8 +1420,7 @@ feed_body_pre_hook_with_macro (void)
                                        &packet, &packet_size,
                                        MILTER_COMMAND_BODY,
                                        expected_macros);
-    gcut_assert_error(feed());
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 }
 
 void
@@ -1421,6 +1440,8 @@ test_feed_body (gconstpointer data)
         "La de da de da 3.\n"
         "La de da de da 4.";
     gsize packed_size;
+    const gchar *packet;
+    gsize packet_size;
 
     test_feed_end_of_header(feed_end_of_header_pre_hook_with_macro);
     clear_reuse_data();
@@ -1430,7 +1451,7 @@ test_feed_body (gconstpointer data)
 
     milter_command_encoder_encode_body(encoder, &packet, &packet_size,
                                body, sizeof(body), &packed_size);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(1, n_bodies);
     cut_assert_equal_int(1, n_body_responses);
     milter_assert_equal_state(BODY_REPLIED);
@@ -1462,6 +1483,9 @@ feed_end_of_message_pre_hook_with_chunk (void)
 static void
 feed_end_of_message_pre_hook_with_macro (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     macro_name = g_strdup("i");
     expected_macro_value = g_strdup("69FDD42DF4A");
     expected_macros =
@@ -1470,8 +1494,7 @@ feed_end_of_message_pre_hook_with_macro (void)
                                        &packet, &packet_size,
                                        MILTER_COMMAND_END_OF_MESSAGE,
                                        expected_macros);
-    gcut_assert_error(feed());
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 }
 
 static void
@@ -1498,6 +1521,8 @@ void
 test_feed_end_of_message (gconstpointer data)
 {
     const HookFunction pre_hook = data;
+    const gchar *packet;
+    gsize packet_size;
 
     test_feed_body(feed_body_pre_hook_with_macro);
     clear_reuse_data();
@@ -1508,7 +1533,7 @@ test_feed_end_of_message (gconstpointer data)
     milter_command_encoder_encode_end_of_message(encoder, &packet, &packet_size,
                                                  end_of_message_chunk_test_data,
                                                  end_of_message_chunk_test_data_size);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
 
     cut_assert_equal_int(1, n_bodies);
     cut_assert_equal_int(1, n_body_responses);
@@ -1537,11 +1562,14 @@ test_feed_end_of_message (gconstpointer data)
 void
 test_feed_quit (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     test_feed_end_of_message(feed_end_of_message_pre_hook_with_macro);
     clear_reuse_data();
 
     milter_command_encoder_encode_quit(encoder, &packet, &packet_size);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(1, n_finished_emissions);
     milter_assert_equal_state(FINISHED);
 
@@ -1554,11 +1582,14 @@ test_feed_quit (void)
 void
 test_feed_abort (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     test_feed_body(feed_body_pre_hook_with_macro);
     clear_reuse_data();
 
     milter_command_encoder_encode_abort(encoder, &packet, &packet_size);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(1, n_aborts);
     cut_assert_equal_int(1, n_abort_responses);
     milter_assert_equal_state(ABORT_REPLIED);
@@ -1576,11 +1607,14 @@ test_feed_abort (void)
 void
 test_feed_abort_outsize_message_processing (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     test_feed_helo(feed_helo_pre_hook_with_macro);
     clear_reuse_data();
 
     milter_command_encoder_encode_abort(encoder, &packet, &packet_size);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(1, n_aborts);
     cut_assert_equal_int(1, n_abort_responses);
     milter_assert_equal_state(ABORT_REPLIED);

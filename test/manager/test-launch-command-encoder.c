@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -28,20 +28,16 @@ void test_encode_launch_without_user_name (void);
 
 static MilterManagerLaunchCommandEncoder *encoder;
 static GString *expected;
-static gchar *actual;
-static gsize actual_size;
 
 void
 setup (void)
 {
-    MilterEncoder *_encoder;
+    MilterEncoder *base_encoder;
 
-    _encoder = milter_manager_launch_command_encoder_new();
-    encoder = MILTER_MANAGER_LAUNCH_COMMAND_ENCODER(_encoder);
+    base_encoder = milter_manager_launch_command_encoder_new();
+    encoder = MILTER_MANAGER_LAUNCH_COMMAND_ENCODER(base_encoder);
 
     expected = g_string_new(NULL);
-    actual = NULL;
-    actual_size = 0;
 }
 
 void
@@ -52,9 +48,6 @@ teardown (void)
 
     if (expected)
         g_string_free(expected, TRUE);
-
-    if (actual)
-        g_free(actual);
 }
 
 static void
@@ -73,6 +66,8 @@ test_encode_launch (void)
 {
     const gchar command_line[] = "/bin/echo -n";
     const gchar user_name[] = "echo_user";
+    const gchar *actual;
+    gsize actual_size;
 
     g_string_append(expected, "launch");
     g_string_append_c(expected, '\0');
@@ -94,6 +89,8 @@ void
 test_encode_launch_without_user_name (void)
 {
     const gchar command_line[] = "/bin/echo -n";
+    const gchar *actual;
+    gsize actual_size;
 
     g_string_append(expected, "launch");
     g_string_append_c(expected, '\0');

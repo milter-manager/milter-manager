@@ -51,9 +51,6 @@ static GIOChannel *output_channel;
 static MilterManagerControlCommandEncoder *command_encoder;
 static MilterManagerControlReplyEncoder *reply_encoder;
 
-static gchar *packet;
-static gsize packet_size;
-
 static gchar *tmp_dir;
 static gchar *custom_config_path;
 
@@ -126,9 +123,6 @@ cut_setup (void)
     expected_error = NULL;
     actual_error = NULL;
 
-    packet = NULL;
-    packet_size = 0;
-
     tmp_dir = g_build_filename(milter_test_get_base_dir(),
                                "tmp",
                                NULL);
@@ -167,9 +161,6 @@ cut_teardown (void)
     if (expected_error)
         g_error_free(expected_error);
 
-    if (packet)
-        g_free(packet);
-
     if (tmp_dir) {
         g_chmod(tmp_dir, 0700);
         cut_remove_path(tmp_dir, NULL);
@@ -183,6 +174,8 @@ cut_teardown (void)
 void
 test_set_configuration (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     const gchar configuration[] = "XXX";
     GString *output;
     GError *error = NULL;
@@ -199,7 +192,6 @@ test_set_configuration (void)
 
     cut_assert_path_exist(custom_config_path);
 
-    g_free(packet);
     milter_manager_control_reply_encoder_encode_success(reply_encoder,
                                                         &packet, &packet_size);
     output = gcut_string_io_channel_get_string(output_channel);
@@ -211,6 +203,8 @@ void
 test_set_configuration_failed (void)
 {
     MilterManagerConfiguration *config;
+    const gchar *packet;
+    gsize packet_size;
     const gchar configuration[] = "XXX";
     GString *output;
     guint packet_size_space;
@@ -233,7 +227,6 @@ test_set_configuration_failed (void)
 
     cut_assert_path_not_exist(custom_config_path);
 
-    g_free(packet);
     milter_manager_control_reply_encoder_encode_error(
         reply_encoder,
         &packet, &packet_size,
@@ -258,6 +251,8 @@ void
 test_reload (void)
 {
     MilterManagerConfiguration *config;
+    const gchar *packet;
+    gsize packet_size;
     GString *output;
     GError *error = NULL;
 
@@ -281,7 +276,6 @@ test_reload (void)
     milter_test_pump_all_events(loop);
     cut_assert_true(milter_manager_configuration_is_privilege_mode(config));
 
-    g_free(packet);
     milter_manager_control_reply_encoder_encode_success(reply_encoder,
                                                         &packet, &packet_size);
     output = gcut_string_io_channel_get_string(output_channel);

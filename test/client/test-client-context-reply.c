@@ -42,9 +42,6 @@ static MilterReplyEncoder *reply_encoder;
 static GIOChannel *channel;
 static MilterWriter *writer;
 
-static gchar *packet;
-static gsize packet_size;
-
 static gboolean send_progress;
 
 static gchar *quarantine_reason;
@@ -195,22 +192,11 @@ cut_setup (void)
 
     command_encoder = MILTER_COMMAND_ENCODER(milter_command_encoder_new());
     reply_encoder = MILTER_REPLY_ENCODER(milter_reply_encoder_new());
-    packet = NULL;
-    packet_size = 0;
 
     send_progress = FALSE;
     quarantine_reason = NULL;
     option = NULL;
     macros_requests = NULL;
-}
-
-static void
-packet_free (void)
-{
-    if (packet)
-        g_free(packet);
-    packet = NULL;
-    packet_size = 0;
 }
 
 void
@@ -239,14 +225,12 @@ cut_teardown (void)
         g_object_unref(option);
     if (macros_requests)
         g_object_unref(macros_requests);
-
-    packet_free();
 }
 
 typedef void (*HookFunction) (void);
 
 static GError *
-feed (void)
+feed (const gchar *packet, gsize packet_size)
 {
     GError *error = NULL;
 
@@ -260,14 +244,15 @@ test_progress (void)
 {
     GString *actual_data;
     const gchar fqdn[] = "delian";
+    const gchar *packet;
+    gsize packet_size;
 
     send_progress = TRUE;
     milter_command_encoder_encode_helo(command_encoder,
                                        &packet, &packet_size,
                                        fqdn);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
 
-    packet_free();
     milter_reply_encoder_encode_progress(reply_encoder, &packet, &packet_size);
     actual_data = gcut_string_io_channel_get_string(channel);
     cut_assert_equal_memory(packet, packet_size,
@@ -279,37 +264,36 @@ test_quarantine (void)
 {
     GString *expected_data;
     GString *actual_data;
-    gchar *continue_packet = NULL;
-    gsize continue_packet_size;
+    const gchar *packet;
+    gsize packet_size;
+    const gchar *expected_packet;
+    gsize expected_packet_size;
 
     quarantine_reason = g_strdup("virus mail!");
     milter_command_encoder_encode_end_of_message(command_encoder,
                                                  &packet, &packet_size,
                                                  NULL, 0);
-    gcut_assert_error(feed());
-
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 
     milter_reply_encoder_encode_quarantine(reply_encoder, &packet, &packet_size,
                                            quarantine_reason);
-    milter_reply_encoder_encode_continue(reply_encoder,
-                                         &continue_packet,
-                                         &continue_packet_size);
     expected_data = g_string_new_len(packet, packet_size);
-    g_string_append_len(expected_data, continue_packet, continue_packet_size);
-    g_free(packet);
-    g_free(continue_packet);
-    packet_size = expected_data->len;
-    packet = g_string_free(expected_data, FALSE);
+    milter_reply_encoder_encode_continue(reply_encoder,
+                                         &packet, &packet_size);
+    g_string_append_len(expected_data, packet, packet_size);
+    expected_packet_size = expected_data->len;
+    expected_packet = cut_take_string(g_string_free(expected_data, FALSE));
 
     actual_data = gcut_string_io_channel_get_string(channel);
-    cut_assert_equal_memory(packet, packet_size,
+    cut_assert_equal_memory(expected_packet, expected_packet_size,
                             actual_data->str, actual_data->len);
 }
 
 void
 test_negotiate (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     GString *actual_data;
 
     option = milter_option_new(2, MILTER_ACTION_ADD_HEADERS, MILTER_STEP_NONE);
@@ -321,9 +305,7 @@ test_negotiate (void)
     milter_command_encoder_encode_negotiate(command_encoder,
                                             &packet, &packet_size,
                                             option);
-    gcut_assert_error(feed());
-
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 
     milter_reply_encoder_encode_negotiate(reply_encoder, &packet, &packet_size,
                                           option, macros_requests);

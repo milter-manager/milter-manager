@@ -834,7 +834,7 @@ prepend_macro (MilterServerContext *context, GString *packed_packet,
 {
     GHashTable *macros, *filtered_macros = NULL, *target_macros;
     GList *request_symbols = NULL;
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
     MilterAgent *agent;
@@ -892,7 +892,6 @@ prepend_macro (MilterServerContext *context, GString *packed_packet,
     }
 
     g_string_prepend_len(packed_packet, packet, packet_size);
-    g_free(packet);
 }
 
 static void
@@ -987,7 +986,8 @@ milter_server_context_need_reply (MilterServerContext *context,
 }
 
 static gboolean
-write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
+write_packet (MilterServerContext *context,
+              const gchar *packet, gsize packet_size,
               MilterServerContextState next_state)
 {
     GError *agent_error = NULL;
@@ -1082,7 +1082,6 @@ write_packet (MilterServerContext *context, gchar *packet, gsize packet_size,
     default:
         break;
     }
-    g_free(packet);
 
     milter_agent_write_packet(MILTER_AGENT(context),
                               packed_packet->str, packed_packet->len,
@@ -1195,7 +1194,7 @@ gboolean
 milter_server_context_negotiate (MilterServerContext *context,
                                  MilterOption        *option)
 {
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
     MilterServerContextPrivate *priv;
@@ -1235,7 +1234,7 @@ gboolean
 milter_server_context_helo (MilterServerContext *context,
                             const gchar *fqdn)
 {
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
     gboolean stop = FALSE;
@@ -1311,7 +1310,7 @@ milter_server_context_connect (MilterServerContext *context,
                                struct sockaddr     *address,
                                socklen_t            address_length)
 {
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
     gboolean stop = FALSE;
@@ -1385,7 +1384,7 @@ milter_server_context_envelope_from (MilterServerContext *context,
                                      const gchar         *from)
 {
     MilterServerContextPrivate *priv;
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
     gboolean stop = FALSE;
@@ -1442,7 +1441,7 @@ milter_server_context_envelope_recipient (MilterServerContext *context,
                                           const gchar         *recipient)
 {
     MilterServerContextPrivate *priv;
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
     MilterCommandEncoder *command_encoder;
@@ -1505,7 +1504,7 @@ gboolean
 milter_server_context_data (MilterServerContext *context)
 {
     MilterServerContextPrivate *priv;
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
     gboolean stop = FALSE;
@@ -1556,7 +1555,7 @@ gboolean
 milter_server_context_unknown (MilterServerContext *context,
                                const gchar         *command)
 {
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
     guint tag = 0;
@@ -1591,7 +1590,7 @@ milter_server_context_header (MilterServerContext *context,
                               const gchar         *header_value)
 {
     MilterServerContextPrivate *priv;
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
     gboolean stop = FALSE;
@@ -1644,7 +1643,7 @@ gboolean
 milter_server_context_end_of_header (MilterServerContext *context)
 {
     MilterServerContextPrivate *priv;
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
     gboolean stop = FALSE;
@@ -1722,7 +1721,7 @@ milter_server_context_body (MilterServerContext *context,
                             const gchar         *chunk,
                             gsize                size)
 {
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
     MilterCommandEncoder *command_encoder;
@@ -1807,7 +1806,7 @@ milter_server_context_end_of_message (MilterServerContext *context,
                                       gsize                size)
 {
     MilterServerContextPrivate *priv;
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
     gboolean stop = FALSE;
@@ -1853,7 +1852,7 @@ gboolean
 milter_server_context_quit (MilterServerContext *context)
 {
     MilterServerContextPrivate *priv;
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
 
@@ -1876,7 +1875,7 @@ gboolean
 milter_server_context_abort (MilterServerContext *context)
 {
     MilterServerContextPrivate *priv;
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
     gboolean success;

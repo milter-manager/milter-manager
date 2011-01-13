@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -58,105 +58,105 @@ MilterEncoder   *milter_reply_encoder_new      (void);
 
 void             milter_reply_encoder_encode_negotiate
                                                (MilterReplyEncoder *encoder,
-                                                gchar             **packet,
+                                                const gchar       **packet,
                                                 gsize              *packet_size,
                                                 MilterOption       *option,
                                                 MilterMacrosRequests *macros_requests);
 void             milter_reply_encoder_encode_continue
                                                (MilterReplyEncoder *encoder,
-                                                gchar             **packet,
+                                                const gchar       **packet,
                                                 gsize              *packet_size);
 void             milter_reply_encoder_encode_reply_code
                                                (MilterReplyEncoder *encoder,
-                                                gchar             **packet,
+                                                const gchar       **packet,
                                                 gsize              *packet_size,
                                                 const gchar        *code);
 void             milter_reply_encoder_encode_temporary_failure
                                                (MilterReplyEncoder *encoder,
-                                                gchar             **packet,
+                                                const gchar       **packet,
                                                 gsize              *packet_size);
 void             milter_reply_encoder_encode_reject
                                                (MilterReplyEncoder *encoder,
-                                                gchar             **packet,
+                                                const gchar       **packet,
                                                 gsize              *packet_size);
 void             milter_reply_encoder_encode_accept
                                                (MilterReplyEncoder *encoder,
-                                                gchar             **packet,
+                                                const gchar       **packet,
                                                 gsize              *packet_size);
 void             milter_reply_encoder_encode_discard
                                                (MilterReplyEncoder *encoder,
-                                                gchar             **packet,
+                                                const gchar       **packet,
                                                 gsize              *packet_size);
 void             milter_reply_encoder_encode_add_header
                                                (MilterReplyEncoder *encoder,
-                                                gchar             **packet,
+                                                const gchar       **packet,
                                                 gsize              *packet_size,
                                                 const gchar        *name,
                                                 const gchar        *value);
 void             milter_reply_encoder_encode_insert_header
                                                (MilterReplyEncoder *encoder,
-                                                gchar             **packet,
+                                                const gchar       **packet,
                                                 gsize              *packet_size,
                                                 guint32             index,
                                                 const gchar        *name,
                                                 const gchar        *value);
 void             milter_reply_encoder_encode_change_header
                                                (MilterReplyEncoder *encoder,
-                                                gchar             **packet,
+                                                const gchar       **packet,
                                                 gsize              *packet_size,
                                                 const gchar        *name,
                                                 guint32             index,
                                                 const gchar        *value);
 void             milter_reply_encoder_encode_delete_header
                                                (MilterReplyEncoder *encoder,
-                                                gchar             **packet,
+                                                const gchar       **packet,
                                                 gsize              *packet_size,
                                                 const gchar        *name,
                                                 guint32             index);
 void             milter_reply_encoder_encode_change_from
                                                (MilterReplyEncoder *encoder,
-                                                gchar             **packet,
+                                                const gchar       **packet,
                                                 gsize              *packet_size,
                                                 const gchar        *from,
                                                 const gchar        *parameters);
 void             milter_reply_encoder_encode_add_recipient
                                                (MilterReplyEncoder *encoder,
-                                                gchar             **packet,
+                                                const gchar       **packet,
                                                 gsize              *packet_size,
                                                 const gchar        *recipient,
                                                 const gchar        *parameters);
 void             milter_reply_encoder_encode_delete_recipient
                                                (MilterReplyEncoder *encoder,
-                                                gchar             **packet,
+                                                const gchar       **packet,
                                                 gsize              *packet_size,
                                                 const gchar        *recipient);
 void             milter_reply_encoder_encode_replace_body
                                                (MilterReplyEncoder *encoder,
-                                                gchar             **packet,
+                                                const gchar       **packet,
                                                 gsize              *packet_size,
                                                 const gchar        *body,
                                                 gsize               body_size,
                                                 gsize              *packed_size);
 void             milter_reply_encoder_encode_progress
                                                (MilterReplyEncoder *encoder,
-                                                gchar             **packet,
+                                                const gchar       **packet,
                                                 gsize              *packet_size);
 void             milter_reply_encoder_encode_quarantine
                                                (MilterReplyEncoder *encoder,
-                                                gchar             **packet,
+                                                const gchar       **packet,
                                                 gsize              *packet_size,
                                                 const gchar        *reason);
 void             milter_reply_encoder_encode_connection_failure
                                                (MilterReplyEncoder *encoder,
-                                                gchar             **packet,
+                                                const gchar       **packet,
                                                 gsize              *packet_size);
 void             milter_reply_encoder_encode_shutdown
                                                (MilterReplyEncoder *encoder,
-                                                gchar             **packet,
+                                                const gchar       **packet,
                                                 gsize              *packet_size);
 void             milter_reply_encoder_encode_skip
                                                (MilterReplyEncoder *encoder,
-                                                gchar             **packet,
+                                                const gchar       **packet,
                                                 gsize              *packet_size);
 
 G_END_DECLS

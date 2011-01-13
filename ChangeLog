@@ -1,3 +1,8 @@
+2011-01-13  Kouhei Sutou  <kou@clear-code.com>
+
+	* ./: suppress memory allocation for milter protocol packet
+	encoding but it doesn't affect speed. :<
+
 2011-01-13  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/core/milter-utils.h (MilterUtilsPipeMode): moved from

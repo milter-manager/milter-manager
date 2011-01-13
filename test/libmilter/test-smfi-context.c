@@ -59,9 +59,6 @@ static GIOChannel *channel;
 static MilterWriter *writer;
 static GString *expected_output;
 
-static gchar *packet;
-static gsize packet_size;
-
 static gboolean send_progress;
 
 static gchar *macro_name;
@@ -277,9 +274,6 @@ cut_setup (void)
     command_encoder = MILTER_COMMAND_ENCODER(milter_command_encoder_new());
     reply_encoder = MILTER_REPLY_ENCODER(milter_reply_encoder_new());
 
-    packet = NULL;
-    packet_size = 0;
-
     send_progress = FALSE;
 
     add_header = FALSE;
@@ -319,15 +313,6 @@ cut_setup (void)
     set_mlreply_result = MI_FAILURE;
 }
 
-static void
-packet_free (void)
-{
-    if (packet)
-        g_free(packet);
-    packet = NULL;
-    packet_size = 0;
-}
-
 void
 cut_teardown (void)
 {
@@ -349,8 +334,6 @@ cut_teardown (void)
         g_object_unref(command_encoder);
     if (reply_encoder)
         g_object_unref(reply_encoder);
-
-    packet_free();
 
     if (macro_name)
         g_free(macro_name);
@@ -383,7 +366,7 @@ cut_teardown (void)
 }
 
 static GError *
-feed (void)
+feed (const gchar *packet, gsize packet_size)
 {
     GError *error = NULL;
 
@@ -398,6 +381,8 @@ feed_negotiate (void)
     MilterOption *option;
     MilterActionFlags action;
     MilterStepFlags step;
+    const gchar *packet;
+    gsize packet_size;
     GError *error = NULL;
 
     action = gcut_flags_get_all(MILTER_TYPE_ACTION_FLAGS, &error);
@@ -409,9 +394,7 @@ feed_negotiate (void)
                                             &packet, &packet_size,
                                             option);
     g_object_unref(option);
-    gcut_assert_error(feed());
-
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 }
 
 static void
@@ -419,6 +402,8 @@ feed_connect (void)
 {
     struct sockaddr *address;
     socklen_t address_size;
+    const gchar *packet;
+    gsize packet_size;
     GError *error = NULL;
 
     milter_connection_parse_spec("inet:2929@192.168.1.5",
@@ -429,86 +414,90 @@ feed_connect (void)
                                           "mx.example.com",
                                           address, address_size);
     g_free(address);
-    gcut_assert_error(feed());
-
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 }
 
 static void
 feed_helo (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     milter_command_encoder_encode_helo(command_encoder,
                                        &packet, &packet_size,
                                        "mx.example.com");
-    gcut_assert_error(feed());
-
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 }
 
 static void
 feed_envelope_from (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     milter_command_encoder_encode_envelope_from(command_encoder,
                                                 &packet, &packet_size,
                                                 "sender@example.com");
-    gcut_assert_error(feed());
-
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 }
 
 static void
 feed_envelope_recipient (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     milter_command_encoder_encode_envelope_recipient(command_encoder,
                                                      &packet, &packet_size,
                                                      "receiver@example.com");
-    gcut_assert_error(feed());
-
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 }
 
 static void
 feed_data (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     milter_command_encoder_encode_data(command_encoder,
                                        &packet, &packet_size);
-    gcut_assert_error(feed());
-
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 }
 
 static void
 feed_header (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     milter_command_encoder_encode_header(command_encoder,
                                          &packet, &packet_size,
                                          "From", "sender@example.com");
-    gcut_assert_error(feed());
-
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 }
 
 static void
 feed_end_of_header (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     milter_command_encoder_encode_end_of_header(command_encoder,
                                                 &packet, &packet_size);
-    gcut_assert_error(feed());
-
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 }
 
 static void
 feed_body (void)
 {
     const gchar body[] = "Hello\n\nBye\n";
+    const gchar *packet;
+    gsize packet_size;
 
     milter_command_encoder_encode_body(command_encoder,
                                        &packet, &packet_size,
                                        body, strlen(body), NULL);
-    gcut_assert_error(feed());
-
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 }
 
 static void
@@ -541,6 +530,8 @@ void
 test_getsymval (void)
 {
     GHashTable *macros;
+    const gchar *packet;
+    gsize packet_size;
 
     macros = gcut_hash_table_string_string_new("{mail_addr}", "kou@example.com",
                                                NULL);
@@ -549,15 +540,14 @@ test_getsymval (void)
                                                MILTER_COMMAND_ENVELOPE_FROM,
                                                macros);
     g_hash_table_unref(macros);
-    gcut_assert_error(feed());
-    packet_free();
+    gcut_assert_error(feed(packet, packet_size));
 
     cut_assert_equal_string(NULL, macro_value);
     macro_name = g_strdup("mail_addr");
     milter_command_encoder_encode_envelope_from(command_encoder,
                                                 &packet, &packet_size,
                                                 "<kou@example.com>");
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_string("kou@example.com", macro_value);
 }
 
@@ -593,6 +583,9 @@ data_setreply (void)
 void
 test_setreply (gconstpointer data)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     reply_return_code = g_strdup(gcut_data_get_string(data, "return-code"));
     reply_extended_code = g_strdup(gcut_data_get_string(data, "extended-code"));
     reply_message = g_strdup(gcut_data_get_string(data, "message"));
@@ -600,7 +593,7 @@ test_setreply (gconstpointer data)
 
     milter_command_encoder_encode_data(command_encoder,
                                        &packet, &packet_size);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(gcut_data_get_int(data, "expected-return-status"),
                          set_reply_result);
 }
@@ -608,10 +601,13 @@ test_setreply (gconstpointer data)
 void
 test_setmlreply (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     set_mlreply = TRUE;
     milter_command_encoder_encode_end_of_header(command_encoder,
                                                 &packet, &packet_size);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(MI_SUCCESS, set_mlreply_result);
     cut_assert_equal_string_with_free(
         "450 4.2.0 Rejected by Greylist\r\n"
@@ -622,6 +618,8 @@ test_setmlreply (void)
 void
 test_addheader (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     GString *actual_data;
 
     move_to_body_state();
@@ -633,18 +631,16 @@ test_addheader (void)
     milter_command_encoder_encode_end_of_message(command_encoder,
                                                  &packet, &packet_size,
                                                  NULL, 0);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
 
 
     expected_output = g_string_new(NULL);
 
-    packet_free();
     milter_reply_encoder_encode_add_header(reply_encoder,
                                            &packet, &packet_size,
                                            header_name, header_value);
     g_string_append_len(expected_output, packet, packet_size);
 
-    packet_free();
     milter_reply_encoder_encode_continue(reply_encoder, &packet, &packet_size);
     g_string_append_len(expected_output, packet, packet_size);
 
@@ -656,6 +652,8 @@ test_addheader (void)
 void
 test_insheader (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     GString *actual_data;
 
     move_to_body_state();
@@ -668,19 +666,17 @@ test_insheader (void)
     milter_command_encoder_encode_end_of_message(command_encoder,
                                                  &packet, &packet_size,
                                                  NULL, 0);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
 
 
     expected_output = g_string_new(NULL);
 
-    packet_free();
     milter_reply_encoder_encode_insert_header(reply_encoder,
                                               &packet, &packet_size,
                                               header_index,
                                               header_name, header_value);
     g_string_append_len(expected_output, packet, packet_size);
 
-    packet_free();
     milter_reply_encoder_encode_continue(reply_encoder, &packet, &packet_size);
     g_string_append_len(expected_output, packet, packet_size);
 
@@ -692,6 +688,8 @@ test_insheader (void)
 void
 test_chgheader (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     GString *actual_data;
 
     move_to_body_state();
@@ -704,12 +702,11 @@ test_chgheader (void)
     milter_command_encoder_encode_end_of_message(command_encoder,
                                                  &packet, &packet_size,
                                                  NULL, 0);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
 
 
     expected_output = g_string_new(NULL);
 
-    packet_free();
     milter_reply_encoder_encode_change_header(reply_encoder,
                                               &packet, &packet_size,
                                               header_name,
@@ -717,7 +714,6 @@ test_chgheader (void)
                                               header_value);
     g_string_append_len(expected_output, packet, packet_size);
 
-    packet_free();
     milter_reply_encoder_encode_continue(reply_encoder, &packet, &packet_size);
     g_string_append_len(expected_output, packet, packet_size);
 
@@ -752,6 +748,8 @@ data_cfgfrom (void)
 void
 test_cfgfrom (gconstpointer data)
 {
+    const gchar *packet;
+    gsize packet_size;
     GString *actual_data;
     gchar * const *test_data = data;
 
@@ -770,12 +768,11 @@ test_cfgfrom (gconstpointer data)
     milter_command_encoder_encode_end_of_message(command_encoder,
                                                  &packet, &packet_size,
                                                  NULL, 0);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
 
     expected_output = g_string_new(NULL);
 
     if (change_from && change_from[0] != '\0') {
-        packet_free();
         milter_reply_encoder_encode_change_from(reply_encoder,
                                                 &packet, &packet_size,
                                                 change_from,
@@ -783,7 +780,6 @@ test_cfgfrom (gconstpointer data)
         g_string_append_len(expected_output, packet, packet_size);
     }
 
-    packet_free();
     milter_reply_encoder_encode_continue(reply_encoder, &packet, &packet_size);
     g_string_append_len(expected_output, packet, packet_size);
 
@@ -795,6 +791,8 @@ test_cfgfrom (gconstpointer data)
 void
 test_addrcpt (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     GString *actual_data;
 
     move_to_body_state();
@@ -805,18 +803,16 @@ test_addrcpt (void)
     milter_command_encoder_encode_end_of_message(command_encoder,
                                                  &packet, &packet_size,
                                                  NULL, 0);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
 
 
     expected_output = g_string_new(NULL);
 
-    packet_free();
     milter_reply_encoder_encode_add_recipient(reply_encoder,
                                               &packet, &packet_size,
                                               add_recipient, NULL);
     g_string_append_len(expected_output, packet, packet_size);
 
-    packet_free();
     milter_reply_encoder_encode_continue(reply_encoder, &packet, &packet_size);
     g_string_append_len(expected_output, packet, packet_size);
 
@@ -828,6 +824,8 @@ test_addrcpt (void)
 void
 test_addrcpt_par (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     GString *actual_data;
 
     move_to_body_state();
@@ -839,19 +837,17 @@ test_addrcpt_par (void)
     milter_command_encoder_encode_end_of_message(command_encoder,
                                                  &packet, &packet_size,
                                                  NULL, 0);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
 
 
     expected_output = g_string_new(NULL);
 
-    packet_free();
     milter_reply_encoder_encode_add_recipient(reply_encoder,
                                               &packet, &packet_size,
                                               add_recipient,
                                               add_recipient_parameters);
     g_string_append_len(expected_output, packet, packet_size);
 
-    packet_free();
     milter_reply_encoder_encode_continue(reply_encoder, &packet, &packet_size);
     g_string_append_len(expected_output, packet, packet_size);
 
@@ -877,6 +873,8 @@ data_delrcpt (void)
 void
 test_delrcpt (gconstpointer data)
 {
+    const gchar *packet;
+    gsize packet_size;
     GString *actual_data;
     const gchar *test_data = data;
 
@@ -887,19 +885,17 @@ test_delrcpt (gconstpointer data)
     milter_command_encoder_encode_end_of_message(command_encoder,
                                                  &packet, &packet_size,
                                                  NULL, 0);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
 
     expected_output = g_string_new(NULL);
 
     if (delete_recipient && delete_recipient[0] != '\0') {
-        packet_free();
         milter_reply_encoder_encode_delete_recipient(reply_encoder,
                                                      &packet, &packet_size,
                                                      delete_recipient);
         g_string_append_len(expected_output, packet, packet_size);
     }
 
-    packet_free();
     milter_reply_encoder_encode_continue(reply_encoder, &packet, &packet_size);
     g_string_append_len(expected_output, packet, packet_size);
 
@@ -911,22 +907,22 @@ test_delrcpt (gconstpointer data)
 void
 test_progress (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     GString *actual_data;
     const gchar fqdn[] = "delian";
 
     send_progress = TRUE;
     milter_command_encoder_encode_helo(command_encoder,
                                        &packet, &packet_size, fqdn);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
 
 
     expected_output = g_string_new(NULL);
 
-    packet_free();
     milter_reply_encoder_encode_progress(reply_encoder, &packet, &packet_size);
     g_string_append_len(expected_output, packet, packet_size);
 
-    packet_free();
     milter_reply_encoder_encode_continue(reply_encoder, &packet, &packet_size);
     g_string_append_len(expected_output, packet, packet_size);
 
@@ -938,6 +934,8 @@ test_progress (void)
 void
 test_quarantine (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     GString *actual_data;
 
     move_to_body_state();
@@ -946,17 +944,15 @@ test_quarantine (void)
     milter_command_encoder_encode_end_of_message(command_encoder,
                                                  &packet, &packet_size,
                                                  NULL, 0);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
 
 
     expected_output = g_string_new(NULL);
 
-    packet_free();
     milter_reply_encoder_encode_quarantine(reply_encoder, &packet, &packet_size,
                                            quarantine_reason);
     g_string_append_len(expected_output, packet, packet_size);
 
-    packet_free();
     milter_reply_encoder_encode_continue(reply_encoder, &packet, &packet_size);
     g_string_append_len(expected_output, packet, packet_size);
 
@@ -968,6 +964,8 @@ test_quarantine (void)
 void
 test_replacebody (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     GString *actual_data;
     gsize packed_size;
 
@@ -978,19 +976,17 @@ test_replacebody (void)
     milter_command_encoder_encode_end_of_message(command_encoder,
                                                  &packet, &packet_size,
                                                  NULL, 0);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(MI_SUCCESS, replace_body_result);
 
 
     expected_output = g_string_new(NULL);
 
-    packet_free();
     milter_reply_encoder_encode_replace_body(reply_encoder,
                                              &packet, &packet_size,
                                              body->str, body->len, &packed_size);
     g_string_append_len(expected_output, packet, packet_size);
 
-    packet_free();
     milter_reply_encoder_encode_continue(reply_encoder, &packet, &packet_size);
     g_string_append_len(expected_output, packet, packet_size);
 

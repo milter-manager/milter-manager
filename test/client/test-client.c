@@ -92,8 +92,6 @@ static guint shutdown_count;
 
 static const gchar *spec;
 
-static gchar *packet;
-
 static MilterOption *option;
 static MilterOption *negotiate_option;
 
@@ -341,8 +339,6 @@ cut_setup (void)
     decoder = milter_reply_decoder_new();
     encoder = MILTER_COMMAND_ENCODER(milter_command_encoder_new());
 
-    packet = NULL;
-
     option = NULL;
     negotiate_option = NULL;
 
@@ -418,9 +414,6 @@ cut_teardown (void)
 
     if (loop)
         g_object_unref(loop);
-
-    if (packet)
-        g_free(packet);
 
     if (option)
         g_object_unref(option);
@@ -508,6 +501,7 @@ setup_test_server (void)
 static gboolean
 cb_idle_negotiate (gpointer user_data)
 {
+    const gchar *packet;
     gsize packet_size;
 
     cut_trace(setup_test_server());
@@ -560,7 +554,7 @@ test_negotiate (void)
 static gboolean
 cb_idle_helo (gpointer user_data)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     cut_trace(setup_test_server());

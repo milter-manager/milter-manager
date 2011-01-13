@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -59,15 +59,16 @@ milter_manager_launch_command_encoder_new (void)
 void
 milter_manager_launch_command_encoder_encode_launch (
     MilterManagerLaunchCommandEncoder *encoder,
-    gchar **packet, gsize *packet_size,
+    const gchar **packet, gsize *packet_size,
     const gchar *command_line,
     const gchar *user_name)
 {
-    MilterEncoder *_encoder;
+    MilterEncoder *base_encoder;
     GString *buffer;
 
-    _encoder = MILTER_ENCODER(encoder);
-    buffer = milter_encoder_get_buffer(_encoder);
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
 
     g_string_append(buffer, MILTER_MANAGER_LAUNCH_COMMAND_LAUNCH);
     g_string_append_c(buffer, '\0');
@@ -75,7 +76,7 @@ milter_manager_launch_command_encoder_encode_launch (
     g_string_append_c(buffer, '\0');
     if (user_name)
         g_string_append(buffer, user_name);
-    milter_encoder_pack(_encoder, packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 /*

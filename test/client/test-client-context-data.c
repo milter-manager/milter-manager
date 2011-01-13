@@ -38,9 +38,6 @@ static MilterEventLoop *loop;
 static MilterClientContext *context;
 static MilterCommandEncoder *encoder;
 
-static gchar *packet;
-static gsize packet_size;
-
 static GError *expected_error;
 static GError *actual_error;
 
@@ -231,8 +228,6 @@ cut_setup (void)
     setup_signals(context);
 
     encoder = MILTER_COMMAND_ENCODER(milter_command_encoder_new());
-    packet = NULL;
-    packet_size = 0;
 
     expected_error = NULL;
     actual_error = NULL;
@@ -254,15 +249,6 @@ cut_setup (void)
 
     private_data_list = NULL;
     expected_private_data_list = NULL;
-}
-
-static void
-packet_free (void)
-{
-    if (packet)
-        g_free(packet);
-    packet = NULL;
-    packet_size = 0;
 }
 
 static void
@@ -291,8 +277,6 @@ cut_teardown (void)
     if (loop)
         g_object_unref(loop);
 
-    packet_free();
-
     errors_free();
 
     if (private_data_list)
@@ -304,7 +288,7 @@ cut_teardown (void)
 typedef void (*HookFunction) (void);
 
 static GError *
-feed (void)
+feed (const gchar *packet, gsize packet_size)
 {
     GError *error = NULL;
 
@@ -322,20 +306,19 @@ append_expected_private_data (const gchar *tag)
 }
 
 static void
-create_negotiate_packet (void)
+create_negotiate_packet (const gchar **packet, gsize *packet_size)
 {
     MilterOption *option;
 
     option = milter_option_new(2, MILTER_ACTION_ADD_HEADERS, MILTER_STEP_NONE);
-    packet_free();
     milter_command_encoder_encode_negotiate(encoder,
-                                            &packet, &packet_size,
+                                            packet, packet_size,
                                             option);
     g_object_unref(option);
 }
 
 static void
-create_connect_packet_ipv4 (void)
+create_connect_packet_ipv4 (const gchar **packet, gsize *packet_size)
 {
     struct sockaddr_in address;
     const gchar host_name[] = "mx.local.net";
@@ -347,43 +330,44 @@ create_connect_packet_ipv4 (void)
     address.sin_port = port;
     inet_pton(AF_INET, ip_address, &(address.sin_addr));
 
-    packet_free();
     milter_command_encoder_encode_connect(encoder,
-                                          &packet, &packet_size,
+                                          packet, packet_size,
                                           host_name,
                                           (const struct sockaddr *)&address,
                                           sizeof(address));
 }
 
 static void
-create_helo_packet (void)
+create_helo_packet (const gchar **packet, gsize *packet_size)
 {
     const gchar fqdn[] = "delian";
 
-    packet_free();
-    milter_command_encoder_encode_helo(encoder, &packet, &packet_size, fqdn);
+    milter_command_encoder_encode_helo(encoder, packet, packet_size, fqdn);
 }
 
 void
 test_private (void)
 {
-    create_negotiate_packet();
+    const gchar *packet;
+    gsize packet_size;
+
+    create_negotiate_packet(&packet, &packet_size);
     gcut_assert_equal_list_string(NULL, private_data_list);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(1, n_negotiates);
     append_expected_private_data("option negotiation");
     gcut_assert_equal_list_string(expected_private_data_list,
                                   private_data_list);
 
-    create_connect_packet_ipv4();
-    gcut_assert_error(feed());
+    create_connect_packet_ipv4(&packet, &packet_size);
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(1, n_connects);
     append_expected_private_data("connect");
     gcut_assert_equal_list_string(expected_private_data_list,
                                   private_data_list);
 
-    create_helo_packet();
-    gcut_assert_error(feed());
+    create_helo_packet(&packet, &packet_size);
+    gcut_assert_error(feed(packet, packet_size));
     cut_assert_equal_int(1, n_helos);
     append_expected_private_data("helo");
     gcut_assert_equal_list_string(expected_private_data_list,

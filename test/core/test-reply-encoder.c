@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -53,7 +53,6 @@ void test_encode_negotiate (void);
 
 static MilterReplyEncoder *encoder;
 static GString *expected;
-static gchar *actual;
 static MilterMacrosRequests *macros_requests;
 
 void
@@ -62,7 +61,6 @@ setup (void)
     encoder = MILTER_REPLY_ENCODER(milter_reply_encoder_new());
 
     expected = g_string_new(NULL);
-    actual = NULL;
 
     macros_requests = NULL;
 }
@@ -76,9 +74,6 @@ teardown (void)
 
     if (expected)
         g_string_free(expected, TRUE);
-
-    if (actual)
-        g_free(actual);
 
     if (macros_requests)
         g_object_unref(macros_requests);
@@ -119,10 +114,10 @@ encode_negotiate_with_option (GString *buffer, MilterOption *option)
     g_string_append_len(buffer, step_string, sizeof(step_string));
 }
 
-
 void
 test_encode_continue (void)
 {
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append(expected, "c");
@@ -135,6 +130,7 @@ test_encode_continue (void)
 void
 test_encode_reply_code (void)
 {
+    const gchar *actual;
     gsize actual_size = 0;
     const gchar code[] = "554 5.7.1 1% 2%% 3%%%";
 
@@ -200,6 +196,7 @@ void
 test_encode_add_header (gconstpointer data)
 {
     const HeaderTestData *test_data = data;
+    const gchar *actual;
     gsize actual_size = 0;
 
     if (test_data->name && test_data->name[0] != '\0') {
@@ -241,6 +238,7 @@ void
 test_encode_insert_header (gconstpointer data)
 {
     const HeaderTestData *test_data = data;
+    const gchar *actual;
     gsize actual_size = 0;
 
     if (test_data->name && test_data->name[0] != '\0') {
@@ -290,6 +288,7 @@ void
 test_encode_change_header (gconstpointer data)
 {
     const HeaderTestData *test_data = data;
+    const gchar *actual;
     gsize actual_size = 0;
 
     if (test_data->name && test_data->name[0] != '\0') {
@@ -332,6 +331,7 @@ void
 test_encode_delete_header (gconstpointer data)
 {
     const HeaderTestData *test_data = data;
+    const gchar *actual;
     gsize actual_size = 0;
 
     if (test_data->name && test_data->name[0] != '\0') {
@@ -385,6 +385,7 @@ test_encode_change_from (gconstpointer data)
     gchar * const *test_data = data;
     gchar *from = NULL;
     gchar *parameters = NULL;
+    const gchar *actual;
     gsize actual_size = 0;
 
     if (test_data && test_data[0]) {
@@ -439,6 +440,7 @@ test_encode_add_recipient (gconstpointer data)
     gchar * const *test_data = data;
     gchar *recipient = NULL;
     gchar *parameters = NULL;
+    const gchar *actual;
     gsize actual_size = 0;
 
     if (test_data && test_data[0]) {
@@ -485,6 +487,7 @@ void
 test_encode_delete_recipient (gconstpointer data)
 {
     const gchar *recipient = data;
+    const gchar *actual;
     gsize actual_size = 0;
 
     if (recipient && recipient[0] != '\0') {
@@ -508,6 +511,7 @@ test_encode_replace_body (void)
         "La de da de da 3.\n"
         "La de da de da 4.";
     gsize written_size = 0;
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append(expected, "b");
@@ -527,6 +531,7 @@ test_encode_replace_body_large (void)
     GString *body;
     gsize i, body_size;
     gsize written_size = 0;
+    const gchar *actual;
     gsize actual_size = 0;
 
     body = g_string_new(NULL);
@@ -551,6 +556,7 @@ test_encode_replace_body_large (void)
 void
 test_encode_progress (void)
 {
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append(expected, "p");
@@ -578,6 +584,7 @@ void
 test_encode_quarantine (gconstpointer data)
 {
     const gchar *reason = data;
+    const gchar *actual;
     gsize actual_size = 0;
 
     if (reason && reason[0] != '\0') {
@@ -595,6 +602,7 @@ test_encode_quarantine (gconstpointer data)
 void
 test_encode_connection_failure (void)
 {
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append(expected, "f");
@@ -607,6 +615,7 @@ test_encode_connection_failure (void)
 void
 test_encode_shutdown (void)
 {
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append(expected, "4");
@@ -619,6 +628,7 @@ test_encode_shutdown (void)
 void
 test_encode_skip (void)
 {
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append(expected, "s");
@@ -631,6 +641,7 @@ test_encode_skip (void)
 void
 test_encode_negotiate (void)
 {
+    const gchar *actual;
     gsize actual_size = 0;
     gint32 stage;
     gchar encoded_stage[sizeof(gint32)];

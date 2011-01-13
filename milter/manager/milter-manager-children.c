@@ -2486,7 +2486,7 @@ milter_manager_children_start_child (MilterManagerChildren *children,
 {
     GError *error = NULL;
     MilterManagerLaunchCommandEncoder *encoder;
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
     gchar *command;
     gchar *user_name;
@@ -2522,6 +2522,7 @@ milter_manager_children_start_child (MilterManagerChildren *children,
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  command,
                  user_name ? user_name : "[current-user]");
+    /* TODO: create priv->launch_command_encoder. */
     encoder = MILTER_MANAGER_LAUNCH_COMMAND_ENCODER(milter_manager_launch_command_encoder_new());
     milter_manager_launch_command_encoder_encode_launch(encoder,
                                                         &packet, &packet_size,
@@ -2529,7 +2530,6 @@ milter_manager_children_start_child (MilterManagerChildren *children,
                                                         user_name);
     milter_writer_write(priv->launcher_writer, packet, packet_size,
                         NULL, &error);
-    g_free(packet);
     g_object_unref(encoder);
 
     if (error) {

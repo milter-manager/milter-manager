@@ -42,8 +42,6 @@ static MilterWriter *writer;
 
 static GError *error_in_callback;
 
-static gchar *packet;
-static gsize packet_size;
 static GString *expected_packet;
 
 static GString *body;
@@ -106,21 +104,10 @@ cut_setup (void)
 
     command_encoder = MILTER_COMMAND_ENCODER(milter_command_encoder_new());
     reply_encoder = MILTER_REPLY_ENCODER(milter_reply_encoder_new());
-    packet = NULL;
-    packet_size = 0;
 
     expected_packet = g_string_new(NULL);
 
     body = g_string_new(NULL);
-}
-
-static void
-packet_free (void)
-{
-    if (packet)
-        g_free(packet);
-    packet = NULL;
-    packet_size = 0;
 }
 
 void
@@ -142,8 +129,6 @@ cut_teardown (void)
     if (loop)
         g_object_unref(loop);
 
-    packet_free();
-
     if (expected_packet)
         g_string_free(expected_packet, TRUE);
 
@@ -154,7 +139,7 @@ cut_teardown (void)
 typedef void (*HookFunction) (void);
 
 static GError *
-feed (void)
+feed (const gchar *packet, gsize packet_size)
 {
     GError *error = NULL;
 
@@ -169,15 +154,16 @@ void
 test_replace_body (void)
 {
     GString *actual_data;
+    const gchar *packet;
+    gsize packet_size;
     gsize packed_size = 0;
 
     g_string_append(body, "XXX");
     milter_command_encoder_encode_end_of_message(command_encoder,
                                                  &packet, &packet_size,
                                                  NULL, 0);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
 
-    packet_free();
     milter_reply_encoder_encode_replace_body(reply_encoder,
                                              &packet, &packet_size,
                                              body->str, body->len,
@@ -192,6 +178,8 @@ test_replace_body_large (void)
 {
     GString *actual_data;
     gsize i, rest_size;
+    const gchar *packet;
+    gsize packet_size;
     gsize packed_size = 0;
 
     for (i = 0; i < MILTER_CHUNK_SIZE + 500; i++) {
@@ -200,16 +188,14 @@ test_replace_body_large (void)
     milter_command_encoder_encode_end_of_message(command_encoder,
                                                  &packet, &packet_size,
                                                  NULL, 0);
-    gcut_assert_error(feed());
+    gcut_assert_error(feed(packet, packet_size));
 
-    packet_free();
     milter_reply_encoder_encode_replace_body(reply_encoder,
                                              &packet, &packet_size,
                                              body->str, body->len,
                                              &packed_size);
     g_string_append_len(expected_packet, packet, packet_size);
 
-    packet_free();
     rest_size = body->len - packed_size;
     milter_reply_encoder_encode_replace_body(reply_encoder,
                                              &packet, &packet_size,

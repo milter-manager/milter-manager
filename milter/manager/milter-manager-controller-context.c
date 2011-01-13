@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -101,7 +101,7 @@ cb_decoder_set_configuration (MilterManagerControlCommandDecoder *decoder,
     MilterAgent *agent;
     MilterEncoder *_encoder;
     MilterManagerControlReplyEncoder *encoder;
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     priv = MILTER_MANAGER_CONTROLLER_CONTEXT_GET_PRIVATE(context);
@@ -151,9 +151,9 @@ cb_decoder_get_configuration (MilterManagerControlCommandDecoder *decoder,
     MilterManagerConfiguration *config;
     GError *error = NULL;
     MilterAgent *agent;
-    MilterEncoder *_encoder;
+    MilterEncoder *base_encoder;
     MilterManagerControlReplyEncoder *encoder;
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
     gchar *config_xml;
 
@@ -161,8 +161,8 @@ cb_decoder_get_configuration (MilterManagerControlCommandDecoder *decoder,
     config = milter_manager_get_configuration(priv->manager);
 
     agent = MILTER_AGENT(context);
-    _encoder = milter_agent_get_encoder(agent);
-    encoder = MILTER_MANAGER_CONTROL_REPLY_ENCODER(_encoder);
+    base_encoder = milter_agent_get_encoder(agent);
+    encoder = MILTER_MANAGER_CONTROL_REPLY_ENCODER(base_encoder);
     config_xml = milter_manager_configuration_to_xml(config);
     milter_manager_control_reply_encoder_encode_configuration(
         encoder, &packet, &packet_size,
@@ -184,9 +184,9 @@ cb_decoder_reload (MilterManagerControlCommandDecoder *decoder,
     MilterManagerConfiguration *config;
     GError *error = NULL;
     MilterAgent *agent;
-    MilterEncoder *_encoder;
+    MilterEncoder *base_encoder;
     MilterManagerControlReplyEncoder *encoder;
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     priv = MILTER_MANAGER_CONTROLLER_CONTEXT_GET_PRIVATE(context);
@@ -194,8 +194,8 @@ cb_decoder_reload (MilterManagerControlCommandDecoder *decoder,
     milter_manager_configuration_reload(config);
 
     agent = MILTER_AGENT(context);
-    _encoder = milter_agent_get_encoder(agent);
-    encoder = MILTER_MANAGER_CONTROL_REPLY_ENCODER(_encoder);
+    base_encoder = milter_agent_get_encoder(agent);
+    encoder = MILTER_MANAGER_CONTROL_REPLY_ENCODER(base_encoder);
     milter_manager_control_reply_encoder_encode_success(encoder,
                                                         &packet,
                                                         &packet_size);
@@ -221,9 +221,9 @@ cb_decoder_get_status (MilterManagerControlCommandDecoder *decoder,
     GString *status;
     GError *error = NULL;
     MilterAgent *agent;
-    MilterEncoder *_encoder;
+    MilterEncoder *base_encoder;
     MilterManagerControlReplyEncoder *encoder;
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     priv = MILTER_MANAGER_CONTROLLER_CONTEXT_GET_PRIVATE(context);
@@ -231,8 +231,8 @@ cb_decoder_get_status (MilterManagerControlCommandDecoder *decoder,
     status = g_string_new(NULL);
     collect_status(context, status);
     agent = MILTER_AGENT(context);
-    _encoder = milter_agent_get_encoder(agent);
-    encoder = MILTER_MANAGER_CONTROL_REPLY_ENCODER(_encoder);
+    base_encoder = milter_agent_get_encoder(agent);
+    encoder = MILTER_MANAGER_CONTROL_REPLY_ENCODER(base_encoder);
     milter_manager_control_reply_encoder_encode_status(encoder,
                                                        &packet,
                                                        &packet_size,

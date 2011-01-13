@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -53,7 +53,6 @@ void test_encode_unknown (void);
 
 static MilterCommandEncoder *encoder;
 static GString *expected;
-static gchar *actual;
 static GHashTable *macros;
 
 void
@@ -62,7 +61,6 @@ setup (void)
     encoder = MILTER_COMMAND_ENCODER(milter_command_encoder_new());
 
     expected = g_string_new(NULL);
-    actual = NULL;
 
     macros = NULL;
 }
@@ -76,9 +74,6 @@ teardown (void)
 
     if (expected)
         g_string_free(expected, TRUE);
-
-    if (actual)
-        g_free(actual);
 
     if (macros)
         g_hash_table_unref(macros);
@@ -123,6 +118,7 @@ void
 test_encode_negotiate (void)
 {
     MilterOption *option;
+    const gchar *actual;
     gsize actual_size = 0;
 
     option = milter_option_new(2,
@@ -154,6 +150,7 @@ test_encode_negotiate (void)
 void
 test_encode_negotiate_null (void)
 {
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append_c(expected, 'O');
@@ -296,6 +293,7 @@ void
 test_encode_define_macro (gconstpointer data)
 {
     const DefineMacroTestData *test_data = data;
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append(expected, "D");
@@ -317,6 +315,7 @@ test_encode_connect_ipv4 (void)
     const gchar ip_address[] = "192.168.123.123";
     gchar port_string[sizeof(uint16_t)];
     uint16_t port;
+    const gchar *actual;
     gsize actual_size = 0;
 
 
@@ -352,6 +351,7 @@ test_encode_connect_ipv6 (void)
     const gchar ipv6_address[] = "2001:c90:625:12e8:290:ccff:fee2:80c5";
     gchar port_string[sizeof(uint16_t)];
     uint16_t port;
+    const gchar *actual;
     gsize actual_size = 0;
 
     port = g_htons(50443);
@@ -386,6 +386,7 @@ test_encode_connect_unix (void)
     const gchar path[] = "/tmp/unix.sock";
     gchar port_string[sizeof(uint16_t)];
     uint16_t port;
+    const gchar *actual;
     gsize actual_size = 0;
 
     port = g_htons(0);
@@ -417,6 +418,7 @@ test_encode_connect_unknown (void)
 {
     struct sockaddr address;
     const gchar host_name[] = "unknown";
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append(expected, "C");
@@ -439,6 +441,7 @@ void
 test_encode_helo (void)
 {
     const gchar fqdn[] = "delian";
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append(expected, "H");
@@ -454,6 +457,7 @@ void
 test_encode_envelope_from (void)
 {
     const gchar from[] = "<kou@example.com>";
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append(expected, "M");
@@ -470,6 +474,7 @@ void
 test_encode_envelope_recipient (void)
 {
     const gchar to[] = "<kou@example.com>";
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append(expected, "R");
@@ -486,6 +491,7 @@ test_encode_envelope_recipient (void)
 void
 test_encode_data (void)
 {
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append(expected, "T");
@@ -499,6 +505,7 @@ void
 test_encode_header (void)
 {
     const gchar from[] = "<kou@example.com>";
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append(expected, "L");
@@ -517,6 +524,7 @@ test_encode_header (void)
 void
 test_encode_end_of_header (void)
 {
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append(expected, "N");
@@ -534,6 +542,7 @@ test_encode_body (void)
         "La de da de da 2.\n"
         "La de da de da 3.\n"
         "La de da de da 4.";
+    const gchar *actual;
     gsize actual_size = 0, packed_size;
 
     g_string_append(expected, "B");
@@ -549,6 +558,7 @@ test_encode_body (void)
 void
 test_encode_end_of_message (void)
 {
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append(expected, "E");
@@ -567,6 +577,7 @@ test_encode_end_of_message_with_data (void)
         "La de da de da 2.\n"
         "La de da de da 3.\n"
         "La de da de da 4.";
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append(expected, "E");
@@ -581,6 +592,7 @@ test_encode_end_of_message_with_data (void)
 void
 test_encode_abort (void)
 {
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append(expected, "A");
@@ -593,6 +605,7 @@ test_encode_abort (void)
 void
 test_encode_quit (void)
 {
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append(expected, "Q");
@@ -606,6 +619,7 @@ void
 test_encode_unknown (void)
 {
     const gchar command[] = "UNKNOWN COMMAND";
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append(expected, "U");

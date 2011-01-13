@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -58,8 +58,6 @@ static MilterWriter *writer;
 static MilterDecoder *decoder;
 static MilterCommandEncoder *encoder;
 static MilterReplyEncoder *reply_encoder;
-static gchar *packet;
-static gsize packet_size;
 static GString *packet_string;
 static GHashTable *macros;
 
@@ -144,8 +142,6 @@ setup (void)
 
     encoder = MILTER_COMMAND_ENCODER(milter_command_encoder_new());
     reply_encoder = MILTER_REPLY_ENCODER(milter_reply_encoder_new());
-    packet = NULL;
-    packet_size = 0;
     packet_string = NULL;
     macros = NULL;
 
@@ -155,15 +151,6 @@ setup (void)
     n_message_processed = 0;
     actual_result = NULL;
     expected_result = NULL;
-}
-
-static void
-packet_free (void)
-{
-    if (packet)
-        g_free(packet);
-    packet = NULL;
-    packet_size = 0;
 }
 
 static void
@@ -192,7 +179,6 @@ teardown (void)
     if (channel)
         g_io_channel_unref(channel);
 
-    packet_free();
     if (packet_string)
         g_string_free(packet_string, TRUE);
     if (macros)
@@ -214,7 +200,7 @@ teardown (void)
 
 static void
 milter_test_assert_packet_helper (GIOChannel *channel,
-                                  gchar *packet, gsize packet_size)
+                                  const gchar *packet, gsize packet_size)
 {
     GString *actual;
 
@@ -330,6 +316,8 @@ void
 test_negotiate (void)
 {
     MilterOption *option;
+    const gchar *packet;
+    gsize packet_size;
 
     option = milter_option_new(protocol_version,
                                MILTER_ACTION_ADD_HEADERS,
@@ -352,6 +340,8 @@ test_negotiated_newer_version (void)
 {
     MilterOption *option, *reply_option;
     MilterMacrosRequests *macros_requests;
+    const gchar *packet;
+    gsize packet_size;
     GError *error = NULL;
 
     option = milter_option_new(2, MILTER_ACTION_ADD_HEADERS, MILTER_STEP_NONE);
@@ -387,6 +377,8 @@ reply_negotiate (void)
 {
     MilterOption *reply_option;
     MilterMacrosRequests *macros_requests;
+    const gchar *packet;
+    gsize packet_size;
     GError *error = NULL;
 
     reply_option = milter_option_new(protocol_version,
@@ -401,18 +393,18 @@ reply_negotiate (void)
 
     milter_decoder_decode(decoder, packet, packet_size, &error);
     gcut_assert_error(error);
-    packet_free();
 }
 
 static void
 reply_continue (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     GError *error = NULL;
 
     milter_reply_encoder_encode_continue(reply_encoder, &packet, &packet_size);
     milter_decoder_decode(decoder, packet, packet_size, &error);
     gcut_assert_error(error);
-    packet_free();
 }
 
 void
@@ -422,9 +414,10 @@ test_connect (void)
     const gchar host_name[] = "mx.local.net";
     const gchar ip_address[] = "192.168.123.123";
     guint16 port;
+    const gchar *packet;
+    gsize packet_size;
 
     test_negotiate();
-    packet_free();
     channel_free();
 
     reply_negotiate();
@@ -457,9 +450,10 @@ test_connect_with_macro (void)
     const gchar host_name[] = "mx.local.net";
     const gchar ip_address[] = "192.168.123.123";
     guint16 port;
+    const gchar *packet;
+    gsize packet_size;
 
     test_negotiate();
-    packet_free();
     channel_free();
 
     reply_negotiate();
@@ -487,7 +481,6 @@ test_connect_with_macro (void)
     milter_test_assert_status(NOT_CHANGE);
 
     packet_string = g_string_new_len(packet, packet_size);
-    packet_free();
     milter_command_encoder_encode_connect(encoder,
                                           &packet, &packet_size,
                                           host_name,
@@ -503,9 +496,10 @@ void
 test_helo (void)
 {
     const gchar fqdn[] = "delian";
+    const gchar *packet;
+    gsize packet_size;
 
     test_connect_with_macro();
-    packet_free();
     channel_free();
 
     reply_continue();
@@ -524,9 +518,10 @@ void
 test_envelope_from (void)
 {
     const gchar from[] = "sender@example.com";
+    const gchar *packet;
+    gsize packet_size;
 
     test_helo();
-    packet_free();
     channel_free();
 
     reply_continue();
@@ -546,9 +541,10 @@ void
 test_envelope_recipient (void)
 {
     const gchar recipient[] = "receiver@example.com";
+    const gchar *packet;
+    gsize packet_size;
 
     test_envelope_from();
-    packet_free();
     channel_free();
 
     reply_continue();
@@ -568,8 +564,10 @@ test_envelope_recipient (void)
 void
 test_data (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     test_envelope_recipient();
-    packet_free();
     channel_free();
 
     reply_continue();
@@ -590,7 +588,6 @@ test_data_with_protocol_version2 (void)
     protocol_version = 2;
 
     test_envelope_recipient();
-    packet_free();
     channel_free();
 
     reply_continue();
@@ -608,9 +605,10 @@ void
 test_unknown (void)
 {
     const gchar command[] = "Who am I?";
+    const gchar *packet;
+    gsize packet_size;
 
     test_data();
-    packet_free();
     channel_free();
 
     reply_continue();
@@ -630,9 +628,10 @@ test_header (void)
 {
     const gchar name[] = "X-HEADER-NAME";
     const gchar value[] = "MilterServerContext test";
+    const gchar *packet;
+    gsize packet_size;
 
     test_data();
-    packet_free();
     channel_free();
 
     reply_continue();
@@ -652,8 +651,10 @@ test_header (void)
 void
 test_end_of_header (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     test_header();
-    packet_free();
     channel_free();
 
     reply_continue();
@@ -672,10 +673,11 @@ void
 test_body (void)
 {
     const gchar chunk[] = "This is a body text.";
+    const gchar *packet;
+    gsize packet_size;
     gsize packed_size;
 
     test_end_of_header();
-    packet_free();
     channel_free();
 
     reply_continue();
@@ -696,9 +698,10 @@ void
 test_end_of_message (void)
 {
     const gchar chunk[] = "This is a end_of_message text.";
+    const gchar *packet;
+    gsize packet_size;
 
     test_body();
-    packet_free();
     channel_free();
 
     reply_continue();
@@ -718,8 +721,10 @@ test_end_of_message (void)
 void
 test_end_of_message_without_chunk (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     test_body();
-    packet_free();
     channel_free();
 
     reply_continue();
@@ -738,8 +743,10 @@ test_end_of_message_without_chunk (void)
 void
 test_quit (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     test_end_of_message_without_chunk();
-    packet_free();
     channel_free();
 
     reply_continue();
@@ -768,8 +775,10 @@ test_quit (void)
 void
 test_quit_after_connect (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     test_connect();
-    packet_free();
     channel_free();
 
     reply_continue();
@@ -785,8 +794,10 @@ test_quit_after_connect (void)
 void
 test_abort (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     test_body();
-    packet_free();
     channel_free();
 
     cut_assert_true(milter_server_context_abort(context));
@@ -800,8 +811,10 @@ test_abort (void)
 void
 test_abort_and_quit (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     test_envelope_recipient();
-    packet_free();
     channel_free();
 
     cut_assert_true(milter_server_context_abort(context));
@@ -814,7 +827,6 @@ test_abort_and_quit (void)
 
     milter_command_encoder_encode_abort(encoder, &packet, &packet_size);
     packet_string = g_string_new_len(packet, packet_size);
-    packet_free();
 
     milter_command_encoder_encode_quit(encoder, &packet, &packet_size);
     g_string_append_len(packet_string, packet, packet_size);

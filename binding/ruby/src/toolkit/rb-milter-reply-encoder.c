@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -32,7 +32,7 @@ static VALUE
 encode_negotiate (int argc, VALUE *argv, VALUE self)
 {
     VALUE option, macros_requests;
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     rb_scan_args(argc, argv, "11", &option, &macros_requests);
@@ -41,86 +41,86 @@ encode_negotiate (int argc, VALUE *argv, VALUE self)
 					  RVAL2OPTION(option),
 					  RVAL2MACROS_REQUESTS(macros_requests));
 
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_continue (VALUE self)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_reply_encoder_encode_continue(SELF(self),
 					 &packet, &packet_size);
 
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_reply_code (VALUE self, VALUE code)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_reply_encoder_encode_reply_code(SELF(self),
 					   &packet, &packet_size,
 					   RVAL2CSTR(code));
 
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_temporary_failure (VALUE self)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_reply_encoder_encode_temporary_failure(SELF(self),
 						  &packet, &packet_size);
 
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_reject (VALUE self)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_reply_encoder_encode_reject(SELF(self),
 				       &packet, &packet_size);
 
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_accept (VALUE self)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_reply_encoder_encode_accept(SELF(self),
 				       &packet, &packet_size);
 
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_discard (VALUE self)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_reply_encoder_encode_discard(SELF(self),
 					&packet, &packet_size);
 
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_add_header (VALUE self, VALUE name, VALUE value)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_reply_encoder_encode_add_header(SELF(self),
@@ -128,13 +128,13 @@ encode_add_header (VALUE self, VALUE name, VALUE value)
 					   RVAL2CSTR(name),
 					   RVAL2CSTR(value));
 
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_insert_header (VALUE self, VALUE index, VALUE name, VALUE value)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_reply_encoder_encode_insert_header(SELF(self),
@@ -143,13 +143,13 @@ encode_insert_header (VALUE self, VALUE index, VALUE name, VALUE value)
 					      RVAL2CSTR(name),
 					      RVAL2CSTR(value));
 
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_change_header (VALUE self, VALUE name, VALUE index, VALUE value)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_reply_encoder_encode_change_header(SELF(self),
@@ -158,13 +158,13 @@ encode_change_header (VALUE self, VALUE name, VALUE index, VALUE value)
 					      NUM2UINT(index),
 					      RVAL2CSTR(value));
 
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_delete_header (VALUE self, VALUE name, VALUE index)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_reply_encoder_encode_delete_header(SELF(self),
@@ -172,14 +172,14 @@ encode_delete_header (VALUE self, VALUE name, VALUE index)
 					      RVAL2CSTR(name),
 					      NUM2UINT(index));
 
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_change_from (int argc, VALUE *argv, VALUE self)
 {
     VALUE from, parameters;
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     rb_scan_args(argc, argv, "11", &from, &parameters);
@@ -188,14 +188,14 @@ encode_change_from (int argc, VALUE *argv, VALUE self)
 					    RVAL2CSTR(from),
 					    RVAL2CSTR_ACCEPT_NIL(parameters));
 
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_add_recipient (int argc, VALUE *argv, VALUE self)
 {
     VALUE to, parameters;
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     rb_scan_args(argc, argv, "11", &to, &parameters);
@@ -204,26 +204,26 @@ encode_add_recipient (int argc, VALUE *argv, VALUE self)
 					      RVAL2CSTR(to),
 					      RVAL2CSTR_ACCEPT_NIL(parameters));
 
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_delete_recipient (VALUE self, VALUE to)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_reply_encoder_encode_delete_recipient(SELF(self),
 						 &packet, &packet_size,
 						 RVAL2CSTR(to));
 
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_replace_body (VALUE self, VALUE chunk)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size, packed_size;
 
     if (!RVAL2CBOOL(rb_obj_is_kind_of(chunk, rb_cString)))
@@ -237,69 +237,69 @@ encode_replace_body (VALUE self, VALUE chunk)
 					     &packed_size);
 
     return rb_ary_new3(2,
-		       CSTR2RVAL_SIZE_FREE(packet, packet_size),
+		       CSTR2RVAL_SIZE(packet, packet_size),
 		       UINT2NUM(packed_size));
 }
 
 static VALUE
 encode_progress (VALUE self)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_reply_encoder_encode_progress(SELF(self),
 					 &packet, &packet_size);
 
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_quarantine (VALUE self, VALUE reason)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_reply_encoder_encode_quarantine(SELF(self),
 					   &packet, &packet_size,
 					   RVAL2CSTR(reason));
 
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_connection_failure (VALUE self)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_reply_encoder_encode_connection_failure(SELF(self),
 						   &packet, &packet_size);
 
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_shutdown (VALUE self)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_reply_encoder_encode_shutdown(SELF(self),
 					 &packet, &packet_size);
 
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_skip (VALUE self)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_reply_encoder_encode_skip(SELF(self),
 				     &packet, &packet_size);
 
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 void

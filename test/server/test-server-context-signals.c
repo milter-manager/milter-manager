@@ -67,8 +67,6 @@ static MilterReader *reader;
 static MilterWriter *writer;
 
 static MilterReplyEncoder *encoder;
-static gchar *packet;
-static gsize packet_size;
 
 static GError *actual_error;
 static GError *expected_error;
@@ -427,8 +425,6 @@ cut_setup (void)
     milter_agent_start(MILTER_AGENT(context), NULL);
 
     encoder = MILTER_REPLY_ENCODER(milter_reply_encoder_new());
-    packet = NULL;
-    packet_size = 0;
 
     option = NULL;
     requests = NULL;
@@ -481,15 +477,6 @@ cut_setup (void)
     buffer = g_string_new(NULL);
 }
 
-static void
-packet_free (void)
-{
-    if (packet)
-        g_free(packet);
-    packet = NULL;
-    packet_size = 0;
-}
-
 void
 cut_teardown (void)
 {
@@ -517,8 +504,6 @@ cut_teardown (void)
         g_object_unref(option);
     if (requests)
         g_object_unref(requests);
-
-    packet_free();
 
     if (actual_error)
         g_error_free(actual_error);
@@ -603,6 +588,9 @@ write_data (const gchar *data, gsize data_size)
 void
 test_negotiate_reply (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     option = milter_option_new(2,
                                MILTER_ACTION_ADD_HEADERS,
                                MILTER_STEP_NO_HEADERS);
@@ -625,6 +613,9 @@ test_negotiate_reply (void)
 void
 test_continue (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     milter_server_context_helo(context, "delian");
 
     milter_reply_encoder_encode_continue(encoder, &packet, &packet_size);
@@ -636,6 +627,8 @@ test_continue (void)
 void
 test_reply_code_temporary_failure (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     const gchar code[] = "451 4.7.1 Greylisting in action, please come back";
 
     milter_reply_encoder_encode_reply_code(encoder, &packet, &packet_size, code);
@@ -651,6 +644,8 @@ test_reply_code_temporary_failure (void)
 void
 test_reply_code_reject (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     const gchar code[] = "554 5.7.1 1% 2%% 3%%%";
 
     milter_reply_encoder_encode_reply_code(encoder, &packet, &packet_size, code);
@@ -666,6 +661,9 @@ test_reply_code_reject (void)
 void
 test_temporary_failure (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     milter_reply_encoder_encode_temporary_failure(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_temporary_failures);
@@ -675,6 +673,9 @@ test_temporary_failure (void)
 void
 test_reject (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     milter_reply_encoder_encode_reject(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_rejects);
@@ -684,6 +685,9 @@ test_reject (void)
 void
 test_accept (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     milter_reply_encoder_encode_accept(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_accepts);
@@ -693,6 +697,9 @@ test_accept (void)
 void
 test_discard (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     milter_reply_encoder_encode_discard(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_discards);
@@ -702,6 +709,8 @@ test_discard (void)
 void
 test_add_header (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     const gchar name[] = "X-HEADER-NAME";
     const gchar value[] = "MilterServerContext test";
 
@@ -720,6 +729,8 @@ test_add_header (void)
 void
 test_insert_header (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     const gchar name[] = "X-HEADER-NAME";
     const gchar value[] = "MilterServerContext test";
 
@@ -739,6 +750,8 @@ test_insert_header (void)
 void
 test_change_header (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     const gchar name[] = "X-HEADER-NAME";
     const gchar value[] = "MilterServerContext test";
 
@@ -757,6 +770,8 @@ test_change_header (void)
 void
 test_delete_header (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     const gchar name[] = "X-HEADER-NAME";
 
     milter_server_context_end_of_message(context, NULL, 0);
@@ -773,6 +788,8 @@ test_delete_header (void)
 void
 test_change_from (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     const gchar from[] = "example@example.com";
 
     milter_server_context_end_of_message(context, NULL, 0);
@@ -788,6 +805,8 @@ test_change_from (void)
 void
 test_add_recipient (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     const gchar recipient[] = "example@example.com";
 
     milter_server_context_end_of_message(context, NULL, 0);
@@ -805,6 +824,8 @@ test_add_recipient (void)
 void
 test_delete_recipient (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     const gchar recipient[] = "example@example.com";
 
     milter_reply_encoder_encode_delete_recipient(encoder,
@@ -819,6 +840,8 @@ test_delete_recipient (void)
 void
 test_replace_body (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     const gchar chunk[] = "This is a body text.";
     gsize packed_size;
 
@@ -834,6 +857,9 @@ test_replace_body (void)
 void
 test_progress (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     milter_reply_encoder_encode_progress(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_progresss);
@@ -843,6 +869,8 @@ test_progress (void)
 void
 test_quarantine (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     const gchar reason[] = "infection";
 
     milter_reply_encoder_encode_quarantine(encoder, &packet, &packet_size, reason);
@@ -855,6 +883,9 @@ test_quarantine (void)
 void
 test_connection_failure (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     milter_reply_encoder_encode_connection_failure(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_connection_failures);
@@ -864,6 +895,9 @@ test_connection_failure (void)
 void
 test_shutdown (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     milter_reply_encoder_encode_shutdown(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_shutdowns);
@@ -873,6 +907,9 @@ test_shutdown (void)
 void
 test_skip (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     milter_server_context_set_state(context,
                                     MILTER_SERVER_CONTEXT_STATE_BODY);
 
@@ -886,6 +923,9 @@ test_skip (void)
 void
 test_skip_in_invalid_state (void)
 {
+    const gchar *packet;
+    gsize packet_size;
+
     expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
                                  MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
                                  "Invalid state: start");
@@ -901,6 +941,7 @@ static gboolean
 cb_timeout (MilterServerContext *context, gpointer data)
 {
     gboolean *timeout_flag = data;
+
     *timeout_flag = TRUE;
     gcut_string_io_channel_set_buffer_limit(channel, 0);
     return FALSE;
@@ -910,6 +951,7 @@ static gboolean
 cb_timeout_detect (gpointer data)
 {
     gboolean *timeout_flag = data;
+
     *timeout_flag = TRUE;
     return FALSE;
 }
@@ -918,6 +960,7 @@ static gboolean
 cb_io_timeout_detect (gpointer data)
 {
     gboolean *timeout_flag = data;
+
     *timeout_flag = TRUE;
     gcut_string_io_channel_set_buffer_limit(channel, 0);
     return FALSE;
@@ -986,6 +1029,8 @@ test_writing_timeout (void)
 void
 test_invalid_state_error (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     const gchar from[] = "example@example.com";
 
     expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,

@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -53,18 +53,18 @@ MilterEncoder   *milter_manager_reply_encoder_new            (void);
 
 void             milter_manager_reply_encoder_encode_success
                                             (MilterManagerReplyEncoder *encoder,
-                                             gchar        **packet,
+                                             const gchar  **packet,
                                              gsize         *packet_size);
 
 void             milter_manager_reply_encoder_encode_failure
                                             (MilterManagerReplyEncoder *encoder,
-                                             gchar        **packet,
+                                             const gchar  **packet,
                                              gsize         *packet_size,
                                              const gchar   *message);
 
 void             milter_manager_reply_encoder_encode_error
                                             (MilterManagerReplyEncoder *encoder,
-                                             gchar        **packet,
+                                             const gchar  **packet,
                                              gsize         *packet_size,
                                              const gchar   *message);
 

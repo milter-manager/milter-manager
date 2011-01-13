@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -41,6 +41,9 @@ extern VALUE rb_cMilterSocketAddressUnknown;
 #  define CSTR2RVAL_FREE(string) CSTR2RVAL2(string)
 #endif
 
+/* TODO: support encoding. */
+#define CSTR2RVAL_SIZE(string, size)			\
+    (rb_str_new(string, size))
 #define CSTR2RVAL_SIZE_FREE(string, size)		\
     (rb_milter_cstr2rval_size_free(string, size))
 

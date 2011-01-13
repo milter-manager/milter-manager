@@ -106,7 +106,7 @@ data_add_header (void)
     {                                                                   \
         MilterActionFlags action;                                       \
         GError *parse_error = NULL;                                     \
-        gchar *packet = NULL;                                           \
+        const gchar *packet = NULL;                                     \
         gsize packet_size = 0;                                          \
                                                                         \
         action = gcut_flags_parse(MILTER_TYPE_ACTION_FLAGS,             \
@@ -131,8 +131,6 @@ data_add_header (void)
                        g_memdup(packet, packet_size), g_free,           \
                        "packet-size", G_TYPE_UINT, packet_size,         \
                        NULL);                                           \
-        if (packet)                                                     \
-            g_free(packet);                                             \
     } while (0)
 
     ADD("success",
@@ -206,7 +204,7 @@ data_insert_header (void)
     {                                                                   \
         MilterActionFlags action;                                       \
         GError *parse_error = NULL;                                     \
-        gchar *packet = NULL;                                           \
+        const gchar *packet = NULL;                                     \
         gsize packet_size = 0;                                          \
                                                                         \
         action = gcut_flags_parse(MILTER_TYPE_ACTION_FLAGS,             \
@@ -233,8 +231,6 @@ data_insert_header (void)
                        g_memdup(packet, packet_size), g_free,           \
                        "packet-size", G_TYPE_UINT, packet_size,         \
                        NULL);                                           \
-        if (packet)                                                     \
-            g_free(packet);                                             \
     } while (0)
 
     ADD("success",
@@ -309,7 +305,7 @@ data_change_header (void)
     {                                                                   \
         MilterActionFlags action;                                       \
         GError *parse_error = NULL;                                     \
-        gchar *packet = NULL;                                           \
+        const gchar *packet = NULL;                                     \
         gsize packet_size = 0;                                          \
                                                                         \
         action = gcut_flags_parse(MILTER_TYPE_ACTION_FLAGS,             \
@@ -336,8 +332,6 @@ data_change_header (void)
                        g_memdup(packet, packet_size), g_free,           \
                        "packet-size", G_TYPE_UINT, packet_size,         \
                        NULL);                                           \
-        if (packet)                                                     \
-            g_free(packet);                                             \
     } while (0)
 
     ADD("success",
@@ -407,7 +401,7 @@ data_delete_header (void)
     {                                                                   \
         MilterActionFlags action;                                       \
         GError *parse_error = NULL;                                     \
-        gchar *packet = NULL;                                           \
+        const gchar *packet = NULL;                                     \
         gsize packet_size = 0;                                          \
                                                                         \
         action = gcut_flags_parse(MILTER_TYPE_ACTION_FLAGS,             \
@@ -432,8 +426,6 @@ data_delete_header (void)
                        g_memdup(packet, packet_size), g_free,           \
                        "packet-size", G_TYPE_UINT, packet_size,         \
                        NULL);                                           \
-        if (packet)                                                     \
-            g_free(packet);                                             \
     } while (0)
 
     ADD("success",

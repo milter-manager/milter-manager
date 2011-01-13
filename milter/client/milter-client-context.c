@@ -1980,7 +1980,8 @@ cb_timeout (gpointer data)
 }
 
 static gboolean
-write_packet (MilterClientContext *context, gchar *packet, gsize packet_size)
+write_packet (MilterClientContext *context,
+              const gchar *packet, gsize packet_size)
 {
     MilterClientContextPrivate *priv;
     MilterEventLoop *loop;
@@ -2001,7 +2002,6 @@ write_packet (MilterClientContext *context, gchar *packet, gsize packet_size)
     success = milter_agent_write_packet(MILTER_AGENT(context),
                                         packet, packet_size,
                                         &agent_error);
-    g_free(packet);
     if (agent_error) {
         GError *error = NULL;
         milter_utils_set_error_with_sub_error(&error,
@@ -2095,7 +2095,7 @@ milter_client_context_add_header (MilterClientContext *context,
                                   GError **error)
 {
     MilterClientContextPrivate *priv;
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
 
@@ -2139,7 +2139,7 @@ milter_client_context_insert_header (MilterClientContext *context,
                                      GError **error)
 {
     MilterClientContextPrivate *priv;
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
 
@@ -2184,7 +2184,7 @@ milter_client_context_change_header (MilterClientContext *context,
                                      GError **error)
 {
     MilterClientContextPrivate *priv;
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
 
@@ -2227,7 +2227,7 @@ milter_client_context_delete_header (MilterClientContext *context,
                                      GError **error)
 {
     MilterClientContextPrivate *priv;
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
 
@@ -2272,7 +2272,7 @@ milter_client_context_change_from (MilterClientContext *context,
 {
     MilterClientContextPrivate *priv;
     MilterEncoder *encoder;
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
 
     if (!from) {
@@ -2317,7 +2317,7 @@ milter_client_context_add_recipient (MilterClientContext *context,
 {
     MilterClientContextPrivate *priv;
     MilterEncoder *encoder;
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
 
     if (!recipient) {
@@ -2362,7 +2362,7 @@ milter_client_context_delete_recipient (MilterClientContext *context,
 {
     MilterClientContextPrivate *priv;
     MilterEncoder *encoder;
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
 
     if (!recipient) {
@@ -2427,7 +2427,7 @@ milter_client_context_replace_body (MilterClientContext *context,
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     reply_encoder = MILTER_REPLY_ENCODER(encoder);
     for (rest_size = body_size; rest_size > 0; rest_size -= packed_size) {
-        gchar *packet = NULL;
+        const gchar *packet = NULL;
         gsize packet_size;
         gsize offset;
 
@@ -2451,7 +2451,7 @@ gboolean
 milter_client_context_progress (MilterClientContext *context)
 {
     MilterEncoder *encoder;
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
 
     milter_debug("[%u] [client][send][progress]",
@@ -2502,7 +2502,7 @@ milter_client_context_reset_message_related_data (MilterClientContext *context)
 
 static void
 create_reply_packet (MilterClientContext *context, MilterStatus status,
-                     gchar **packet, gsize *packet_size)
+                     const gchar **packet, gsize *packet_size)
 {
     MilterEncoder *encoder;
     MilterReplyEncoder *reply_encoder;
@@ -2555,7 +2555,7 @@ create_reply_packet (MilterClientContext *context, MilterStatus status,
 static gboolean
 reply (MilterClientContext *context, MilterStatus status)
 {
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
 
     create_reply_packet(context, status, &packet, &packet_size);
@@ -2570,7 +2570,7 @@ static gboolean
 reply_on_end_of_message (MilterClientContext *context, MilterStatus status)
 {
     MilterClientContextPrivate *priv;
-    gchar *packet = NULL;
+    const gchar *packet = NULL;
     gsize packet_size;
     gboolean success;
 
@@ -2583,27 +2583,20 @@ reply_on_end_of_message (MilterClientContext *context, MilterStatus status)
     if (priv->quarantine_reason) {
         MilterEncoder *encoder;
         MilterReplyEncoder *reply_encoder;
-        gchar *quarantine_packet;
-        gsize quarantine_packet_size;
         GString *concatenated_packet;
-        gsize concatenated_packet_size;
 
         encoder = milter_agent_get_encoder(MILTER_AGENT(context));
         reply_encoder = MILTER_REPLY_ENCODER(encoder);
 
+        concatenated_packet = g_string_new_len(packet, packet_size);
         milter_reply_encoder_encode_quarantine(reply_encoder,
-                                               &quarantine_packet,
-                                               &quarantine_packet_size,
+                                               &packet, &packet_size,
                                                priv->quarantine_reason);
-        concatenated_packet = g_string_new_len(quarantine_packet,
-                                               quarantine_packet_size);
-        g_string_append_len(concatenated_packet, packet, packet_size);
-        concatenated_packet_size = concatenated_packet->len;
+        g_string_prepend_len(concatenated_packet, packet, packet_size);
         success = write_packet(context,
-                               g_string_free(concatenated_packet, FALSE),
-                               concatenated_packet_size);
-        g_free(packet);
-        g_free(quarantine_packet);
+                               concatenated_packet->str,
+                               concatenated_packet->len);
+        g_string_free(concatenated_packet, TRUE);
     } else {
         success = write_packet(context, packet, packet_size);
     }
@@ -2702,7 +2695,7 @@ negotiate_response (MilterClientContext *context,
                     MilterOption *option, MilterMacrosRequests *macros_requests,
                     MilterStatus status)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
     MilterEncoder *encoder;
     MilterClientContextPrivate *priv;

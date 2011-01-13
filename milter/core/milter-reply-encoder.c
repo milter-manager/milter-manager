@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -107,39 +107,47 @@ encode_macros_requests (GString *buffer, MilterMacrosRequests *requests)
 
 void
 milter_reply_encoder_encode_negotiate (MilterReplyEncoder *encoder,
-                                       gchar **packet, gsize *packet_size,
+                                       const gchar **packet,
+                                       gsize *packet_size,
                                        MilterOption *option,
                                        MilterMacrosRequests *macros_requests)
 {
-    MilterEncoder *_encoder;
+    MilterEncoder *base_encoder;
     GString *buffer;
 
-    _encoder = MILTER_ENCODER(encoder);
-    milter_encoder_encode_negotiate(_encoder, option);
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_encode_negotiate(base_encoder, option);
     if (macros_requests) {
-        buffer = milter_encoder_get_buffer(_encoder);
+        buffer = milter_encoder_get_buffer(base_encoder);
         encode_macros_requests(buffer, macros_requests);
     }
-    milter_encoder_pack(_encoder, packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 void
 milter_reply_encoder_encode_continue (MilterReplyEncoder *encoder,
-                                            gchar **packet, gsize *packet_size)
+                                      const gchar **packet,
+                                      gsize *packet_size)
 {
+    MilterEncoder *base_encoder;
     GString *buffer;
 
-    buffer = milter_encoder_get_buffer(MILTER_ENCODER(encoder));
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
+
 
     g_string_append_c(buffer, MILTER_REPLY_CONTINUE);
-    milter_encoder_pack(MILTER_ENCODER(encoder), packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 void
 milter_reply_encoder_encode_reply_code (MilterReplyEncoder *encoder,
-                                        gchar **packet, gsize *packet_size,
+                                        const gchar **packet,
+                                        gsize *packet_size,
                                         const gchar *code)
 {
+    MilterEncoder *base_encoder;
     GString *buffer;
 
     if (!code) {
@@ -148,69 +156,92 @@ milter_reply_encoder_encode_reply_code (MilterReplyEncoder *encoder,
         return;
     }
 
-    buffer = milter_encoder_get_buffer(MILTER_ENCODER(encoder));
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
+
 
     g_string_append_c(buffer, MILTER_REPLY_REPLY_CODE);
     g_string_append(buffer, code);
     g_string_append_c(buffer, '\0');
-    milter_encoder_pack(MILTER_ENCODER(encoder), packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 void
 milter_reply_encoder_encode_temporary_failure (MilterReplyEncoder *encoder,
-                                               gchar **packet,
+                                               const gchar **packet,
                                                gsize *packet_size)
 {
+    MilterEncoder *base_encoder;
     GString *buffer;
 
-    buffer = milter_encoder_get_buffer(MILTER_ENCODER(encoder));
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
+
 
     g_string_append_c(buffer, MILTER_REPLY_TEMPORARY_FAILURE);
-    milter_encoder_pack(MILTER_ENCODER(encoder), packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 void
 milter_reply_encoder_encode_reject (MilterReplyEncoder *encoder,
-                                    gchar **packet, gsize *packet_size)
+                                    const gchar **packet,
+                                    gsize *packet_size)
 {
+    MilterEncoder *base_encoder;
     GString *buffer;
 
-    buffer = milter_encoder_get_buffer(MILTER_ENCODER(encoder));
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
+
 
     g_string_append_c(buffer, MILTER_REPLY_REJECT);
-    milter_encoder_pack(MILTER_ENCODER(encoder), packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 void
 milter_reply_encoder_encode_accept (MilterReplyEncoder *encoder,
-                                    gchar **packet, gsize *packet_size)
+                                    const gchar **packet,
+                                    gsize *packet_size)
 {
+    MilterEncoder *base_encoder;
     GString *buffer;
 
-    buffer = milter_encoder_get_buffer(MILTER_ENCODER(encoder));
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
+
 
     g_string_append_c(buffer, MILTER_REPLY_ACCEPT);
-    milter_encoder_pack(MILTER_ENCODER(encoder), packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 void
 milter_reply_encoder_encode_discard (MilterReplyEncoder *encoder,
-                                     gchar **packet, gsize *packet_size)
+                                     const gchar **packet,
+                                     gsize *packet_size)
 {
+    MilterEncoder *base_encoder;
     GString *buffer;
 
-    buffer = milter_encoder_get_buffer(MILTER_ENCODER(encoder));
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
+
 
     g_string_append_c(buffer, MILTER_REPLY_DISCARD);
-    milter_encoder_pack(MILTER_ENCODER(encoder), packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 static void
 encode_reply_header (MilterReplyEncoder *encoder,
-                     gchar **packet, gsize *packet_size,
+                     const gchar **packet, gsize *packet_size,
                      MilterReply reply,
                      const gchar *name, const gchar *value, guint32 index)
 {
+    MilterEncoder *base_encoder;
     GString *buffer;
 
     if (name == NULL || name[0] == '\0') {
@@ -219,7 +250,10 @@ encode_reply_header (MilterReplyEncoder *encoder,
         return;
     }
 
-    buffer = milter_encoder_get_buffer(MILTER_ENCODER(encoder));
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
+
 
     g_string_append_c(buffer, reply);
     if (reply != MILTER_REPLY_ADD_HEADER) {
@@ -235,12 +269,13 @@ encode_reply_header (MilterReplyEncoder *encoder,
     if (value)
         g_string_append(buffer, value);
     g_string_append_c(buffer, '\0');
-    milter_encoder_pack(MILTER_ENCODER(encoder), packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 void
 milter_reply_encoder_encode_add_header (MilterReplyEncoder *encoder,
-                                        gchar **packet, gsize *packet_size,
+                                        const gchar **packet,
+                                        gsize *packet_size,
                                         const gchar *name,
                                         const gchar *value)
 {
@@ -252,7 +287,8 @@ milter_reply_encoder_encode_add_header (MilterReplyEncoder *encoder,
 
 void
 milter_reply_encoder_encode_insert_header (MilterReplyEncoder *encoder,
-                                           gchar **packet, gsize *packet_size,
+                                           const gchar **packet,
+                                           gsize *packet_size,
                                            guint32 index,
                                            const gchar *name,
                                            const gchar *value)
@@ -265,7 +301,8 @@ milter_reply_encoder_encode_insert_header (MilterReplyEncoder *encoder,
 
 void
 milter_reply_encoder_encode_change_header (MilterReplyEncoder *encoder,
-                                           gchar **packet, gsize *packet_size,
+                                           const gchar **packet,
+                                           gsize *packet_size,
                                            const gchar *name,
                                            guint32 index,
                                            const gchar *value)
@@ -278,7 +315,8 @@ milter_reply_encoder_encode_change_header (MilterReplyEncoder *encoder,
 
 void
 milter_reply_encoder_encode_delete_header (MilterReplyEncoder *encoder,
-                                           gchar **packet, gsize *packet_size,
+                                           const gchar **packet,
+                                           gsize *packet_size,
                                            const gchar *name,
                                            guint32 index)
 {
@@ -290,10 +328,12 @@ milter_reply_encoder_encode_delete_header (MilterReplyEncoder *encoder,
 
 void
 milter_reply_encoder_encode_change_from (MilterReplyEncoder *encoder,
-                                         gchar **packet, gsize *packet_size,
+                                         const gchar **packet,
+                                         gsize *packet_size,
                                          const gchar *from,
                                          const gchar *parameters)
 {
+    MilterEncoder *base_encoder;
     GString *buffer;
 
     if (from == NULL || from[0] == '\0') {
@@ -302,7 +342,10 @@ milter_reply_encoder_encode_change_from (MilterReplyEncoder *encoder,
         return;
     }
 
-    buffer = milter_encoder_get_buffer(MILTER_ENCODER(encoder));
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
+
     g_string_append_c(buffer, MILTER_REPLY_CHANGE_FROM);
     g_string_append(buffer, from);
     g_string_append_c(buffer, '\0');
@@ -310,15 +353,17 @@ milter_reply_encoder_encode_change_from (MilterReplyEncoder *encoder,
         g_string_append(buffer, parameters);
         g_string_append_c(buffer, '\0');
     }
-    milter_encoder_pack(MILTER_ENCODER(encoder), packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 void
 milter_reply_encoder_encode_add_recipient (MilterReplyEncoder *encoder,
-                                           gchar **packet, gsize *packet_size,
+                                           const gchar **packet,
+                                           gsize *packet_size,
                                            const gchar *recipient,
                                            const gchar *parameters)
 {
+    MilterEncoder *base_encoder;
     GString *buffer;
     MilterReply reply;
     gboolean have_parameter;
@@ -329,7 +374,10 @@ milter_reply_encoder_encode_add_recipient (MilterReplyEncoder *encoder,
         return;
     }
 
-    buffer = milter_encoder_get_buffer(MILTER_ENCODER(encoder));
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
+
     have_parameter = parameters && parameters[0] != '\0';
     if (have_parameter)
         reply = MILTER_REPLY_ADD_RECIPIENT_WITH_PARAMETERS;
@@ -342,14 +390,16 @@ milter_reply_encoder_encode_add_recipient (MilterReplyEncoder *encoder,
         g_string_append(buffer, parameters);
         g_string_append_c(buffer, '\0');
     }
-    milter_encoder_pack(MILTER_ENCODER(encoder), packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 void
 milter_reply_encoder_encode_delete_recipient (MilterReplyEncoder *encoder,
-                                              gchar **packet, gsize *packet_size,
+                                              const gchar **packet,
+                                              gsize *packet_size,
                                               const gchar *recipient)
 {
+    MilterEncoder *base_encoder;
     GString *buffer;
 
     if (recipient == NULL || recipient[0] == '\0') {
@@ -358,19 +408,24 @@ milter_reply_encoder_encode_delete_recipient (MilterReplyEncoder *encoder,
         return;
     }
 
-    buffer = milter_encoder_get_buffer(MILTER_ENCODER(encoder));
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
+
     g_string_append_c(buffer, MILTER_REPLY_DELETE_RECIPIENT);
     g_string_append(buffer, recipient);
     g_string_append_c(buffer, '\0');
-    milter_encoder_pack(MILTER_ENCODER(encoder), packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 void
 milter_reply_encoder_encode_replace_body (MilterReplyEncoder *encoder,
-                                          gchar **packet, gsize *packet_size,
+                                          const gchar **packet,
+                                          gsize *packet_size,
                                           const gchar *body, gsize body_size,
                                           gsize *packed_size)
 {
+    MilterEncoder *base_encoder;
     GString *buffer;
 
     if (body_size <= 0 || (body == NULL && body_size > 0)) {
@@ -380,32 +435,42 @@ milter_reply_encoder_encode_replace_body (MilterReplyEncoder *encoder,
         return;
     }
 
-    buffer = milter_encoder_get_buffer(MILTER_ENCODER(encoder));
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
+
     g_string_append_c(buffer, MILTER_REPLY_REPLACE_BODY);
     if (body_size > MILTER_CHUNK_SIZE)
         *packed_size = MILTER_CHUNK_SIZE;
     else
         *packed_size = body_size;
     g_string_append_len(buffer, body, *packed_size);
-    milter_encoder_pack(MILTER_ENCODER(encoder), packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 void
 milter_reply_encoder_encode_progress (MilterReplyEncoder *encoder,
-                                      gchar **packet, gsize *packet_size)
+                                      const gchar **packet,
+                                      gsize *packet_size)
 {
+    MilterEncoder *base_encoder;
     GString *buffer;
 
-    buffer = milter_encoder_get_buffer(MILTER_ENCODER(encoder));
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
+
     g_string_append_c(buffer, MILTER_REPLY_PROGRESS);
-    milter_encoder_pack(MILTER_ENCODER(encoder), packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 void
 milter_reply_encoder_encode_quarantine (MilterReplyEncoder *encoder,
-                                        gchar **packet, gsize *packet_size,
+                                        const gchar **packet,
+                                        gsize *packet_size,
                                         const gchar *reason)
 {
+    MilterEncoder *base_encoder;
     GString *buffer;
 
     if (reason == NULL || reason[0] == '\0') {
@@ -414,46 +479,63 @@ milter_reply_encoder_encode_quarantine (MilterReplyEncoder *encoder,
         return;
     }
 
-    buffer = milter_encoder_get_buffer(MILTER_ENCODER(encoder));
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
+
     g_string_append_c(buffer, MILTER_REPLY_QUARANTINE);
     g_string_append(buffer, reason);
     g_string_append_c(buffer, '\0');
-    milter_encoder_pack(MILTER_ENCODER(encoder), packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 void
 milter_reply_encoder_encode_connection_failure (MilterReplyEncoder *encoder,
-                                                gchar **packet,
+                                                const gchar **packet,
                                                 gsize *packet_size)
 {
+    MilterEncoder *base_encoder;
     GString *buffer;
 
-    buffer = milter_encoder_get_buffer(MILTER_ENCODER(encoder));
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
+
 
     g_string_append_c(buffer, MILTER_REPLY_CONNECTION_FAILURE);
-    milter_encoder_pack(MILTER_ENCODER(encoder), packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 void
 milter_reply_encoder_encode_shutdown (MilterReplyEncoder *encoder,
-                                      gchar **packet, gsize *packet_size)
+                                      const gchar **packet,
+                                      gsize *packet_size)
 {
+    MilterEncoder *base_encoder;
     GString *buffer;
 
-    buffer = milter_encoder_get_buffer(MILTER_ENCODER(encoder));
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
+
     g_string_append_c(buffer, MILTER_REPLY_SHUTDOWN);
-    milter_encoder_pack(MILTER_ENCODER(encoder), packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 void
 milter_reply_encoder_encode_skip (MilterReplyEncoder *encoder,
-                                  gchar **packet, gsize *packet_size)
+                                  const gchar **packet,
+                                  gsize *packet_size)
 {
+    MilterEncoder *base_encoder;
     GString *buffer;
 
-    buffer = milter_encoder_get_buffer(MILTER_ENCODER(encoder));
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
+
     g_string_append_c(buffer, MILTER_REPLY_SKIP);
-    milter_encoder_pack(MILTER_ENCODER(encoder), packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 /*

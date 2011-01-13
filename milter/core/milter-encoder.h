@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -56,12 +56,13 @@ GType            milter_encoder_get_type       (void) G_GNUC_CONST;
 MilterEncoder   *milter_encoder_new            (void);
 
 GString         *milter_encoder_get_buffer     (MilterEncoder     *encoder);
+void             milter_encoder_clear_buffer   (MilterEncoder     *encoder);
 void             milter_encoder_pack           (MilterEncoder     *encoder,
-                                                gchar            **packet,
+                                                const gchar      **packet,
                                                 gsize             *packet_size);
 void             milter_encoder_encode_negotiate
                                                (MilterEncoder    *encoder,
-                                                 MilterOption     *option);
+                                                MilterOption     *option);
 
 guint            milter_encoder_get_tag        (MilterEncoder *encoder);
 void             milter_encoder_set_tag        (MilterEncoder *encoder,

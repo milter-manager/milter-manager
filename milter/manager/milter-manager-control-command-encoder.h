@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -53,17 +53,17 @@ MilterEncoder   *milter_manager_control_command_encoder_new            (void);
 
 void             milter_manager_control_command_encoder_encode_set_configuration
                                             (MilterManagerControlCommandEncoder *encoder,
-                                             gchar        **packet,
+                                             const gchar  **packet,
                                              gsize         *packet_size,
                                              const gchar   *configuration,
                                              gsize          configuration_size);
 void             milter_manager_control_command_encoder_encode_reload
                                             (MilterManagerControlCommandEncoder *encoder,
-                                             gchar        **packet,
+                                             const gchar  **packet,
                                              gsize         *packet_size);
 void             milter_manager_control_command_encoder_encode_get_status
                                             (MilterManagerControlCommandEncoder *encoder,
-                                             gchar        **packet,
+                                             const gchar  **packet,
                                              gsize         *packet_size);
 
 G_END_DECLS

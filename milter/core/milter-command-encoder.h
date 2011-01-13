@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -58,75 +58,75 @@ MilterEncoder   *milter_command_encoder_new            (void);
 
 void             milter_command_encoder_encode_negotiate
                                             (MilterCommandEncoder *encoder,
-                                             gchar               **packet,
+                                             const gchar         **packet,
                                              gsize                *packet_size,
                                              MilterOption         *option);
 void             milter_command_encoder_encode_define_macro
                                             (MilterCommandEncoder *encoder,
-                                             gchar               **packet,
+                                             const gchar         **packet,
                                              gsize                *packet_size,
                                              MilterCommand         context,
                                              GHashTable           *macros);
 void             milter_command_encoder_encode_connect
                                             (MilterCommandEncoder *encoder,
-                                             gchar               **packet,
+                                             const gchar         **packet,
                                              gsize                *packet_size,
                                              const gchar          *host_name,
                                              const struct sockaddr *address,
                                              socklen_t             address_size);
 void             milter_command_encoder_encode_helo
                                             (MilterCommandEncoder *encoder,
-                                             gchar               **packet,
+                                             const gchar         **packet,
                                              gsize                *packet_size,
                                              const gchar          *fqdn);
 void             milter_command_encoder_encode_envelope_from
                                             (MilterCommandEncoder *encoder,
-                                             gchar               **packet,
+                                             const gchar         **packet,
                                              gsize                *packet_size,
                                              const gchar          *from);
 void             milter_command_encoder_encode_envelope_recipient
                                             (MilterCommandEncoder *encoder,
-                                             gchar               **packet,
+                                             const gchar         **packet,
                                              gsize                *packet_size,
                                              const gchar          *to);
 void             milter_command_encoder_encode_data
                                             (MilterCommandEncoder *encoder,
-                                             gchar               **packet,
+                                             const gchar         **packet,
                                              gsize                *packet_size);
 void             milter_command_encoder_encode_header
                                             (MilterCommandEncoder *encoder,
-                                             gchar               **packet,
+                                             const gchar         **packet,
                                              gsize                *packet_size,
                                              const gchar          *name,
                                              const gchar          *value);
 void             milter_command_encoder_encode_end_of_header
                                             (MilterCommandEncoder *encoder,
-                                             gchar               **packet,
+                                             const gchar         **packet,
                                              gsize                *packet_size);
 void             milter_command_encoder_encode_body
                                             (MilterCommandEncoder *encoder,
-                                             gchar               **packet,
+                                             const gchar         **packet,
                                              gsize                *packet_size,
                                              const gchar          *chunk,
                                              gsize                 size,
                                              gsize                *packed_size);
 void             milter_command_encoder_encode_end_of_message
                                             (MilterCommandEncoder *encoder,
-                                             gchar               **packet,
+                                             const gchar         **packet,
                                              gsize                *packet_size,
                                              const gchar          *chunk,
                                              gsize                 size);
 void             milter_command_encoder_encode_abort
                                             (MilterCommandEncoder *encoder,
-                                             gchar               **packet,
+                                             const gchar         **packet,
                                              gsize                *packet_size);
 void             milter_command_encoder_encode_quit
                                             (MilterCommandEncoder *encoder,
-                                             gchar               **packet,
+                                             const gchar         **packet,
                                              gsize                *packet_size);
 void             milter_command_encoder_encode_unknown
                                             (MilterCommandEncoder *encoder,
-                                             gchar               **packet,
+                                             const gchar         **packet,
                                              gsize                *packet_size,
                                              const gchar          *command);
 

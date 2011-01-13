@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -36,7 +36,6 @@ void test_tag (void);
 
 static MilterEncoder *encoder;
 static GString *expected;
-static gchar *actual;
 
 void
 cut_setup (void)
@@ -44,7 +43,6 @@ cut_setup (void)
     encoder = milter_encoder_new();
 
     expected = g_string_new(NULL);
-    actual = NULL;
 }
 
 void
@@ -56,9 +54,6 @@ cut_teardown (void)
 
     if (expected)
         g_string_free(expected, TRUE);
-
-    if (actual)
-        g_free(actual);
 }
 
 static void
@@ -100,6 +95,7 @@ void
 test_encode_negotiate (void)
 {
     MilterOption *option;
+    const gchar *actual;
     gsize actual_size = 0;
 
     option = milter_option_new(2,
@@ -131,6 +127,7 @@ test_encode_negotiate (void)
 void
 test_encode_negotiate_null (void)
 {
+    const gchar *actual;
     gsize actual_size = 0;
 
     g_string_append_c(expected, 'O');

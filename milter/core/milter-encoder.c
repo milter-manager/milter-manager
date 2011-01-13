@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -164,7 +164,17 @@ milter_encoder_get_buffer (MilterEncoder *encoder)
 }
 
 void
-milter_encoder_pack (MilterEncoder *encoder, gchar **packet, gsize *packet_size)
+milter_encoder_clear_buffer (MilterEncoder *encoder)
+{
+    MilterEncoderPrivate *priv;
+
+    priv = MILTER_ENCODER_GET_PRIVATE(encoder);
+    g_string_truncate(priv->buffer, 0);
+}
+
+void
+milter_encoder_pack (MilterEncoder *encoder, const gchar **packet,
+                     gsize *packet_size)
 {
     MilterEncoderPrivate *priv;
     guint32 content_size;
@@ -175,10 +185,8 @@ milter_encoder_pack (MilterEncoder *encoder, gchar **packet, gsize *packet_size)
     memcpy(content_string, &content_size, sizeof(content_size));
     g_string_prepend_len(priv->buffer, content_string, sizeof(content_size));
 
-    *packet = g_memdup(priv->buffer->str, priv->buffer->len);
+    *packet = priv->buffer->str;
     *packet_size = priv->buffer->len;
-
-    g_string_truncate(priv->buffer, 0);
 }
 
 void

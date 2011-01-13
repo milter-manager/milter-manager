@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -32,49 +32,49 @@ initialize (VALUE self)
 static VALUE
 encode_success (VALUE self)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_manager_control_reply_encoder_encode_success(SELF(self),
                                                         &packet, &packet_size);
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_failure (VALUE self, VALUE message)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_manager_control_reply_encoder_encode_failure(SELF(self),
                                                         &packet, &packet_size,
                                                         RVAL2CSTR(message));
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_error (VALUE self, VALUE message)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_manager_control_reply_encoder_encode_error(SELF(self),
                                                       &packet, &packet_size,
                                                       RVAL2CSTR(message));
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 static VALUE
 encode_configuration (VALUE self, VALUE configuration)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_manager_control_reply_encoder_encode_configuration(
         SELF(self),
         &packet, &packet_size,
         RSTRING_PTR(configuration), RSTRING_LEN(configuration));
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 void

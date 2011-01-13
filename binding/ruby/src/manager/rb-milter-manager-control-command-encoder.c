@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -32,14 +32,14 @@ initialize (VALUE self)
 static VALUE
 encode_set_configuration (VALUE self, VALUE configuration)
 {
-    gchar *packet;
+    const gchar *packet;
     gsize packet_size;
 
     milter_manager_control_command_encoder_encode_set_configuration(
         SELF(self),
         &packet, &packet_size,
         RSTRING_PTR(configuration), RSTRING_LEN(configuration));
-    return CSTR2RVAL_SIZE_FREE(packet, packet_size);
+    return CSTR2RVAL_SIZE(packet, packet_size);
 }
 
 void

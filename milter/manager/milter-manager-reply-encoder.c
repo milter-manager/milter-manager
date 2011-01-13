@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -58,54 +58,57 @@ milter_manager_reply_encoder_new (void)
 
 void
 milter_manager_reply_encoder_encode_success (MilterManagerReplyEncoder *encoder,
-                                             gchar **packet,
+                                             const gchar **packet,
                                              gsize *packet_size)
 {
-    MilterEncoder *_encoder;
+    MilterEncoder *base_encoder;
     GString *buffer;
 
-    _encoder = MILTER_ENCODER(encoder);
-    buffer = milter_encoder_get_buffer(_encoder);
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
 
     g_string_append(buffer, MILTER_MANAGER_REPLY_SUCCESS);
     g_string_append_c(buffer, '\0');
-    milter_encoder_pack(_encoder, packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 void
 milter_manager_reply_encoder_encode_failure (MilterManagerReplyEncoder *encoder,
-                                             gchar **packet,
+                                             const gchar **packet,
                                              gsize *packet_size,
                                              const gchar *message)
 {
-    MilterEncoder *_encoder;
+    MilterEncoder *base_encoder;
     GString *buffer;
 
-    _encoder = MILTER_ENCODER(encoder);
-    buffer = milter_encoder_get_buffer(_encoder);
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
 
     g_string_append(buffer, MILTER_MANAGER_REPLY_FAILURE);
     g_string_append_c(buffer, '\0');
     g_string_append(buffer, message);
-    milter_encoder_pack(_encoder, packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 void
 milter_manager_reply_encoder_encode_error (MilterManagerReplyEncoder *encoder,
-                                           gchar **packet,
+                                           const gchar **packet,
                                            gsize *packet_size,
                                            const gchar *message)
 {
-    MilterEncoder *_encoder;
+    MilterEncoder *base_encoder;
     GString *buffer;
 
-    _encoder = MILTER_ENCODER(encoder);
-    buffer = milter_encoder_get_buffer(_encoder);
+    base_encoder = MILTER_ENCODER(encoder);
+    milter_encoder_clear_buffer(base_encoder);
+    buffer = milter_encoder_get_buffer(base_encoder);
 
     g_string_append(buffer, MILTER_MANAGER_REPLY_ERROR);
     g_string_append_c(buffer, '\0');
     g_string_append(buffer, message);
-    milter_encoder_pack(_encoder, packet, packet_size);
+    milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
 /*

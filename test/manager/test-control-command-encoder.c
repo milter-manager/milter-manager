@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -29,33 +29,26 @@ void test_encode_get_status (void);
 
 static MilterManagerControlCommandEncoder *encoder;
 static GString *expected;
-static gchar *actual;
-static gsize actual_size;
 
 void
-setup (void)
+cut_setup (void)
 {
-    MilterEncoder *_encoder;
+    MilterEncoder *base_encoder;
 
-    _encoder = milter_manager_control_command_encoder_new();
-    encoder = MILTER_MANAGER_CONTROL_COMMAND_ENCODER(_encoder);
+    base_encoder = milter_manager_control_command_encoder_new();
+    encoder = MILTER_MANAGER_CONTROL_COMMAND_ENCODER(base_encoder);
 
     expected = g_string_new(NULL);
-    actual = NULL;
-    actual_size = 0;
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (encoder)
         g_object_unref(encoder);
 
     if (expected)
         g_string_free(expected, TRUE);
-
-    if (actual)
-        g_free(actual);
 }
 
 static void
@@ -75,6 +68,8 @@ test_encode_set_configuration (void)
     const gchar configuration[] =
         "security.privilege_mode = true\n"
         "# comment\n";
+    const gchar *actual;
+    gsize actual_size;
 
     g_string_append(expected, "set-configuration");
     g_string_append_c(expected, '\0');
@@ -93,6 +88,9 @@ test_encode_set_configuration (void)
 void
 test_encode_reload (void)
 {
+    const gchar *actual;
+    gsize actual_size;
+
     g_string_append(expected, "reload");
     g_string_append_c(expected, '\0');
 
@@ -106,6 +104,9 @@ test_encode_reload (void)
 void
 test_encode_get_status (void)
 {
+    const gchar *actual;
+    gsize actual_size;
+
     g_string_append(expected, "get-status");
     g_string_append_c(expected, '\0');
 

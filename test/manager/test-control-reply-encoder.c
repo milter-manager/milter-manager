@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -31,33 +31,26 @@ void test_encode_status (void);
 
 static MilterManagerControlReplyEncoder *encoder;
 static GString *expected;
-static gchar *actual;
-static gsize actual_size;
 
 void
-setup (void)
+cut_setup (void)
 {
-    MilterEncoder *_encoder;
+    MilterEncoder *base_encoder;
 
-    _encoder = milter_manager_control_reply_encoder_new();
-    encoder = MILTER_MANAGER_CONTROL_REPLY_ENCODER(_encoder);
+    base_encoder = milter_manager_control_reply_encoder_new();
+    encoder = MILTER_MANAGER_CONTROL_REPLY_ENCODER(base_encoder);
 
     expected = g_string_new(NULL);
-    actual = NULL;
-    actual_size = 0;
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (encoder)
         g_object_unref(encoder);
 
     if (expected)
         g_string_free(expected, TRUE);
-
-    if (actual)
-        g_free(actual);
 }
 
 static void
@@ -74,6 +67,9 @@ pack (GString *buffer)
 void
 test_encode_success (void)
 {
+    const gchar *actual;
+    gsize actual_size;
+
     g_string_append(expected, "success");
     g_string_append_c(expected, '\0');
 
@@ -89,6 +85,8 @@ void
 test_encode_failure (void)
 {
     const gchar message[] = "Failure!";
+    const gchar *actual;
+    gsize actual_size;
 
     g_string_append(expected, "failure");
     g_string_append_c(expected, '\0');
@@ -107,6 +105,8 @@ void
 test_encode_error (void)
 {
     const gchar message[] = "Error!";
+    const gchar *actual;
+    gsize actual_size;
 
     g_string_append(expected, "error");
     g_string_append_c(expected, '\0');
@@ -127,6 +127,8 @@ test_encode_configuration (void)
     const gchar configuration[] =
         "security.privilege_mode = true\n"
         "# comment\n";
+    const gchar *actual;
+    gsize actual_size;
 
     g_string_append(expected, "configuration");
     g_string_append_c(expected, '\0');
@@ -158,6 +160,8 @@ test_encode_status (void)
         "    </milter>\n"
         "  </milters>\n"
         "</status>";
+    const gchar *actual;
+    gsize actual_size;
 
     g_string_append(expected, "status");
     g_string_append_c(expected, '\0');

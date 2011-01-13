@@ -48,9 +48,6 @@ static GIOChannel *output_channel;
 static GString *expected_packet;
 static gchar *expected_error_message;
 
-static gchar *packet;
-static gsize packet_size;
-
 static gchar *current_locale;
 
 static guint idle_id;
@@ -134,9 +131,6 @@ cut_setup (void)
 
     expected_error_message = NULL;
 
-    packet = NULL;
-    packet_size = 0;
-
     idle_id = 0;
     timeout_id = 0;
 }
@@ -157,9 +151,6 @@ cut_teardown (void)
     if (reply_encoder)
         g_object_unref(reply_encoder);
 
-    if (packet)
-        g_free(packet);
-
     if (expected_packet)
         g_string_free(expected_packet, TRUE);
     if (expected_error_message)
@@ -177,6 +168,8 @@ cut_teardown (void)
 void
 test_launch (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     GError *error = NULL;
     GString *output;
     const gchar command_line[] = "/bin/echo -n";
@@ -190,7 +183,6 @@ test_launch (void)
     gcut_assert_error(error);
     milter_test_pump_all_events(loop);
 
-    g_free(packet);
     milter_manager_reply_encoder_encode_success(reply_encoder,
                                                 &packet, &packet_size);
     output = gcut_string_io_channel_get_string(output_channel);
@@ -201,6 +193,8 @@ test_launch (void)
 void
 test_already_launched (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     GString *output;
     GString *expected_packet;
     GError *error = NULL;
@@ -216,11 +210,9 @@ test_already_launched (void)
     gcut_assert_error(error);
     milter_test_pump_all_events(loop);
 
-    g_free(packet);
     milter_manager_reply_encoder_encode_success(reply_encoder,
                                                 &packet, &packet_size);
     expected_packet = g_string_new_len(packet, packet_size);
-    g_free(packet);
     milter_manager_reply_encoder_encode_error(reply_encoder,
                                               &packet, &packet_size,
                                               "already launched: </bin/cat>");
@@ -273,6 +265,8 @@ data_launch_error (void)
 void
 test_launch_error (gconstpointer data)
 {
+    const gchar *packet;
+    gsize packet_size;
     GString *output;
     GError *error = NULL;
     const gchar *command;
@@ -291,7 +285,6 @@ test_launch_error (gconstpointer data)
     gcut_assert_error(error);
     milter_test_pump_all_events(loop);
 
-    g_free(packet);
     milter_manager_reply_encoder_encode_error(reply_encoder,
                                               &packet, &packet_size,
                                               expected_error_message);

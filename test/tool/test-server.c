@@ -65,8 +65,6 @@ static GArray *command;
 static gchar *server_path;
 static gchar *fixtures_path;
 
-static gsize packet_size;
-static gchar *packet;
 static GError *error;
 static gboolean reaped;
 static gint exit_status;
@@ -131,24 +129,17 @@ cut_shutdown (void)
 }
 
 static void
-packet_free (void)
-{
-    if (packet)
-        g_free(packet);
-    packet = NULL;
-}
-
-static void
-write_data (gchar *data, gsize data_size)
+write_data (const gchar *data, gsize data_size)
 {
     milter_test_client_write(client, data, data_size);
-    packet_free();
 }
 
 static void
 cb_negotiate (MilterCommandDecoder *decoder, MilterOption *option,
               TestData *test_data)
 {
+    const gchar *packet;
+    gsize packet_size;
     MilterOption *reply_option;
 
     reply_option = milter_option_new(6, test_data->actions, test_data->steps);
@@ -176,6 +167,8 @@ cb_define_macro (MilterDecoder *decoder, MilterCommand context,
 static void
 send_reply (MilterCommand command, TestData *test_data)
 {
+    const gchar *packet;
+    gsize packet_size;
     MilterReply reply;
     gint additional_flag;
     GList *reply_pair;
@@ -229,7 +222,6 @@ send_reply (MilterCommand command, TestData *test_data)
         milter_reply_encoder_encode_quarantine(encoder, &packet, &packet_size,
                                                "virus");
         write_data(packet, packet_size);
-        g_free(packet);
     case MILTER_REPLY_CONTINUE:
     default:
         milter_reply_encoder_encode_continue(encoder, &packet, &packet_size);
@@ -417,7 +409,6 @@ cut_setup (void)
 
     setup_server_command();
 
-    packet = NULL;
     error = NULL;
     reaped = FALSE;
     output_string = g_string_new(NULL);
@@ -450,7 +441,6 @@ cut_teardown (void)
         g_object_unref(encoder);
     if (command)
         g_array_free(command, TRUE);
-    packet_free();
 
     if (output_string)
         g_string_free(output_string, TRUE);
@@ -1658,7 +1648,8 @@ end_of_message_action_test_data_free (EndOfMessageActionTestData *data)
 static void
 change_from_function (void)
 {
-    packet_free();
+    const gchar *packet;
+    gsize packet_size;
 
     milter_reply_encoder_encode_change_from(encoder, &packet, &packet_size,
                                             "sender+changed@example.com", NULL);
@@ -1692,7 +1683,8 @@ end_of_message_action_assert_change_from (void)
 static void
 add_recipient_function (void)
 {
-    packet_free();
+    const gchar *packet;
+    gsize packet_size;
 
     milter_reply_encoder_encode_add_recipient(encoder, &packet, &packet_size,
                                               "receiver+added@example.org",
@@ -1727,7 +1719,8 @@ end_of_message_action_assert_add_recipient (void)
 static void
 delete_recipient_function (void)
 {
-    packet_free();
+    const gchar *packet;
+    gsize packet_size;
 
     milter_reply_encoder_encode_delete_recipient(encoder, &packet, &packet_size,
                                                  "receiver@example.org");
@@ -1760,7 +1753,8 @@ end_of_message_action_assert_delete_recipient (void)
 static void
 add_header_function (void)
 {
-    packet_free();
+    const gchar *packet;
+    gsize packet_size;
 
     milter_reply_encoder_encode_add_header(encoder, &packet, &packet_size,
                                            "X-Test-Header1", "TestHeader1Value");
@@ -1794,7 +1788,8 @@ end_of_message_action_assert_add_header (void)
 static void
 insert_header_function (void)
 {
-    packet_free();
+    const gchar *packet;
+    gsize packet_size;
 
     milter_reply_encoder_encode_insert_header(encoder, &packet, &packet_size,
                                               1, "To",
@@ -1829,7 +1824,8 @@ end_of_message_action_assert_insert_header (void)
 static void
 change_header_function (void)
 {
-    packet_free();
+    const gchar *packet;
+    gsize packet_size;
 
     milter_reply_encoder_encode_change_header(encoder, &packet, &packet_size,
                                               "To", 1,
@@ -1864,7 +1860,8 @@ end_of_message_action_assert_change_header (void)
 static void
 delete_header_function (void)
 {
-    packet_free();
+    const gchar *packet;
+    gsize packet_size;
 
     milter_reply_encoder_encode_delete_header(encoder, &packet, &packet_size,
                                               "To", 1);
@@ -1897,10 +1894,10 @@ end_of_message_action_assert_delete_header (void)
 static void
 replace_body_function (void)
 {
+    const gchar *packet;
+    gsize packet_size;
     const gchar replace_string[] = "This is the replaced message.";
     gsize packed_size;
-
-    packet_free();
 
     milter_reply_encoder_encode_replace_body(encoder, &packet, &packet_size,
                                              replace_string,
@@ -1969,6 +1966,7 @@ void
 test_end_of_message_action (gconstpointer data)
 {
     EndOfMessageActionTestData *action_test_data;
+
     action_test_data = (EndOfMessageActionTestData*)data;
 
     setup_test_client("inet:9999@localhost", action_test_data->test_data);
