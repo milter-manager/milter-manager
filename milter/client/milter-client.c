@@ -1334,6 +1334,7 @@ milter_client_listen (MilterClient  *client, GError **error)
         return FALSE;
 
     milter_client_set_listen_channel(client, channel);
+    g_io_channel_unref(channel);
     return TRUE;
 }
 

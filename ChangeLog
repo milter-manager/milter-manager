@@ -29,6 +29,7 @@
 	(worker_watch_master): should not close server_fd directly.
 	(client_invoke_workers): should not clean up client in master
 	processe twice.
+	(milter_client_listen): already refered from listen_channel.
 
 	* test/client/test-client.c (cut_setup): set n_workers from
 	environment variable MILTER_N_WORKERS.
