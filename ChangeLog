@@ -525,7 +525,7 @@
 
 2011-01-06  Kouhei Sutou  <kou@cozmixng.org>
 
-	* milter/client/milter-client.c: report error in deprectead
+	* milter/client/milter-client.c: report error in deprected
 	milter_client_main().
 
 2011-01-05  Kouhei Sutou  <kou@cozmixng.org>
