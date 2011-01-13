@@ -3586,7 +3586,7 @@ flush (MilterAgent *agent, GError **error)
     if (priv->buffering) {
         GError *local_error = NULL;
 
-        milter_debug("[%u] [client][buffered-packets][flush]"
+        milter_debug("[%u] [client][buffered-packets][flush] "
                      "<%" G_GSIZE_FORMAT ">",
                      milter_agent_get_tag(agent),
                      priv->buffered_packets->len);
