@@ -321,9 +321,16 @@ setup_client_signals (void)
 void
 cut_setup (void)
 {
+    const gchar *env;
+    int n_workers;
+
     spec = "inet:9999@127.0.0.1";
 
     client = milter_client_new();
+    env = g_getenv("MILTER_N_WORKERS");
+    if (env && (n_workers = strtoul(env, NULL, 10)) > 0) {
+        milter_client_set_n_workers(client, n_workers);
+    }
     loop_run_count = 0;
     loop = milter_client_get_process_loop(client);
     g_object_ref(loop);

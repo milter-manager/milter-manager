@@ -1,3 +1,8 @@
+2011-01-13  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* test/client/test-client.c (cut_setup): set n_workers from
+	environment variable MILTER_N_WORKERS.
+
 2011-01-12  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/client/milter-client.c (milter_client_run): run in
