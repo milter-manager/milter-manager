@@ -3,6 +3,7 @@
 	* milter/client/milter-client.c (client_invoke_workers): check the
 	result of listen.
 	(milter_client_run): invert pipe_fds.
+	(client_invoke_workers): do not wait accepting thread.
 
 	* test/client/test-client.c (cut_setup): set n_workers from
 	environment variable MILTER_N_WORKERS.

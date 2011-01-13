@@ -136,6 +136,9 @@ static void   listen_started
                             socklen_t        address_size);
 static GPid   default_fork (MilterClient    *client);
 
+static GThread *run_worker (MilterClient *client,
+                            GError      **error);
+
 static void
 _milter_client_class_init (MilterClientClass *klass)
 {
@@ -1667,7 +1670,7 @@ client_invoke_workers (MilterClient *client, guint n_workers, GError **error)
             milter_event_loop_watch_io(loop, priv->workers.control,
                                        G_IO_IN | G_IO_PRI | G_IO_ERR,
                                        worker_watch_master, client);
-            milter_client_run_worker(client, error);
+            run_worker(client, error);
             milter_client_shutdown(client);
             _exit(EXIT_SUCCESS);
         default:
@@ -1788,6 +1791,17 @@ worker_accept_thread (gpointer data)
 gboolean
 milter_client_run_worker (MilterClient *client, GError **error)
 {
+    GThread *thread = run_worker(client, error);
+
+    if (!thread) return FALSE;
+    g_thread_join(thread);
+
+    return TRUE;
+}
+
+static GThread *
+run_worker (MilterClient *client, GError **error)
+{
     MilterClientPrivate *priv;
     GThread *thread;
     GError *local_error = NULL;
@@ -1802,7 +1816,7 @@ milter_client_run_worker (MilterClient *client, GError **error)
         milter_error("[client][worker][run][error] %s",
                      local_error->message);
         g_propagate_error(error, local_error);
-        return FALSE;
+        return NULL;
     }
 
     if (!priv->listen_channel) {
@@ -1814,7 +1828,7 @@ milter_client_run_worker (MilterClient *client, GError **error)
         milter_error("[client][worker][run][listen][error] %s",
                      local_error->message);
         g_propagate_error(error, local_error);
-        return FALSE;
+        return NULL;
     }
 
     g_io_channel_ref(priv->listen_channel);
@@ -1825,7 +1839,7 @@ milter_client_run_worker (MilterClient *client, GError **error)
         milter_error("[client][worker][run][accept][thread][error] %s",
                      local_error->message);
         g_propagate_error(error, local_error);
-        return FALSE;
+        return NULL;
     }
 
     g_mutex_lock(priv->quit_mutex);
@@ -1841,9 +1855,8 @@ milter_client_run_worker (MilterClient *client, GError **error)
                                         NULL);
         milter_event_loop_run(loop);
     }
-    g_thread_join(thread);
 
-    return TRUE;
+    return thread;
 }
 
 void
