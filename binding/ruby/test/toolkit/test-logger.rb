@@ -38,7 +38,9 @@ class TestLogger < Test::Unit::TestCase
     assert_equal(Milter::LogItemFlags::DOMAIN |
                  Milter::LogItemFlags::LEVEL |
                  Milter::LogItemFlags::LOCATION |
-                 Milter::LogItemFlags::TIME,
+                 Milter::LogItemFlags::TIME |
+                 Milter::LogItemFlags::NAME |
+                 Milter::LogItemFlags::PID,
                  Milter::LogItemFlags::ALL)
     assert_equal(Milter::LOG_ITEM_ALL,
                  Milter::LogItemFlags::ALL)
