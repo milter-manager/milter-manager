@@ -147,6 +147,13 @@ gboolean         milter_utils_parse_file_mode(const gchar  *string,
                                               guint        *mode,
                                               gchar       **error_message);
 
+typedef enum {
+    MILTER_UTILS_READ_PIPE,
+    MILTER_UTILS_WRITE_PIPE
+} MilterUtilsPipeMode;
+
+
+
 G_END_DECLS
 
 #endif /* __MILTER_UTILS_H__ */

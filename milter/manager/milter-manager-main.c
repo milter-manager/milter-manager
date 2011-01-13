@@ -289,13 +289,8 @@ cb_error (MilterErrorEmittable *emittable, GError *error, gpointer user_data)
     g_print("milter-manager error: %s\n", error->message);
 }
 
-typedef enum {
-    READ_PIPE,
-    WRITE_PIPE
-} PipeMode;
-
 static void
-close_pipe (int *pipe, PipeMode mode)
+close_pipe (int *pipe, MilterUtilsPipeMode mode)
 {
     if (pipe[mode] == -1)
         return;
@@ -340,8 +335,8 @@ create_process_launcher_pipes (gint **command_pipe, gint **reply_pipe)
     if (pipe(*reply_pipe) == -1) {
         milter_manager_error("failed to create pipe for launcher reply: %s",
                              g_strerror(errno));
-        close((*command_pipe)[WRITE_PIPE]);
-        close((*command_pipe)[READ_PIPE]);
+        close((*command_pipe)[MILTER_UTILS_WRITE_PIPE]);
+        close((*command_pipe)[MILTER_UTILS_READ_PIPE]);
         return FALSE;
     }
 
@@ -354,11 +349,11 @@ prepare_process_launcher_pipes_for_process_launcher (gint *command_pipe,
                                                      GIOChannel **read_channel,
                                                      GIOChannel **write_channel)
 {
-    close_pipe(command_pipe, WRITE_PIPE);
-    close_pipe(reply_pipe, READ_PIPE);
+    close_pipe(command_pipe, MILTER_UTILS_WRITE_PIPE);
+    close_pipe(reply_pipe, MILTER_UTILS_READ_PIPE);
 
-    *write_channel = create_write_io_channel(reply_pipe[WRITE_PIPE]);
-    *read_channel = create_read_io_channel(command_pipe[READ_PIPE]);
+    *write_channel = create_write_io_channel(reply_pipe[MILTER_UTILS_WRITE_PIPE]);
+    *read_channel = create_read_io_channel(command_pipe[MILTER_UTILS_READ_PIPE]);
 }
 
 static void
@@ -367,11 +362,11 @@ prepare_process_launcher_pipes_for_manager (gint *command_pipe,
                                             GIOChannel **read_channel,
                                             GIOChannel **write_channel)
 {
-    close_pipe(command_pipe, READ_PIPE);
-    close_pipe(reply_pipe, WRITE_PIPE);
+    close_pipe(command_pipe, MILTER_UTILS_READ_PIPE);
+    close_pipe(reply_pipe, MILTER_UTILS_WRITE_PIPE);
 
-    *write_channel = create_write_io_channel(command_pipe[WRITE_PIPE]);
-    *read_channel = create_read_io_channel(reply_pipe[READ_PIPE]);
+    *write_channel = create_write_io_channel(command_pipe[MILTER_UTILS_WRITE_PIPE]);
+    *read_channel = create_read_io_channel(reply_pipe[MILTER_UTILS_READ_PIPE]);
 }
 
 static gboolean
@@ -447,8 +442,10 @@ start_process_launcher_process (MilterManager *manager)
 
     milter_debug("[manager][process-launcher][pipe] "
                  "command:<%d:%d>, reply:<%d:%d>",
-                 command_pipe[READ_PIPE], command_pipe[WRITE_PIPE],
-                 reply_pipe[READ_PIPE], reply_pipe[WRITE_PIPE]);
+                 command_pipe[MILTER_UTILS_READ_PIPE],
+                 command_pipe[MILTER_UTILS_WRITE_PIPE],
+                 reply_pipe[MILTER_UTILS_READ_PIPE],
+                 reply_pipe[MILTER_UTILS_WRITE_PIPE]);
 
     switch (milter_client_fork(MILTER_CLIENT(manager))) {
     case 0:

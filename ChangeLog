@@ -1,5 +1,9 @@
 2011-01-13  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/core/milter-utils.h (MilterUtilsPipeMode): moved from
+	milter/manager/milter-manager-main.c to be shared from
+	milter/client/milter-client.c.
+
 	* milter/client/milter-client.c (client_invoke_workers): check the
 	result of listen.
 	(milter_client_run): invert pipe_fds.
