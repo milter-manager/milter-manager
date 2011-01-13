@@ -1,3 +1,8 @@
+2011-01-13  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* binding/ruby/src/toolkit/rb-milter-client.c (client_custom_fork):
+	return 0 in child process.
+
 2011-01-13  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter/client/milter-client-context.[ch],

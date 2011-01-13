@@ -31,6 +31,7 @@ client_custom_fork (MilterClient *client)
     return (GPid)rb_fork(&status, NULL, NULL, Qnil);
 #else
     VALUE pid = rb_funcall2(rb_mKernel, rb_intern("fork"), 0, 0);
+    if (NIL_P(pid)) return (GPid)0;
     return (GPid)NUM2INT(pid);
 #endif
 }
