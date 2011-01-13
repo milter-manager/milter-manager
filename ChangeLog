@@ -1,5 +1,8 @@
 2011-01-13  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* binding/ruby/src/toolkit/rb-milter-client.c (client_run_master)
+	(client_run_worker): removed obsolete methods.
+
 	* binding/ruby/test/milter-multiprocess-test-utils.rb
 	(MilterMultiprocessTestUtils): utility module for
 	MILTER_N_WORKERS.

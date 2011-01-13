@@ -67,28 +67,6 @@ client_main (VALUE self)
 }
 
 static VALUE
-client_run_master (VALUE self)
-{
-    GError *error = NULL;
-
-    if (!milter_client_run_master(SELF(self), &error))
-	RAISE_GERROR(error);
-
-    return Qnil;
-}
-
-static VALUE
-client_run_worker (VALUE self)
-{
-    GError *error = NULL;
-
-    if (!milter_client_run_worker(SELF(self), &error))
-	RAISE_GERROR(error);
-
-    return Qnil;
-}
-
-static VALUE
 client_shutdown (VALUE self)
 {
     milter_client_shutdown(SELF(self));
@@ -263,8 +241,6 @@ Init_milter_client (void)
     rb_define_method(rb_cMilterClient, "initialize", client_initialize, 0);
     rb_define_method(rb_cMilterClient, "run", client_run, 0);
     rb_define_method(rb_cMilterClient, "main", client_main, 0);
-    rb_define_method(rb_cMilterClient, "run_master", client_run_master, 0);
-    rb_define_method(rb_cMilterClient, "run_worker", client_run_worker, 0);
     rb_define_method(rb_cMilterClient, "shutdown", client_shutdown, 0);
     rb_define_method(rb_cMilterClient, "start_syslog", client_start_syslog, 1);
     rb_define_method(rb_cMilterClient, "listen", client_listen, 0);
