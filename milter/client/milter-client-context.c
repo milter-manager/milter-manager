@@ -2126,7 +2126,7 @@ write_packet_on_end_of_message (MilterClientContext *context,
     gboolean success = TRUE;
     MilterClientContextPrivate *priv;
 
-    milter_debug("[%u] [client][buffered-packet][buffer]",
+    milter_debug("[%u] [client][buffered-packets][buffer]",
                  milter_agent_get_tag(MILTER_AGENT(context)));
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
