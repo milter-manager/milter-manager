@@ -3,6 +3,8 @@
 	* binding/ruby/test/milter-multiprocess-test-utils.rb
 	(MilterMultiprocessTestUtils): utility module for
 	MILTER_N_WORKERS.
+	(MilterMultiprocessTestUtils#setup_workers): set n_workers to
+	argument, not instance variable, and set @n_workers always.
 
 	* binding/ruby/test/toolkit/test-client.rb (TestClient#test_n_workers):
 	fix for MILTER_N_WORKERS.
