@@ -1658,31 +1658,34 @@ client_invoke_workers (MilterClient *client, guint n_workers, GError **error)
                     g_strerror(errno));
         return FALSE;
     }
-    priv->workers.control = setup_client_channel(pipe_fds[1]);
+    priv->workers.control = setup_client_channel(pipe_fds[0]);
     for (i = 0; i < n_workers; ++i) {
         GPid pid = milter_client_fork(client);
-        if (pid == 0) {
-            close(pipe_fds[0]);
+        switch (pid) {
+        case 0:
+            close(pipe_fds[1]);
+            milter_event_loop_watch_io(loop, priv->workers.control,
+                                       G_IO_IN | G_IO_PRI | G_IO_ERR,
+                                       worker_watch_master, client);
             milter_client_run_worker(client, error);
             milter_client_shutdown(client);
             _exit(EXIT_SUCCESS);
-        } else if (pid != -1) {
-            milter_event_loop_watch_io(loop, priv->workers.control,
-                                       G_IO_IN, worker_watch_master, client);
+        default:
             milter_event_loop_watch_child(loop, pid, watch_worker_process, NULL);
-        } else {
+            break;
+        case -1:
             g_set_error(error,
                         MILTER_CLIENT_ERROR,
                         MILTER_CLIENT_ERROR_PROCESS,
                         "%s",
                         g_strerror(errno));
-            close(pipe_fds[0]);
+            close(pipe_fds[1]);
             g_io_channel_unref(priv->workers.control);
             return FALSE;
         }
     }
-        g_io_channel_unref(priv->workers.control);
-    priv->workers.control = setup_client_channel(pipe_fds[0]);
+    g_io_channel_unref(priv->workers.control);
+    priv->workers.control = setup_client_channel(pipe_fds[1]);
     return milter_client_run_master(client, error);
 }
 
