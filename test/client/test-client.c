@@ -322,13 +322,13 @@ void
 cut_setup (void)
 {
     const gchar *env;
-    int n_workers;
+    guint64 n_workers;
 
     spec = "inet:9999@127.0.0.1";
 
     client = milter_client_new();
     env = g_getenv("MILTER_N_WORKERS");
-    if (env && (n_workers = strtoul(env, NULL, 10)) > 0) {
+    if (env && (n_workers = g_ascii_strtoull(env, NULL, 10)) > 0) {
         milter_client_set_n_workers(client, n_workers);
     }
     loop_run_count = 0;
