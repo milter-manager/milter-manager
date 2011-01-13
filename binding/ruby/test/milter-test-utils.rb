@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -28,4 +28,4 @@ require 'milter-manager-encoder-test-utils'
 require 'milter-detector-test-utils'
 require 'milter-parse-test-utils'
 require 'milter-event-loop-test-utils'
-require 'milter-multiprocess-test-utils'
+require 'milter-multi-process-test-utils'

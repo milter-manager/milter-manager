@@ -16,7 +16,7 @@
 
 class TestClient < Test::Unit::TestCase
   include MilterTestUtils
-  include MilterMultiprocessTestUtils
+  include MilterMultiProcessTestUtils
 
   def setup
     @client = Milter::Client.new

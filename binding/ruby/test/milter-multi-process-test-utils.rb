@@ -1,4 +1,4 @@
-module MilterMultiprocessTestUtils
+module MilterMultiProcessTestUtils
   include MilterTestUtils
 
   private
