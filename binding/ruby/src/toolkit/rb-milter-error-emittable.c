@@ -24,9 +24,10 @@
 static VALUE
 error_convert (guint num, const GValue *values)
 {
-    GError *error;
+    GError *error, *copied_error;
     error = g_value_get_pointer(&values[1]);
-    return rb_ary_new3(2, GVAL2RVAL(&values[0]), GERROR2RVAL(error));
+    copied_error = g_error_copy(error);
+    return rb_ary_new3(2, GVAL2RVAL(&values[0]), GERROR2RVAL(copied_error));
 }
 
 void
