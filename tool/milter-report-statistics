@@ -104,7 +104,7 @@ class MilterStatus
   end
 
   def cpu_time
-    ["TIME+"]
+    @top["TIME+"]
   end
 
   def cpu_percent
