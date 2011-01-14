@@ -104,7 +104,7 @@ class MilterStatus
   end
 
   def cpu_time
-    @top["TIME+"]
+    ["TIME+"]
   end
 
   def cpu_percent
@@ -193,13 +193,13 @@ class MilterStatisticsReporter
       top << status.pid
     end
     statuses.each do |status|
-      status.top = top[status.pid]
+      status.top = top[status.pid] || {}
       show(time_stamp,
            status.pid,
            status.vss,
            status.rss,
-           status.cpu_percent,
-           status.cpu_time,
+           status.cpu_percent || "",
+           status.cpu_time || "",
            status.n_file_descriptors,
            status.command_line.join(" "))
     end

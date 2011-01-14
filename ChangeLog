@@ -1,5 +1,7 @@
 2011-01-14  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-report-statistics: set fallback values.
+
 	* tool/milter-report-statistics: run n-tops for 20 over processes.
 
 	* tool/milter-report-statistics: retrieve info for all processed by a
