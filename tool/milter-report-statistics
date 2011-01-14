@@ -37,21 +37,34 @@ class Top
     @processes ||= retrieve
   end
 
+  def split_pids
+    splitted_pids = []
+    @pids.each do |pid|
+      splitted_pids << pid
+      if splitted_pids.size >= 20
+        yield(splitted_pids)
+        splitted_pids.clear
+      end
+    end
+    yield(splitted_pids) unless splitted_pids.empty?
+  end
+
   def retrieve
     _processes = {}
-    pids = @pids.collect {|pid| "-p #{pid}"}.join(" ")
-    result = `env LANG=C top -n 1 -b #{pids}`
-    header, body = result.split(/\n\n/, 2)
-    labels = nil
-    body.each_line do |line|
-      values = line.strip.split(/\s+/, 12)
-      if labels.nil?
-        labels = values[1..-1]
-      else
-        pid = values.shift
-        _processes[pid] = process = {}
-        labels.each_with_index do |label, i|
-          process[label] = values[i]
+    split_pids do |pids|
+      result = `env LANG=C top -n 1 -b -p #{pids.join(',')}`
+      header, body = result.split(/\n\n/, 2)
+      labels = nil
+      body.each_line do |line|
+        values = line.strip.split(/\s+/, 12)
+        if labels.nil?
+          labels = values[1..-1]
+        else
+          pid = values.shift
+          _processes[pid] = process = {}
+          labels.each_with_index do |label, i|
+            process[label] = values[i]
+          end
         end
       end
     end
