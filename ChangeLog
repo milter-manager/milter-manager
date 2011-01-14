@@ -1,6 +1,7 @@
 2011-01-14  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/client/milter-client.c (milter_client_run): fix condition.
+	(client_run_workers): change log message.
 
 	* milter/core/milter-libev-event-loop.c (evcond_from_g_io_condition)
 	(evcond_to_g_io_condition): deal with EV_ERROR.

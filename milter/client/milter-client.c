@@ -1670,7 +1670,7 @@ client_run_workers (MilterClient *client, guint n_workers, GError **error)
     if (!priv->listen_channel) {
         GError *local_error = NULL;
         if (!milter_client_listen(client, &local_error)) {
-            milter_error("[client][run][listen][error] %s",
+            milter_error("[client][workers][run][listen][error] %s",
                          local_error->message);
             g_propagate_error(error, local_error);
             return FALSE;
