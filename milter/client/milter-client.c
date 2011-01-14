@@ -1726,7 +1726,7 @@ milter_client_run (MilterClient *client, GError **error)
     priv = MILTER_CLIENT_GET_PRIVATE(client);
     n_workers = milter_client_get_n_workers(client);
     if (n_workers > 0) {
-        if (client_run_workers(client, n_workers, error)) {
+        if (!client_run_workers(client, n_workers, error)) {
             return FALSE;
         }
         success = run_master(client, error);
