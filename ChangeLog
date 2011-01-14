@@ -1,3 +1,8 @@
+2011-01-14  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* milter/client/milter-client.c (milter_client_run_master): fix
+	inverse condition.
+
 2011-01-13  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/test/milter-event-loop-test-utils.rb

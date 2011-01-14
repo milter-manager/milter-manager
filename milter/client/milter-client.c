@@ -1757,7 +1757,7 @@ milter_client_main (MilterClient *client)
 gboolean
 milter_client_run_master (MilterClient *client, GError **error)
 {
-    if (run_master(client, error)) {
+    if (!run_master(client, error)) {
         /* TODO: report error */
         return FALSE;
     }
