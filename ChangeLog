@@ -1,3 +1,8 @@
+2011-01-14  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* milter/client/milter-client.c (client_invoke_workers): use
+	listen_channel if it is already bound.
+
 2011-01-14  Kouhei Sutou  <kou@clear-code.com>
 
 	* doc/milter-performance-check.rd*: add document for

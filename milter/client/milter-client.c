@@ -1667,9 +1667,14 @@ client_invoke_workers (MilterClient *client, guint n_workers, GError **error)
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
     loop = milter_client_get_process_loop(client);
-    if (!milter_client_listen(client, error)) {
-        /* TODO: report error. */
-        return FALSE;
+    if (!priv->listen_channel) {
+        GError *local_error = NULL;
+        if (!milter_client_listen(client, &local_error)) {
+            milter_error("[client][invoke][listen][error] %s",
+                         local_error->message);
+            g_propagate_error(error, local_error);
+            return FALSE;
+        }
     }
 
     if (pipe(pipe_fds) == -1) {
