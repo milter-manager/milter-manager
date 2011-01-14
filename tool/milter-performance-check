@@ -235,7 +235,7 @@ class MilterPerformanceTool
     @accumulated_response_time = 0
     @max_response_time = 0
     @min_response_time = nil
-    @n_temporary_failure_mails = 0
+    @temporary_failure_messages = []
     @n_reject_mails = 0
     @n_error_mails = 0
     @n_processed_mails = 0
@@ -292,9 +292,17 @@ class MilterPerformanceTool
     puts "     Average: %#5.2f (sec)" % average_per_mail(@accumulated_response_time)
     puts
     puts "Status:"
-    puts statistics_report("Temporary failure", @n_temporary_failure_mails)
+    puts statistics_report("Temporary failure", @temporary_failure_messages.size)
     puts statistics_report("           Reject", @n_reject_mails)
     puts statistics_report("            Error", @n_error_mails)
+    unless @temporary_failure_messages.empty?
+      puts
+      puts "Temporary failures:"
+      n_messages = @temporary_failure_messages.size
+      @temporary_failure_messages.each_with_index do |message, i|
+        puts("  %#{Math.log10(n_messages).floor}d %s" % [i, message])
+      end
+    end
   end
 
   private
@@ -316,7 +324,10 @@ class MilterPerformanceTool
       end
     end
     workers.each do |worker|
-      receive_statistics_from_worker(worker)
+      begin
+        receive_statistics_from_worker(worker)
+      rescue EOFError
+      end
     end
   ensure
     workers.each do |worker|
@@ -348,7 +359,7 @@ class MilterPerformanceTool
       @max_response_time,
       @min_response_time,
       @accumulated_response_time,
-      @n_temporary_failure_mails,
+      @temporary_failure_messages,
       @n_reject_mails,
       @n_error_mails,
     ]
@@ -358,13 +369,13 @@ class MilterPerformanceTool
   def receive_statistics_from_worker(input)
     data = Marshal.load(input)
     n_processed_mails, max_response_time, min_response_time, accumulated_response_time,
-    n_temporary_failure_mails, n_reject_mails, n_error_mails = *data
+    temporary_failure_messages, n_reject_mails, n_error_mails = *data
 
     @n_processed_mails += n_processed_mails
     @max_response_time = [@max_response_time, max_response_time].compact.max
     @min_response_time = [@min_response_time, min_response_time].compact.min
     @accumulated_response_time += accumulated_response_time
-    @n_temporary_failure_mails += n_temporary_failure_mails
+    @temporary_failure_messages.concat(temporary_failure_messages)
     @n_reject_mails += n_reject_mails
     @n_error_mails += n_error_mails
   end
@@ -462,7 +473,7 @@ class MilterPerformanceTool
   def send_mail(mail_source_file=nil)
     helo_fqdn, from, recipients, source = prepare_send_mail(mail_source_file)
 
-    temporary_failure = false
+    temporary_failure_message = nil
     reject = false
     error = false
     error_message = nil
@@ -485,7 +496,7 @@ class MilterPerformanceTool
         _smtp.send_mail(source, from, *recipients)
       end
     rescue Net::SMTPServerBusy
-      temporary_failure = true
+      temporary_failure_message = $!.message
     rescue Net::SMTPFatalError
       reject = true
     rescue Net::ProtoFatalError, Timeout::Error, SystemCallError
@@ -497,23 +508,25 @@ class MilterPerformanceTool
     STDERR.puts("#{error_object.class}: #{error_object.message}") if error_object
     update_statistics(mail_source_file, source.size,
                       wall_clock_time, response_time,
-                      temporary_failure, reject, error)
+                      temporary_failure_message, reject, error)
   end
 
   def update_statistics(source_file, source_size,
                         wall_clock_time, response_time,
-                        temporary_failure, reject, error)
+                        temporary_failure_message, reject, error)
     @mutex.synchronize do
       if source_file
         @sources << [response_time, source_file]
         @rejected_sources << source_file if reject
-        @temporary_failure_sources << source_file if temporary_failure
+        @temporary_failure_sources << source_file if temporary_failure_message
       end
       @accumulated_response_time += response_time
       @n_processed_mails += 1
       @max_response_time = [response_time, @max_response_time].max
       @min_response_time = [response_time, @min_response_time || response_time].min
-      @n_temporary_failure_mails += 1 if temporary_failure
+      if temporary_failure_message
+        @temporary_failure_messages << temporary_failure_message
+      end
       @n_reject_mails += 1 if reject
       @n_error_mails += 1 if error
 
