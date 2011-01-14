@@ -148,6 +148,12 @@ smtp-source is more better tool for you.
 
    The default is false. (don't shuffle.)
 
+: --report-failure-responses, --no-report-failure-responses
+
+   Reports failure messages from SMTP server at the last.
+
+   The default is false. (don't report.)
+
 : --reading-timeout=SECONDS
 
    Specifies timeout on reading a response from a SMTP server.

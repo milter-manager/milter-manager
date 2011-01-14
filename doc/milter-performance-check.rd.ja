@@ -154,6 +154,13 @@ smtp-sourceを利用するとよいでしょう。
 
    既定値はfalseです。（並び替えません。）
 
+: --report-failure-responses, --no-report-failure-responses
+
+   SMTPサーバが返した失敗時のメッセージを一番最後に表示しま
+   す。
+
+   既定値はfalseです。（表示しません。）
+
 : --reading-timeout=SECONDS
 
    SMTPサーバからのレスポンスを待つ時間を指定します。

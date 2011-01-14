@@ -1,5 +1,8 @@
 2011-01-14  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/milter-performance-check.rd*: add document for
+	--report-failure-responses.
+
 	* tool/milter-performance-check: add --report-failure-responses option.
 
 	* tool/milter-performance-check: show error messages.
