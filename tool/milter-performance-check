@@ -307,7 +307,7 @@ class MilterPerformanceTool
       else
         begin
           run_single_worker(mails)
-          report_data(STDOUT)
+          send_statistics_to_master(STDOUT)
         rescue Exception
           STDERR.puts("#{$!.message} (#{$!.class})")
           STDERR.puts($@)
@@ -316,7 +316,7 @@ class MilterPerformanceTool
       end
     end
     workers.each do |worker|
-      report_merge(worker)
+      receive_statistics_from_worker(worker)
     end
   ensure
     workers.each do |worker|
@@ -342,7 +342,7 @@ class MilterPerformanceTool
     end
   end
 
-  def report_data(output)
+  def send_statistics_to_master(output)
     data = [
       @n_processed_mails,
       @max_response_time,
@@ -355,7 +355,7 @@ class MilterPerformanceTool
     Marshal.dump(data, output)
   end
 
-  def report_merge(input)
+  def receive_statistics_from_worker(input)
     data = Marshal.load(input)
     n_processed_mails, max_response_time, min_response_time, accumulated_response_time,
     n_temporary_failure_mails, n_reject_mails, n_error_mails = *data
@@ -492,7 +492,7 @@ class MilterPerformanceTool
       error = true
       error_object = $!
     end
-    wallclock_time = Time.now
+    wall_clock_time = Time.now
     response_time = wall_clock_time - start_time
     STDERR.puts("#{error_object.class}: #{error_object.message}") if error_object
     update_statistics(mail_source_file, source.size,

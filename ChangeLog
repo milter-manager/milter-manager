@@ -1,5 +1,7 @@
 2011-01-14  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-performance-check: use meaningful name.
+
 	* tool/milter-performance-check: cleanup.
 
 	* tool/milter-performance-check: write error messages to STDERR.
