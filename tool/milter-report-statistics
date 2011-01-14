@@ -192,7 +192,7 @@ class MilterStatisticsReporter
 
   def show(time, pid, vss, rss, cpu_percent, cpu_time, n_fds, command_line)
     items = [time, pid, vss, rss, cpu_percent, cpu_time, n_fds, command_line]
-    puts("%8s %6s %9s %9s %4s %8s %5s %s" % items)
+    puts("%8s %6s %9s %9s %5s %8s %5s %s" % items)
   end
 
   def time_stamp

@@ -1,3 +1,7 @@
+2011-01-14  Kouhei Sutou  <kou@clear-code.com>
+
+	* tool/milter-report-statistics: use 5 columns for CPU time.
+
 2011-01-14  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* tool/milter-test-client.c: add --n-workers option.
