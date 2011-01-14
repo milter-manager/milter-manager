@@ -221,7 +221,7 @@ run (MilterEventLoop *loop)
     MilterLibevEventLoopPrivate *priv;
 
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
-    ev_loop(priv->base, EVLOOP_NONBLOCK);
+    ev_run(priv->base, 0);
 }
 
 static gboolean
@@ -229,10 +229,13 @@ iterate (MilterEventLoop *loop, gboolean may_block)
 {
     MilterLibevEventLoopPrivate *priv;
 
-    /* TODO: may_block */
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
-    ev_loop(priv->base, EVLOOP_ONESHOT);
-    return TRUE;                /* TODO */
+    if (may_block) {
+        ev_loop(priv->base, EVRUN_ONCE);
+    } else {
+        ev_loop(priv->base, EVRUN_NOWAIT | EVRUN_ONCE);
+    }
+    return TRUE;
 }
 
 static void
@@ -241,7 +244,7 @@ quit (MilterEventLoop *loop)
     MilterLibevEventLoopPrivate *priv;
 
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
-    ev_unloop(priv->base, EVUNLOOP_ONE);
+    ev_break(priv->base, EVBREAK_ONE);
 }
 
 static short

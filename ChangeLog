@@ -1,6 +1,8 @@
 2011-01-14  Kouhei Sutou  <kou@clear-code.com>
 
-	* test/tool/test-server.c: always use GLib event loop.
+	* milter/core/milter-libev-event-loop.c (iterate): support may_block.
+
+	* test/tool/test-server.c: always use GLib event loop for GCutEgg.
 
 	* tool/milter-performance-check: add a missing +1.
 
