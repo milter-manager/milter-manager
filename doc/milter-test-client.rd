@@ -91,6 +91,14 @@ tool for looking into the problems.
    Changes UNIX domain socket group to GROUP when
    "unix:PATH" format SPEC is used.
 
+: --n-workers=N_WORKERS
+
+   Run ((|N_WORKERS|)) processes to process mails.
+   Availble value is between 0 and 1000.
+   If it is 0, no worker processes will be used.
+
+   ((*NOTE: This item is an experimental feature.*))
+
 : --version
 
    Shows version and exits.

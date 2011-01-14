@@ -4,6 +4,9 @@
 
 2011-01-14  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* doc/milter-test-client.rd, doc/milter-test-client.rd.ja:
+	describe --n-workers option.
+
 	* tool/milter-test-client.c: add --n-workers option.
 	add --event-loop-backend option.
 
