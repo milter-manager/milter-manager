@@ -1,5 +1,7 @@
 2011-01-14  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* tool/milter-test-client.c: add --n-workers option.
+
 	* milter/client/milter-client.c (milter_client_run_master): fix
 	inverse condition.
 

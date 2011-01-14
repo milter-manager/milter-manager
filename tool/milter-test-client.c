@@ -40,6 +40,7 @@ static gchar *group = NULL;
 static gchar *unix_socket_group = NULL;
 static guint unix_socket_mode = 0660;
 static MilterClient *client = NULL;
+static guint n_workers = 0;
 
 static gboolean
 print_version (const gchar *option_name,
@@ -125,6 +126,8 @@ static const GOptionEntry option_entries[] =
      N_("Change UNIX domain socket group to GROUP"), "GROUP"},
     {"unix-socket-mode", 0, 0, G_OPTION_ARG_CALLBACK, parse_unix_socket_mode,
      N_("Change UNIX domain socket mode to MODE (default: 0660)"), "MODE"},
+    {"n-workers", 0, 0, G_OPTION_ARG_INT, &n_workers,
+     N_("Run N_WORKERS processes (default: 0)"), "N_WORKERS"},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
      N_("Show version"), NULL},
     {NULL}
@@ -496,6 +499,8 @@ main (int argc, char *argv[])
     milter_client_set_effective_group(client, group);
     milter_client_set_unix_socket_mode(client, unix_socket_mode);
     milter_client_set_unix_socket_group(client, unix_socket_group);
+    if (n_workers > 0)
+        milter_client_set_n_workers(client, n_workers);
     if (spec)
         success = milter_client_set_connection_spec(client, spec, &error);
     if (success)
