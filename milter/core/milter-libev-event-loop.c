@@ -254,6 +254,9 @@ evcond_from_g_io_condition(GIOCondition condition)
     if (condition & (G_IO_OUT)) {
         event_condition |= EV_WRITE;
     }
+    if (condition & (G_IO_ERR | G_IO_HUP | G_IO_NVAL)) {
+        event_condition |= EV_ERROR;
+    }
     return event_condition;
 }
 
@@ -266,6 +269,9 @@ evcond_to_g_io_condition(short event)
     }
     if (event & EV_WRITE) {
         condition |= G_IO_OUT;
+    }
+    if (event & EV_ERROR) {
+        condition |= (G_IO_ERR | G_IO_HUP | G_IO_NVAL);
     }
     return condition;
 }
