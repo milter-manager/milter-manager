@@ -493,14 +493,16 @@ class MilterPerformanceTool
       error_object = $!
     end
     wallclock_time = Time.now
-    response_time = wallclock_time - start_time
+    response_time = wall_clock_time - start_time
     STDERR.puts("#{error_object.class}: #{error_object.message}") if error_object
     update_statistics(mail_source_file, source.size,
-                      wallclock_time, response_time, temporary_failure, reject, error)
+                      wall_clock_time, response_time,
+                      temporary_failure, reject, error)
   end
 
   def update_statistics(source_file, source_size,
-                        wallclock_time, response_time, temporary_failure, reject, error)
+                        wall_clock_time, response_time,
+                        temporary_failure, reject, error)
     @mutex.synchronize do
       if source_file
         @sources << [response_time, source_file]
@@ -516,7 +518,9 @@ class MilterPerformanceTool
       @n_error_mails += 1 if error
 
       if @report_file
-        @report_file.puts([wallclock_time.iso8601(6),response_time,source_size].join(","))
+        @report_file.puts([wall_clock_time.iso8601(6),
+                           response_time,
+                           source_size].join(","))
       end
     end
   end

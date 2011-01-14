@@ -1,5 +1,7 @@
 2011-01-14  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-performance-check: cleanup.
+
 	* tool/milter-performance-check: write error messages to STDERR.
 
 	* tool/milter-report-statistics: use 5 columns for CPU time.
