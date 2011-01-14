@@ -1,5 +1,8 @@
 2011-01-14  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* binding/ruby/src/toolkit/rb-milter-event-loop.c (rb_loop_run):
+	custom run using ruby.
+
 	* milter/client/milter-client.c (client_invoke_workers): use
 	listen_channel if it is already bound.
 

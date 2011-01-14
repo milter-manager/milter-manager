@@ -18,8 +18,46 @@
  */
 
 #include "rb-milter-core-private.h"
+#ifdef RUBY_UBF_IO
+#  define USE_BLOCKING_REGION 1
+#else
+#  define USE_BLOCKING_REGION 0
+#endif
+#if !USE_BLOCKING_REGION
+#  include <rubysig.h>
+#endif
 
 #define SELF(self) RVAL2EVENT_LOOP(self)
+
+#if USE_BLOCKING_REGION
+static VALUE
+blocking_run (void *arg)
+{
+    MilterEventLoop *loop = arg;
+    milter_event_loop_run_without_custom(loop);
+    return Qnil;
+}
+
+static void
+quit_run (void *arg)
+{
+    MilterEventLoop *loop = arg;
+    milter_event_loop_quit(loop);
+}
+#endif
+
+static void
+rb_loop_run (MilterEventLoop *loop)
+{
+#if USE_BLOCKING_REGION
+    rb_thread_blocking_region(blocking_run, loop, quit_run, loop);
+#else
+    TRAP_BEG;
+    milter_event_loop_run_without_custom(loop);
+    TRAP_END;
+#endif
+}
+
 
 static VALUE
 glib_initialize (int argc, VALUE *argv, VALUE self)
@@ -42,6 +80,7 @@ libev_initialize (VALUE self)
 
     event_loop = milter_libev_event_loop_new();
     G_INITIALIZE(self, event_loop);
+    milter_event_loop_set_custom_run_func(event_loop, rb_loop_run);
     return Qnil;
 }
 
