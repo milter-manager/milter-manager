@@ -687,7 +687,7 @@ EOM
     puts
     puts label
     n_messages = messages.size
-    n_columns = Math.log10(n_messages).floor
+    n_columns = Math.log10(n_messages).floor + 1
     messages.each_with_index do |message, i|
       puts("  %#{n_columns}d %s" % [i, message])
     end

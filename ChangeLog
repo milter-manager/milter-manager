@@ -1,5 +1,7 @@
 2011-01-14  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-performance-check: add a missing +1.
+
 	* tool/milter-report-statistics: set fallback values.
 
 	* tool/milter-report-statistics: run n-tops for 20 over processes.
