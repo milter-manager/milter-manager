@@ -305,8 +305,13 @@ class MilterPerformanceTool
       if worker
         workers << worker
       else
-        run_single_worker(mails)
-        report_data(STDOUT)
+        begin
+          run_single_worker(mails)
+          report_data(STDOUT)
+        rescue Exception
+          STDERR.puts("#{$!.message} (#{$!.class})")
+          STDERR.puts($@)
+        end
         exit!
       end
     end
@@ -489,7 +494,7 @@ class MilterPerformanceTool
     end
     wallclock_time = Time.now
     response_time = wallclock_time - start_time
-    puts "#{error_object.class}: #{error_object.message}" if error_object
+    STDERR.puts("#{error_object.class}: #{error_object.message}") if error_object
     update_statistics(mail_source_file, source.size,
                       wallclock_time, response_time, temporary_failure, reject, error)
   end
