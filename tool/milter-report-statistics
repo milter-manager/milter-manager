@@ -19,10 +19,52 @@ require 'pathname'
 require 'time'
 require 'optparse'
 
+class Top
+  def initialize
+    @pids = []
+  end
+
+  def <<(pid)
+    @pids << pid
+  end
+
+  def [](pid)
+    processes[pid]
+  end
+
+  private
+  def processes
+    @processes ||= retrieve
+  end
+
+  def retrieve
+    _processes = {}
+    pids = @pids.collect {|pid| "-p #{pid}"}.join(" ")
+    result = `env LANG=C top -n 1 -b #{pids}`
+    header, body = result.split(/\n\n/, 2)
+    labels = nil
+    body.each_line do |line|
+      values = line.strip.split(/\s+/, 12)
+      if labels.nil?
+        labels = values[1..-1]
+      else
+        pid = values.shift
+        _processes[pid] = process = {}
+        labels.each_with_index do |label, i|
+          process[label] = values[i]
+        end
+      end
+    end
+    _processes
+  end
+end
+
 class MilterStatus
+  attr_accessor :top
   def initialize(proc_path)
     @proc_path = proc_path
     @status = parse_status(read_proc_path("status"))
+    @top = nil
   end
 
   def target?(targets)
@@ -49,11 +91,11 @@ class MilterStatus
   end
 
   def cpu_time
-    top["TIME+"]
+    @top["TIME+"]
   end
 
   def cpu_percent
-    top["%CPU"]
+    @top["%CPU"]
   end
 
   def n_file_descriptors
@@ -89,29 +131,6 @@ class MilterStatus
     end
     status
   end
-
-  def top
-    @top ||= retrieve_top_info
-  end
-
-  def retrieve_top_info
-    top_info = {}
-    top_result = `env LANG=C top -p #{pid} -n 1 -b`
-    header, body = top_result.split(/\n\n/, 2)
-    labels = nil
-    body.each_line do |line|
-      values = line.strip.split(/\s+/, 12)
-      if labels.nil?
-        labels = values
-      else
-        labels.each_with_index do |label, i|
-          top_info[label] = values[i]
-        end
-        break
-      end
-    end
-    top_info
-  end
 end
 
 class MilterStatisticsReporter
@@ -133,8 +152,10 @@ class MilterStatisticsReporter
     show_header
     loop do
       begin
+        start = Time.now
         report
-        sleep(@interval)
+        report_time = Time.now - start
+        sleep(@interval - report_time) if report_time < @interval
       rescue Interrupt
         break
       end
@@ -147,13 +168,19 @@ class MilterStatisticsReporter
 
   def report
     reported = false
+    top = Top.new
+    statuses = []
     Pathname.glob("/proc/[0-9]*") do |proc_path|
       status = MilterStatus.new(proc_path)
       next if status.pid.to_i == Process.pid
       next unless status.target?(@targets)
       command_line = status.command_line.join(" ")
       next unless @filters.all? {|filter| filter =~ command_line}
-      reported = true
+      statuses << status
+      top << status.pid
+    end
+    statuses.each do |status|
+      status.top = top[status.pid]
       show(time_stamp,
            status.pid,
            status.vss,
@@ -161,11 +188,9 @@ class MilterStatisticsReporter
            status.cpu_percent,
            status.cpu_time,
            status.n_file_descriptors,
-           command_line)
+           status.command_line.join(" "))
     end
-    unless reported
-      puts("%8s not found" % time_stamp)
-    end
+    puts("%8s not found" % time_stamp) if statuses.empty?
   end
 
   private
