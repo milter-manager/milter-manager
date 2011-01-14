@@ -1,5 +1,9 @@
 2011-01-14  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-performance-check: add --report-failure-responses option.
+
+	* tool/milter-performance-check: show error messages.
+
 	* tool/milter-performance-check: show reject messages.
 
 	* tool/milter-performance-check: show temporary failure messages.

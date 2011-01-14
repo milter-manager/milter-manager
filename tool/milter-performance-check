@@ -50,6 +50,7 @@ class MilterPerformanceTool
     @flood_mode = nil
     @report_file = nil
     @shuffle = false
+    @report_failure_responses = false
     @reading_timeout = Net::SMTP.new("localhost").read_timeout
     @mail_source_from_stdin = nil
     @mutex = Mutex.new
@@ -208,13 +209,19 @@ class MilterPerformanceTool
               "Write performance reports of each mail to FILE.",
               "No report is written if not specified.") do |file|
         @report_file = File.open(file, "w")
-        @report_file.puts("wallclock time,response time,message size")
+        @report_file.puts("wall clock time,response time,message size")
       end
 
       opts.on("--[no-]shuffle",
               "Shuffle target mails",
               "(#{@shuffle})") do |shuffle|
         @shuffle = shuffle
+      end
+
+      opts.on("--[no-]report-failure-responses",
+              "Report failure messages from SMTP server at the last",
+              "(#{@report_failure_responses})") do |boolean|
+        @report_failure_responses = boolean
       end
 
       opts.on("--reading-timeout=SECONDS", Integer,
@@ -237,7 +244,7 @@ class MilterPerformanceTool
     @min_response_time = nil
     @temporary_failure_messages = []
     @reject_messages = []
-    @n_error_mails = 0
+    @error_messages = []
     @n_processed_mails = 0
     mails = expand_mails(@mails)
     mails = [mails[0]] * @n_mails if mails.size <= 1
@@ -294,9 +301,10 @@ class MilterPerformanceTool
     puts "Status:"
     puts statistics_report("Temporary failure", @temporary_failure_messages.size)
     puts statistics_report("           Reject", @reject_messages.size)
-    puts statistics_report("            Error", @n_error_mails)
+    puts statistics_report("            Error", @error_messages.size)
     report_messages("Temporary failures:", @temporary_failure_messages)
     report_messages("Rejects:", @reject_messages)
+    report_messages("Errors:", @error_messages)
   end
 
   private
@@ -320,7 +328,7 @@ class MilterPerformanceTool
     workers.each do |worker|
       begin
         receive_statistics_from_worker(worker)
-      rescue EOFError
+      rescue EOFError, Errno::EPIPE
       end
     end
   ensure
@@ -355,7 +363,7 @@ class MilterPerformanceTool
       @accumulated_response_time,
       @temporary_failure_messages,
       @reject_messages,
-      @n_error_mails,
+      @error_messages,
     ]
     Marshal.dump(data, output)
   end
@@ -363,7 +371,7 @@ class MilterPerformanceTool
   def receive_statistics_from_worker(input)
     data = Marshal.load(input)
     n_processed_mails, max_response_time, min_response_time, accumulated_response_time,
-    temporary_failure_messages, reject_messages, n_error_mails = *data
+    temporary_failure_messages, reject_messages, error_messages = *data
 
     @n_processed_mails += n_processed_mails
     @max_response_time = [@max_response_time, max_response_time].compact.max
@@ -371,7 +379,7 @@ class MilterPerformanceTool
     @accumulated_response_time += accumulated_response_time
     @temporary_failure_messages.concat(temporary_failure_messages)
     @reject_messages.concat(reject_messages)
-    @n_error_mails += n_error_mails
+    @error_messages.concat(error_messages)
   end
 
   def expand_mails(mails)
@@ -469,7 +477,6 @@ class MilterPerformanceTool
 
     temporary_failure_message = nil
     reject_message = nil
-    error = false
     error_message = nil
     start_time = Time.now
     begin
@@ -493,23 +500,22 @@ class MilterPerformanceTool
       temporary_failure_message = $!.message
     rescue Net::SMTPFatalError
       reject_message = $!.message
-    rescue Net::ProtoFatalError, Timeout::Error, SystemCallError
-      error = true
-      error_object = $!
+    rescue Net::ProtoFatalError
+      error_message = $!.message
+    rescue Timeout::Error, SystemCallError
+      error_message = "#{$!.class}: #{$!.message}"
     end
     wall_clock_time = Time.now
     response_time = wall_clock_time - start_time
-    STDERR.puts("#{error_object.class}: #{error_object.message}") if error_object
+    STDERR.puts(error_message) if error_message
     update_statistics(mail_source_file, source.size,
                       wall_clock_time, response_time,
-                      temporary_failure_message, reject_message, error)
+                      temporary_failure_message, reject_message, error_message)
   end
 
   def update_statistics(source_file, source_size,
                         wall_clock_time, response_time,
-                        temporary_failure_message,
-                        reject_message,
-                        error)
+                        temporary_failure_message, reject_message, error_message)
     @mutex.synchronize do
       if source_file
         @sources << [response_time, source_file]
@@ -524,7 +530,7 @@ class MilterPerformanceTool
         @temporary_failure_messages << temporary_failure_message
       end
       @reject_messages << reject_message if reject_message
-      @n_error_mails += 1 if error
+      @error_messages << error_message if error_message
 
       if @report_file
         @report_file.puts([wall_clock_time.iso8601(6),
@@ -676,6 +682,7 @@ EOM
   end
 
   def report_messages(label, messages)
+    return unless @report_failure_responses
     return if messages.empty?
     puts
     puts label
