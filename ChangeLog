@@ -1,5 +1,7 @@
 2011-01-14  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-performance-check: show reject messages.
+
 	* tool/milter-performance-check: show temporary failure messages.
 
 	* binding/ruby/src/toolkit/rb-milter-error-emittable.c: copy
