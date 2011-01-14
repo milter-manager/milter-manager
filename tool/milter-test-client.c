@@ -41,6 +41,7 @@ static gchar *unix_socket_group = NULL;
 static guint unix_socket_mode = 0660;
 static MilterClient *client = NULL;
 static guint n_workers = 0;
+static MilterClientEventLoopBackend event_loop_backend = MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
 
 static gboolean
 print_version (const gchar *option_name,
@@ -100,6 +101,32 @@ parse_unix_socket_mode (const gchar *option_name,
     return success;
 }
 
+static gboolean
+parse_event_loop_backend (const gchar *option_name,
+                        const gchar *value,
+                        gpointer data,
+                        GError **error)
+{
+    GEnumClass *backend_enum;
+    GEnumValue *backend_value;
+
+    backend_enum = g_type_class_ref(MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND);
+    backend_value = g_enum_get_value_by_nick(backend_enum, value);
+    g_type_class_unref(backend_enum);
+
+    if (backend_value) {
+        event_loop_backend = backend_value->value;
+        return TRUE;
+    } else {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    _("invalid name: %s"),
+                    value);
+        return FALSE;
+    }
+}
+
 static const GOptionEntry option_entries[] =
 {
     {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
@@ -128,6 +155,8 @@ static const GOptionEntry option_entries[] =
      N_("Change UNIX domain socket mode to MODE (default: 0660)"), "MODE"},
     {"n-workers", 0, 0, G_OPTION_ARG_INT, &n_workers,
      N_("Run N_WORKERS processes (default: 0)"), "N_WORKERS"},
+    {"event-loop-backend", 0, 0, G_OPTION_ARG_CALLBACK, parse_event_loop_backend,
+     N_("Use BACKEND as event loop backend (default: glib)"), "[glib|livev]"},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
      N_("Show version"), NULL},
     {NULL}
@@ -499,6 +528,7 @@ main (int argc, char *argv[])
     milter_client_set_effective_group(client, group);
     milter_client_set_unix_socket_mode(client, unix_socket_mode);
     milter_client_set_unix_socket_group(client, unix_socket_group);
+    milter_client_set_event_loop_backend(client, event_loop_backend);
     if (n_workers > 0)
         milter_client_set_n_workers(client, n_workers);
     if (spec)
