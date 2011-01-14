@@ -1,5 +1,8 @@
 2011-01-14  Nobuyoshi Nakada  <nakada@clear-code.com>
 
+	* milter/client/milter-client.c (client_run_workers): renamed.
+	(milter_client_run): run master here.
+
 	* binding/ruby/src/toolkit/rb-milter-event-loop.c (rb_loop_run):
 	custom run using ruby.
 

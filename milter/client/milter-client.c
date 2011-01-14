@@ -1657,7 +1657,7 @@ worker_watch_master (GIOChannel   *source,
 }
 
 static gboolean
-client_invoke_workers (MilterClient *client, guint n_workers, GError **error)
+client_run_workers (MilterClient *client, guint n_workers, GError **error)
 {
     guint i;
     int pipe_fds[2];
@@ -1670,7 +1670,7 @@ client_invoke_workers (MilterClient *client, guint n_workers, GError **error)
     if (!priv->listen_channel) {
         GError *local_error = NULL;
         if (!milter_client_listen(client, &local_error)) {
-            milter_error("[client][invoke][listen][error] %s",
+            milter_error("[client][run][listen][error] %s",
                          local_error->message);
             g_propagate_error(error, local_error);
             return FALSE;
@@ -1713,7 +1713,7 @@ client_invoke_workers (MilterClient *client, guint n_workers, GError **error)
     }
     g_io_channel_unref(priv->workers.control);
     priv->workers.control = setup_client_channel(pipe_fds[MILTER_UTILS_WRITE_PIPE]);
-    return run_master(client, error);
+    return TRUE;
 }
 
 gboolean
@@ -1726,7 +1726,10 @@ milter_client_run (MilterClient *client, GError **error)
     priv = MILTER_CLIENT_GET_PRIVATE(client);
     n_workers = milter_client_get_n_workers(client);
     if (n_workers > 0) {
-        success = client_invoke_workers(client, n_workers, error);
+        if (client_run_workers(client, n_workers, error)) {
+            return FALSE;
+        }
+        success = run_master(client, error);
     } else if (priv->multi_thread_mode) {
         if (!milter_client_prepare(client, multi_thread_server_watch_func,
                                    error))
