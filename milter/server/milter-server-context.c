@@ -2580,12 +2580,11 @@ cb_decoder_delete_recipient (MilterReplyDecoder *decoder,
                  recipient,
                  milter_server_context_get_name(context));
 
-    /* TODO: should check state */
-    /* if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) { */
+    if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         g_signal_emit_by_name(user_data, "delete-recipient", recipient);
-    /* } else { */
-    /*     invalid_state(context, priv->state); */
-    /* } */
+    } else {
+        invalid_state(context, priv->state);
+    }
 }
 
 static void

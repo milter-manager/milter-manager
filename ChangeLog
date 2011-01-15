@@ -1,5 +1,9 @@
 2011-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c,
+	test/server/test-server-context-signals.c: add state check on
+	delete-recipient.
+
 	* binding/ruby/src/toolkit/rb-milter-client.c: undefine PACKAGE_*
 	macros because Ruby's config.h defines them. :<
 
