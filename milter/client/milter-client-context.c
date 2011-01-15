@@ -30,8 +30,6 @@
 #include "milter-client-context.h"
 #include "milter-client-enum-types.h"
 
-#define PACKET_BUFFER_SIZE 4096
-
 enum
 {
     NEGOTIATE,
@@ -73,7 +71,8 @@ enum
     PROP_CLIENT,
     PROP_STATE,
     PROP_OPTION,
-    PROP_MESSAGE_RESULT
+    PROP_MESSAGE_RESULT,
+    PROP_PACKET_BUFFER_SIZE
 };
 
 static gint signals[LAST_SIGNAL] = {0};
@@ -108,6 +107,7 @@ struct _MilterClientContextPrivate
     MilterMessageResult *message_result;
     GString *buffered_packets;
     gboolean buffering;
+    guint packet_buffer_size;
 };
 
 static void         finished           (MilterFinishedEmittable *emittable);
@@ -269,6 +269,16 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                                MILTER_TYPE_MESSAGE_RESULT,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_MESSAGE_RESULT, spec);
+
+    spec = g_param_spec_uint("packet-buffer-size",
+                             "Packet buffer size",
+                             "The packet buffer size of the client context",
+                             0,
+                             G_MAXUINT,
+                             MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE,
+                             G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_PACKET_BUFFER_SIZE,
+                                    spec);
 
     /**
      * MilterClientContext::negotiate:
@@ -1553,6 +1563,7 @@ milter_client_context_init (MilterClientContext *context)
     priv->message_result = NULL;
     priv->buffered_packets = g_string_new(NULL);
     priv->buffering = FALSE;
+    priv->packet_buffer_size = MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE;
 }
 
 static void
@@ -1662,6 +1673,10 @@ set_property (GObject      *object,
         milter_client_context_set_message_result(context,
                                                  g_value_get_object(value));
         break;
+    case PROP_PACKET_BUFFER_SIZE:
+        milter_client_context_set_packet_buffer_size(context,
+                                                     g_value_get_uint(value));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -1689,6 +1704,9 @@ get_property (GObject    *object,
         break;
     case PROP_MESSAGE_RESULT:
         g_value_set_object(value, priv->message_result);
+        break;
+    case PROP_PACKET_BUFFER_SIZE:
+        g_value_set_uint(value, priv->packet_buffer_size);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -2133,7 +2151,7 @@ write_packet_on_end_of_message (MilterClientContext *context,
     g_string_append_len(priv->buffered_packets, packet, packet_size);
     priv->buffering = TRUE;
 
-    if (priv->buffered_packets->len > PACKET_BUFFER_SIZE) {
+    if (priv->buffered_packets->len > priv->packet_buffer_size) {
         GError *agent_error = NULL;
 
         success = milter_agent_flush(MILTER_AGENT(context), &agent_error);
@@ -3796,6 +3814,25 @@ milter_client_context_get_n_processing_sessions (MilterClientContext *context)
     if (!priv->client)
         return 0;
     return milter_client_get_n_processing_sessions(priv->client);
+}
+
+void
+milter_client_context_set_packet_buffer_size (MilterClientContext *context,
+                                              guint size)
+{
+    MilterClientContextPrivate *priv;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    priv->packet_buffer_size = size;
+}
+
+guint
+milter_client_context_get_packet_buffer_size (MilterClientContext *context)
+{
+    MilterClientContextPrivate *priv;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    return priv->packet_buffer_size;
 }
 
 /*

@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -332,6 +332,15 @@ typedef enum
 #define MILTER_CLIENT_CONTEXT_STATE_IN_MESSAGE_PROCESSING(state)        \
     (MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_FROM <= (state) &&            \
      (state) < MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE)
+
+/**
+ * MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE:
+ *
+ * The default pacekt buffer size. The packet buffer size
+ * for the context can be changed by
+ * milter_client_context_set_packet_buffer_size().
+ */
+#define MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE 4096
 
 typedef struct _MilterClientContextClass    MilterClientContextClass;
 
@@ -903,6 +912,30 @@ void                 milter_client_context_reset_message_related_data
  */
 guint                milter_client_context_get_n_processing_sessions
                                                        (MilterClientContext  *context);
+
+/**
+ * milter_client_context_set_packet_buffer_size:
+ * @context: a %MilterClientContext.
+ * @size: a packet buffer size. (deafult is 4KB.)
+ *
+ * Sets the packet buffer size for the context. Packets on
+ * end-of-message are buffered until the buffer size is
+ * full. Packet buffering is for performance.
+ */
+void                 milter_client_context_set_packet_buffer_size
+                                                       (MilterClientContext *context,
+                                                        guint                size);
+
+/**
+ * milter_client_context_get_packet_buffer_size:
+ * @context: a %MilterClientContext.
+ *
+ * Gets the packet buffer size for the context.
+ *
+ * Returns: the packet buffer size for the context.
+ */
+guint                milter_client_context_get_packet_buffer_size
+                                                       (MilterClientContext *context);
 
 G_END_DECLS
 

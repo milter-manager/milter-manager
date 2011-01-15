@@ -1,5 +1,11 @@
 2011-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client-context.[ch]
+	(MILTER_CLIENT_CONTEXT_PACKET_BUFFER_SIZE),
+	(milter_client_context_get_packet_buffer_size),
+	(milter_client_context_set_packet_buffer_size): add.
+	* test/client/test-client-context-base.c: add a test for the above.
+
 	* milter/server/milter-server-context.c,
 	test/server/test-server-context-signals.c: include more error
 	information on invalid state error.

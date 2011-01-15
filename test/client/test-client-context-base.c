@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2009-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -32,6 +32,7 @@
 void test_tag (void);
 void test_socket_address (void);
 void test_n_processing_sessions (void);
+void test_packet_buffer_size (void);
 
 static MilterClientContext *context;
 
@@ -136,6 +137,18 @@ test_n_processing_sessions (void)
 {
     cut_assert_equal_uint(
         0, milter_client_context_get_n_processing_sessions(context));
+}
+
+void
+test_packet_buffer_size (void)
+{
+    cut_assert_equal_uint(
+        MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE,
+        milter_client_context_get_packet_buffer_size(context));
+    milter_client_context_set_packet_buffer_size(context, 29);
+    cut_assert_equal_uint(
+        29,
+        milter_client_context_get_packet_buffer_size(context));
 }
 
 /*
