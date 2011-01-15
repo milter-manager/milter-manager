@@ -1,5 +1,7 @@
 2011-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c: support progress.
+
 	* milter/server/milter-server-context.c,
 	test/server/test-server-context-signals.c: remove needless timeout
 	reset.

@@ -985,6 +985,23 @@ milter_server_context_need_reply (MilterServerContext *context,
     }
 }
 
+static void
+reset_end_of_message_timeout (MilterServerContext *context)
+{
+    MilterEventLoop *loop;
+    MilterServerContextPrivate *priv;
+
+    disable_timeout(context);
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    loop = milter_agent_get_event_loop(MILTER_AGENT(context));
+    priv->timeout_id =
+        milter_event_loop_add_timeout(loop,
+                                      priv->end_of_message_timeout,
+                                      cb_end_of_message_timeout,
+                                      context);
+}
+
 static gboolean
 write_packet (MilterServerContext *context,
               const gchar *packet, gsize packet_size,
@@ -1116,11 +1133,7 @@ write_packet (MilterServerContext *context,
             milter_server_context_set_state(context, next_state);
         else
             priv->sent_end_of_message = TRUE;
-        priv->timeout_id =
-            milter_event_loop_add_timeout(loop,
-                                          priv->end_of_message_timeout,
-                                          cb_end_of_message_timeout,
-                                          context);
+        reset_end_of_message_timeout(context);
         break;
     case MILTER_SERVER_CONTEXT_STATE_BODY:
         milter_server_context_set_state(context, next_state);
@@ -2629,8 +2642,8 @@ cb_decoder_progress (MilterReplyDecoder *decoder, gpointer user_data)
                  milter_server_context_get_name(context));
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
-        /* TODO: reset end-of-message timeout */
-        g_signal_emit_by_name(user_data, "progress");
+        reset_end_of_message_timeout(context);
+        g_signal_emit_by_name(context, "progress");
     } else {
         invalid_state(context, priv->state, "progress", "end-of-message");
     }
