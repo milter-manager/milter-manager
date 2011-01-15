@@ -57,6 +57,7 @@ void test_replace_body_on_invalid_state (void);
 void test_progress (void);
 void test_progress_on_invalid_state (void);
 void test_quarantine (void);
+void test_quarantine_on_invalid_state (void);
 void test_connection_failure (void);
 void test_shutdown (void);
 void test_skip (void);
@@ -1062,6 +1063,23 @@ test_quarantine (void)
     cut_assert_equal_int(1, n_quarantines);
     cut_assert_equal_string(reason, actual_quarantine_reason);
     milter_assert_status(MILTER_STATUS_QUARANTINE);
+}
+
+void
+test_quarantine_on_invalid_state (void)
+{
+    const gchar *packet;
+    gsize packet_size;
+    const gchar reason[] = "infection";
+
+    milter_reply_encoder_encode_quarantine(encoder, &packet, &packet_size, reason);
+    write_data(packet, packet_size);
+    cut_assert_equal_int(0, n_quarantines);
+
+    expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
+                                 MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
+                                 "Invalid state: start");
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void

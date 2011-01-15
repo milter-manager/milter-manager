@@ -1,6 +1,10 @@
 2011-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/server/test-server-context-signals.c
+	(test_quarantine_on_invalid_state): add a test for
+	quarntine on invalid state.
+
+	* test/server/test-server-context-signals.c
 	(test_progress_on_invalid_state): add a test for
 	progress on invalid state.
 
