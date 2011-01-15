@@ -107,6 +107,12 @@ client_listen (VALUE self)
 }
 
 static VALUE
+client_create_context (VALUE self)
+{
+    return GOBJ2RVAL_UNREF(milter_client_create_context(SELF(self)));
+}
+
+static VALUE
 client_get_connection_spec (VALUE self)
 {
     return CSTR2RVAL(milter_client_get_connection_spec(SELF(self)));
@@ -223,6 +229,19 @@ client_set_default_unix_socket_mode (VALUE self, VALUE rb_mode)
     return Qnil;
 }
 
+static VALUE
+client_get_default_packet_buffer_size (VALUE self)
+{
+    return UINT2NUM(milter_client_get_default_packet_buffer_size(SELF(self)));
+}
+
+static VALUE
+client_set_default_packet_buffer_size (VALUE self, VALUE size)
+{
+    milter_client_set_default_packet_buffer_size(SELF(self), NUM2UINT(size));
+    return Qnil;
+}
+
 static void
 mark (gpointer data)
 {
@@ -232,8 +251,6 @@ mark (gpointer data)
 					     (GFunc)rbgobj_gc_mark_instance,
 					     NULL);
 }
-
-VALUE rb_cMilterClient;
 
 void
 Init_milter_client (void)
@@ -259,6 +276,8 @@ Init_milter_client (void)
     rb_define_method(rb_cMilterClient, "shutdown", client_shutdown, 0);
     rb_define_method(rb_cMilterClient, "start_syslog", client_start_syslog, 1);
     rb_define_method(rb_cMilterClient, "listen", client_listen, 0);
+    rb_define_method(rb_cMilterClient, "create_context",
+		     client_create_context, 0);
     rb_define_method(rb_cMilterClient, "connection_spec",
                      client_get_connection_spec, 0);
     rb_define_method(rb_cMilterClient, "set_connection_spec",
@@ -283,6 +302,10 @@ Init_milter_client (void)
                      client_get_default_unix_socket_mode, 0);
     rb_define_method(rb_cMilterClient, "set_default_unix_socket_mode",
                      client_set_default_unix_socket_mode, 1);
+    rb_define_method(rb_cMilterClient, "default_packet_buffer_size",
+                     client_get_default_packet_buffer_size, 0);
+    rb_define_method(rb_cMilterClient, "set_default_packet_buffer_size",
+                     client_set_default_packet_buffer_size, 1);
 
     G_DEF_SETTERS(rb_cMilterClient);
 

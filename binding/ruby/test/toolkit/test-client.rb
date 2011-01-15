@@ -94,4 +94,14 @@ class TestClient < Test::Unit::TestCase
       TCPSocket.new("localhost", port)
     end
   end
+
+  def test_default_packet_size
+    assert_equal(Milter::ClientContext::DEFAULT_PACKET_BUFFER_SIZE,
+                 @client.default_packet_buffer_size)
+    assert_equal(Milter::ClientContext::DEFAULT_PACKET_BUFFER_SIZE,
+                 @client.create_context.packet_buffer_size)
+    @client.default_packet_buffer_size = 29
+    assert_equal(29, @client.default_packet_buffer_size)
+    assert_equal(29, @client.create_context.packet_buffer_size)
+  end
 end
