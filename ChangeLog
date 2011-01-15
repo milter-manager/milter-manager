@@ -1,5 +1,9 @@
 2011-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* test/server/test-server-context-signals.c
+	(test_add_header_on_invalid_state): add a test for add-header on
+	invalid state.
+
 	* milter/server/milter-server-context.c,
 	test/server/test-server-context-signals.c: add state check on
 	quarantine.
