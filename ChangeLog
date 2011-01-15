@@ -1,5 +1,10 @@
 2011-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager-configuration.[ch]
+	(milter_manager_configuration_get_default_packet_buffer_size)
+	(milter_manager_configuration_set_default_packet_buffer_size): add.
+	* test/manager/test-configuration.c: add a test for the above.
+
 	* milter/client/milter-client.[ch]: make default packet buffer
 	size accessor customizable.
 

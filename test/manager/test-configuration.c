@@ -53,6 +53,9 @@ void test_package_platform (void);
 void test_package_options (void);
 void test_event_loop_backend (void);
 void test_connection_check_interval (void);
+void test_location (void);
+void test_n_workers (void);
+void test_default_packet_buffer_size (void);
 void test_egg (void);
 void test_find_egg (void);
 void test_remove_egg (void);
@@ -65,8 +68,6 @@ void test_load_absolute_path (void);
 void test_save_custom (void);
 void test_to_xml_full (void);
 void test_to_xml_signal (void);
-void test_location (void);
-void test_n_workers (void);
 
 static MilterManagerConfiguration *config;
 static MilterEventLoop *loop;
@@ -556,6 +557,18 @@ test_n_workers (void)
     cut_assert_equal_uint(
         5,
         milter_manager_configuration_get_n_workers(config));
+}
+
+void
+test_default_packet_buffer_size (void)
+{
+    cut_assert_equal_uint(
+        MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE,
+        milter_manager_configuration_get_default_packet_buffer_size(config));
+    milter_manager_configuration_set_default_packet_buffer_size(config, 29);
+    cut_assert_equal_uint(
+        29,
+        milter_manager_configuration_get_default_packet_buffer_size(config));
 }
 
 static void

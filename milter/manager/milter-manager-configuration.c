@@ -77,6 +77,7 @@ struct _MilterManagerConfigurationPrivate
     guint connection_check_interval;
     MilterClientEventLoopBackend event_loop_backend;
     guint n_workers;
+    guint default_packet_buffer_size;
 };
 
 enum
@@ -109,13 +110,14 @@ enum
     PROP_CONNECTION_CHECK_INTERVAL,
     PROP_EVENT_LOOP_BACKEND,
     PROP_N_WORKER_PROCESSES,
+    PROP_DEFAULT_PACKET_BUFFER_SIZE
 };
 
 enum
 {
     CONNECTED,
     TO_XML,
-    LAST_SIGNAL,
+    LAST_SIGNAL
 };
 
 static gint signals[LAST_SIGNAL] = {0};
@@ -401,10 +403,21 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
 
     spec = g_param_spec_uint("n-workers",
                              "Number of worker processes",
-                             "The Number of worker processes of the client",
+                             "The number of worker processes of the client",
                              0, MILTER_CLIENT_MAX_N_WORKERS, 0,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_N_WORKER_PROCESSES, spec);
+
+    spec = g_param_spec_uint("default-packet-buffer-size",
+                             "Default packet buffer size",
+                             "The default packet buffer size of client contexts "
+                             "of the client",
+                             0,
+                             G_MAXUINT,
+                             MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE,
+                             G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class,
+                                    PROP_DEFAULT_PACKET_BUFFER_SIZE, spec);
 
 
     signals[CONNECTED] =
@@ -457,6 +470,8 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
                                             (GDestroyNotify)g_dataset_destroy);
     priv->connection_check_interval = DEFAULT_CONNECTION_CHECK_INTERVAL;
     priv->n_workers = 0;
+    priv->default_packet_buffer_size =
+        MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE;
 
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
     if (config_dir_env)
@@ -610,6 +625,11 @@ set_property (GObject      *object,
     case PROP_N_WORKER_PROCESSES:
         milter_manager_configuration_set_n_workers(config, g_value_get_uint(value));
         break;
+    case PROP_DEFAULT_PACKET_BUFFER_SIZE:
+        milter_manager_configuration_set_default_packet_buffer_size(
+            config,
+            g_value_get_uint(value));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -706,6 +726,9 @@ get_property (GObject    *object,
         break;
     case PROP_N_WORKER_PROCESSES:
         g_value_set_uint(value, priv->n_workers);
+        break;
+    case PROP_DEFAULT_PACKET_BUFFER_SIZE:
+        g_value_set_uint(value, priv->default_packet_buffer_size);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -2120,6 +2143,25 @@ milter_manager_configuration_set_n_workers (MilterManagerConfiguration *configur
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
     priv->n_workers = n_workers;
+}
+
+guint
+milter_manager_configuration_get_default_packet_buffer_size (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->default_packet_buffer_size;
+}
+
+void
+milter_manager_configuration_set_default_packet_buffer_size (MilterManagerConfiguration *configuration,
+                                                             guint                       size)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->default_packet_buffer_size = size;
 }
 
 /*

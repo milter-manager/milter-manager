@@ -346,6 +346,12 @@ void          milter_manager_configuration_set_n_workers
                                      (MilterManagerConfiguration *configuration,
                                       guint                       n_workers);
 
+guint         milter_manager_configuration_get_default_packet_buffer_size
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_default_packet_buffer_size
+                                     (MilterManagerConfiguration *configuration,
+                                      guint                       size);
+
 G_END_DECLS
 
 #endif /* __MILTER_MANAGER_CONFIGURATION_H__ */
