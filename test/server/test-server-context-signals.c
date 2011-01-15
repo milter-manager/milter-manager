@@ -45,6 +45,7 @@ void test_insert_header_on_invalid_state (void);
 void test_change_header (void);
 void test_change_header_on_invalid_state (void);
 void test_delete_header (void);
+void test_delete_header_on_invalid_state (void);
 void test_change_from (void);
 void test_add_recipient (void);
 void test_delete_recipient (void);
@@ -845,6 +846,24 @@ test_delete_header (void)
     cut_assert_equal_int(0, actual_header_index);
     cut_assert_equal_string(name, actual_header_name);
     milter_assert_status(MILTER_STATUS_NOT_CHANGE);
+}
+
+void
+test_delete_header_on_invalid_state (void)
+{
+    const gchar *packet;
+    gsize packet_size;
+    const gchar name[] = "X-HEADER-NAME";
+
+    milter_reply_encoder_encode_delete_header(encoder, &packet, &packet_size,
+                                              name, 0);
+    write_data(packet, packet_size);
+    cut_assert_equal_int(0, n_delete_headers);
+
+    expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
+                                 MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
+                                 "Invalid state: start");
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
