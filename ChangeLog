@@ -1,6 +1,10 @@
 2011-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/server/test-server-context-signals.c
+	(test_change_from_on_invalid_state): add a test for change-from on
+	invalid state.
+
+	* test/server/test-server-context-signals.c
 	(test_delete_header_on_invalid_state): add a test for delete-header on
 	invalid state.
 
