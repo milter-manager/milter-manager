@@ -2422,19 +2422,33 @@ milter_client_get_custom_fork_func (MilterClient *client)
 void
 milter_client_set_default_packet_buffer_size (MilterClient *client, guint size)
 {
-    MilterClientPrivate *priv;
+    MilterClientClass *klass;
 
-    priv = MILTER_CLIENT_GET_PRIVATE(client);
-    priv->default_packet_buffer_size = size;
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->set_default_packet_buffer_size) {
+        klass->set_default_packet_buffer_size(client, size);
+    } else {
+        MilterClientPrivate *priv;
+
+        priv = MILTER_CLIENT_GET_PRIVATE(client);
+        priv->default_packet_buffer_size = size;
+    }
 }
 
 guint
 milter_client_get_default_packet_buffer_size (MilterClient *client)
 {
-    MilterClientPrivate *priv;
+    MilterClientClass *klass;
 
-    priv = MILTER_CLIENT_GET_PRIVATE(client);
-    return priv->default_packet_buffer_size;
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->get_default_packet_buffer_size) {
+        return klass->get_default_packet_buffer_size(client);
+    } else {
+        MilterClientPrivate *priv;
+
+        priv = MILTER_CLIENT_GET_PRIVATE(client);
+        return priv->default_packet_buffer_size;
+    }
 }
 
 /*

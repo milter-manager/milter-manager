@@ -1,5 +1,8 @@
 2011-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.[ch]: make default packet buffer
+	size accessor customizable.
+
 	* milter/client/milter-client.h,
 	milter/client/milter-client-context.h: specify packet buffer size unit.
 

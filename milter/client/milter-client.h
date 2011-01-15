@@ -176,6 +176,11 @@ struct _MilterClientClass
     guint  (*get_n_workers)               (MilterClient *client);
     void   (*set_n_workers)               (MilterClient *client,
                                            guint         n_workers);
+    guint  (*get_default_packet_buffer_size)
+                                          (MilterClient *client);
+    void   (*set_default_packet_buffer_size)
+                                          (MilterClient *client,
+                                           guint         size);
     GPid   (*fork)                        (MilterClient *client);
 };
 
