@@ -573,6 +573,46 @@ void                 milter_client_set_maintenance_interval
                                                      (MilterClient  *client,
                                                       guint          n_sessions);
 
+
+/**
+ * milter_client_set_default_packet_buffer_size:
+ * @client: a %MilterClient.
+ * @size: a packet buffer size. (deafult is 4KB.)
+ *
+ * Sets the default packet buffer size for each client
+ * context created by the client. See
+ * milter_client_contexdt_set_packet_buffer_size() for more
+ * packet buffer size information.
+ */
+void                 milter_client_set_default_packet_buffer_size
+                                                       (MilterClient *context,
+                                                        guint         size);
+
+/**
+ * milter_client_get_default_packet_buffer_size:
+ * @client: a %MilterClient.
+ *
+ * Gets the default packet buffer size for each client
+ * context created by the client.
+ *
+ * Returns: the defalt packet buffer size for each client
+ * context created by the context.
+ */
+guint                milter_client_get_default_packet_buffer_size
+                                                       (MilterClient *client);
+
+/**
+ * milter_client_create_context:
+ * @client: a %MilterClient.
+ *
+ * Creates a new %MilterClientContext that is initialized with
+ * the @client configuration.
+ *
+ * Returns: a newly allocated %MilterClientContext. It
+ * should be unref-ed when no longer needed.
+ */
+MilterClientContext *milter_client_create_context      (MilterClient *client);
+
 /**
  * milter_client_run:
  * @client: a %MilterClient.
@@ -803,6 +843,7 @@ void                 milter_client_set_custom_fork_func (MilterClient *client,
  */
 MilterClientCustomForkFunc
                      milter_client_get_custom_fork_func (MilterClient *client);
+
 G_END_DECLS
 
 #endif /* __MILTER_CLIENT_CLIENT_H__ */

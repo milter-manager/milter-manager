@@ -42,6 +42,7 @@ enum
     PROP_EVENT_LOOP_BACKEND,
     PROP_N_WORKERS,
     PROP_CUSTOM_FORK,
+    PROP_DEFAULT_PACKET_BUFFER_SIZE
 };
 
 enum
@@ -102,6 +103,8 @@ struct _MilterClientPrivate
     MilterSyslogLogger *syslog_logger;
     MilterClientEventLoopBackend event_loop_backend;
     MilterClientCustomForkFunc custom_fork;
+
+    guint default_packet_buffer_size;
 };
 
 typedef struct _MilterClientProcessData
@@ -179,6 +182,17 @@ _milter_client_class_init (MilterClientClass *klass)
                                 "The custom fork",
                                 G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_CUSTOM_FORK, spec);
+
+    spec = g_param_spec_uint("default-packet-buffer-size",
+                             "Default packet buffer size",
+                             "The default packet buffer size of each "
+                             "client context of the client.",
+                             0,
+                             G_MAXUINT,
+                             MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE,
+                             G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class,
+                                    PROP_DEFAULT_PACKET_BUFFER_SIZE, spec);
 
     signals[CONNECTION_ESTABLISHED] =
         g_signal_new("connection-established",
@@ -289,6 +303,9 @@ _milter_client_init (MilterClient *client)
     priv->syslog_logger = NULL;
 
     priv->event_loop_backend = MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
+
+    priv->default_packet_buffer_size =
+        MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE;
 }
 
 static void
@@ -779,6 +796,22 @@ single_thread_cb_finished (MilterClientContext *context, gpointer _data)
     }
 }
 
+MilterClientContext *
+milter_client_create_context (MilterClient *client)
+{
+    MilterClientPrivate *priv;
+    MilterClientContext *context;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+
+    context = milter_client_context_new(client);
+    milter_client_context_set_packet_buffer_size(
+        context,
+        priv->default_packet_buffer_size);
+
+    return context;
+}
+
 typedef struct _ClientChannelSetupData
 {
     MilterClient *client;
@@ -801,7 +834,7 @@ single_thread_client_channel_setup (MilterClient *client,
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    context = milter_client_context_new(client);
+    context = milter_client_create_context(client);
     agent = MILTER_AGENT(context);
 
     milter_agent_set_event_loop(agent, priv->process_loop);
@@ -1136,7 +1169,7 @@ multi_thread_process_client_channel (MilterClient *client, GIOChannel *channel,
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    context = milter_client_context_new(client);
+    context = milter_client_create_context(client);
 
     writer = milter_writer_io_channel_new(channel);
     milter_agent_set_writer(MILTER_AGENT(context), writer);
@@ -2376,6 +2409,24 @@ milter_client_get_custom_fork_func (MilterClient *client)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
     return priv->custom_fork;
+}
+
+void
+milter_client_set_default_packet_buffer_size (MilterClient *client, guint size)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    priv->default_packet_buffer_size = size;
+}
+
+guint
+milter_client_get_default_packet_buffer_size (MilterClient *client)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    return priv->default_packet_buffer_size;
 }
 
 /*

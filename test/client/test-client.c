@@ -63,6 +63,7 @@ void test_need_maintain_no_processing_sessions_below_processed_sessions (void);
 void test_need_maintain_no_processing_sessions_no_interval (void);
 void test_n_workers (void);
 void test_custom_fork (void);
+void test_default_packet_buffer_size (void);
 
 static MilterEventLoop *loop;
 
@@ -995,6 +996,27 @@ test_custom_fork (void)
     milter_client_set_custom_fork_func(client, worker_fork);
     cut_assert_equal_uint(29, milter_client_fork(client));
     cut_assert_equal_uint(1, n_worker_fork_called);
+}
+
+void
+test_default_packet_buffer_size (void)
+{
+    MilterClientContext *context;
+
+    cut_assert_equal_uint(MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE,
+                          milter_client_get_default_packet_buffer_size(client));
+    context = milter_client_create_context(client);
+    gcut_take_object(G_OBJECT(context));
+    cut_assert_equal_uint(MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE,
+                          milter_client_context_get_packet_buffer_size(context));
+
+    milter_client_set_default_packet_buffer_size(client, 29);
+    cut_assert_equal_uint(29,
+                          milter_client_get_default_packet_buffer_size(client));
+    context = milter_client_create_context(client);
+    gcut_take_object(G_OBJECT(context));
+    cut_assert_equal_uint(29,
+                          milter_client_context_get_packet_buffer_size(context));
 }
 
 /*
