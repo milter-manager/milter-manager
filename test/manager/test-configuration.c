@@ -563,11 +563,11 @@ void
 test_default_packet_buffer_size (void)
 {
     cut_assert_equal_uint(
-        MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE,
+        0,
         milter_manager_configuration_get_default_packet_buffer_size(config));
-    milter_manager_configuration_set_default_packet_buffer_size(config, 29);
+    milter_manager_configuration_set_default_packet_buffer_size(config, 4096);
     cut_assert_equal_uint(
-        29,
+        4096,
         milter_manager_configuration_get_default_packet_buffer_size(config));
 }
 
@@ -642,6 +642,18 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
     cut_assert_equal_uint(
         0,
         milter_manager_configuration_get_connection_check_interval(config));
+
+    gcut_assert_equal_enum(
+        MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND,
+        MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB,
+        milter_manager_configuration_get_event_loop_backend(config));
+    cut_assert_equal_uint(
+        0,
+        milter_manager_configuration_get_n_workers(config));
+
+    cut_assert_equal_uint(
+        0,
+        milter_manager_configuration_get_default_packet_buffer_size(config));
 
     if (expected_children)
         g_object_unref(expected_children);
@@ -859,6 +871,8 @@ test_clear (void)
     test_max_connections();
     test_max_file_descriptors();
     test_connection_check_interval();
+    test_n_workers();
+    test_default_packet_buffer_size();
 
     handler_id = g_signal_connect(config, "connected",
                                   G_CALLBACK(cb_connected), NULL);

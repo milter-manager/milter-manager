@@ -333,15 +333,6 @@ typedef enum
     (MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_FROM <= (state) &&            \
      (state) < MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE)
 
-/**
- * MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE:
- *
- * The default pacekt buffer size. The packet buffer size
- * for the context can be changed by
- * milter_client_context_set_packet_buffer_size().
- */
-#define MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE 4096
-
 typedef struct _MilterClientContextClass    MilterClientContextClass;
 
 struct _MilterClientContext
@@ -916,8 +907,8 @@ guint                milter_client_context_get_n_processing_sessions
 /**
  * milter_client_context_set_packet_buffer_size:
  * @context: a %MilterClientContext.
- * @size: a packet buffer size in bytes. (deafult is
- *        %MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE.)
+ * @size: a packet buffer size in bytes. (The deafult is 0
+ *        bytes. It means buffering is disabled.)
  *
  * Sets the packet buffer size for the context. Packets on
  * end-of-message are buffered until the buffer size is

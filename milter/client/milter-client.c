@@ -187,9 +187,7 @@ _milter_client_class_init (MilterClientClass *klass)
                              "Default packet buffer size",
                              "The default packet buffer size of each "
                              "client context of the client.",
-                             0,
-                             G_MAXUINT,
-                             MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE,
+                             0, G_MAXUINT, 0,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class,
                                     PROP_DEFAULT_PACKET_BUFFER_SIZE, spec);
@@ -304,8 +302,7 @@ _milter_client_init (MilterClient *client)
 
     priv->event_loop_backend = MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
 
-    priv->default_packet_buffer_size =
-        MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE;
+    priv->default_packet_buffer_size = 0;
 }
 
 static void

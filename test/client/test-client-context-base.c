@@ -142,13 +142,11 @@ test_n_processing_sessions (void)
 void
 test_packet_buffer_size (void)
 {
-    cut_assert_equal_uint(
-        MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE,
-        milter_client_context_get_packet_buffer_size(context));
-    milter_client_context_set_packet_buffer_size(context, 29);
-    cut_assert_equal_uint(
-        29,
-        milter_client_context_get_packet_buffer_size(context));
+    cut_assert_equal_uint(0,
+                          milter_client_context_get_packet_buffer_size(context));
+    milter_client_context_set_packet_buffer_size(context, 4096);
+    cut_assert_equal_uint(4096,
+                          milter_client_context_get_packet_buffer_size(context));
 }
 
 /*

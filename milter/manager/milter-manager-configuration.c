@@ -412,9 +412,7 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                              "Default packet buffer size",
                              "The default packet buffer size of client contexts "
                              "of the client",
-                             0,
-                             G_MAXUINT,
-                             MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE,
+                             0, G_MAXUINT, 0,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class,
                                     PROP_DEFAULT_PACKET_BUFFER_SIZE, spec);
@@ -470,8 +468,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
                                             (GDestroyNotify)g_dataset_destroy);
     priv->connection_check_interval = DEFAULT_CONNECTION_CHECK_INTERVAL;
     priv->n_workers = 0;
-    priv->default_packet_buffer_size =
-        MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE;
+    priv->default_packet_buffer_size = 0;
 
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
     if (config_dir_env)
@@ -1814,6 +1811,8 @@ clear_manager (MilterManagerConfigurationPrivate *priv)
     priv->max_connections = 0;
     priv->max_file_descriptors = 0;
     priv->connection_check_interval = DEFAULT_CONNECTION_CHECK_INTERVAL;
+    priv->n_workers = 0;
+    priv->default_packet_buffer_size = 0;
 }
 
 static void

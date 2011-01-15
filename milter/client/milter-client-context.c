@@ -273,9 +273,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     spec = g_param_spec_uint("packet-buffer-size",
                              "Packet buffer size",
                              "The packet buffer size of the client context",
-                             0,
-                             G_MAXUINT,
-                             MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE,
+                             0, G_MAXUINT, 0,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_PACKET_BUFFER_SIZE,
                                     spec);
@@ -1563,7 +1561,7 @@ milter_client_context_init (MilterClientContext *context)
     priv->message_result = NULL;
     priv->buffered_packets = g_string_new(NULL);
     priv->buffering = FALSE;
-    priv->packet_buffer_size = MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE;
+    priv->packet_buffer_size = 0;
 }
 
 static void

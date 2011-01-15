@@ -1003,19 +1003,19 @@ test_default_packet_buffer_size (void)
 {
     MilterClientContext *context;
 
-    cut_assert_equal_uint(MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE,
+    cut_assert_equal_uint(0,
                           milter_client_get_default_packet_buffer_size(client));
     context = milter_client_create_context(client);
     gcut_take_object(G_OBJECT(context));
-    cut_assert_equal_uint(MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE,
+    cut_assert_equal_uint(0,
                           milter_client_context_get_packet_buffer_size(context));
 
-    milter_client_set_default_packet_buffer_size(client, 29);
-    cut_assert_equal_uint(29,
+    milter_client_set_default_packet_buffer_size(client, 4096);
+    cut_assert_equal_uint(4096,
                           milter_client_get_default_packet_buffer_size(client));
     context = milter_client_create_context(client);
     gcut_take_object(G_OBJECT(context));
-    cut_assert_equal_uint(29,
+    cut_assert_equal_uint(4096,
                           milter_client_context_get_packet_buffer_size(context));
 }
 

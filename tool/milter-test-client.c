@@ -43,8 +43,7 @@ static MilterClient *client = NULL;
 static guint n_workers = 0;
 static MilterClientEventLoopBackend event_loop_backend =
     MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
-static guint packet_buffer_size =
-    MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE;
+static guint packet_buffer_size = 0;
 
 static gboolean
 print_version (const gchar *option_name,
@@ -162,7 +161,7 @@ static const GOptionEntry option_entries[] =
      N_("Use BACKEND as event loop backend (default: glib)"), "[glib|livev]"},
     {"packet-buffer-size", 0, 0, G_OPTION_ARG_INT, &packet_buffer_size,
      N_("Use SIZE as packet buffer size in bytes. 0 disables packet buffering. "
-        "(default: 4096bytes)"), "SIZE"},
+        "(default: 0; disabled)"), "SIZE"},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
      N_("Show version"), NULL},
     {NULL}

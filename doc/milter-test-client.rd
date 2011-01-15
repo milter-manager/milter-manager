@@ -113,7 +113,8 @@ tool for looking into the problems.
    size is rather than ((|SIZE|)) bytes. Buffering is
    disabled when ((|SIZE|)) is 0.
 
-   The default is 4KB.
+   The default is 0KB. It means packet buffering is disabled
+   by default.
 
 : --version
 
