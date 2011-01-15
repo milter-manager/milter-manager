@@ -577,7 +577,8 @@ void                 milter_client_set_maintenance_interval
 /**
  * milter_client_set_default_packet_buffer_size:
  * @client: a %MilterClient.
- * @size: a packet buffer size. (deafult is 4KB.)
+ * @size: a packet buffer size in bytes. (deafult is
+ *        %MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE.)
  *
  * Sets the default packet buffer size for each client
  * context created by the client. See

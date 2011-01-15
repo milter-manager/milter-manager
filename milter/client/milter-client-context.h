@@ -916,7 +916,8 @@ guint                milter_client_context_get_n_processing_sessions
 /**
  * milter_client_context_set_packet_buffer_size:
  * @context: a %MilterClientContext.
- * @size: a packet buffer size. (deafult is 4KB.)
+ * @size: a packet buffer size in bytes. (deafult is
+ *        %MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE.)
  *
  * Sets the packet buffer size for the context. Packets on
  * end-of-message are buffered until the buffer size is
