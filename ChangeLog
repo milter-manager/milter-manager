@@ -1,6 +1,10 @@
 2011-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
 	* test/server/test-server-context-signals.c
+	(test_insert_header_on_invalid_state): add a test for insert-header on
+	invalid state.
+
+	* test/server/test-server-context-signals.c
 	(test_add_header_on_invalid_state): add a test for add-header on
 	invalid state.
 
