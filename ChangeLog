@@ -1,3 +1,8 @@
+2011-01-15  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/src/toolkit/rb-milter-client.c: undefine PACKAGE_*
+	macros because Ruby's config.h defines them. :<
+
 2011-01-14  Kouhei Sutou  <kou@clear-code.com>
 
 	* milter/core/milter-libev-event-loop.c (iterate): support may_block.

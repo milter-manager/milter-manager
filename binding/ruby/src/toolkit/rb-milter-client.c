@@ -19,7 +19,13 @@
 
 #ifdef HAVE_CONFIG_H
 #  include "../../../../config.h"
+#  undef PACKAGE_NAME
+#  undef PACKAGE_TARNAME
+#  undef PACKAGE_VERSION
+#  undef PACKAGE_STRING
+#  undef PACKAGE_BUGREPORT
 #endif /* HAVE_CONFIG_H */
+
 #include "rb-milter-client-private.h"
 
 #define SELF(self) RVAL2GOBJ(self)
