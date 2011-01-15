@@ -1,5 +1,8 @@
 2011-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager.c: connect between milter client
+	and configuration for default packet buffer.
+
 	* milter/manager/milter-manager-configuration.[ch]
 	(milter_manager_configuration_get_default_packet_buffer_size)
 	(milter_manager_configuration_set_default_packet_buffer_size): add.

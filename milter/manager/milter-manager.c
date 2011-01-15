@@ -99,6 +99,11 @@ static void   set_effective_group         (MilterClient *client,
 static guint  get_maintenance_interval    (MilterClient *client);
 static void   set_maintenance_interval    (MilterClient *client,
                                            guint         n_sessions);
+static guint  get_default_packet_buffer_size
+                                          (MilterClient *client);
+static void   set_default_packet_buffer_size
+                                          (MilterClient *client,
+                                           guint         size);
 static void   maintain                    (MilterClient *client);
 static void   sessions_finished           (MilterClient *client,
                                            guint         n_finished_sessions);
@@ -142,6 +147,10 @@ milter_manager_class_init (MilterManagerClass *klass)
     client_class->set_maintenance_interval = set_maintenance_interval;
     client_class->get_event_loop_backend = get_event_loop_backend;
     client_class->set_event_loop_backend = set_event_loop_backend;
+    client_class->get_default_packet_buffer_size =
+        get_default_packet_buffer_size;
+    client_class->set_default_packet_buffer_size =
+        set_default_packet_buffer_size;
     client_class->maintain = maintain;
     client_class->sessions_finished = sessions_finished;
 
@@ -1000,6 +1009,33 @@ set_maintenance_interval (MilterClient *client, guint n_sessions)
     configuration = priv->configuration;
     milter_manager_configuration_set_maintenance_interval(configuration,
                                                           n_sessions);
+}
+
+static guint
+get_default_packet_buffer_size (MilterClient *client)
+{
+    MilterManager *manager;
+    MilterManagerPrivate *priv;
+    MilterManagerConfiguration *configuration;
+
+    manager = MILTER_MANAGER(client);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    configuration = priv->configuration;
+    return milter_manager_configuration_get_default_packet_buffer_size(configuration);
+}
+
+static void
+set_default_packet_buffer_size (MilterClient *client, guint size)
+{
+    MilterManager *manager;
+    MilterManagerPrivate *priv;
+    MilterManagerConfiguration *configuration;
+
+    manager = MILTER_MANAGER(client);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    configuration = priv->configuration;
+    milter_manager_configuration_set_default_packet_buffer_size(configuration,
+                                                                size);
 }
 
 static void
