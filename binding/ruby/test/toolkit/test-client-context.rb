@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -117,5 +117,12 @@ class TestClientContext < Test::Unit::TestCase
 
   def test_n_processing_sessions
     assert_equal(0, @context.n_processing_sessions)
+  end
+
+  def test_packet_buffer_size
+    assert_equal(Milter::ClientContext::DEFAULT_PACKET_BUFFER_SIZE,
+                 @context.packet_buffer_size)
+    @context.packet_buffer_size = 29
+    assert_equal(29, @context.packet_buffer_size)
   end
 end

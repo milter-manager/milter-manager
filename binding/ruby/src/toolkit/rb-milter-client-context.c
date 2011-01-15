@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -227,6 +227,23 @@ get_n_processing_sessions (VALUE self)
     return UINT2NUM(n_processing_sessions);
 }
 
+static VALUE
+set_packet_buffer_size (VALUE self, VALUE size)
+{
+    milter_client_context_set_packet_buffer_size(SELF(self), NUM2UINT(size));
+    return Qnil;
+}
+
+static VALUE
+get_packet_buffer_size (VALUE self)
+{
+    guint packet_buffer_size;
+
+    packet_buffer_size =
+	milter_client_context_get_packet_buffer_size(SELF(self));
+    return UINT2NUM(packet_buffer_size);
+}
+
 void
 Init_milter_client_context (void)
 {
@@ -241,6 +258,9 @@ Init_milter_client_context (void)
 		rb_mMilter);
     G_DEF_CONSTANTS(rb_cMilterClientContext, MILTER_TYPE_CLIENT_CONTEXT_STATE,
                     "MILTER_CLIENT_CONTEXT_");
+
+    rb_define_const(rb_cMilterClientContext, "DEFAULT_PACKET_BUFFER_SIZE",
+		    UINT2NUM(MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE));
 
     rb_define_method(rb_cMilterClientContext, "feed", feed, 1);
     rb_define_method(rb_cMilterClientContext, "progress", progress, 0);
@@ -261,6 +281,10 @@ Init_milter_client_context (void)
 		     get_socket_address, 0);
     rb_define_method(rb_cMilterClientContext, "n_processing_sessions",
 		     get_n_processing_sessions, 0);
+    rb_define_method(rb_cMilterClientContext, "set_packet_buffer_size",
+		     set_packet_buffer_size, 0);
+    rb_define_method(rb_cMilterClientContext, "packet_buffer_size",
+		     get_packet_buffer_size, 0);
 
     G_DEF_SIGNAL_FUNC(rb_cMilterClientContext, "connect",
 		      rb_milter__connect_signal_convert);
