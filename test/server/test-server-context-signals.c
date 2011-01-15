@@ -51,6 +51,7 @@ void test_change_from_on_invalid_state (void);
 void test_add_recipient (void);
 void test_add_recipient_on_invalid_state (void);
 void test_delete_recipient (void);
+void test_delete_recipient_on_invalid_state (void);
 void test_replace_body (void);
 void test_progress (void);
 void test_quarantine (void);
@@ -958,6 +959,25 @@ test_delete_recipient (void)
     cut_assert_equal_int(1, n_delete_recipients);
     cut_assert_equal_string(recipient, actual_recipient);
     milter_assert_status(MILTER_STATUS_NOT_CHANGE);
+}
+
+void
+test_delete_recipient_on_invalid_state (void)
+{
+    const gchar *packet;
+    gsize packet_size;
+    const gchar recipient[] = "example@example.com";
+
+    milter_reply_encoder_encode_delete_recipient(encoder,
+                                                 &packet, &packet_size,
+                                                 recipient);
+    write_data(packet, packet_size);
+    cut_assert_equal_int(0, n_delete_recipients);
+
+    expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
+                                 MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
+                                 "Invalid state: start");
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
