@@ -851,23 +851,6 @@ temporary_failure_data_result (void)
 }
 
 static void
-quarantine_data_result (void)
-{
-    ADD("body quarantine",
-        NULL,
-        MILTER_ACTION_NONE,
-        MILTER_STEP_NONE,
-        MILTER_STATUS_QUARANTINE,
-        create_replies(MILTER_COMMAND_BODY, MILTER_REPLY_QUARANTINE,
-                       NULL),
-        create_expected_command_receives(MILTER_COMMAND_BODY, 1,
-                                         MILTER_COMMAND_END_OF_MESSAGE, 1,
-                                         NULL),
-        NULL,
-        NULL);
-}
-
-static void
 reject_data_result (void)
 {
     ADD("connect reject",
@@ -1188,7 +1171,6 @@ data_result (void)
     accept_data_result();
     discard_data_result();
     temporary_failure_data_result();
-    quarantine_data_result();
     reject_data_result();
     combined_data_result();
     reply_code_data_result();
@@ -1620,7 +1602,8 @@ typedef struct _EndOfMessageActionTestData
 
 static EndOfMessageActionTestData *
 end_of_message_action_test_data_new (EndOfMessageActionFunc action_func,
-                                     AssertFunc assert_func)
+                                     AssertFunc assert_func,
+                                     MilterStatus status)
 {
     EndOfMessageActionTestData *test_data;
 
@@ -1628,7 +1611,7 @@ end_of_message_action_test_data_new (EndOfMessageActionFunc action_func,
     test_data->test_data = result_test_data_new(NULL,
                                                 MILTER_ACTION_NONE,
                                                 MILTER_STEP_NONE,
-                                                MILTER_STATUS_NOT_CHANGE,
+                                                status,
                                                 NULL,
                                                 NULL,
                                                 NULL,
@@ -1925,40 +1908,88 @@ end_of_message_action_assert_replace_body (void)
         normalized_output_string->str);
 }
 
+static void
+quarantine_function (void)
+{
+    const gchar *packet;
+    gsize packet_size;
+    const gchar reason[] = "Virus is found.";
+
+    milter_reply_encoder_encode_quarantine(encoder, &packet, &packet_size,
+                                           reason);
+    write_data(packet, packet_size);
+}
+
+static void
+end_of_message_action_assert_quarantine (void)
+{
+    cut_assert_equal_string(
+        "status: quarantine\n"
+        "elapsed-time: XXX seconds\n"
+        "Quarantine reason: <Virus is found.>\n"
+        "\n"
+        "Envelope:------------------------------\n"
+        "  MAIL FROM:<sender@example.com>" "\n"
+        "  RCPT TO:<receiver@example.org>" "\n"
+        "Header:--------------------------------\n"
+        "  From: <sender@example.com>" "\n"
+        "  To: <receiver@example.org>" "\n"
+        "Body:----------------------------------\n"
+        "La de da de da 1.\n"
+        "La de da de da 2.\n"
+        "La de da de da 3.\n"
+        "La de da de da 4."
+        "\n",
+        normalized_output_string->str);
+}
+
 void
 data_end_of_message_action (void)
 {
-#define ADD(label, action_func, assert_func)                            \
+#define ADD(label, action_func, assert_func, status)                    \
     cut_add_data(label,                                                 \
                  end_of_message_action_test_data_new(action_func,       \
-                                                     assert_func),      \
+                                                     assert_func,       \
+                                                     status),           \
                  end_of_message_action_test_data_free,                  \
                  NULL)
 
     ADD("change-from",
         change_from_function,
-        end_of_message_action_assert_change_from);
+        end_of_message_action_assert_change_from,
+        MILTER_STATUS_NOT_CHANGE);
     ADD("add-recipient",
         add_recipient_function,
-        end_of_message_action_assert_add_recipient);
+        end_of_message_action_assert_add_recipient,
+        MILTER_STATUS_NOT_CHANGE);
     ADD("delete-recipient",
         delete_recipient_function,
-        end_of_message_action_assert_delete_recipient);
+        end_of_message_action_assert_delete_recipient,
+        MILTER_STATUS_NOT_CHANGE);
     ADD("add-header",
         add_header_function,
-        end_of_message_action_assert_add_header);
+        end_of_message_action_assert_add_header,
+        MILTER_STATUS_NOT_CHANGE);
     ADD("insert-header",
         insert_header_function,
-        end_of_message_action_assert_insert_header);
+        end_of_message_action_assert_insert_header,
+        MILTER_STATUS_NOT_CHANGE);
     ADD("change-header",
         change_header_function,
-        end_of_message_action_assert_change_header);
+        end_of_message_action_assert_change_header,
+        MILTER_STATUS_NOT_CHANGE);
     ADD("delete-header",
         delete_header_function,
-        end_of_message_action_assert_delete_header);
+        end_of_message_action_assert_delete_header,
+        MILTER_STATUS_NOT_CHANGE);
     ADD("replace-body",
         replace_body_function,
-        end_of_message_action_assert_replace_body);
+        end_of_message_action_assert_replace_body,
+        MILTER_STATUS_NOT_CHANGE);
+    ADD("quarantine",
+        quarantine_function,
+        end_of_message_action_assert_quarantine,
+        MILTER_STATUS_QUARANTINE);
 #undef ADD
 }
 

@@ -1749,8 +1749,7 @@ print_result (MilterServerContext *context, ProcessData *data)
     print_status(context, data);
     g_print("elapsed-time: %g seconds\n", g_timer_elapsed(data->timer, NULL));
     if (data->quarantine_reason) {
-        g_print("The message was quarantined.: %s\n",
-                data->quarantine_reason);
+        g_print("Quarantine reason: <%s>\n", data->quarantine_reason);
     }
 
     if (output_message) {
