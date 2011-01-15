@@ -93,7 +93,7 @@ tool for looking into the problems.
 
 : --n-workers=N_WORKERS
 
-   Run ((|N_WORKERS|)) processes to process mails.
+   Runs ((|N_WORKERS|)) processes to process mails.
    Availble value is between 0 and 1000.
    If it is 0, no worker processes will be used.
 
@@ -101,10 +101,19 @@ tool for looking into the problems.
 
 : --event-loop-backend=BACKEDN
 
-   Use ((|BACKEND|)) as event loop backend.
+   Uses ((|BACKEND|)) as event loop backend.
    Availble values are (('glib'')) or (('libev')).
 
    ((*NOTE: This item is an experimental feature.*))
+
+: --packet-buffer-size=SIZE
+
+   Uses ((|SIZE|)) as send packets buffer size on
+   end-of-message. Buffered packets are sent when buffer
+   size is rather than ((|SIZE|)) bytes. Buffering is
+   disabled when ((|SIZE|)) is 0.
+
+   The default is 4KB.
 
 : --version
 

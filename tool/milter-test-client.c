@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -41,7 +41,10 @@ static gchar *unix_socket_group = NULL;
 static guint unix_socket_mode = 0660;
 static MilterClient *client = NULL;
 static guint n_workers = 0;
-static MilterClientEventLoopBackend event_loop_backend = MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
+static MilterClientEventLoopBackend event_loop_backend =
+    MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
+static guint packet_buffer_size =
+    MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE;
 
 static gboolean
 print_version (const gchar *option_name,
@@ -157,6 +160,9 @@ static const GOptionEntry option_entries[] =
      N_("Run N_WORKERS processes (default: 0)"), "N_WORKERS"},
     {"event-loop-backend", 0, 0, G_OPTION_ARG_CALLBACK, parse_event_loop_backend,
      N_("Use BACKEND as event loop backend (default: glib)"), "[glib|livev]"},
+    {"packet-buffer-size", 0, 0, G_OPTION_ARG_INT, &packet_buffer_size,
+     N_("Use SIZE as packet buffer size in bytes. 0 disables packet buffering. "
+        "(default: 4096bytes)"), "SIZE"},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
      N_("Show version"), NULL},
     {NULL}
@@ -531,6 +537,7 @@ main (int argc, char *argv[])
     milter_client_set_event_loop_backend(client, event_loop_backend);
     if (n_workers > 0)
         milter_client_set_n_workers(client, n_workers);
+    milter_client_set_default_packet_buffer_size(client, packet_buffer_size);
     if (spec)
         success = milter_client_set_connection_spec(client, spec, &error);
     if (success)

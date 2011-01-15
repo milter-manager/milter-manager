@@ -1,5 +1,8 @@
 2011-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* tool/milter-test-client.c, doc/milter-test-client.rd*:
+	add --packet-buffer-size option.
+
 	* milter/server/milter-server-context.c: support progress.
 
 	* milter/server/milter-server-context.c,
