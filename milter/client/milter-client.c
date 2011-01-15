@@ -581,6 +581,10 @@ set_property (GObject      *object,
     case PROP_CUSTOM_FORK:
         priv->custom_fork = g_value_get_pointer(value);
         break;
+    case PROP_DEFAULT_PACKET_BUFFER_SIZE:
+        milter_client_set_default_packet_buffer_size(client,
+                                                     g_value_get_uint(value));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -607,6 +611,10 @@ get_property (GObject    *object,
         break;
     case PROP_CUSTOM_FORK:
         g_value_set_pointer(value, priv->custom_fork);
+        break;
+    case PROP_DEFAULT_PACKET_BUFFER_SIZE:
+        g_value_set_uint(value,
+                         milter_client_get_default_packet_buffer_size(client));
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);

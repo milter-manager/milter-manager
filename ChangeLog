@@ -1,5 +1,8 @@
 2011-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c: support property access for
+	default-packet-buffer-size.
+
 	* tool/milter-test-server.c: improve output on quarantine.
 	* test/tool/test-server.c: work quarantine test again.
 
