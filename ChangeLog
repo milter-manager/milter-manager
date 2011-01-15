@@ -1,5 +1,9 @@
 2011-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c,
+	test/server/test-server-context-signals.c: include more error
+	information on invalid state error.
+
 	* test/server/test-server-context-signals.c
 	(test_quarantine_on_invalid_state): add a test for
 	quarntine on invalid state.

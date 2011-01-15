@@ -33,7 +33,9 @@
 void test_negotiate_reply (void);
 void test_continue (void);
 void test_reply_code_temporary_failure (void);
+void test_reply_code_temporary_failure_on_invalid_state (void);
 void test_reply_code_reject (void);
+void test_reply_code_reject_on_invalid_state (void);
 void test_temporary_failure (void);
 void test_reject (void);
 void test_accept (void);
@@ -641,6 +643,9 @@ test_reply_code_temporary_failure (void)
     gsize packet_size;
     const gchar code[] = "451 4.7.1 Greylisting in action, please come back";
 
+    milter_server_context_set_state(context,
+                                    MILTER_SERVER_CONTEXT_STATE_DATA);
+
     milter_reply_encoder_encode_reply_code(encoder, &packet, &packet_size, code);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_reply_codes);
@@ -652,11 +657,36 @@ test_reply_code_temporary_failure (void)
 }
 
 void
+test_reply_code_temporary_failure_on_invalid_state (void)
+{
+    const gchar *packet;
+    gsize packet_size;
+    const gchar code[] = "451 4.7.1 Greylisting in action, please come back";
+
+    milter_reply_encoder_encode_reply_code(encoder, &packet, &packet_size, code);
+    write_data(packet, packet_size);
+    cut_assert_equal_int(0, n_reply_codes);
+    cut_assert_equal_int(1, n_errors);
+
+    expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
+                                 MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
+                                 "<reply-code> should be caused on "
+                                 "<connect, helo, envelope-from, "
+                                 "envelope-recipient, data, header, "
+                                 "end-of-header, body, end-of-message, "
+                                 "unknown> but was <start>");
+    gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
 test_reply_code_reject (void)
 {
     const gchar *packet;
     gsize packet_size;
     const gchar code[] = "554 5.7.1 1% 2%% 3%%%";
+
+    milter_server_context_set_state(context,
+                                    MILTER_SERVER_CONTEXT_STATE_DATA);
 
     milter_reply_encoder_encode_reply_code(encoder, &packet, &packet_size, code);
     write_data(packet, packet_size);
@@ -666,6 +696,28 @@ test_reply_code_reject (void)
     cut_assert_equal_string("1% 2%% 3%%%",
                             actual_reply_message);
     milter_assert_status(MILTER_STATUS_REJECT);
+}
+
+void
+test_reply_code_reject_on_invalid_state (void)
+{
+    const gchar *packet;
+    gsize packet_size;
+    const gchar code[] = "554 5.7.1 1% 2%% 3%%%";
+
+    milter_reply_encoder_encode_reply_code(encoder, &packet, &packet_size, code);
+    write_data(packet, packet_size);
+    cut_assert_equal_int(0, n_reply_codes);
+    cut_assert_equal_int(1, n_errors);
+
+    expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
+                                 MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
+                                 "<reply-code> should be caused on "
+                                 "<connect, helo, envelope-from, "
+                                 "envelope-recipient, data, header, "
+                                 "end-of-header, body, end-of-message, "
+                                 "unknown> but was <start>");
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
@@ -749,10 +801,12 @@ test_add_header_on_invalid_state (void)
                                            name, value);
     write_data(packet, packet_size);
     cut_assert_equal_int(0, n_add_headers);
+    cut_assert_equal_int(1, n_errors);
 
     expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
                                  MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
-                                 "Invalid state: start");
+                                 "<add-header> should be caused on "
+                                 "<end-of-message> but was <start>");
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
@@ -790,10 +844,12 @@ test_insert_header_on_invalid_state (void)
                                               G_MAXUINT32, name, value);
     write_data(packet, packet_size);
     cut_assert_equal_int(0, n_insert_headers);
+    cut_assert_equal_int(1, n_errors);
 
     expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
                                  MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
-                                 "Invalid state: start");
+                                 "<insert-header> should be caused on "
+                                 "<end-of-message> but was <start>");
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
@@ -829,10 +885,12 @@ test_change_header_on_invalid_state (void)
                                               name, 0, value);
     write_data(packet, packet_size);
     cut_assert_equal_int(0, n_change_headers);
+    cut_assert_equal_int(1, n_errors);
 
     expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
                                  MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
-                                 "Invalid state: start");
+                                 "<change-header> should be caused on "
+                                 "<end-of-message> but was <start>");
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
@@ -865,10 +923,12 @@ test_delete_header_on_invalid_state (void)
                                               name, 0);
     write_data(packet, packet_size);
     cut_assert_equal_int(0, n_delete_headers);
+    cut_assert_equal_int(1, n_errors);
 
     expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
                                  MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
-                                 "Invalid state: start");
+                                 "<delete-header> should be caused on "
+                                 "<end-of-message> but was <start>");
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
@@ -901,10 +961,12 @@ test_change_from_on_invalid_state (void)
                                             from, NULL);
     write_data(packet, packet_size);
     cut_assert_equal_int(0, n_change_froms);
+    cut_assert_equal_int(1, n_errors);
 
     expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
                                  MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
-                                 "Invalid state: start");
+                                 "<change-from> should be caused on "
+                                 "<end-of-message> but was <start>");
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
@@ -939,10 +1001,12 @@ test_add_recipient_on_invalid_state (void)
                                               recipient, NULL);
     write_data(packet, packet_size);
     cut_assert_equal_int(0, n_add_recipients);
+    cut_assert_equal_int(1, n_errors);
 
     expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
                                  MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
-                                 "Invalid state: start");
+                                 "<add-recipient> should be caused on "
+                                 "<end-of-message> but was <start>");
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
@@ -976,10 +1040,12 @@ test_delete_recipient_on_invalid_state (void)
                                                  recipient);
     write_data(packet, packet_size);
     cut_assert_equal_int(0, n_delete_recipients);
+    cut_assert_equal_int(1, n_errors);
 
     expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
                                  MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
-                                 "Invalid state: start");
+                                 "<delete-recipient> should be caused on "
+                                 "<end-of-message> but was <start>");
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
@@ -1012,10 +1078,12 @@ test_replace_body_on_invalid_state (void)
                                              chunk, strlen(chunk), &packed_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(0, n_replace_bodys);
+    cut_assert_equal_int(1, n_errors);
 
     expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
                                  MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
-                                 "Invalid state: start");
+                                 "<replace-body> should be caused on "
+                                 "<end-of-message> but was <start>");
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
@@ -1042,10 +1110,12 @@ test_progress_on_invalid_state (void)
     milter_reply_encoder_encode_progress(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(0, n_progresss);
+    cut_assert_equal_int(1, n_errors);
 
     expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
                                  MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
-                                 "Invalid state: start");
+                                 "<progress> should be caused on "
+                                 "<end-of-message> but was <start>");
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
@@ -1075,10 +1145,12 @@ test_quarantine_on_invalid_state (void)
     milter_reply_encoder_encode_quarantine(encoder, &packet, &packet_size, reason);
     write_data(packet, packet_size);
     cut_assert_equal_int(0, n_quarantines);
+    cut_assert_equal_int(1, n_errors);
 
     expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
                                  MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
-                                 "Invalid state: start");
+                                 "<quarantine> should be caused on "
+                                 "<end-of-message> but was <start>");
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
@@ -1128,13 +1200,15 @@ test_skip_on_invalid_state (void)
     const gchar *packet;
     gsize packet_size;
 
-    expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
-                                 MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
-                                 "Invalid state: start");
     milter_reply_encoder_encode_skip(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(0, n_skips);
+    cut_assert_equal_int(1, n_errors);
 
+    expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
+                                 MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
+                                 "<skip> should be caused on "
+                                 "<body> but was <start>");
     cut_assert_false(milter_server_context_get_skip_body(context));
     gcut_assert_equal_error(expected_error, actual_error);
 }
@@ -1226,24 +1300,6 @@ test_writing_timeout (void)
     cut_assert_true(timed_out_before);
     cut_assert_true(timed_out_writing);
     cut_assert_false(timed_out_after);
-}
-
-void
-test_invalid_state_error (void)
-{
-    const gchar *packet;
-    gsize packet_size;
-    const gchar from[] = "example@example.com";
-
-    expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
-                                 MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
-                                 "Invalid state: start");
-    milter_reply_encoder_encode_change_from(encoder,
-                                            &packet, &packet_size,
-                                            from, NULL);
-    write_data(packet, packet_size);
-    cut_assert_equal_int(1, n_errors);
-    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void

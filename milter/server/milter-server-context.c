@@ -1898,7 +1898,9 @@ milter_server_context_abort (MilterServerContext *context)
 
 static void
 invalid_state (MilterServerContext *context,
-               MilterServerContextState state)
+               MilterServerContextState state,
+               const gchar *action,
+               const gchar *expected_states)
 {
     GError *error = NULL;
     gchar *state_name;
@@ -1920,9 +1922,10 @@ invalid_state (MilterServerContext *context,
     g_set_error(&error,
                 MILTER_SERVER_CONTEXT_ERROR,
                 MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
-                "Invalid state: %s", state_name);
-    milter_error("[%u] [server][error][state] %s: %s",
-                 tag, error->message, name);
+                "<%s> should be caused on <%s> but was <%s>",
+                action, expected_states, state_name);
+    milter_error("[%u] [server][error][%s][state][invalid][%s] %s: %s",
+                 tag, action, state_name, error->message, name);
     milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context),
                                 error);
     g_error_free(error);
@@ -1992,7 +1995,7 @@ cb_decoder_negotiate_reply (MilterDecoder *decoder,
                                                   macros_requests);
         priv->negotiated = TRUE;
     } else {
-        invalid_state(context, state);
+        invalid_state(context, state, "negotiate-reply", "negotiate");
     }
 }
 
@@ -2102,7 +2105,10 @@ cb_decoder_continue (MilterReplyDecoder *decoder, gpointer user_data)
             emit_message_processed_signal(context);
         break;
       default:
-        invalid_state(context, priv->state);
+          invalid_state(context, priv->state, "continue",
+                        "connect, helo, envelope-from, envelope-recipient, "
+                        "data, header, end-of-header, body, end-of-message, "
+                        "unknown");
         break;
     }
 }
@@ -2160,12 +2166,17 @@ cb_decoder_reply_code (MilterReplyDecoder *decoder,
     state = priv->state;
 
     switch (state) {
-    case MILTER_SERVER_CONTEXT_STATE_CONNECT: /* more? */
-        invalid_state(context, state);
-        break;
     case MILTER_SERVER_CONTEXT_STATE_BODY:
         clear_process_body_count(context);
-    default:
+    case MILTER_SERVER_CONTEXT_STATE_CONNECT:
+    case MILTER_SERVER_CONTEXT_STATE_HELO:
+    case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
+    case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
+    case MILTER_SERVER_CONTEXT_STATE_UNKNOWN:
+    case MILTER_SERVER_CONTEXT_STATE_DATA:
+    case MILTER_SERVER_CONTEXT_STATE_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         g_timer_stop(priv->elapsed);
         milter_debug("[%u] [server][timer][stop] %g: %s",
                      tag, g_timer_elapsed(priv->elapsed, NULL), name);
@@ -2176,6 +2187,12 @@ cb_decoder_reply_code (MilterReplyDecoder *decoder,
             priv->state != MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT) {
             emit_message_processed_signal(context);
         }
+        break;
+    default:
+        invalid_state(context, state, "reply-code",
+                      "connect, helo, envelope-from, envelope-recipient, "
+                      "data, header, end-of-header, body, end-of-message, "
+                      "unknown");
         break;
     }
 }
@@ -2415,7 +2432,7 @@ cb_decoder_add_header (MilterReplyDecoder *decoder,
         headers = milter_message_result_get_added_headers(priv->message_result);
         milter_headers_add_header(headers, name, value);
     } else {
-        invalid_state(context, priv->state);
+        invalid_state(context, priv->state, "add-header", "end-of-message");
     }
 }
 
@@ -2447,7 +2464,7 @@ cb_decoder_insert_header (MilterReplyDecoder *decoder,
         headers = milter_message_result_get_added_headers(priv->message_result);
         milter_headers_add_header(headers, name, value);
     } else {
-        invalid_state(context, priv->state);
+        invalid_state(context, priv->state, "insert-header", "end-of-message");
     }
 }
 
@@ -2479,7 +2496,7 @@ cb_decoder_change_header (MilterReplyDecoder *decoder,
         headers = milter_message_result_get_added_headers(priv->message_result);
         milter_headers_add_header(headers, name, value);
     } else {
-        invalid_state(context, priv->state);
+        invalid_state(context, priv->state, "change-header", "end-of-message");
     }
 }
 
@@ -2510,7 +2527,7 @@ cb_decoder_delete_header (MilterReplyDecoder *decoder,
         headers = milter_message_result_get_removed_headers(priv->message_result);
         milter_headers_add_header(headers, name, NULL);
     } else {
-        invalid_state(context, priv->state);
+        invalid_state(context, priv->state, "delete-header", "end-of-message");
     }
 }
 
@@ -2532,10 +2549,11 @@ cb_decoder_change_from (MilterReplyDecoder *decoder,
                  from, parameters,
                  milter_server_context_get_name(context));
 
-    if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
+    if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         g_signal_emit_by_name(context, "change-from", from, parameters);
-    else
-        invalid_state(context, priv->state);
+    } else {
+        invalid_state(context, priv->state, "change-from", "end-of-message");
+    }
 }
 
 static void
@@ -2559,7 +2577,7 @@ cb_decoder_add_recipient (MilterReplyDecoder *decoder,
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         g_signal_emit_by_name(context, "add-recipient", recipient, parameters);
     } else {
-        invalid_state(context, priv->state);
+        invalid_state(context, priv->state, "add-recipient", "end-of-message");
     }
 }
 
@@ -2583,7 +2601,8 @@ cb_decoder_delete_recipient (MilterReplyDecoder *decoder,
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         g_signal_emit_by_name(user_data, "delete-recipient", recipient);
     } else {
-        invalid_state(context, priv->state);
+        invalid_state(context, priv->state,
+                      "delete-recipient", "end-of-message");
     }
 }
 
@@ -2606,10 +2625,11 @@ cb_decoder_replace_body (MilterReplyDecoder *decoder,
                  body_size,
                  milter_server_context_get_name(context));
 
-    if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
+    if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         g_signal_emit_by_name(context, "replace-body", body, body_size);
-    else
-        invalid_state(context, priv->state);
+    } else {
+        invalid_state(context, priv->state, "replace-body", "end-of-message");
+    }
 }
 
 static void
@@ -2630,7 +2650,7 @@ cb_decoder_progress (MilterReplyDecoder *decoder, gpointer user_data)
         /* TODO: reset end-of-message timeout */
         g_signal_emit_by_name(user_data, "progress");
     } else {
-        invalid_state(context, priv->state);
+        invalid_state(context, priv->state, "progress", "end-of-message");
     }
 }
 
@@ -2658,7 +2678,7 @@ cb_decoder_quarantine (MilterReplyDecoder *decoder,
         ensure_message_result(priv);
         milter_message_result_set_quarantine(priv->message_result, TRUE);
     } else {
-        invalid_state(context, priv->state);
+        invalid_state(context, priv->state, "quarantine", "end-of-message");
     }
 }
 
@@ -2744,7 +2764,7 @@ cb_decoder_skip (MilterReplyDecoder *decoder, gpointer user_data)
         clear_process_body_count(context);
         priv->skip_body = TRUE;
     } else {
-        invalid_state(context, priv->state);
+        invalid_state(context, priv->state, "skip", "body");
     }
 }
 
