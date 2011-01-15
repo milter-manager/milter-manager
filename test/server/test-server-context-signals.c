@@ -877,6 +877,8 @@ test_quarantine (void)
     gsize packet_size;
     const gchar reason[] = "infection";
 
+    milter_server_context_end_of_message(context, NULL, 0);
+
     milter_reply_encoder_encode_quarantine(encoder, &packet, &packet_size, reason);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_quarantines);

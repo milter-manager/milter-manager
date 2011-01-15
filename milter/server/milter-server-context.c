@@ -2652,15 +2652,14 @@ cb_decoder_quarantine (MilterReplyDecoder *decoder,
                  reason,
                  milter_server_context_get_name(context));
 
-    /* TODO: should check state */
-    /* if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) { */
+    if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         g_signal_emit_by_name(user_data, "quarantine", reason);
 
         ensure_message_result(priv);
         milter_message_result_set_quarantine(priv->message_result, TRUE);
-    /* } else { */
-    /*     invalid_state(context, priv->state); */
-    /* } */
+    } else {
+        invalid_state(context, priv->state);
+    }
 }
 
 static void
