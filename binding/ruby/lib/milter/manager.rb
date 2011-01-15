@@ -124,10 +124,10 @@ module Milter::Manager
                 c.fallback_status_at_disconnect.nick.dump)
       dump_item("manager.event_loop_backend",
                 c.event_loop_backend.nick.dump)
+      dump_item("manager.n_workers", c.n_workers)
+      dump_item("manager.packet_buffer_size", c.default_packet_buffer_size)
       dump_item("manager.connection_check_interval",
                 c.connection_check_interval.inspect)
-      dump_item("manager.n_workers",
-                c.n_workers)
       @result << "\n"
 
       dump_item("controller.connection_spec",
@@ -887,8 +887,19 @@ module Milter::Manager
       end
 
       def n_workers=(n_workers)
-        update_location("n_workers", n_workers.zero?)
+        update_location("n_workers", n_workers.nil?)
+        n_workers ||= 0
         @configuration.n_workers = n_workers
+      end
+
+      def packet_buffer_size
+        @configuration.default_packet_buffer_size
+      end
+
+      def packet_buffer_size=(size)
+        update_location("size", size.nil?)
+        size ||= 0
+        @configuration.default_packet_buffer_size = size
       end
 
       def fallback_status

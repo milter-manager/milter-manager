@@ -70,6 +70,8 @@ current configuration is shown.
   manager.fallback_status = "accept"
   manager.fallback_status_at_disconnect = "temporary-failure"
   manager.event_loop_backend = "glib"
+  manager.n_workers = 0
+  manager.packet_buffer_size = 0
   manager.connection_check_interval = 0
 
   controller.connection_spec = nil
@@ -507,6 +509,8 @@ Here are descriptions of configuration items.
 
 : manager.event_loop_backend
 
+   ((*Normally, this item doesn't need to be used.*))
+
    Since 1.6.3.
 
    Specifies a backend for event loop. For non-large
@@ -532,6 +536,8 @@ Here are descriptions of configuration items.
 
 : manager.n_workers
 
+   ((*Normally, this item doesn't need to be used.*))
+
    Since 1.6.3.
 
    Specifies the number of processes which process mails. For non-large
@@ -551,6 +557,30 @@ Here are descriptions of configuration items.
 
    Default:
      manager.n_workers = 0 # no worker processes.
+
+: manager.packet_buffer_size
+
+   ((*Normally, this item doesn't need to be used.*))
+
+   Since 1.6.3.
+
+   Specifies buffer size to buffer send packets on
+   end-of-message. Packets aren't sent until amount of
+   buffered packets is greater than buffer size. 0 means
+   buffering is disabled.
+
+   It may improve performance when many message modification
+   operations, add_header, delete_recipient and so on, are
+   requested on end-of-message. Normary, this configuration
+   doesn't improve performance.
+
+   Example:
+     manager.packet_buffer_size = 4096 # Doesn't send packets
+                                       # until amount of
+                                       # buffered packets >= 4KB.
+
+   Default:
+     manager.packet_buffer_size = 0 # Disables buffering.
 
 : manager.use_netstat_connection_checker
 

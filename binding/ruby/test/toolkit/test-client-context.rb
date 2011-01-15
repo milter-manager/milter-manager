@@ -120,9 +120,8 @@ class TestClientContext < Test::Unit::TestCase
   end
 
   def test_packet_buffer_size
-    assert_equal(Milter::ClientContext::DEFAULT_PACKET_BUFFER_SIZE,
-                 @context.packet_buffer_size)
-    @context.packet_buffer_size = 29
-    assert_equal(29, @context.packet_buffer_size)
+    assert_equal(0, @context.packet_buffer_size)
+    @context.packet_buffer_size = 4096
+    assert_equal(4096, @context.packet_buffer_size)
   end
 end

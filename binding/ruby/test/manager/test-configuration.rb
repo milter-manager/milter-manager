@@ -80,6 +80,12 @@ class TestConfiguration < Test::Unit::TestCase
     assert_equal(10, @configuration.n_workers)
   end
 
+  def test_default_packet_buffer_size
+    assert_equal(0, @configuration.default_packet_buffer_size)
+    @configuration.default_packet_buffer_size = 4096
+    assert_equal(4096, @configuration.default_packet_buffer_size)
+  end
+
   def test_package
     @configuration.package_platform = "pkgsrc"
     assert_equal("pkgsrc", @configuration.package_platform)
@@ -273,9 +279,11 @@ manager.fallback_status_at_disconnect = "temporary-failure"
 # default
 manager.event_loop_backend = "glib"
 # default
-manager.connection_check_interval = 0
-# default
 manager.n_workers = 0
+# default
+manager.packet_buffer_size = 0
+# default
+manager.connection_check_interval = 0
 
 # default
 controller.connection_spec = nil
@@ -383,9 +391,11 @@ manager.fallback_status_at_disconnect = "temporary-failure"
 # default
 manager.event_loop_backend = "glib"
 # default
-manager.connection_check_interval = 0
-# default
 manager.n_workers = 0
+# default
+manager.packet_buffer_size = 0
+# default
+manager.connection_check_interval = 0
 
 # #{__FILE__}:#{controller_connection_spec}
 controller.connection_spec = "inet:10025"

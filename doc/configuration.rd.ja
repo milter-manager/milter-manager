@@ -76,6 +76,8 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
   manager.fallback_status_at_disconnect = "temporary-failure"
   manager.event_loop_backend = "glib"
   manager.connection_check_interval = 0
+  manager.n_workers = 0
+  manager.
 
   controller.connection_spec = nil
   controller.unix_socket_mode = 0660
@@ -500,6 +502,8 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
 : manager.event_loop_backend
 
+   ((*この項目は通常は使用する必要はありません。*))
+
    1.6.3から使用可能。
 
    イベントループのバックエンドを指定します。100メール/秒以
@@ -528,6 +532,8 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
 : manager.n_workers
 
+   ((*この項目は通常は使用する必要はありません。*))
+
    1.6.3から使用可能。
 
    メールを処理するプロセス数を指定します。100メール/秒以下のメール流量
@@ -536,7 +542,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
    重いmilterを使用しながら100メール/秒以上のメール流量を処理するような
    大規模のメールシステムではこの値を増やす必要があります。
 
-   指定できる値は0以上、1000以下です。0のときにワーカープロセスを使用し
+   指定できる値は0以上、1000以下です。0のときはワーカープロセスを使用し
    ません。
 
    ((*注意: この項目は実験的な機能扱いです。*))
@@ -546,6 +552,27 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
    既定値:
      manager.n_workers = 0 # ワーカープロセスを使用しない
+
+: manager.packet_buffer_size
+
+   ((*この項目は通常は使用する必要はありません。*))
+
+   1.6.3から使用可能。
+
+   end-of-message時に送信パケットをバッファリングするための
+   バッファサイズを指定します。バッファリングしているパケット
+   の量が指定したバイト以上になるとまとめてパケットを送信し
+   ます。0を指定するとバッファリングしません。
+
+   end-of-message時にadd_headerやdelete_recipientなどメッセー
+   ジ変更操作を多くする場合にパフォーマンスがよくなる可能性
+   があります。通常はほとんど影響がありません。
+
+   例:
+     manager.packet_buffer_size = 4096 # 4KB溜まるまで送信しない。
+
+   既定値:
+     manager.packet_buffer_size = 0 # バッファリングを無効にする。
 
 : manager.use_netstat_connection_checker
 

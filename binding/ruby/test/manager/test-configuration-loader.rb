@@ -208,6 +208,22 @@ class TestConfigurationLoader < Test::Unit::TestCase
                  @loader.manager.event_loop_backend)
   end
 
+  def test_manager_n_workers
+    assert_equal(0, @configuration.n_workers)
+    @loader.manager.n_workers = 5
+    assert_equal(5, @configuration.n_workers)
+    @loader.manager.n_workers = nil
+    assert_equal(0, @configuration.n_workers)
+  end
+
+  def test_manager_packet_buffer_size
+    assert_equal(0, @configuration.default_packet_buffer_size)
+    @loader.manager.packet_buffer_size = 4096
+    assert_equal(4096, @configuration.default_packet_buffer_size)
+    @loader.manager.packet_buffer_size = nil
+    assert_equal(0, @configuration.default_packet_buffer_size)
+  end
+
   def test_to_xml
     assert_equal(<<-EOX, @configuration.to_xml)
 <configuration>

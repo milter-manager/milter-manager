@@ -1,5 +1,13 @@
 2011-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/src/toolkit/rb-milter-client-context.c,
+	binding/ruby/test/toolkit/test-client-context.rb,
+	binding/ruby/test/toolkit/test-client.rb,
+	binding/ruby/test/manager/test-configuration-loader.rb,
+	binding/ruby/test/manager/test-configuration.rb,
+	doc/configuration.rd*: add manager.packet_buffer_size configuration.
+
 	* milter/client/milter-client-context.[ch],
 	milter/client/milter-client.c,
 	milter/manager/milter-manager-configuration.c,
@@ -8,10 +16,6 @@
 	test/manager/test-configuration.c,
 	tool/milter-test-client.c,
 	doc/milter-test-client.rd*: disable packet buffer by default.
-
-	* binding/ruby/lib/milter/manager.rb,
-	binding/ruby/test/manager/test-configuration-loader.rb,
-	binding/ruby/test/manager/test-configuration.rb,
 
 	* milter/manager/milter-manager.c: connect between milter client
 	and configuration for default packet buffer.

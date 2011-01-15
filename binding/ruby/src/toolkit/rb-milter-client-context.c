@@ -259,9 +259,6 @@ Init_milter_client_context (void)
     G_DEF_CONSTANTS(rb_cMilterClientContext, MILTER_TYPE_CLIENT_CONTEXT_STATE,
                     "MILTER_CLIENT_CONTEXT_");
 
-    rb_define_const(rb_cMilterClientContext, "DEFAULT_PACKET_BUFFER_SIZE",
-		    UINT2NUM(MILTER_CLIENT_CONTEXT_DEFAULT_PACKET_BUFFER_SIZE));
-
     rb_define_method(rb_cMilterClientContext, "feed", feed, 1);
     rb_define_method(rb_cMilterClientContext, "progress", progress, 0);
     rb_define_method(rb_cMilterClientContext, "quarantine", quarantine, 1);
