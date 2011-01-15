@@ -51,6 +51,7 @@ module Milter
         if @options.unix_socket_mode
           client.unix_socket_mode = @options.unix_socket_mode
         end
+        client.default_packet_buffer_size = @options.packet_buffer_size
         yield(client, options) if block_given?
         daemonize if @options.run_as_daemon
         client.n_workers = @options.n_workers if @options.n_workers
@@ -68,6 +69,8 @@ module Milter
         @options.unix_socket_group = nil
         @options.unix_socket_mode = nil
         @options.syslog = false
+        @options.packet_buffer_size =
+          Milter::ClientContext::DEFAULT_PACKET_BUFFER_SIZE
       end
 
       def setup_option_parser
@@ -157,6 +160,16 @@ module Milter
             raise OptionParser::InvalidArgument
           end
           @options.n_workers = num
+        end
+
+        @option_parser.on("--packet-buffer-size=SIZE",
+                          Integer,
+                          "Use SIZE as packet buffer size.",
+                          "(#{@options.packet_buffer_size})") do |size|
+          if size < 0
+            raise OptionParser::InvalidArgument
+          end
+          @options.packet_buffer_size = size
         end
       end
 
