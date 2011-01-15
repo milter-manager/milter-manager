@@ -1,5 +1,7 @@
 2011-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client-context.c: log on auto-flush.
+
 	* binding/ruby/lib/milter/manager.rb,
 	binding/ruby/src/toolkit/rb-milter-client-context.c,
 	binding/ruby/test/toolkit/test-client-context.rb,

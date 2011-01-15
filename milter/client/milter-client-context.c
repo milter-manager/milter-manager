@@ -2152,6 +2152,11 @@ write_packet_on_end_of_message (MilterClientContext *context,
     if (priv->buffered_packets->len > priv->packet_buffer_size) {
         GError *agent_error = NULL;
 
+        milter_debug("[%u] [client][buffered-packets][auto-flush] "
+                     "<%" G_GSIZE_FORMAT ":%u>",
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     priv->buffered_packets->len,
+                     priv->packet_buffer_size);
         success = milter_agent_flush(MILTER_AGENT(context), &agent_error);
         if (!success) {
             GError *error = NULL;
