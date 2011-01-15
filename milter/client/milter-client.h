@@ -740,7 +740,7 @@ void                 milter_client_set_event_loop_backend
  *
  * Gets the number of worker processes of @client.
  *
- * Returns the number of worker processes of @client.
+ * Returns: the number of worker processes of @client.
  */
 guint                milter_client_get_n_workers     (MilterClient  *client);
 
@@ -758,14 +758,51 @@ void                 milter_client_set_n_workers     (MilterClient  *client,
  * milter_client_fork:
  * @client: a %MilterClient.
  *
- * Forks new process.  If custom_fork is set, it will be called.
+ * Forks new process. If custom fork is set by
+ * milter_client_set_custom_fork_func(), it will be called.
+ *
+ * Returns: child process PID for parent process, 0 for child
+ * process or -1 on error.
  */
 GPid                 milter_client_fork                 (MilterClient *client);
+
+/**
+ * milter_client_fork_without_custom:
+ * @client: a %MilterClient.
+ *
+ * Forks new process. The custom fork for the client never
+ * called even if the custom fork is set by
+ * milter_client_set_custom_fork(). This function will be
+ * called in custom fork.
+ *
+ * Returns: child process PID for parent process, 0 for child
+ * process or -1 on error.
+ */
 GPid                 milter_client_fork_without_custom  (MilterClient *client);
+
+/**
+ * milter_client_set_custom_fork_func:
+ * @client: a %MilterClient.
+ * @custom_fork: a %MilterClientCustomForkFunc.
+ *
+ * Sets custom fork function for the client. It will be
+ * called in milter_client_fork(). If @custom_fork is %NULL,
+ * the system fork(2) will be called.
+ */
 void                 milter_client_set_custom_fork_func (MilterClient *client,
                                                          MilterClientCustomForkFunc custom_fork);
-MilterClientCustomForkFunc milter_client_get_custom_fork_func
-                                                         (MilterClient *client);
+
+/**
+ * milter_client_set_custom_fork_func:
+ * @client: a %MilterClient.
+ * @custom_fork: a %MilterClientCustomForkFunc.
+ *
+ * Gets the custom fork function for the client.
+ *
+ * Returns: the custom fork function for the client.
+ */
+MilterClientCustomForkFunc
+                     milter_client_get_custom_fork_func (MilterClient *client);
 G_END_DECLS
 
 #endif /* __MILTER_CLIENT_CLIENT_H__ */

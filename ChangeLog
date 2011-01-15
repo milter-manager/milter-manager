@@ -1,5 +1,8 @@
 2011-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.h: documents custom func related
+	functions.
+
 	* binding/ruby/src/toolkit/rb-milter-client-context.c,
 	binding/ruby/test/toolkit/test-client-context.rb: bind
 	milter_client_context_get_packet_buffer_size() and
