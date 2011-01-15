@@ -1,5 +1,8 @@
 2011-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/lib/milter/client/command-line.rb: packet buffer
+	size is 0 by default
+
 	* milter/client/milter-client-context.c: log on auto-flush.
 
 	* binding/ruby/lib/milter/manager.rb,

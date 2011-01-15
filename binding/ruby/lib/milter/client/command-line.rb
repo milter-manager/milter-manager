@@ -69,8 +69,7 @@ module Milter
         @options.unix_socket_group = nil
         @options.unix_socket_mode = nil
         @options.syslog = false
-        @options.packet_buffer_size =
-          Milter::ClientContext::DEFAULT_PACKET_BUFFER_SIZE
+        @options.packet_buffer_size = 0
       end
 
       def setup_option_parser
