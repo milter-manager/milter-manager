@@ -55,6 +55,7 @@ void test_delete_recipient_on_invalid_state (void);
 void test_replace_body (void);
 void test_replace_body_on_invalid_state (void);
 void test_progress (void);
+void test_progress_on_invalid_state (void);
 void test_quarantine (void);
 void test_connection_failure (void);
 void test_shutdown (void);
@@ -1029,6 +1030,22 @@ test_progress (void)
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_progresss);
     milter_assert_status(MILTER_STATUS_NOT_CHANGE);
+}
+
+void
+test_progress_on_invalid_state (void)
+{
+    const gchar *packet;
+    gsize packet_size;
+
+    milter_reply_encoder_encode_progress(encoder, &packet, &packet_size);
+    write_data(packet, packet_size);
+    cut_assert_equal_int(0, n_progresss);
+
+    expected_error = g_error_new(MILTER_SERVER_CONTEXT_ERROR,
+                                 MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
+                                 "Invalid state: start");
+    gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
