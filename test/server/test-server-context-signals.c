@@ -778,6 +778,7 @@ test_add_header (void)
 
     milter_server_context_end_of_message(context, NULL, 0);
 
+    cut_assert_true(milter_server_context_is_processing(context));
     milter_reply_encoder_encode_add_header(encoder,
                                            &packet, &packet_size,
                                            name, value);
@@ -786,6 +787,7 @@ test_add_header (void)
     cut_assert_equal_string(name, actual_header_name);
     cut_assert_equal_string(value, actual_header_value);
     milter_assert_status(MILTER_STATUS_NOT_CHANGE);
+    cut_assert_true(milter_server_context_is_processing(context));
 }
 
 void
@@ -820,6 +822,7 @@ test_insert_header (void)
 
     milter_server_context_end_of_message(context, NULL, 0);
 
+    cut_assert_true(milter_server_context_is_processing(context));
     milter_reply_encoder_encode_insert_header(encoder,
                                               &packet, &packet_size,
                                               G_MAXUINT32, name, value);
@@ -829,6 +832,7 @@ test_insert_header (void)
     cut_assert_equal_string(name, actual_header_name);
     cut_assert_equal_string(value, actual_header_value);
     milter_assert_status(MILTER_STATUS_NOT_CHANGE);
+    cut_assert_true(milter_server_context_is_processing(context));
 }
 
 void
@@ -863,6 +867,7 @@ test_change_header (void)
 
     milter_server_context_end_of_message(context, NULL, 0);
 
+    cut_assert_true(milter_server_context_is_processing(context));
     milter_reply_encoder_encode_change_header(encoder, &packet, &packet_size,
                                               name, 0, value);
     write_data(packet, packet_size);
@@ -871,6 +876,7 @@ test_change_header (void)
     cut_assert_equal_string(name, actual_header_name);
     cut_assert_equal_string(value, actual_header_value);
     milter_assert_status(MILTER_STATUS_NOT_CHANGE);
+    cut_assert_true(milter_server_context_is_processing(context));
 }
 
 void
@@ -903,6 +909,7 @@ test_delete_header (void)
 
     milter_server_context_end_of_message(context, NULL, 0);
 
+    cut_assert_true(milter_server_context_is_processing(context));
     milter_reply_encoder_encode_delete_header(encoder, &packet, &packet_size,
                                               name, 0);
     write_data(packet, packet_size);
@@ -910,6 +917,7 @@ test_delete_header (void)
     cut_assert_equal_int(0, actual_header_index);
     cut_assert_equal_string(name, actual_header_name);
     milter_assert_status(MILTER_STATUS_NOT_CHANGE);
+    cut_assert_true(milter_server_context_is_processing(context));
 }
 
 void
@@ -940,6 +948,8 @@ test_change_from (void)
     const gchar from[] = "example@example.com";
 
     milter_server_context_end_of_message(context, NULL, 0);
+
+    cut_assert_true(milter_server_context_is_processing(context));
     milter_reply_encoder_encode_change_from(encoder,
                                             &packet, &packet_size,
                                             from, NULL);
@@ -947,6 +957,7 @@ test_change_from (void)
     cut_assert_equal_int(1, n_change_froms);
     cut_assert_equal_string(from, actual_envelope_from);
     milter_assert_status(MILTER_STATUS_NOT_CHANGE);
+    cut_assert_true(milter_server_context_is_processing(context));
 }
 
 void
@@ -979,6 +990,7 @@ test_add_recipient (void)
 
     milter_server_context_end_of_message(context, NULL, 0);
 
+    cut_assert_true(milter_server_context_is_processing(context));
     milter_reply_encoder_encode_add_recipient(encoder,
                                               &packet, &packet_size,
                                               recipient, NULL);
@@ -987,6 +999,7 @@ test_add_recipient (void)
     cut_assert_equal_string(recipient, actual_recipient);
     cut_assert_null(actual_recipient_parameters);
     milter_assert_status(MILTER_STATUS_NOT_CHANGE);
+    cut_assert_true(milter_server_context_is_processing(context));
 }
 
 void
@@ -1019,6 +1032,7 @@ test_delete_recipient (void)
 
     milter_server_context_end_of_message(context, NULL, 0);
 
+    cut_assert_true(milter_server_context_is_processing(context));
     milter_reply_encoder_encode_delete_recipient(encoder,
                                                  &packet, &packet_size,
                                                  recipient);
@@ -1026,6 +1040,7 @@ test_delete_recipient (void)
     cut_assert_equal_int(1, n_delete_recipients);
     cut_assert_equal_string(recipient, actual_recipient);
     milter_assert_status(MILTER_STATUS_NOT_CHANGE);
+    cut_assert_true(milter_server_context_is_processing(context));
 }
 
 void
@@ -1059,11 +1074,13 @@ test_replace_body (void)
 
     milter_server_context_end_of_message(context, NULL, 0);
 
+    cut_assert_true(milter_server_context_is_processing(context));
     milter_reply_encoder_encode_replace_body(encoder, &packet, &packet_size,
                                              chunk, strlen(chunk), &packed_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_replace_bodys);
     milter_assert_status(MILTER_STATUS_NOT_CHANGE);
+    cut_assert_true(milter_server_context_is_processing(context));
 }
 
 void
@@ -1095,10 +1112,12 @@ test_progress (void)
 
     milter_server_context_end_of_message(context, NULL, 0);
 
+    cut_assert_true(milter_server_context_is_processing(context));
     milter_reply_encoder_encode_progress(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_progresss);
     milter_assert_status(MILTER_STATUS_NOT_CHANGE);
+    cut_assert_true(milter_server_context_is_processing(context));
 }
 
 void
@@ -1128,11 +1147,13 @@ test_quarantine (void)
 
     milter_server_context_end_of_message(context, NULL, 0);
 
+    cut_assert_true(milter_server_context_is_processing(context));
     milter_reply_encoder_encode_quarantine(encoder, &packet, &packet_size, reason);
     write_data(packet, packet_size);
     cut_assert_equal_int(1, n_quarantines);
     cut_assert_equal_string(reason, actual_quarantine_reason);
     milter_assert_status(MILTER_STATUS_QUARANTINE);
+    cut_assert_true(milter_server_context_is_processing(context));
 }
 
 void

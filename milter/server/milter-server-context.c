@@ -2416,8 +2416,6 @@ cb_decoder_add_header (MilterReplyDecoder *decoder,
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
-    disable_timeout(context);
-
     milter_debug("[%u] [server][receive][add-header] <%s>=<%s>: %s",
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  name, value,
@@ -2447,8 +2445,6 @@ cb_decoder_insert_header (MilterReplyDecoder *decoder,
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
-
-    disable_timeout(context);
 
     milter_debug("[%u] [server][receive][insert-header] [%u]<%s>=<%s>: %s",
                  milter_agent_get_tag(MILTER_AGENT(context)),
@@ -2480,8 +2476,6 @@ cb_decoder_change_header (MilterReplyDecoder *decoder,
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
-    disable_timeout(context);
-
     milter_debug("[%u] [server][receive][change-header] <%s>[%u]=<%s>: %s",
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  name, index, value,
@@ -2510,8 +2504,6 @@ cb_decoder_delete_header (MilterReplyDecoder *decoder,
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
-
-    disable_timeout(context);
 
     milter_debug("[%u] [server][receive][delete-header] <%s>[%u]: %s",
                  milter_agent_get_tag(MILTER_AGENT(context)),
@@ -2542,8 +2534,6 @@ cb_decoder_change_from (MilterReplyDecoder *decoder,
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
-    disable_timeout(context);
-
     milter_debug("[%u] [server][receive][change-from] <%s>:<%s>: %s",
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  from, parameters,
@@ -2567,8 +2557,6 @@ cb_decoder_add_recipient (MilterReplyDecoder *decoder,
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
-    disable_timeout(context);
-
     milter_debug("[%u] [server][receive][add-recipient] <%s>:<%s>: %s",
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  recipient, parameters,
@@ -2590,8 +2578,6 @@ cb_decoder_delete_recipient (MilterReplyDecoder *decoder,
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
-
-    disable_timeout(context);
 
     milter_debug("[%u] [server][receive][delete-recipient]: <%s>: %s",
                  milter_agent_get_tag(MILTER_AGENT(context)),
@@ -2617,8 +2603,6 @@ cb_decoder_replace_body (MilterReplyDecoder *decoder,
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
-    disable_timeout(context);
-
     milter_debug("[%u] [server][receive][replace-body] "
                  "body_size=%" G_GSIZE_FORMAT ": %s",
                  milter_agent_get_tag(MILTER_AGENT(context)),
@@ -2639,8 +2623,6 @@ cb_decoder_progress (MilterReplyDecoder *decoder, gpointer user_data)
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
-
-    disable_timeout(context);
 
     milter_debug("[%u] [server][receive][progress] %s",
                  milter_agent_get_tag(MILTER_AGENT(context)),
@@ -2663,8 +2645,6 @@ cb_decoder_quarantine (MilterReplyDecoder *decoder,
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(user_data);
-
-    disable_timeout(context);
 
     priv->status = MILTER_STATUS_QUARANTINE;
     milter_debug("[%u] [server][receive][quarantine] <%s>: %s",

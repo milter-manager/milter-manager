@@ -1,5 +1,10 @@
 2011-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c,
+	test/server/test-server-context-signals.c: remove needless timeout
+	reset.
+	Reported by Kenji Shiono. Thanks!!!
+
 	* binding/ruby/lib/milter/client/command-line.rb:
 	add --packet-buffer-size option.
 
