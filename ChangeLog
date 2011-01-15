@@ -2,6 +2,10 @@
 
 	* milter/server/milter-server-context.c,
 	test/server/test-server-context-signals.c: add state check on
+	progress.
+
+	* milter/server/milter-server-context.c,
+	test/server/test-server-context-signals.c: add state check on
 	delete-recipient.
 
 	* binding/ruby/src/toolkit/rb-milter-client.c: undefine PACKAGE_*

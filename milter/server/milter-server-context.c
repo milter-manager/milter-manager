@@ -2626,13 +2626,12 @@ cb_decoder_progress (MilterReplyDecoder *decoder, gpointer user_data)
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  milter_server_context_get_name(context));
 
-    /* TODO: should check state */
-    /* if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) { */
+    if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         /* TODO: reset end-of-message timeout */
         g_signal_emit_by_name(user_data, "progress");
-    /* } else { */
-    /*     invalid_state(context, priv->state); */
-    /* } */
+    } else {
+        invalid_state(context, priv->state);
+    }
 }
 
 static void

@@ -828,6 +828,8 @@ test_delete_recipient (void)
     gsize packet_size;
     const gchar recipient[] = "example@example.com";
 
+    milter_server_context_end_of_message(context, NULL, 0);
+
     milter_reply_encoder_encode_delete_recipient(encoder,
                                                  &packet, &packet_size,
                                                  recipient);
@@ -859,6 +861,8 @@ test_progress (void)
 {
     const gchar *packet;
     gsize packet_size;
+
+    milter_server_context_end_of_message(context, NULL, 0);
 
     milter_reply_encoder_encode_progress(encoder, &packet, &packet_size);
     write_data(packet, packet_size);
