@@ -51,6 +51,7 @@ module Milter
         if @options.unix_socket_mode
           client.unix_socket_mode = @options.unix_socket_mode
         end
+        client.event_loop_backend = @options.event_loop_backend
         client.default_packet_buffer_size = @options.packet_buffer_size
         client.n_workers = @options.n_workers
         yield(client, options) if block_given?
@@ -69,6 +70,7 @@ module Milter
         @options.unix_socket_group = nil
         @options.unix_socket_mode = nil
         @options.syslog = false
+        @options.event_loop_backend = Milter::Client::EVENT_LOOP_BACKEND_GLIB
         @options.n_workers = 0
         @options.packet_buffer_size = 0
       end
@@ -151,6 +153,16 @@ module Milter
                           "(%o)" % client.default_unix_socket_mode) do |mode|
           client.unix_socket_mode = mode
           @options.unix_socket_mode = mode
+        end
+
+        backends = Milter::ClientEventLoopBackend.values.collect do |value|
+          value.nick
+        end
+        @option_parser.on("--event-loop-backend=BACKEND", backends,
+                          "Use BACKEND as event loop backend.",
+                          "available values: [#{backends.join(', ')}]",
+                          "(#{@options.event_loop_backend.nick})") do |backend|
+          @options.event_loop_backend = backend
         end
 
         @option_parser.on("--n-workers=N",
