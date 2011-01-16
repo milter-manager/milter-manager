@@ -1,5 +1,8 @@
 2011-01-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/Makefile.am,
+	milter/core/milter-libev-event-loop.c: don't use libev 3 API.
+
 	* binding/ruby/lib/milter/client/command-line.rb: add
 	--event-loop-backend option.
 

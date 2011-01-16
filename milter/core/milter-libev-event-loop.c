@@ -231,9 +231,9 @@ iterate (MilterEventLoop *loop, gboolean may_block)
 
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
     if (may_block) {
-        ev_loop(priv->base, EVRUN_ONCE);
+        ev_run(priv->base, EVRUN_ONCE);
     } else {
-        ev_loop(priv->base, EVRUN_NOWAIT | EVRUN_ONCE);
+        ev_run(priv->base, EVRUN_NOWAIT | EVRUN_ONCE);
     }
     return TRUE;
 }
