@@ -1,5 +1,11 @@
 2011-01-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* binding/ruby/src/manager/rb-milter-manager-configuration.c: move
+	EventLoopBackend to ...
+	* binding/ruby/src/toolkit/rb-milter-client.c: ... here.
+	* binding/ruby/test/manager/test-configuration-loader.rb,
+	binding/ruby/test/toolkit/test-client.rb: follow the above change.
+
 	* milter/core/milter-agent.[ch],
 	milter/core/milter-reader.c,
 	milter/core/milter-writer.[ch],

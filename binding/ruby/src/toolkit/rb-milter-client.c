@@ -309,5 +309,11 @@ Init_milter_client (void)
 
     G_DEF_SETTERS(rb_cMilterClient);
 
+    G_DEF_CLASS(MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND,
+		"ClientEventLoopBackend",
+		rb_mMilter);
+    G_DEF_CONSTANTS(rb_cMilterClient, MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND,
+		    "MILTER_CLIENT_");
+
     Init_milter_client_context();
 }

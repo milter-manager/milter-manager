@@ -61,10 +61,10 @@ class TestClient < Test::Unit::TestCase
   end
 
   def test_event_loop_backend
-    assert_equal(Milter::Manager::EventLoopBackend::GLIB,
+    assert_equal(Milter::Client::EVENT_LOOP_BACKEND_GLIB,
                  @client.event_loop_backend)
     @client.event_loop_backend = "libev"
-    assert_equal(Milter::Manager::EventLoopBackend::LIBEV,
+    assert_equal(Milter::Client::EVENT_LOOP_BACKEND_LIBEV,
                  @client.event_loop_backend)
   end
 
