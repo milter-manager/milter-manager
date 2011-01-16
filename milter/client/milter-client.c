@@ -67,7 +67,8 @@ struct _MilterClientPrivate
     GIOChannel *listening_channel;
     MilterEventLoop *accept_loop;
     MilterEventLoop *process_loop;
-    guint server_watch_id;
+    guint accept_watch_id;
+    guint accept_error_watch_id;
     gchar *connection_spec;
     GList *processing_data;
     guint n_processing_sessions;
@@ -266,7 +267,8 @@ _milter_client_init (MilterClient *client)
     priv->accept_loop = NULL;
     priv->process_loop = NULL;
 
-    priv->server_watch_id = 0;
+    priv->accept_watch_id = 0;
+    priv->accept_error_watch_id = 0;
     priv->connection_spec = NULL;
     priv->processing_data = NULL;
     priv->n_processing_sessions = 0;
@@ -467,6 +469,20 @@ watch_worker_process (GPid     pid,
 }
 
 static void
+dispose_accept_watchers (MilterClientPrivate *priv)
+{
+    if (priv->accept_watch_id > 0) {
+        milter_event_loop_remove(priv->accept_loop, priv->accept_watch_id);
+        priv->accept_watch_id = 0;
+    }
+
+    if (priv->accept_error_watch_id > 0) {
+        milter_event_loop_remove(priv->accept_loop, priv->accept_error_watch_id);
+        priv->accept_error_watch_id = 0;
+    }
+}
+
+static void
 dispose (GObject *object)
 {
     MilterClientPrivate *priv;
@@ -483,10 +499,7 @@ dispose (GObject *object)
         priv->listening_channel = NULL;
     }
 
-    if (priv->server_watch_id > 0) {
-        milter_event_loop_remove(priv->accept_loop, priv->server_watch_id);
-        priv->server_watch_id = 0;
-    }
+    dispose_accept_watchers(priv);
 
     if (priv->accept_loop) {
         g_object_unref(priv->accept_loop);
@@ -1032,54 +1045,18 @@ single_thread_accept_connection (MilterClient *client, gint server_fd)
 }
 
 static gboolean
-cb_server_status_changed (MilterClient *client,
-                          GIOChannel *channel, GIOCondition condition,
-                          AcceptConnectionFunction accept_connection)
-{
-    MilterClientPrivate *priv;
-    gboolean keep_callback = TRUE;
-
-    priv = MILTER_CLIENT_GET_PRIVATE(client);
-    if (condition & G_IO_IN ||
-        condition & G_IO_PRI) {
-        gint fd;
-        fd = g_io_channel_unix_get_fd(channel);
-        keep_callback = accept_connection(client, fd);
-    }
-
-    if (condition & G_IO_ERR ||
-        condition & G_IO_HUP ||
-        condition & G_IO_NVAL) {
-        gchar *message;
-        GError *error = NULL;
-
-        message = milter_utils_inspect_io_condition_error(condition);
-
-        error = g_error_new(MILTER_CLIENT_ERROR,
-                            MILTER_CLIENT_ERROR_IO_ERROR,
-                            "IO error on waiting MTA connection socket: %s",
-                            message);
-        milter_error("[client][watch][error] %s", error->message);
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
-                                    error);
-        g_error_free(error);
-
-        keep_callback = FALSE;
-    }
-
-    if (!keep_callback)
-        milter_client_shutdown(client);
-    return keep_callback;
-}
-
-static gboolean
-single_thread_server_watch_func (GIOChannel *channel, GIOCondition condition,
+single_thread_accept_watch_func (GIOChannel *channel, GIOCondition condition,
                                  gpointer data)
 {
     MilterClient *client = data;
+    gboolean keep_callback = TRUE;
+    gint fd;
 
-    return cb_server_status_changed(client, channel, condition,
-                                    single_thread_accept_connection);
+    fd = g_io_channel_unix_get_fd(channel);
+    keep_callback = single_thread_accept_connection(client, fd);
+    if (!keep_callback)
+        milter_client_shutdown(client);
+    return keep_callback;
 }
 
 static gboolean
@@ -1237,13 +1214,18 @@ multi_thread_accept_connection (MilterClient *client, gint server_fd)
 }
 
 static gboolean
-multi_thread_server_watch_func (GIOChannel *channel, GIOCondition condition,
+multi_thread_accept_watch_func (GIOChannel *channel, GIOCondition condition,
                                 gpointer data)
 {
     MilterClient *client = data;
+    gboolean keep_callback = TRUE;
+    gint fd;
 
-    return cb_server_status_changed(client, channel, condition,
-                                    multi_thread_accept_connection);
+    fd = g_io_channel_unix_get_fd(channel);
+    keep_callback = multi_thread_accept_connection(client, fd);
+    if (!keep_callback)
+        milter_client_shutdown(client);
+    return keep_callback;
 }
 
 static void
@@ -1583,7 +1565,33 @@ milter_client_daemonize (MilterClient *client, GError **error)
 }
 
 static gboolean
-milter_client_prepare (MilterClient *client, GIOFunc func, GError **error)
+accept_error_watch_func (GIOChannel *channel, GIOCondition condition,
+                         gpointer user_data)
+{
+    MilterClient *client = user_data;
+    MilterClientPrivate *priv;
+    gchar *message;
+    GError *error = NULL;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+
+    message = milter_utils_inspect_io_condition_error(condition);
+    error = g_error_new(MILTER_CLIENT_ERROR,
+                        MILTER_CLIENT_ERROR_IO_ERROR,
+                        "IO error on waiting MTA connection socket: %s",
+                        message);
+    milter_error("[client][watch][error] %s", error->message);
+    milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
+                                error);
+    g_error_free(error);
+
+    milter_client_shutdown(client);
+
+    return FALSE;
+}
+
+static gboolean
+milter_client_prepare (MilterClient *client, GIOFunc accept_func, GError **error)
 {
     MilterClientPrivate *priv;
     GError *local_error = NULL;
@@ -1620,12 +1628,17 @@ milter_client_prepare (MilterClient *client, GIOFunc func, GError **error)
         return FALSE;
     }
 
-    priv->server_watch_id =
+    priv->accept_watch_id =
         milter_event_loop_watch_io(priv->accept_loop,
                                    priv->listening_channel,
-                                   G_IO_IN | G_IO_PRI |
+                                   G_IO_IN | G_IO_PRI,
+                                   accept_func, client);
+    priv->accept_error_watch_id =
+        milter_event_loop_watch_io(priv->accept_loop,
+                                   priv->listening_channel,
                                    G_IO_ERR | G_IO_HUP | G_IO_NVAL,
-                                   func, client);
+                                   accept_error_watch_func,
+                                   client);
 
     return TRUE;
 }
@@ -1769,12 +1782,12 @@ milter_client_run (MilterClient *client, GError **error)
         }
         success = run_master(client, error);
     } else if (priv->multi_thread_mode) {
-        if (!milter_client_prepare(client, multi_thread_server_watch_func,
+        if (!milter_client_prepare(client, multi_thread_accept_watch_func,
                                    error))
             return FALSE;
         success = multi_thread_start_accept(client, error);
     } else {
-        if (!milter_client_prepare(client, single_thread_server_watch_func,
+        if (!milter_client_prepare(client, single_thread_accept_watch_func,
                                    error))
             return FALSE;
         success = single_thread_start_accept(client, error);
@@ -1950,10 +1963,7 @@ milter_client_shutdown (MilterClient *client)
 
         if (priv->accept_loop)
             milter_event_loop_quit(priv->accept_loop);
-        if (priv->server_watch_id > 0) {
-            milter_event_loop_remove(priv->accept_loop, priv->server_watch_id);
-            priv->server_watch_id = 0;
-        }
+        dispose_accept_watchers(priv);
         if (priv->workers.control) {
             g_io_channel_unref(priv->workers.control);
             priv->workers.control = NULL;

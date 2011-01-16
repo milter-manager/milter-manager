@@ -1,3 +1,8 @@
+2011-01-17  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/client/milter-client.c: use separted accept watch
+	callbackes, accept callback and error callback, for accept socket.
+
 2011-01-16  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/core/Makefile.am,
