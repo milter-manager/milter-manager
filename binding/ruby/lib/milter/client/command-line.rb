@@ -52,9 +52,9 @@ module Milter
           client.unix_socket_mode = @options.unix_socket_mode
         end
         client.default_packet_buffer_size = @options.packet_buffer_size
+        client.n_workers = @options.n_workers
         yield(client, options) if block_given?
         daemonize if @options.run_as_daemon
-        client.n_workers = @options.n_workers if @options.n_workers
         client.run
       end
 
@@ -69,6 +69,7 @@ module Milter
         @options.unix_socket_group = nil
         @options.unix_socket_mode = nil
         @options.syslog = false
+        @options.n_workers = 0
         @options.packet_buffer_size = 0
       end
 
@@ -152,9 +153,10 @@ module Milter
           @options.unix_socket_mode = mode
         end
 
-        @option_parser.on("--n-workers=<NUMBER-OF-WORKERS>",
+        @option_parser.on("--n-workers=N",
                           Integer,
-                          "Run in multi workers mode") do |num|
+                          "Run with N workrs.",
+                          "(#{@options.n_workers})") do |num|
           if num <= 0
             raise OptionParser::InvalidArgument
           end

@@ -1,3 +1,8 @@
+2011-01-16  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/lib/milter/client/command-line.rb: show --n-workers
+	default value.
+
 2011-01-15  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/lib/milter/client/command-line.rb: packet buffer
