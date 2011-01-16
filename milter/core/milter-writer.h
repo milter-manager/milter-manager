@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -55,6 +55,8 @@ struct _MilterWriter
 struct _MilterWriterClass
 {
     GObjectClass parent_class;
+
+    void       (*flushed)                     (MilterWriter *writer);
 };
 
 GQuark           milter_writer_error_quark    (void);
@@ -66,7 +68,6 @@ MilterWriter    *milter_writer_io_channel_new (GIOChannel       *channel);
 gboolean         milter_writer_write          (MilterWriter     *writer,
                                                const gchar      *chunk,
                                                gsize             chunk_size,
-                                               gsize            *written_size,
                                                GError          **error);
 gboolean         milter_writer_flush          (MilterWriter     *writer,
                                                GError          **error);

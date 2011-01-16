@@ -176,7 +176,7 @@ write_packet (const gchar *packet, gsize packet_size)
 {
     GError *error = NULL;
 
-    milter_writer_write(writer, packet, packet_size, NULL, &error);
+    milter_writer_write(writer, packet, packet_size, &error);
     gcut_assert_error(error);
     milter_writer_flush(writer, &error);
     gcut_assert_error(error);

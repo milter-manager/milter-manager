@@ -351,6 +351,33 @@ cut_teardown (void)
         g_error_free(expected_error);
 }
 
+#define pump_all_events_without_error_check()           \
+    cut_trace_with_info_expression(                     \
+        pump_all_events_without_error_check_helper(),   \
+        pump_all_events_without_error_check())
+
+#define pump_all_events()                       \
+    cut_trace_with_info_expression(             \
+        pump_all_events_helper(),               \
+        pump_all_events())
+
+static void
+pump_all_events_without_error_check_helper (void)
+{
+    milter_test_pump_all_events(loop);
+}
+
+static void
+pump_all_events_helper (void)
+{
+    GError *error;
+
+    pump_all_events_without_error_check_helper();
+    error = actual_error;
+    actual_error = NULL;
+    gcut_assert_error(error);
+}
+
 #define started_clients                                                 \
     milter_manager_test_scenario_get_started_clients(main_scenario)
 
@@ -497,6 +524,8 @@ wait_leader_error_helper (void)
     gboolean timeout_emitted = FALSE;
     guint timeout_emitted_id;
 
+    pump_all_events_without_error_check();
+
     timeout_emitted_id =
         milter_event_loop_add_timeout(loop, 0.1,
                                       cb_timeout_emitted, &timeout_emitted);
@@ -622,6 +651,8 @@ assert_response_error (MilterManagerTestScenario *scenario, const gchar *group)
         message = get_string(scenario, group, "error_message");
         expected_error = g_error_new(domain, code, "%s", message);
         wait_leader_error();
+    } else {
+        pump_all_events();
     }
 
     gcut_assert_equal_error(expected_error, actual_error);
@@ -726,7 +757,7 @@ assert_response_reply_code (MilterManagerTestScenario *scenario, const gchar *gr
     const GList *replied_codes;
 
     replied_codes = get_string_g_list(scenario, group, "reply_codes");
-    cut_trace(milter_manager_test_wait_signal(loop, FALSE));
+    pump_all_events();
     gcut_assert_equal_list_string(
         replied_codes,
         milter_manager_test_server_get_received_reply_codes(server));

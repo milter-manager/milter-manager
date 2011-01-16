@@ -135,7 +135,7 @@ write_data (GIOChannel *channel, const gchar *data, gsize size)
     g_io_channel_seek_position(channel, read_offset, G_SEEK_CUR, &error);
     gcut_assert_error(error);
 
-    milter_event_loop_iterate(loop, FALSE);
+    milter_test_pump_all_events(loop);
 }
 
 void
@@ -211,6 +211,9 @@ test_finished_signal (void)
     write_data(channel, "first", strlen("first"));
     cut_assert_equal_memory("first", strlen("first"),
                             actual_read_string->str, actual_read_size);
+    cut_assert_false(finished);
+    g_io_channel_close(channel);
+    milter_test_pump_all_events(loop);
     cut_assert_true(finished);
 }
 
@@ -219,8 +222,6 @@ test_shutdown (void)
 {
     cut_assert_true(milter_reader_is_watching(reader));
     milter_reader_shutdown(reader);
-    cut_assert_true(milter_reader_is_watching(reader));
-    milter_event_loop_iterate(loop, FALSE);
     cut_assert_false(milter_reader_is_watching(reader));
 }
 

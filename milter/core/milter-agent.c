@@ -46,6 +46,7 @@ struct _MilterAgentPrivate
     gboolean finished;
     guint tag;
     GTimer *timer;
+    gboolean shutting_down;
 };
 
 enum
@@ -57,6 +58,14 @@ enum
     PROP_ELAPSED,
     PROP_EVENT_LOOP
 };
+
+enum
+{
+    FLUSHED,
+    LAST_SIGNAL
+};
+
+static gint signals[LAST_SIGNAL] = {0};
 
 static GStaticMutex auto_tag_mutex = G_STATIC_MUTEX_INIT;
 static guint auto_tag = 0;
@@ -140,6 +149,22 @@ milter_agent_class_init (MilterAgentClass *klass)
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_EVENT_LOOP, spec);
 
+    /**
+     * MilterAgent::flushed:
+     * @agent: the agent that received the signal.
+     *
+     * This signal is emitted when writer of the agent
+     * flushes requested data.
+     */
+    signals[FLUSHED] =
+        g_signal_new("flushed",
+                     MILTER_TYPE_AGENT,
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MilterAgentClass, flushed),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__VOID,
+                     G_TYPE_NONE, 0);
+
     g_type_class_add_private(gobject_class, sizeof(MilterAgentPrivate));
 }
 
@@ -202,6 +227,7 @@ milter_agent_init (MilterAgent *agent)
     priv->finished = FALSE;
     priv->timer = NULL;
     priv->event_loop = NULL;
+    priv->shutting_down = FALSE;
 }
 
 static void
@@ -403,8 +429,6 @@ milter_agent_set_reader (MilterAgent *agent, MilterReader *reader)
     priv = MILTER_AGENT_GET_PRIVATE(agent);
 
     if (priv->reader) {
-        milter_reader_set_tag(priv->reader, 0);
-
 #define DISCONNECT(name)                                                \
         g_signal_handlers_disconnect_by_func(priv->reader,              \
                                              G_CALLBACK(cb_reader_ ## name), \
@@ -438,6 +462,20 @@ GQuark
 milter_agent_error_quark (void)
 {
     return g_quark_from_static_string("milter-agent-error-quark");
+}
+
+static void
+cb_writer_flushed (MilterWriter *writer, gpointer user_data)
+{
+    MilterAgent *agent = user_data;
+
+    if (milter_need_debug_log()) {
+        MilterAgentPrivate *priv;
+
+        priv = MILTER_AGENT_GET_PRIVATE(agent);
+        milter_debug("[%u] [agent][writer] flushed", priv->tag);
+    }
+    g_signal_emit(agent, signals[FLUSHED], 0);
 }
 
 static void
@@ -483,8 +521,7 @@ milter_agent_write_packet (MilterAgent *agent,
     if (!priv->writer)
         return TRUE;
 
-    success = milter_writer_write(priv->writer, packet, packet_size,
-                                  NULL, error);
+    success = milter_writer_write(priv->writer, packet, packet_size, error);
     if (success) {
         success = milter_agent_flush(agent, error);
     }
@@ -518,12 +555,11 @@ milter_agent_set_writer (MilterAgent *agent, MilterWriter *writer)
             }
         }
 
-        milter_writer_set_tag(priv->writer, 0);
-
 #define DISCONNECT(name)                                                \
         g_signal_handlers_disconnect_by_func(priv->writer,              \
                                              G_CALLBACK(cb_writer_ ## name), \
                                              agent)
+        DISCONNECT(flushed);
         DISCONNECT(error);
         DISCONNECT(finished);
 #undef DISCONNECT
@@ -539,6 +575,7 @@ milter_agent_set_writer (MilterAgent *agent, MilterWriter *writer)
         g_signal_connect(priv->writer, #name,                           \
                          G_CALLBACK(cb_writer_ ## name),                \
                          agent)
+        CONNECT(flushed);
         CONNECT(error);
         CONNECT(finished);
 #undef CONNECT
@@ -592,17 +629,31 @@ void
 milter_agent_shutdown (MilterAgent *agent)
 {
     MilterAgentPrivate *priv;
+    gboolean have_reader = FALSE;
 
     priv = MILTER_AGENT_GET_PRIVATE(agent);
 
     milter_debug("[%u] [agent][shutdown]", priv->tag);
+
+    if (priv->shutting_down)
+        return;
+
+    priv->shutting_down = TRUE;
+    if (priv->writer) {
+        milter_debug("[%u] [agent][shutdown][writer][shutdown]", priv->tag);
+        milter_writer_shutdown(priv->writer);
+    }
+
     if (priv->reader) {
+        have_reader = TRUE;
         milter_debug("[%u] [agent][shutdown][reader]", priv->tag);
         milter_reader_shutdown(priv->reader);
-    } else {
-        if (!priv->finished)
-            milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(agent));
     }
+
+    if (!have_reader && !priv->finished) {
+        milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(agent));
+    }
+    priv->shutting_down = FALSE;
 }
 
 guint

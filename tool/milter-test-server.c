@@ -160,14 +160,6 @@ set_macro (gpointer key, gpointer value, gpointer user_data)
 }
 
 static void
-send_recipient (MilterServerContext *context, ProcessData *data)
-{
-    milter_server_context_envelope_recipient(context,
-                                             *(recipients + data->current_recipient));
-    data->current_recipient++;
-}
-
-static void
 set_macros_for_connect (MilterProtocolAgent *agent)
 {
     milter_protocol_agent_set_macros(agent, MILTER_COMMAND_CONNECT,
@@ -261,177 +253,210 @@ set_macros_for_unknown (MilterProtocolAgent *agent)
 {
 }
 
-static void
-send_header (MilterServerContext *context, MilterProtocolAgent *agent, ProcessData *data)
+static gboolean
+send_connect (MilterServerContext *context, ProcessData *data)
 {
+    const gchar *host_name;
 
+    set_macros_for_connect(MILTER_PROTOCOL_AGENT(context));
+    if (milter_option_get_step(data->option) & MILTER_STEP_NO_CONNECT)
+        return FALSE;
+
+    if (connect_host)
+        host_name = connect_host;
+    else
+        host_name = "mx.example.net";
+
+    if (connect_address) {
+        milter_server_context_connect(context,
+                                      host_name,
+                                      connect_address,
+                                      connect_address_length);
+    } else {
+        struct sockaddr_in address;
+        const gchar ip_address[] = "192.168.123.123";
+        uint16_t port = 50443;
+
+        address.sin_family = AF_INET;
+        address.sin_port = g_htons(port);
+        inet_pton(AF_INET, ip_address, &(address.sin_addr));
+        milter_server_context_connect(context,
+                                      host_name,
+                                      (struct sockaddr *)(&address),
+                                      sizeof(address));
+    }
+
+    return TRUE;
+}
+
+static gboolean
+send_helo (MilterServerContext *context, ProcessData *data)
+{
+    set_macros_for_helo(MILTER_PROTOCOL_AGENT(context));
+    if (milter_option_get_step(data->option) & MILTER_STEP_NO_HELO)
+        return FALSE;
+
+    milter_server_context_helo(context, helo_host);
+    return TRUE;
+}
+
+static gboolean
+send_envelope_from (MilterServerContext *context, ProcessData *data)
+{
+    milter_server_context_reset_message_related_data(context);
+    set_macros_for_envelope_from(MILTER_PROTOCOL_AGENT(context));
+    if (milter_option_get_step(data->option) & MILTER_STEP_NO_ENVELOPE_FROM)
+        return FALSE;
+
+    milter_server_context_envelope_from(context, envelope_from);
+    return TRUE;
+}
+
+static gboolean
+send_envelope_recipient (MilterServerContext *context, ProcessData *data)
+{
+    gchar *recipient;
+
+    set_macros_for_envelope_recipient(MILTER_PROTOCOL_AGENT(context));
+    if (milter_option_get_step(data->option) & MILTER_STEP_NO_ENVELOPE_RECIPIENT)
+        return FALSE;
+
+    recipient = recipients[data->current_recipient];
+    if (!recipient)
+        return FALSE;
+
+    milter_server_context_envelope_recipient(context, recipient);
+    data->current_recipient++;
+    return TRUE;
+}
+
+static gboolean
+send_unknown (MilterServerContext *context, ProcessData *data)
+{
+    if (milter_option_get_step(data->option) & MILTER_STEP_NO_UNKNOWN)
+        return FALSE;
+    if (!unknown_command)
+        return FALSE;
+    if (milter_option_get_version(data->option) < 3)
+        return FALSE;
+
+    set_macros_for_unknown(MILTER_PROTOCOL_AGENT(context));
+    milter_server_context_unknown(context, unknown_command);
+    return TRUE;
+}
+
+static gboolean
+send_data (MilterServerContext *context, ProcessData *data)
+{
+    set_macros_for_data(MILTER_PROTOCOL_AGENT(context));
+    if (milter_option_get_step(data->option) & MILTER_STEP_NO_DATA)
+        return FALSE;
+
+    if (milter_option_get_version(data->option) < 4)
+        return FALSE;
+
+    milter_server_context_data(context);
+    return TRUE;
+}
+
+static gboolean
+send_header (MilterServerContext *context, ProcessData *data)
+{
     MilterHeader *header;
 
-    set_macros_for_header(agent);
+    set_macros_for_header(MILTER_PROTOCOL_AGENT(context));
+    if (milter_option_get_step(data->option) & MILTER_STEP_NO_HEADERS)
+        return FALSE;
+    if (milter_headers_length(data->option_headers) == 0)
+        return FALSE;
+
     header = milter_headers_get_nth_header(data->option_headers, 1);
     milter_server_context_header(context, header->name, header->value);
     milter_headers_remove(data->option_headers, header);
+    return TRUE;
 }
 
-static void
-send_body_chunk (MilterServerContext *context, MilterProtocolAgent *agent, ProcessData *data)
+static gboolean
+send_end_of_header (MilterServerContext *context, ProcessData *data)
+{
+    set_macros_for_end_of_header(MILTER_PROTOCOL_AGENT(context));
+    if (milter_option_get_step(data->option) & MILTER_STEP_NO_END_OF_HEADER)
+        return FALSE;
+
+    milter_server_context_end_of_header(context);
+    return TRUE;
+}
+
+static gboolean
+send_body (MilterServerContext *context, ProcessData *data)
 {
     gchar *body_chunk;
 
-    set_macros_for_body(agent);
+    set_macros_for_body(MILTER_PROTOCOL_AGENT(context));
+    if (milter_option_get_step(data->option) & MILTER_STEP_NO_BODY)
+        return FALSE;
 
     body_chunk = data->body_chunks[data->current_body_chunk];
+    if (!body_chunk)
+        return FALSE;
+
     milter_server_context_body(context, body_chunk, strlen(body_chunk));
     data->current_body_chunk++;
+    return TRUE;
+}
+
+static gboolean
+send_end_of_message (MilterServerContext *context, ProcessData *data)
+{
+    set_macros_for_end_of_message(MILTER_PROTOCOL_AGENT(context));
+    milter_server_context_end_of_message(context, NULL, 0);
+    return TRUE;
 }
 
 static void
 cb_continue (MilterServerContext *context, gpointer user_data)
 {
     ProcessData *data = user_data;
-    MilterStepFlags step = MILTER_STEP_NONE;
     MilterProtocolAgent *agent;
 
     agent = MILTER_PROTOCOL_AGENT(context);
 
-    if (data->option)
-        step = milter_option_get_step(data->option);
-
     switch (milter_server_context_get_state(context)) {
     case MILTER_SERVER_CONTEXT_STATE_NEGOTIATE:
-        set_macros_for_connect(agent);
-        if (!(step & MILTER_STEP_NO_CONNECT)) {
-            const gchar *host_name;
-
-            if (connect_host)
-                host_name = connect_host;
-            else
-                host_name = "mx.example.net";
-
-            if (connect_address) {
-                milter_server_context_connect(context,
-                                              host_name,
-                                              connect_address,
-                                              connect_address_length);
-            } else {
-                struct sockaddr_in address;
-                const gchar ip_address[] = "192.168.123.123";
-                uint16_t port = 50443;
-
-                address.sin_family = AF_INET;
-                address.sin_port = g_htons(port);
-                inet_pton(AF_INET, ip_address, &(address.sin_addr));
-                milter_server_context_connect(context,
-                                              host_name,
-                                              (struct sockaddr *)(&address),
-                                              sizeof(address));
-            }
-            if (!(step & MILTER_STEP_NO_REPLY_CONNECT)) {
-                break;
-            }
-        }
+        if (send_connect(context, data))
+            break;
     case MILTER_SERVER_CONTEXT_STATE_CONNECT:
-        set_macros_for_helo(agent);
-        if (!(step & MILTER_STEP_NO_HELO)) {
-            milter_server_context_helo(context, helo_host);
-            if (!(step & MILTER_STEP_NO_REPLY_HELO)) {
-                break;
-            }
-        }
+        if (send_helo(context, data))
+            break;
     case MILTER_SERVER_CONTEXT_STATE_HELO:
-        milter_server_context_reset_message_related_data(context);
-        set_macros_for_envelope_from(agent);
-        if (!(step & MILTER_STEP_NO_ENVELOPE_FROM)) {
-            milter_server_context_envelope_from(context, envelope_from);
-            if (!(step & MILTER_STEP_NO_REPLY_ENVELOPE_FROM)) {
-                break;
-            }
-        }
+        if (send_envelope_from(context, data))
+            break;
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
-        set_macros_for_envelope_recipient(agent);
-        if (!(step & MILTER_STEP_NO_ENVELOPE_RECIPIENT)) {
-            send_recipient(context, data);
-            if (!(step & MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT)) {
-                break;
-            }
-        }
+        if (send_envelope_recipient(context, data))
+            break;
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
-        if (!(step & MILTER_STEP_NO_ENVELOPE_RECIPIENT) &&
-            *(recipients + data->current_recipient)) {
-            set_macros_for_envelope_recipient(agent);
-            send_recipient(context, data);
-            if (!(step & MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT)) {
-                break;
-            }
-        }
-        if (!(step & MILTER_STEP_NO_UNKNOWN) &&
-            unknown_command &&
-            milter_option_get_version(data->option) >= 3) {
-            set_macros_for_unknown(agent);
-            milter_server_context_unknown(context, unknown_command);
-            if (!(step & MILTER_STEP_NO_REPLY_UNKNOWN)) {
-                break;
-            }
-        }
+        if (send_envelope_recipient(context, data))
+            break;
+        if (send_unknown(context, data))
+            break;
     case MILTER_SERVER_CONTEXT_STATE_UNKNOWN:
-        set_macros_for_data(agent);
-        if (!(step & MILTER_STEP_NO_DATA) &&
-            milter_option_get_version(data->option) >= 4) {
-            milter_server_context_data(context);
-            if (!(step & MILTER_STEP_NO_REPLY_DATA)) {
-                break;
-            }
-        }
+        if (send_data(context, data))
+            break;
     case MILTER_SERVER_CONTEXT_STATE_DATA:
-        set_macros_for_header(agent);
-        if (!(step & MILTER_STEP_NO_HEADERS)) {
-            MilterHeader *header;
-            header = milter_headers_get_nth_header(data->option_headers, 1);
-            milter_server_context_header(context, header->name, header->value);
-            milter_headers_remove(data->option_headers, header);
-            if (!(step & MILTER_STEP_NO_REPLY_HEADER)) {
-                break;
-            }
-        }
+        if (send_header(context, data))
+            break;
     case MILTER_SERVER_CONTEXT_STATE_HEADER:
-        if (!(step & MILTER_STEP_NO_HEADERS) &&
-            milter_headers_length(data->option_headers) > 0) {
-            send_header(context, agent, data);
-            if (!(step & MILTER_STEP_NO_REPLY_HEADER)) {
-                break;
-            }
-
-            while (milter_headers_length(data->option_headers) > 0) {
-                send_header(context, agent, data);
-            }
-        }
-        set_macros_for_end_of_header(agent);
-        if (!(step & MILTER_STEP_NO_END_OF_HEADER)) {
-            milter_server_context_end_of_header(context);
-            if (!(step & MILTER_STEP_NO_REPLY_END_OF_HEADER)) {
-                break;
-            }
-        }
+        if (send_header(context, data))
+            break;
+        if (send_end_of_header(context, data))
+            break;
     case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
-        if (!(step & MILTER_STEP_NO_BODY)) {
-            send_body_chunk(context, agent, data);
-            if (!(step & MILTER_STEP_NO_REPLY_BODY)) {
-                break;
-            }
-        }
+        if (send_body(context, data))
+            break;
     case MILTER_SERVER_CONTEXT_STATE_BODY:
-        if (!(step & MILTER_STEP_NO_BODY) &&
-            data->body_chunks[data->current_body_chunk]) {
-            send_body_chunk(context, agent, data);
-            if (!(step & MILTER_STEP_NO_REPLY_BODY)) {
-                break;
-            }
-            while (data->body_chunks[data->current_body_chunk]) {
-                send_body_chunk(context, agent, data);
-            }
-        }
-        set_macros_for_end_of_message(agent);
-        milter_server_context_end_of_message(context, NULL, 0);
+        if (send_body(context, data))
+            break;
+        send_end_of_message(context, data);
         break;
     case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
         send_quit(context, data);
@@ -751,6 +776,76 @@ cb_end_of_message_timeout (MilterServerContext *context, gpointer user_data)
 }
 
 static void
+cb_state_transited (MilterServerContext *context,
+                    MilterServerContextState state,
+                    gpointer user_data)
+{
+    ProcessData *data = user_data;
+    MilterStepFlags step = MILTER_STEP_NONE;
+
+    if (data->option)
+        step = milter_option_get_step(data->option);
+
+    switch (state) {
+    case MILTER_SERVER_CONTEXT_STATE_CONNECT:
+        if (!(step & MILTER_STEP_NO_REPLY_CONNECT))
+            break;
+        if (send_helo(context, data))
+            break;
+    case MILTER_SERVER_CONTEXT_STATE_HELO:
+        if (!(step & MILTER_STEP_NO_REPLY_HELO))
+            break;
+        if (send_envelope_from(context, data))
+            break;
+    case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
+        if (!(step & MILTER_STEP_NO_REPLY_ENVELOPE_FROM))
+            break;
+        if (send_envelope_recipient(context, data))
+            break;
+    case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT:
+        if (!(step & MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT))
+            break;
+        if (send_envelope_recipient(context, data))
+            break;
+        if (send_unknown(context, data))
+            break;
+        if (send_data(context, data))
+            break;
+    case MILTER_SERVER_CONTEXT_STATE_UNKNOWN:
+        if (!(step & MILTER_STEP_NO_REPLY_UNKNOWN))
+            break;
+        if (send_data(context, data))
+            break;
+    case MILTER_SERVER_CONTEXT_STATE_DATA:
+        if (!(step & MILTER_STEP_NO_REPLY_DATA))
+            break;
+        if (send_header(context, data))
+            break;
+    case MILTER_SERVER_CONTEXT_STATE_HEADER:
+        if (!(step & MILTER_STEP_NO_REPLY_HEADER))
+            break;
+        if (send_header(context, data))
+            break;
+        if (send_end_of_header(context, data))
+            break;
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
+        if (!(step & MILTER_STEP_NO_REPLY_END_OF_HEADER))
+            break;
+        if (send_body(context, data))
+            break;
+    case MILTER_SERVER_CONTEXT_STATE_BODY:
+        if (!(step & MILTER_STEP_NO_REPLY_BODY))
+            break;
+        if (send_body(context, data))
+            break;
+        if (send_end_of_message(context, data))
+            break;
+    default:
+        break;
+    }
+}
+
+static void
 setup (MilterServerContext *context, ProcessData *data)
 {
 #define CONNECT(name)                                                   \
@@ -783,6 +878,8 @@ setup (MilterServerContext *context, ProcessData *data)
     CONNECT(writing_timeout);
     CONNECT(reading_timeout);
     CONNECT(end_of_message_timeout);
+
+    CONNECT(state_transited);
 
 #undef CONNECT
 }

@@ -39,15 +39,29 @@ static GIOChannel *channel;
 static GError *expected_error;
 static GError *actual_error;
 
+static void
+cb_error (MilterErrorEmittable *emittable, GError *error)
+{
+    actual_error = g_error_copy(error);
+}
+
+static void
+setup_error_callback (void)
+{
+    g_signal_connect(writer, "error", G_CALLBACK(cb_error), NULL);
+}
+
 void
 cut_setup (void)
 {
-    writer = NULL;
-
     loop = milter_test_event_loop_new();
 
     channel = gcut_string_io_channel_new(NULL);
     g_io_channel_set_encoding(channel, NULL, NULL);
+
+    writer = milter_writer_io_channel_new(channel);
+    milter_writer_start(writer, loop);
+    setup_error_callback();
 
     expected_error = NULL;
     actual_error = NULL;
@@ -71,51 +85,57 @@ cut_teardown (void)
         g_error_free(actual_error);
 }
 
+static void
+pump_all_events (void)
+{
+    milter_test_pump_all_events(loop);
+    gcut_assert_error(actual_error);
+}
+
 void
 test_writer (void)
 {
     const gchar first_chunk[] = "first\n";
     const gchar second_chunk[] = "sec\0ond\n";
     const gchar third_chunk[] = "third\n";
-    gsize written_size;
     GString *actual_data;
     GError *error = NULL;
 
-    writer = milter_writer_io_channel_new(channel);
-    milter_writer_start(writer, loop);
-
-    milter_writer_write(writer, first_chunk, sizeof(first_chunk) - 1,
-                        &written_size, &error);
+    milter_writer_write(writer, first_chunk, sizeof(first_chunk) - 1, &error);
     gcut_assert_error(error);
-    cut_assert_equal_uint(sizeof(first_chunk) - 1, written_size);
 
     milter_writer_flush(writer, &error);
     gcut_assert_error(error);
+
+    pump_all_events();
+
     actual_data = gcut_string_io_channel_get_string(channel);
     cut_assert_equal_memory("first\n", sizeof(first_chunk) - 1,
                             actual_data->str, actual_data->len);
     gcut_string_io_channel_clear(channel);
 
     actual_error = NULL;
-    milter_writer_write(writer, second_chunk, sizeof(second_chunk) - 1,
-                        &written_size, &error);
+    milter_writer_write(writer, second_chunk, sizeof(second_chunk) - 1, &error);
     gcut_assert_error(error);
-    cut_assert_equal_uint(sizeof(second_chunk) - 1, written_size);
 
     milter_writer_flush(writer, &error);
     gcut_assert_error(error);
+
+    pump_all_events();
+
     actual_data = gcut_string_io_channel_get_string(channel);
     cut_assert_equal_memory("sec\0ond\n", (sizeof(second_chunk) - 1),
                             actual_data->str, actual_data->len);
     gcut_string_io_channel_clear(channel);
 
-    milter_writer_write(writer, third_chunk, sizeof(third_chunk) - 1,
-                        &written_size, &error);
+    milter_writer_write(writer, third_chunk, sizeof(third_chunk) - 1, &error);
     gcut_assert_error(error);
-    cut_assert_equal_uint(sizeof(third_chunk) - 1, written_size);
 
     milter_writer_flush(writer, &error);
     gcut_assert_error(error);
+
+    pump_all_events();
+
     actual_data = gcut_string_io_channel_get_string(channel);
     cut_assert_equal_memory("third\n", (sizeof(third_chunk) - 1),
                             actual_data->str, actual_data->len);
@@ -126,25 +146,22 @@ test_writer_huge_data (void)
 {
     gchar *binary_data;
     gsize data_size;
-    gsize written_size;
     GString *actual_data;
     GError *error = NULL;
-
-    writer = milter_writer_io_channel_new(channel);
-    milter_writer_start(writer, loop);
 
     data_size = 192 * 8192;
     binary_data = g_new(gchar, data_size);
     cut_take_memory(binary_data);
     memset(binary_data, '\0', data_size);
 
-    milter_writer_write(writer, binary_data, data_size,
-                        &written_size, &error);
+    milter_writer_write(writer, binary_data, data_size, &error);
     gcut_assert_error(error);
-    cut_assert_equal_uint(data_size, written_size);
 
     milter_writer_flush(writer, &error);
     gcut_assert_error(error);
+
+    pump_all_events();
+
     actual_data = gcut_string_io_channel_get_string(channel);
     cut_assert_equal_memory(binary_data, data_size,
                             actual_data->str, actual_data->len);
@@ -153,28 +170,30 @@ test_writer_huge_data (void)
 void
 test_writer_error (void)
 {
-    gsize written_size;
     GError *error = NULL;
 
     g_io_channel_set_buffered(channel, FALSE);
     g_io_channel_set_flags(channel, G_IO_FLAG_NONBLOCK, &error);
     gcut_assert_error(error);
     gcut_string_io_channel_set_limit(channel, 1);
-    writer = milter_writer_io_channel_new(channel);
-    milter_writer_start(writer, loop);
 
-    expected_error = g_error_new(G_IO_CHANNEL_ERROR,
+    milter_writer_write(writer, "test-data", strlen("test-data"), &error);
+    gcut_assert_error(error);
+
+    milter_test_pump_all_events(loop);
+
+    expected_error = g_error_new(MILTER_WRITER_ERROR,
+                                 MILTER_WRITER_ERROR_IO_ERROR,
+                                 "failed to write: %s:%d: %s",
+                                 g_quark_to_string(G_IO_CHANNEL_ERROR),
                                  G_IO_CHANNEL_ERROR_NOSPC,
-                                 "%s", g_strerror(ENOSPC));
-    milter_writer_write(writer, "test-data", strlen("test-data"),
-                        &written_size, &actual_error);
+                                 g_strerror(ENOSPC));
     gcut_assert_equal_error(expected_error, actual_error);
 }
 
 void
 test_tag (void)
 {
-    writer = milter_writer_io_channel_new(channel);
     cut_assert_equal_uint(0, milter_writer_get_tag(writer));
 
     milter_writer_set_tag(writer, 29);

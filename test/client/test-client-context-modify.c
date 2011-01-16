@@ -178,6 +178,8 @@ test_add_header (gconstpointer data)
                                          gcut_data_get_string(data, "name"),
                                          gcut_data_get_string(data, "value"),
                                          &actual_error);
+    milter_test_pump_all_events(loop);
+
     expected_error = gcut_data_get_pointer(data, "error");
     if (expected_error) {
         gcut_take_error(actual_error);
@@ -282,6 +284,8 @@ test_insert_header (gconstpointer data)
                                             gcut_data_get_string(data, "name"),
                                             gcut_data_get_string(data, "value"),
                                             &actual_error);
+    milter_test_pump_all_events(loop);
+
     expected_error = gcut_data_get_pointer(data, "error");
     if (expected_error) {
         gcut_take_error(actual_error);
@@ -381,6 +385,8 @@ test_change_header (gconstpointer data)
                                             gcut_data_get_uint(data, "index"),
                                             gcut_data_get_string(data, "value"),
                                             &actual_error);
+    milter_test_pump_all_events(loop);
+
     expected_error = gcut_data_get_pointer(data, "error");
     if (expected_error) {
         gcut_take_error(actual_error);
@@ -475,6 +481,8 @@ test_delete_header (gconstpointer data)
                                             gcut_data_get_string(data, "name"),
                                             gcut_data_get_uint(data, "index"),
                                             &actual_error);
+    milter_test_pump_all_events(loop);
+
     expected_error = gcut_data_get_pointer(data, "error");
     if (expected_error) {
         gcut_take_error(actual_error);

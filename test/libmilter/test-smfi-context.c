@@ -38,8 +38,8 @@ void test_setmlreply (void);
 void test_addheader (void);
 void test_chgheader (void);
 void test_insheader (void);
-void data_cfgfrom (void);
-void test_cfgfrom (gconstpointer data);
+void data_chgfrom (void);
+void test_chgfrom (gconstpointer data);
 void test_addrcpt (void);
 void test_addrcpt_par (void);
 void data_delrcpt (void);
@@ -49,6 +49,8 @@ void test_quarantine (void);
 void test_replacebody (void);
 
 static MilterEventLoop *loop;
+
+static GError *actual_error;
 
 static SmfiContext *context;
 static MilterClientContext *client_context;
@@ -248,6 +250,17 @@ static struct smfiDesc smfilter = {
     xxfi_negotiate,
 };
 
+static void
+cb_error (MilterErrorEmittable *emittable, GError *error)
+{
+    actual_error = g_error_copy(error);
+}
+
+static void
+setup_signals (MilterClientContext *context)
+{
+    g_signal_connect(context, "error", G_CALLBACK(cb_error), NULL);
+}
 
 void
 cut_setup (void)
@@ -258,7 +271,10 @@ cut_setup (void)
 
     loop = milter_test_event_loop_new();
 
+    actual_error = NULL;
+
     client_context = milter_client_context_new(NULL);
+    setup_signals(client_context);
     milter_agent_set_event_loop(MILTER_AGENT(client_context), loop);
     expected_output = NULL;
 
@@ -327,6 +343,8 @@ cut_teardown (void)
         g_object_unref(writer);
     if (loop)
         g_object_unref(loop);
+    if (actual_error)
+        g_error_free(actual_error);
     if (expected_output)
         g_string_free(expected_output, TRUE);
 
@@ -365,12 +383,22 @@ cut_teardown (void)
         g_free(reply_message);
 }
 
+static void
+pump_all_events (void)
+{
+    milter_test_pump_all_events(loop);
+    gcut_assert_error(actual_error);
+}
+
 static GError *
 feed (const gchar *packet, gsize packet_size)
 {
     GError *error = NULL;
 
     milter_client_context_feed(client_context, packet, packet_size, &error);
+    if (!error) {
+        pump_all_events();
+    }
 
     return error;
 }
@@ -723,7 +751,7 @@ test_chgheader (void)
 }
 
 void
-data_cfgfrom (void)
+data_chgfrom (void)
 {
     cut_add_data("from",
                  g_strsplit("kou@localhost", " ", 2),
@@ -746,7 +774,7 @@ data_cfgfrom (void)
 }
 
 void
-test_cfgfrom (gconstpointer data)
+test_chgfrom (gconstpointer data)
 {
     const gchar *packet;
     gsize packet_size;

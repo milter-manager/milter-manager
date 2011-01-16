@@ -295,10 +295,11 @@ milter_test_inspect_symbols_table (GHashTable *table)
 static gboolean
 cb_idle_check (gpointer data)
 {
+    gboolean keep_callback = FALSE;
     gboolean *idle_emitted = data;
 
     *idle_emitted = TRUE;
-    return FALSE;
+    return keep_callback;
 }
 
 void

@@ -2528,8 +2528,7 @@ milter_manager_children_start_child (MilterManagerChildren *children,
                                                         &packet, &packet_size,
                                                         command,
                                                         user_name);
-    milter_writer_write(priv->launcher_writer, packet, packet_size,
-                        NULL, &error);
+    milter_writer_write(priv->launcher_writer, packet, packet_size, &error);
     g_object_unref(encoder);
 
     if (error) {
@@ -3690,6 +3689,9 @@ milter_manager_children_body (MilterManagerChildren *children,
         return success;
     }
 
+    milter_debug("[%u] [children][body] size=%" G_GSIZE_FORMAT,
+                 priv->tag, size);
+
     init_command_waiting_child_queue(children, MILTER_COMMAND_BODY);
 
     first_child = get_first_child_in_command_waiting_child_queue(children);
@@ -3704,23 +3706,18 @@ milter_manager_children_body (MilterManagerChildren *children,
     priv->replaced_body_for_each_child = FALSE;
     priv->sending_body = FALSE;
 
-    if (!milter_server_context_get_skip_body(first_child)) {
-        gboolean success;
-        success = milter_server_context_body(first_child, chunk, size);
-        if (success &&
-            !milter_server_context_need_reply(first_child, state)) {
-            g_signal_emit_by_name(first_child, "continue");
-        }
-        return success;
+    if (milter_server_context_get_skip_body(first_child)) {
+        /*
+         * If the first child is not needed the command,
+         * send dummy "continue" to shift next state.
+         */
+        milter_server_context_set_state(first_child, MILTER_SERVER_CONTEXT_STATE_BODY);
+        g_signal_emit_by_name(first_child, "continue");
+        return TRUE;
+    } else {
+        return milter_server_context_body(first_child, chunk, size);
     }
 
-    /*
-     * If the first child is not needed the command,
-     * send dummy "continue" to shift next state.
-     */
-    milter_server_context_set_state(first_child, MILTER_SERVER_CONTEXT_STATE_BODY);
-    g_signal_emit_by_name(first_child, "continue");
-    return TRUE;
 }
 
 static MilterStatus

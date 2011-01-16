@@ -574,7 +574,7 @@ cb_timeout_waiting (gpointer data)
 #define wait_reply(expected, actual)            \
     cut_trace_with_info_expression(             \
         wait_reply_helper(expected, &actual),   \
-        wait_reply(actual))
+        wait_reply(expected, actual))
 
 static void
 wait_reply_helper (guint expected, guint *actual)
@@ -1530,6 +1530,7 @@ test_header_no_reply (void)
     cut_trace(test_data());
 
     milter_manager_children_header(children, name, value);
+    milter_test_pump_all_events(loop);
     cut_assert_false(milter_manager_children_is_waiting_reply(children));
 }
 
@@ -1570,6 +1571,7 @@ test_end_of_header_no_reply (void)
     cut_trace(test_header());
 
     milter_manager_children_end_of_header(children);
+    milter_test_pump_all_events(loop);
     cut_assert_false(milter_manager_children_is_waiting_reply(children));
 }
 
@@ -1614,8 +1616,10 @@ test_body_no_reply (void)
                      "--negotiate-flags", "no-reply-body",
                      NULL);
     cut_trace(test_end_of_header());
+    milter_test_pump_all_events(loop);
 
     milter_manager_children_body(children, chunk, strlen(chunk));
+    milter_test_pump_all_events(loop);
     cut_assert_false(milter_manager_children_is_waiting_reply(children));
 }
 
@@ -1844,7 +1848,8 @@ cb_writing_timeout (MilterServerContext *context, gpointer user_data)
 {
     GIOChannel *channel = user_data;
 
-    gcut_string_io_channel_set_limit(channel, 0);
+    if (channel)
+        gcut_string_io_channel_set_limit(channel, 0);
     n_writing_timeout_emitted++;
 }
 
@@ -1975,6 +1980,7 @@ test_end_of_message_timeout (void)
 
     child = milter_manager_children_get_children(children)->data;
     prepare_timeout_test(child, NULL);
+    milter_server_context_set_writing_timeout(MILTER_SERVER_CONTEXT(child), 1);
 
     milter_manager_children_end_of_message(children, "end", strlen("end"));
 
@@ -2064,6 +2070,7 @@ test_reading_timeout (void)
 
     child = milter_manager_children_get_children(children)->next->data;
     prepare_timeout_test(child, NULL);
+    milter_server_context_set_writing_timeout(MILTER_SERVER_CONTEXT(child), 1);
 
     address.sin_family = AF_INET;
     address.sin_port = g_htons(50443);

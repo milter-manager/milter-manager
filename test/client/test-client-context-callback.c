@@ -740,6 +740,8 @@ feed (const gchar *packet, gsize packet_size)
     GError *error = NULL;
 
     milter_client_context_feed(context, packet, packet_size, &error);
+    if (!error)
+        milter_test_pump_all_events(loop);
 
     return error;
 }
@@ -1686,14 +1688,20 @@ test_write_error (void)
     gcut_assert_error(error);
     gcut_string_io_channel_set_limit(channel, 1);
 
-    expected_error = g_error_new(MILTER_CLIENT_CONTEXT_ERROR,
-                                 MILTER_CLIENT_CONTEXT_ERROR_IO_ERROR,
-                                 "Failed to write to MTA: "
-                                 "g-io-channel-error-quark:4: %s",
-                                 g_strerror(ENOSPC));
-
     milter_client_context_progress(context);
+    milter_test_pump_all_events(loop);
+
     cut_assert_equal_int(1, n_errors);
+    expected_error = g_error_new(MILTER_AGENT_ERROR,
+                                 MILTER_AGENT_ERROR_IO_ERROR,
+                                 "Output error: "
+                                 "%s:%d: failed to write: "
+                                 "%s:%d: %s",
+                                 g_quark_to_string(MILTER_WRITER_ERROR),
+                                 MILTER_WRITER_ERROR_IO_ERROR,
+                                 g_quark_to_string(G_IO_CHANNEL_ERROR),
+                                 g_io_channel_error_from_errno(ENOSPC),
+                                 g_strerror(ENOSPC));
     gcut_assert_equal_error(expected_error, actual_error);
 }
 

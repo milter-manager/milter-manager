@@ -111,6 +111,7 @@ typedef enum
 
 /**
  * MilterServerContextState:
+ * @MILTER_SERVER_CONTEXT_STATE_INVALID: Invalid state.
  * @MILTER_SERVER_CONTEXT_STATE_START: Just started.
  * @MILTER_SERVER_CONTEXT_STATE_DEFINE_MACRO: Sent macro definition.
  * @MILTER_SERVER_CONTEXT_STATE_NEGOTIATE: Negotiating.
@@ -137,6 +138,7 @@ typedef enum
  */
 typedef enum
 {
+    MILTER_SERVER_CONTEXT_STATE_INVALID,
     MILTER_SERVER_CONTEXT_STATE_START,
     MILTER_SERVER_CONTEXT_STATE_DEFINE_MACRO,
     MILTER_SERVER_CONTEXT_STATE_NEGOTIATE,
@@ -203,6 +205,9 @@ struct _MilterServerContextClass
 
     void (*message_processed)   (MilterServerContext *context,
                                  MilterMessageResult *result);
+
+    void (*state_transited)     (MilterServerContext *context,
+                                 MilterServerContextState state);
 };
 
 GQuark               milter_server_context_error_quark (void);

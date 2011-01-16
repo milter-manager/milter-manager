@@ -103,7 +103,7 @@ setup_signals (MilterServerContext *context)
 }
 
 void
-setup (void)
+cut_setup (void)
 {
     MilterOption *option;
     GError *error = NULL;
@@ -160,7 +160,7 @@ channel_free (void)
 }
 
 void
-teardown (void)
+cut_teardown (void)
 {
     if (context)
         g_object_unref(context);
@@ -193,6 +193,13 @@ teardown (void)
         g_object_unref(actual_result);
     if (expected_result)
         g_object_unref(expected_result);
+}
+
+static void
+pump_all_events (void)
+{
+    milter_test_pump_all_events(loop);
+    gcut_assert_error(actual_error);
 }
 
 #define milter_test_assert_packet(channel, packet, packet_size)         \
@@ -324,6 +331,7 @@ test_negotiate (void)
                                MILTER_STEP_NONE);
     gcut_take_object(G_OBJECT(option));
     cut_assert_true(milter_server_context_negotiate(context, option));
+    pump_all_events();
     milter_test_assert_state(NEGOTIATE);
     milter_test_assert_status(NOT_CHANGE);
 
@@ -347,6 +355,7 @@ test_negotiated_newer_version (void)
     option = milter_option_new(2, MILTER_ACTION_ADD_HEADERS, MILTER_STEP_NONE);
     gcut_take_object(G_OBJECT(option));
     cut_assert_true(milter_server_context_negotiate(context, option));
+    pump_all_events();
     milter_test_assert_state(NEGOTIATE);
     milter_test_assert_status(NOT_CHANGE);
 
@@ -430,6 +439,7 @@ test_connect (void)
     cut_assert_true(milter_server_context_connect(context, host_name,
                                                   (struct sockaddr *)&address,
                                                   sizeof(address)));
+    pump_all_events();
     milter_test_assert_state(CONNECT);
     milter_test_assert_status(NOT_CHANGE);
 
@@ -477,6 +487,7 @@ test_connect_with_macro (void)
     cut_assert_true(milter_server_context_connect(context, host_name,
                                                   (struct sockaddr *)&address,
                                                   sizeof(address)));
+    pump_all_events();
     milter_test_assert_state(CONNECT);
     milter_test_assert_status(NOT_CHANGE);
 
@@ -505,6 +516,7 @@ test_helo (void)
     reply_continue();
 
     cut_assert_true(milter_server_context_helo(context, fqdn));
+    pump_all_events();
     milter_test_assert_state(HELO);
     milter_test_assert_status(NOT_CHANGE);
 
@@ -527,6 +539,7 @@ test_envelope_from (void)
     reply_continue();
 
     cut_assert_true(milter_server_context_envelope_from(context, from));
+    pump_all_events();
     milter_test_assert_state(ENVELOPE_FROM);
     milter_test_assert_status(NOT_CHANGE);
 
@@ -550,6 +563,7 @@ test_envelope_recipient (void)
     reply_continue();
 
     cut_assert_true(milter_server_context_envelope_recipient(context, recipient));
+    pump_all_events();
     milter_test_assert_state(ENVELOPE_RECIPIENT);
     milter_test_assert_status(NOT_CHANGE);
 
@@ -573,6 +587,7 @@ test_data (void)
     reply_continue();
 
     cut_assert_true(milter_server_context_data(context));
+    pump_all_events();
     milter_test_assert_state(DATA);
     milter_test_assert_status(NOT_CHANGE);
 
@@ -593,6 +608,7 @@ test_data_with_protocol_version2 (void)
     reply_continue();
 
     cut_assert_true(milter_server_context_data(context));
+    pump_all_events();
     milter_test_assert_state(DATA);
     milter_test_assert_status(NOT_CHANGE);
 
@@ -614,6 +630,7 @@ test_unknown (void)
     reply_continue();
 
     cut_assert_true(milter_server_context_unknown(context, command));
+    pump_all_events();
     milter_test_assert_state(UNKNOWN);
     milter_test_assert_status(NOT_CHANGE);
 
@@ -637,6 +654,7 @@ test_header (void)
     reply_continue();
 
     cut_assert_true(milter_server_context_header(context, name, value));
+    pump_all_events();
     milter_test_assert_state(HEADER);
     milter_test_assert_status(NOT_CHANGE);
 
@@ -660,6 +678,7 @@ test_end_of_header (void)
     reply_continue();
 
     cut_assert_true(milter_server_context_end_of_header(context));
+    pump_all_events();
     milter_test_assert_state(END_OF_HEADER);
     milter_test_assert_status(NOT_CHANGE);
 
@@ -683,6 +702,7 @@ test_body (void)
     reply_continue();
 
     cut_assert_true(milter_server_context_body(context, chunk, strlen(chunk)));
+    pump_all_events();
     milter_test_assert_state(BODY);
     milter_test_assert_status(NOT_CHANGE);
 
@@ -708,6 +728,7 @@ test_end_of_message (void)
 
     cut_assert_true(milter_server_context_end_of_message(context,
                                                          chunk, strlen(chunk)));
+    pump_all_events();
     milter_test_assert_state(END_OF_MESSAGE);
     milter_test_assert_status(NOT_CHANGE);
 
@@ -730,6 +751,7 @@ test_end_of_message_without_chunk (void)
     reply_continue();
 
     cut_assert_true(milter_server_context_end_of_message(context, NULL, 0));
+    pump_all_events();
     milter_test_assert_state(END_OF_MESSAGE);
     milter_test_assert_status(NOT_CHANGE);
 
@@ -752,6 +774,7 @@ test_quit (void)
     reply_continue();
 
     cut_assert_true(milter_server_context_quit(context));
+    pump_all_events();
     milter_test_assert_state(QUIT);
     milter_test_assert_status(NOT_CHANGE);
 
@@ -784,6 +807,7 @@ test_quit_after_connect (void)
     reply_continue();
 
     cut_assert_true(milter_server_context_quit(context));
+    pump_all_events();
     milter_test_assert_state(QUIT);
     milter_test_assert_status(NOT_CHANGE);
 
@@ -801,6 +825,7 @@ test_abort (void)
     channel_free();
 
     cut_assert_true(milter_server_context_abort(context));
+    pump_all_events();
     milter_test_assert_state(ABORT);
     milter_test_assert_status(ABORT);
 
@@ -818,10 +843,12 @@ test_abort_and_quit (void)
     channel_free();
 
     cut_assert_true(milter_server_context_abort(context));
+    pump_all_events();
     milter_test_assert_state(ABORT);
     milter_test_assert_status(ABORT);
 
     cut_assert_true(milter_server_context_quit(context));
+    pump_all_events();
     milter_test_assert_state(QUIT);
     milter_test_assert_status(ABORT);
 

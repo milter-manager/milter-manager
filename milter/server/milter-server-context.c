@@ -57,6 +57,8 @@ enum
 
     MESSAGE_PROCESSED,
 
+    STATE_TRANSITED,
+
     LAST_SIGNAL
 };
 
@@ -84,6 +86,7 @@ struct _MilterServerContextPrivate
     MilterStatus status;
     MilterStatus envelope_recipient_status;
     MilterServerContextState state;
+    GList *next_states;
     MilterServerContextState last_state;
     gchar *reply_code;
     MilterOption *option;
@@ -96,6 +99,7 @@ struct _MilterServerContextPrivate
     guint connect_watch_id;
 
     gboolean skip_body;
+    GString *body;
 
     gchar *name;
     GList *body_response_queue;
@@ -160,9 +164,16 @@ static gboolean stop_on_header       (MilterServerContext *context,
 static gboolean stop_on_body         (MilterServerContext *context,
                                       const gchar   *chunk,
                                       gsize          size);
+static gboolean write_packet         (MilterServerContext      *context,
+                                      const gchar              *packet,
+                                      gsize                     packet_size,
+                                      MilterServerContextState  next_state);
 
 static MilterDecoder *decoder_new    (MilterAgent *agent);
 static MilterEncoder *encoder_new    (MilterAgent *agent);
+static void           flushed        (MilterAgent *agent);
+
+
 
 static void
 milter_server_context_class_init (MilterServerContextClass *klass)
@@ -180,6 +191,7 @@ milter_server_context_class_init (MilterServerContextClass *klass)
 
     agent_class->decoder_new   = decoder_new;
     agent_class->encoder_new   = encoder_new;
+    agent_class->flushed       = flushed;
 
     klass->stop_on_connect          = stop_on_connect;
     klass->stop_on_helo             = stop_on_helo;
@@ -422,6 +434,15 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                      g_cclosure_marshal_VOID__OBJECT,
                      G_TYPE_NONE, 1, MILTER_TYPE_MESSAGE_RESULT);
 
+    signals[STATE_TRANSITED] =
+        g_signal_new("state-transited",
+                     G_TYPE_FROM_CLASS(klass),
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MilterServerContextClass, state_transited),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__ENUM,
+                     G_TYPE_NONE, 1, MILTER_TYPE_SERVER_CONTEXT_STATE);
+
     g_type_class_add_private(gobject_class, sizeof(MilterServerContextPrivate));
 }
 
@@ -441,6 +462,7 @@ milter_server_context_init (MilterServerContext *context)
     priv->status = MILTER_STATUS_NOT_CHANGE;
     priv->envelope_recipient_status = MILTER_STATUS_DEFAULT;
     priv->state = MILTER_SERVER_CONTEXT_STATE_START;
+    priv->next_states = NULL;
     priv->last_state = MILTER_SERVER_CONTEXT_STATE_START;
 
     priv->option = NULL;
@@ -457,6 +479,7 @@ milter_server_context_init (MilterServerContext *context)
         MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT;
 
     priv->skip_body = FALSE;
+    priv->body = g_string_new(NULL);
 
     priv->elapsed = g_timer_new();
     g_timer_stop(priv->elapsed);
@@ -477,6 +500,18 @@ disable_timeout (MilterServerContext *context)
     MilterServerContextPrivate *priv;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    if (milter_need_debug_log()) {
+        const gchar *name;
+
+        name = milter_server_context_get_name(context);
+        if (!name)
+            name = "<unknown>";
+        milter_debug("[%u] [server][timeout][disable] [%s] [%u] (%p)",
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     name,
+                     priv->timeout_id,
+                     context);
+    }
     if (priv->timeout_id > 0) {
         MilterEventLoop *loop;
         loop = milter_agent_get_event_loop(MILTER_AGENT(context));
@@ -527,6 +562,43 @@ dispose_message_result (MilterServerContextPrivate *priv)
 }
 
 static void
+dispose_next_states (MilterServerContext *context)
+{
+    MilterServerContextPrivate *priv;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+
+    if (priv->next_states) {
+        if (priv->next_states && milter_need_debug_log()) {
+            GList *node;
+            GString *unflushed_states;
+
+            unflushed_states = g_string_new(NULL);
+            for (node = priv->next_states; node; node = g_list_next(node)) {
+                MilterServerContextState state = GPOINTER_TO_UINT(node->data);
+                gchar *state_name;
+
+                state_name =
+                    milter_utils_get_enum_nick_name(
+                        MILTER_TYPE_SERVER_CONTEXT_STATE, state);
+                if (unflushed_states->len > 0) {
+                    g_string_append(unflushed_states, ",");
+                }
+                g_string_append(unflushed_states, state_name);
+            }
+            milter_debug("[%u] [server][dispose][next-states][unflushed] [%s] "
+                         "<%s>",
+                         milter_agent_get_tag(MILTER_AGENT(context)),
+                         priv->name ? priv->name : "<unknown>",
+                         unflushed_states->str);
+            g_string_free(unflushed_states, TRUE);
+        }
+        g_list_free(priv->next_states);
+        priv->next_states = NULL;
+    }
+}
+
+static void
 dispose (GObject *object)
 {
     MilterServerContext *context;
@@ -535,8 +607,10 @@ dispose (GObject *object)
     context = MILTER_SERVER_CONTEXT(object);
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
-    milter_debug("[%u] [server-context][dispose]",
-                 milter_agent_get_tag(MILTER_AGENT(context)));
+    milter_debug("[%u] [server][dispose] [%s] (%p)",
+                 milter_agent_get_tag(MILTER_AGENT(context)),
+                 priv->name ? priv->name : "<unknown>",
+                 context);
 
     disable_timeout(context);
     dispose_connect_watch(context);
@@ -552,9 +626,23 @@ dispose (GObject *object)
         priv->address = NULL;
     }
 
+    dispose_next_states(context);
+
     if (priv->option) {
         g_object_unref(priv->option);
         priv->option = NULL;
+    }
+
+    if (priv->body) {
+        if (priv->body->len > 0) {
+            milter_error("[%u] [server][dispose][body][remained] [%s] "
+                         "<%" G_GSIZE_FORMAT ">",
+                         milter_agent_get_tag(MILTER_AGENT(context)),
+                         priv->name ? priv->name : "<unknown>",
+                         priv->body->len);
+        }
+        g_string_free(priv->body, TRUE);
+        priv->body = NULL;
     }
 
     if (priv->name) {
@@ -701,12 +789,49 @@ milter_server_context_set_state (MilterServerContext *context,
                                  MilterServerContextState state)
 {
     MilterServerContextPrivate *priv;
+    MilterServerContextState previous_state;
+    MilterServerContextState previous_last_state;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    previous_state = priv->state;
+    previous_last_state = priv->last_state;
     if (MILTER_SERVER_CONTEXT_STATE_NEGOTIATE <= state &&
         state <= MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
         priv->last_state = state;
     priv->state = state;
+
+    if (milter_need_debug_log()) {
+        const gchar *name;
+        gchar *state_name, *last_state_name;
+        gchar *previous_state_name, *previous_last_state_name;
+
+        name = milter_server_context_get_name(context);
+        if (!name)
+            name = "<unknown>";
+
+        state_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                            priv->state);
+        last_state_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                            priv->last_state);
+        previous_state_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                            previous_state);
+        previous_last_state_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                            previous_last_state);
+
+        milter_debug("[%u] [server][state][set] [%s] <%s>:<%s> -> <%s>:<%s>",
+                     milter_agent_get_tag(MILTER_AGENT(context)),
+                     name,
+                     previous_state_name, previous_last_state_name,
+                     state_name, last_state_name);
+        g_free(state_name);
+        g_free(last_state_name);
+        g_free(previous_state_name);
+        g_free(previous_last_state_name);
+    }
 }
 
 MilterServerContextState
@@ -762,9 +887,26 @@ static gboolean
 cb_writing_timeout (gpointer data)
 {
     MilterServerContext *context = data;
+    MilterAgent *agent;
 
+    agent = MILTER_AGENT(context);
+    if (milter_need_debug_log()) {
+        MilterServerContextPrivate *priv;
+        const gchar *name = NULL;
+
+        priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+        if (priv)
+            name = milter_server_context_get_name(context);
+        if (!name)
+            name = "<unknown>";
+        milter_debug("[%u] [server][timeout][writing] [%s] [%u] (%p)",
+                     priv ? milter_agent_get_tag(agent) : 0,
+                     name,
+                     priv ? priv->timeout_id : 0,
+                     context);
+    }
     g_signal_emit(context, signals[WRITING_TIMEOUT], 0);
-    milter_agent_shutdown(MILTER_AGENT(context));
+    milter_agent_shutdown(agent);
 
     return FALSE;
 }
@@ -773,9 +915,26 @@ static gboolean
 cb_end_of_message_timeout (gpointer data)
 {
     MilterServerContext *context = data;
+    MilterAgent *agent;
 
+    agent = MILTER_AGENT(context);
+    if (milter_need_debug_log()) {
+        MilterServerContextPrivate *priv;
+        const gchar *name = NULL;
+
+        priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+        if (priv)
+            name = milter_server_context_get_name(context);
+        if (!name)
+            name = "<unknown>";
+        milter_debug("[%u] [server][timeout][end-of-message] [%s] [%u] (%p)",
+                     priv ? milter_agent_get_tag(agent) : 0,
+                     name,
+                     priv ? priv->timeout_id : 0,
+                     context);
+    }
     g_signal_emit(context, signals[END_OF_MESSAGE_TIMEOUT], 0);
-    milter_agent_shutdown(MILTER_AGENT(context));
+    milter_agent_shutdown(agent);
 
     return FALSE;
 }
@@ -784,9 +943,26 @@ static gboolean
 cb_reading_timeout (gpointer data)
 {
     MilterServerContext *context = data;
+    MilterAgent *agent;
 
+    agent = MILTER_AGENT(context);
+    if (milter_need_debug_log()) {
+        MilterServerContextPrivate *priv;
+        const gchar *name = NULL;
+
+        priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+        if (priv)
+            name = milter_server_context_get_name(context);
+        if (!name)
+            name = "<unknown>";
+        milter_debug("[%u] [server][timeout][reading] [%s] [%u] (%p)",
+                     priv ? milter_agent_get_tag(agent) : 0,
+                     name,
+                     priv ? priv->timeout_id : 0,
+                     context);
+    }
     g_signal_emit(context, signals[READING_TIMEOUT], 0);
-    milter_agent_shutdown(MILTER_AGENT(context));
+    milter_agent_shutdown(agent);
 
     return FALSE;
 }
@@ -988,18 +1164,330 @@ milter_server_context_need_reply (MilterServerContext *context,
 static void
 reset_end_of_message_timeout (MilterServerContext *context)
 {
+    MilterAgent *agent;
     MilterEventLoop *loop;
     MilterServerContextPrivate *priv;
 
     disable_timeout(context);
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
-    loop = milter_agent_get_event_loop(MILTER_AGENT(context));
+    agent = MILTER_AGENT(context);
+    loop = milter_agent_get_event_loop(agent);
     priv->timeout_id =
         milter_event_loop_add_timeout(loop,
                                       priv->end_of_message_timeout,
                                       cb_end_of_message_timeout,
                                       context);
+    if (milter_need_debug_log()) {
+        const gchar *name;
+
+        name = milter_server_context_get_name(context);
+        if (!name)
+            name = "<unknown>";
+        milter_debug("[%u] [server][timeout][end-of-message][registered][%g] "
+                     "[%s] <%u> (%p)",
+                     milter_agent_get_tag(agent),
+                     priv->end_of_message_timeout,
+                     name,
+                     priv->timeout_id,
+                     context);
+    }
+}
+
+static void
+append_body_response_queue (MilterServerContext *context)
+{
+    MilterServerContextPrivate *priv;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    priv->body_response_queue = g_list_append(priv->body_response_queue,
+                                              GUINT_TO_POINTER(0));
+}
+
+static void
+increment_process_body_count (MilterServerContext *context)
+{
+    MilterServerContextPrivate *priv;
+    GList *last_node;
+    guint process_body_count;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+
+    last_node = g_list_last(priv->body_response_queue);
+    process_body_count = GPOINTER_TO_UINT(last_node->data);
+    process_body_count++;
+    last_node->data = GUINT_TO_POINTER(process_body_count);
+}
+
+static gboolean
+flush_body (MilterServerContext *context)
+{
+    MilterServerContextPrivate *priv;
+    guint tag = 0;
+    const gchar *name = NULL;
+    MilterEncoder *encoder;
+    MilterCommandEncoder *command_encoder;
+    MilterServerContextState state = MILTER_SERVER_CONTEXT_STATE_BODY;
+    const gchar *packet = NULL;
+    gsize packet_size;
+    gsize packed_size;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+
+    if (milter_need_debug_log()) {
+        tag = milter_agent_get_tag(MILTER_AGENT(context));
+        name = milter_server_context_get_name(context);
+        if (!name)
+            name = "<unknown>";
+    }
+
+    milter_debug("[%u] [server][body][flush] [%s] <%" G_GSIZE_FORMAT ">",
+                 tag, name, priv->body->len);
+
+    milter_debug("[%u] [server][timer][continue] %g: %s",
+                 tag, g_timer_elapsed(priv->elapsed, NULL), name);
+    g_timer_continue(priv->elapsed);
+    encoder = milter_agent_get_encoder(MILTER_AGENT(context));
+    command_encoder = MILTER_COMMAND_ENCODER(encoder);
+    append_body_response_queue(context);
+
+    milter_command_encoder_encode_body(command_encoder,
+                                       &packet, &packet_size,
+                                       priv->body->str,
+                                       priv->body->len,
+                                       &packed_size);
+    if (!write_packet(context, packet, packet_size, state))
+        return FALSE;
+
+    g_string_erase(priv->body, 0, packed_size);
+    increment_process_body_count(context);
+
+    g_timer_stop(priv->elapsed);
+    milter_debug("[%u] [server][timer][stop] [%s] <%g>",
+                 tag, name, g_timer_elapsed(priv->elapsed, NULL));
+
+    return TRUE;
+}
+
+static gboolean
+process_next_state_body (MilterServerContext *context)
+{
+    MilterServerContextPrivate *priv;
+    guint tag = 0;
+    const gchar *name = NULL;
+    MilterServerContextState state = MILTER_SERVER_CONTEXT_STATE_BODY;
+    MilterEventLoop *loop;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+
+    if (milter_need_debug_log()) {
+        tag = milter_agent_get_tag(MILTER_AGENT(context));
+        name = milter_server_context_get_name(context);
+        if (!name)
+            name = "<unknown>";
+    }
+
+    milter_debug("[%u] [server][flushed][next][body] [%s] <%" G_GSIZE_FORMAT ">",
+                 tag, name, priv->body->len);
+
+    if (priv->body->len == 0)
+        return TRUE;
+
+    if (!milter_server_context_need_reply(context, state))
+        return flush_body(context);
+
+    disable_timeout(context);
+    loop = milter_agent_get_event_loop(MILTER_AGENT(context));
+    priv->timeout_id =
+        milter_event_loop_add_timeout(loop,
+                                      priv->reading_timeout,
+                                      cb_reading_timeout,
+                                      context);
+    milter_debug("[%u] [server][timeout][reading][registered][%g] "
+                 "[%s] <%u> (%p)",
+                 tag,
+                 priv->reading_timeout,
+                 name,
+                 priv->timeout_id,
+                 context);
+
+    return TRUE;
+}
+
+static void
+process_next_state (MilterServerContext *context,
+                    MilterServerContextState next_state)
+{
+    MilterAgent *agent;
+    MilterServerContextPrivate *priv;
+    guint tag = 0;
+    const gchar *name = NULL;
+    gchar *state_name = NULL;
+    gchar *next_state_name = NULL;
+
+    agent = MILTER_AGENT(context);
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+
+    if (milter_need_debug_log()) {
+        tag = milter_agent_get_tag(agent);
+        name = milter_server_context_get_name(context);
+        if (!name)
+            name = "<unknown>";
+        state_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                            priv->state);
+        next_state_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                            next_state);
+    }
+
+    milter_debug("[%u] [server][flushed][next] [%s] <%s> -> <%s>",
+                 tag, name, state_name, next_state_name);
+
+    if (next_state == MILTER_SERVER_CONTEXT_STATE_INVALID) {
+        GError *error = NULL;
+
+        if (!state_name) {
+            state_name =
+                milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                                priv->state);
+        }
+
+        g_set_error(&error,
+                    MILTER_SERVER_CONTEXT_ERROR,
+                    MILTER_SERVER_CONTEXT_ERROR_INVALID_STATE,
+                    "flushed with invalid next state: <%s>",
+                    state_name);
+        g_free(state_name);
+        if (next_state_name)
+            g_free(next_state_name);
+        milter_error("[%u] [server][flushed][error][next-state][invalid] "
+                     "[%s] %s",
+                     tag, name, error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context), error);
+        g_error_free(error);
+        return;
+    }
+
+    disable_timeout(context);
+
+    switch (next_state) {
+    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
+        if (priv->process_body_count == 0)
+            milter_server_context_set_state(context, next_state);
+        else
+            priv->sent_end_of_message = TRUE;
+        reset_end_of_message_timeout(context);
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_BODY:
+        milter_server_context_set_state(context, next_state);
+        process_next_state_body(context);
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_QUIT:
+        milter_agent_shutdown(agent);
+        milter_server_context_set_state(context, next_state);
+        break;
+    case MILTER_SERVER_CONTEXT_STATE_ABORT:
+        if (MILTER_STATUS_IS_PASS(priv->status) &&
+            (MILTER_SERVER_CONTEXT_STATE_DEFINE_MACRO <= priv->state &&
+             priv->state < MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)) {
+            if (priv->state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT &&
+                priv->envelope_recipient_status != MILTER_STATUS_DEFAULT) {
+                priv->status = priv->envelope_recipient_status;
+            } else {
+                priv->status = MILTER_STATUS_ABORT;
+            }
+        }
+        milter_server_context_set_state(context, next_state);
+        emit_message_processed_signal(context);
+        milter_server_context_reset_message_related_data(context);
+        break;
+    default:
+        milter_server_context_set_state(context, next_state);
+        if (milter_server_context_need_reply(context, next_state)) {
+            MilterEventLoop *loop;
+
+            loop = milter_agent_get_event_loop(agent);
+            priv->timeout_id =
+                milter_event_loop_add_timeout(loop,
+                                              priv->reading_timeout,
+                                              cb_reading_timeout,
+                                              context);
+            milter_debug("[%u] [server][timeout][reading][registered][%g] "
+                         "[%s] <%u> (%p)",
+                         tag,
+                         priv->reading_timeout,
+                         name,
+                         priv->timeout_id,
+                         context);
+        } else {
+            g_timer_stop(priv->elapsed);
+        }
+        break;
+    }
+
+    if (state_name)
+        g_free(state_name);
+    if (next_state_name)
+        g_free(next_state_name);
+}
+
+static void
+flushed (MilterAgent *agent)
+{
+    MilterServerContext *context;
+    MilterServerContextPrivate *priv;
+    guint tag = 0;
+    const gchar *name = NULL;
+    GList *node, *next_states;
+
+    context = MILTER_SERVER_CONTEXT(agent);
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+
+    if (milter_need_debug_log()) {
+        gchar *state_name = NULL;
+        GString *next_state_names = NULL;
+
+        tag = milter_agent_get_tag(agent);
+        name = milter_server_context_get_name(context);
+        if (!name)
+            name = "<unknown>";
+        state_name =
+            milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                            priv->state);
+        next_state_names = g_string_new(NULL);
+        for (node = priv->next_states; node; node = g_list_next(node)) {
+            MilterServerContextState next_state;
+            gchar *next_state_name;
+
+            next_state = GPOINTER_TO_UINT(node->data);
+            next_state_name =
+                milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
+                                                next_state);
+            if (next_state_names->len > 0)
+                g_string_append(next_state_names, ",");
+            g_string_append(next_state_names, next_state_name);
+            g_free(next_state_name);
+        }
+        milter_debug("[%u] [server][flushed] [%s] <%s> -> <%s>",
+                     tag, name, state_name, next_state_names->str);
+        g_free(state_name);
+        g_string_free(next_state_names, TRUE);
+    }
+
+    next_states = priv->next_states;
+    priv->next_states = NULL;
+    for (node = next_states; node; node = g_list_next(node)) {
+        MilterServerContextState next_state;
+
+        next_state = GPOINTER_TO_UINT(node->data);
+        process_next_state(context, next_state);
+        g_signal_emit(context, signals[STATE_TRANSITED], 0, next_state);
+    }
+    g_list_free(next_states);
+
+    milter_debug("[%u] [server][flushed][done] [%s]",
+                 tag, name);
 }
 
 static gboolean
@@ -1023,6 +1511,9 @@ write_packet (MilterServerContext *context,
     loop = milter_agent_get_event_loop(MILTER_AGENT(context));
     name = milter_server_context_get_name(context);
 
+    milter_debug("[%u] [server][write] [%s] (%p)",
+                 tag, name, context);
+
     switch (next_state) {
     case MILTER_SERVER_CONTEXT_STATE_ABORT:
     case MILTER_SERVER_CONTEXT_STATE_QUIT:
@@ -1044,8 +1535,8 @@ write_packet (MilterServerContext *context,
                         MILTER_SERVER_CONTEXT_ERROR_BUSY,
                         "previous command has been processing: %s -> %s",
                         inspected_current_state, inspected_next_state);
-            milter_error("[%u] [server][error] %s: %s",
-                         tag, error->message, name);
+            milter_error("[%u] [server][error] [%s] %s",
+                         tag, name, error->message);
             milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context),
                                         error);
             g_error_free(error);
@@ -1064,6 +1555,20 @@ write_packet (MilterServerContext *context,
                                                          priv->writing_timeout,
                                                          cb_writing_timeout,
                                                          context);
+        if (milter_need_debug_log()) {
+            const gchar *name;
+
+            name = milter_server_context_get_name(context);
+            if (!name)
+                name = "<unknown>";
+            milter_debug("[%u] [server][timeout][writing][registered][%g] "
+                         "[%s] <%u> (%p)",
+                         tag,
+                         priv->writing_timeout,
+                         name,
+                         priv->timeout_id,
+                         context);
+        }
         break;
     }
 
@@ -1103,73 +1608,33 @@ write_packet (MilterServerContext *context,
     milter_agent_write_packet(MILTER_AGENT(context),
                               packed_packet->str, packed_packet->len,
                               &agent_error);
-    disable_timeout(context);
     g_string_free(packed_packet, TRUE);
 
     if (agent_error) {
         GError *error = NULL;
+
+        disable_timeout(context);
         milter_utils_set_error_with_sub_error(
             &error,
             MILTER_SERVER_CONTEXT_ERROR,
             MILTER_SERVER_CONTEXT_ERROR_IO_ERROR,
             agent_error,
             "Failed to write to milter");
-        milter_error("[%u] [server][error][write] %s: %s",
-                     tag, error->message, name);
+        milter_error("[%u] [server][error][write] [%s] %s",
+                     tag, name, error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context),
                                     error);
         g_error_free(error);
 
         g_timer_stop(priv->elapsed);
-        milter_debug("[%u] [server][timer][stop] %g: %s",
-                     tag, g_timer_elapsed(priv->elapsed, NULL), name);
+        milter_debug("[%u] [server][timer][stop] [%s] <%g>",
+                     tag, name, g_timer_elapsed(priv->elapsed, NULL));
 
         return FALSE;
     }
 
-    switch (next_state) {
-    case MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE:
-        if (priv->process_body_count == 0)
-            milter_server_context_set_state(context, next_state);
-        else
-            priv->sent_end_of_message = TRUE;
-        reset_end_of_message_timeout(context);
-        break;
-    case MILTER_SERVER_CONTEXT_STATE_BODY:
-        milter_server_context_set_state(context, next_state);
-        break;
-    case MILTER_SERVER_CONTEXT_STATE_QUIT:
-        milter_agent_shutdown(MILTER_AGENT(context));
-        milter_server_context_set_state(context, next_state);
-        break;
-    case MILTER_SERVER_CONTEXT_STATE_ABORT:
-        if (MILTER_STATUS_IS_PASS(priv->status) &&
-            (MILTER_SERVER_CONTEXT_STATE_DEFINE_MACRO <= priv->state &&
-             priv->state < MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)) {
-            if (priv->state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT &&
-                priv->envelope_recipient_status != MILTER_STATUS_DEFAULT) {
-                priv->status = priv->envelope_recipient_status;
-            } else {
-                priv->status = MILTER_STATUS_ABORT;
-            }
-        }
-        milter_server_context_set_state(context, next_state);
-        emit_message_processed_signal(context);
-        break;
-    default:
-        milter_server_context_set_state(context, next_state);
-        if (milter_server_context_need_reply(context, next_state)) {
-            priv->timeout_id =
-                milter_event_loop_add_timeout(loop,
-                                              priv->reading_timeout,
-                                              cb_reading_timeout,
-                                              context);
-        } else {
-            g_timer_stop(priv->elapsed);
-        }
-        break;
-    }
-
+    priv->next_states = g_list_append(priv->next_states,
+                                      GUINT_TO_POINTER(next_state));
     return TRUE;
 }
 
@@ -1704,40 +2169,11 @@ milter_server_context_end_of_header (MilterServerContext *context)
                         MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER);
 }
 
-static void
-append_body_response_queue (MilterServerContext *context)
-{
-    MilterServerContextPrivate *priv;
-
-    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
-    priv->body_response_queue = g_list_append(priv->body_response_queue,
-                                              GUINT_TO_POINTER(0));
-}
-
-static void
-increment_process_body_count (MilterServerContext *context)
-{
-    MilterServerContextPrivate *priv;
-    GList *last_node;
-    guint process_body_count;
-
-    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
-
-    last_node = g_list_last(priv->body_response_queue);
-    process_body_count = GPOINTER_TO_UINT(last_node->data);
-    process_body_count++;
-    last_node->data = GUINT_TO_POINTER(process_body_count);
-}
-
 gboolean
 milter_server_context_body (MilterServerContext *context,
                             const gchar         *chunk,
                             gsize                size)
 {
-    const gchar *packet = NULL;
-    gsize packet_size;
-    MilterEncoder *encoder;
-    MilterCommandEncoder *command_encoder;
     MilterServerContextState state = MILTER_SERVER_CONTEXT_STATE_BODY;
     gboolean stop = FALSE;
     MilterServerContextPrivate *priv;
@@ -1749,10 +2185,12 @@ milter_server_context_body (MilterServerContext *context,
     if (milter_need_debug_log()) {
         tag = milter_agent_get_tag(MILTER_AGENT(context));
         name = milter_server_context_get_name(context);
+        if (!name)
+            name = "<unknown>";
     }
 
-    milter_debug("[%u] [server][send][body] size=%" G_GSIZE_FORMAT ": %s",
-                 tag, size, name);
+    milter_debug("[%u] [server][send][body] [%s] size=<%" G_GSIZE_FORMAT ">",
+                 tag, name, size);
 
     ensure_message_result(priv);
     milter_message_result_add_body_size(priv->message_result, size);
@@ -1760,9 +2198,9 @@ milter_server_context_body (MilterServerContext *context,
 
     milter_protocol_agent_set_macro_context(MILTER_PROTOCOL_AGENT(context),
                                             MILTER_COMMAND_BODY);
-    milter_debug("[%u] [server][stop-on-body][start] %s", tag, name);
+    milter_debug("[%u] [server][stop-on-body][start] [%s]", tag, name);
     g_signal_emit(context, signals[STOP_ON_BODY], 0, chunk, size, &stop);
-    milter_debug("[%u] [server][stop-on-body][end] %s: stop=<%s>",
+    milter_debug("[%u] [server][stop-on-body][end] [%s]: stop=<%s>",
                  tag, name, stop ? "true" : "false");
     if (stop) {
         stop_on_state(context, state);
@@ -1770,47 +2208,14 @@ milter_server_context_body (MilterServerContext *context,
     }
 
     if (milter_server_context_is_enable_step(context, MILTER_STEP_NO_BODY)) {
-        milter_debug("[%u] [server][body][skip] %s", tag, name);
+        milter_debug("[%u] [server][body][skip] [%s]", tag, name);
         milter_server_context_set_state(context, state);
         g_signal_emit_by_name(context, "skip");
         return TRUE;
     }
 
-    milter_debug("[%u] [server][timer][continue] %g: %s",
-                 tag, g_timer_elapsed(priv->elapsed, NULL), name);
-    g_timer_continue(priv->elapsed);
-    encoder = milter_agent_get_encoder(MILTER_AGENT(context));
-    command_encoder = MILTER_COMMAND_ENCODER(encoder);
-    append_body_response_queue(context);
-
-    while (size > 0) {
-        gsize packed_size;
-
-        milter_command_encoder_encode_body(command_encoder,
-                                           &packet, &packet_size,
-                                           chunk, size, &packed_size);
-
-        if (!write_packet(context, packet, packet_size,
-                          MILTER_SERVER_CONTEXT_STATE_BODY))
-            return FALSE;
-
-        chunk += packed_size;
-        size -= packed_size;
-        increment_process_body_count(context);
-    }
-
-    if (milter_server_context_need_reply(context, state)) {
-        MilterEventLoop *loop;
-        loop = milter_agent_get_event_loop(MILTER_AGENT(context));
-        priv->timeout_id = milter_event_loop_add_timeout(loop,
-                                                         priv->reading_timeout,
-                                                         cb_reading_timeout,
-                                                         context);
-    } else {
-        g_timer_stop(priv->elapsed);
-    }
-
-    return TRUE;
+    g_string_append_len(priv->body, chunk, size);
+    return flush_body(context);
 }
 
 gboolean
@@ -1891,7 +2296,6 @@ milter_server_context_abort (MilterServerContext *context)
     const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
-    gboolean success;
 
     priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
@@ -1902,11 +2306,8 @@ milter_server_context_abort (MilterServerContext *context)
     milter_command_encoder_encode_abort(MILTER_COMMAND_ENCODER(encoder),
                                         &packet, &packet_size);
 
-    success = write_packet(context, packet, packet_size,
-                           MILTER_SERVER_CONTEXT_STATE_ABORT);
-    if (success)
-        milter_server_context_reset_message_related_data(context);
-    return success;
+    return write_packet(context, packet, packet_size,
+                        MILTER_SERVER_CONTEXT_STATE_ABORT);
 }
 
 static void
@@ -1938,7 +2339,8 @@ invalid_state (MilterServerContext *context,
                 "<%s> should be caused on <%s> but was <%s>",
                 action, expected_states, state_name);
     milter_error("[%u] [server][error][%s][state][invalid][%s] %s: %s",
-                 tag, action, state_name, error->message, name);
+                 tag, action, state_name, error->message,
+                 name ? name : "(unknown)");
     milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context),
                                 error);
     g_error_free(error);
@@ -2100,6 +2502,13 @@ cb_decoder_continue (MilterReplyDecoder *decoder, gpointer user_data)
     switch (priv->state) {
       case MILTER_SERVER_CONTEXT_STATE_BODY:
         decrement_process_body_count(context);
+        if (priv->body->len > 0) {
+            if (!flush_body(context)) {
+                milter_debug("[%u] [server][receive][continue]"
+                             "[body][flush][error] [%s]",
+                             tag, name);
+            }
+        }
         break;
       case MILTER_SERVER_CONTEXT_STATE_CONNECT:
       case MILTER_SERVER_CONTEXT_STATE_HELO:
@@ -2836,9 +3245,21 @@ static gboolean
 cb_connection_timeout (gpointer data)
 {
     MilterServerContext *context = data;
-    MilterServerContextPrivate *priv;
+    MilterAgent *agent;
 
-    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    agent = MILTER_AGENT(context);
+    if (milter_need_debug_log()) {
+        MilterServerContextPrivate *priv;
+        const gchar *name;
+
+        priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+        name = priv ? milter_server_context_get_name(context) : "<unknown>";
+        milter_debug("[%u] [server][timeout][connection] [%s] [%u] (%p)",
+                     priv ? milter_agent_get_tag(agent) : 0,
+                     name,
+                     priv ? priv->timeout_id : 0,
+                     context);
+    }
     milter_error("[server][timeout][connection] %s",
                  milter_server_context_get_name(context));
     g_signal_emit(context, signals[CONNECTION_TIMEOUT], 0);
@@ -2938,6 +3359,7 @@ gboolean
 milter_server_context_establish_connection (MilterServerContext *context,
                                             GError **error)
 {
+    MilterAgent *agent;
     MilterServerContextPrivate *priv;
     MilterEventLoop *loop;
     GError *io_error = NULL;
@@ -2976,7 +3398,6 @@ milter_server_context_establish_connection (MilterServerContext *context,
             "Failed to set encoding for preparing connect()");
         return FALSE;
     }
-    g_io_channel_set_buffered(priv->client_channel, FALSE);
 
     g_io_channel_set_flags(priv->client_channel,
                            G_IO_FLAG_NONBLOCK |
@@ -2994,7 +3415,8 @@ milter_server_context_establish_connection (MilterServerContext *context,
         return FALSE;
     }
 
-    loop = milter_agent_get_event_loop(MILTER_AGENT(context));
+    agent = MILTER_AGENT(context);
+    loop = milter_agent_get_event_loop(agent);
     priv->connect_watch_id =
         milter_event_loop_watch_io(loop,
                                    priv->client_channel,
@@ -3007,6 +3429,20 @@ milter_server_context_establish_connection (MilterServerContext *context,
                                                      priv->connection_timeout,
                                                      cb_connection_timeout,
                                                      context);
+    if (milter_need_debug_log()) {
+        const gchar *name;
+
+        name = milter_server_context_get_name(context);
+        if (!name)
+            name = "<unknown>";
+        milter_debug("[%u] [server][timeout][connection][registered][%g] "
+                     "[%s] <%u> (%p)",
+                     milter_agent_get_tag(agent),
+                     priv->connection_timeout,
+                     name,
+                     priv->timeout_id,
+                     context);
+    }
 
     if (connect(client_fd, priv->address, priv->address_size) == -1) {
         if (errno == EINPROGRESS)

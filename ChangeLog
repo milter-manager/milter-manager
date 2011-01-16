@@ -1,5 +1,16 @@
 2011-01-16  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-agent.[ch],
+	milter/core/milter-reader.c,
+	milter/core/milter-writer.[ch],
+	milter/manager/milter-manager-children.c,
+	milter/server/milter-server-context.[ch],
+	tool/milter-test-server.c,
+	test/: make write asynchronize. This improves cuncurrency on many write
+	block case, e.g. many delete-recipinet with Postfix (Postfix's
+	delete-recipient's O(n^2) :<), but decrease performance on many
+	normal cases. :<...
+
 	* binding/ruby/lib/milter/client/command-line.rb: show --n-workers
 	default value.
 

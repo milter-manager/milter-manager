@@ -105,9 +105,14 @@ test_tag (void)
     cut_assert_equal_uint(29, milter_reader_get_tag(reader));
 
     milter_agent_set_reader(agent, NULL);
-    cut_assert_equal_uint(0, milter_reader_get_tag(reader));
+    cut_assert_equal_uint(29, milter_reader_get_tag(reader));
     milter_agent_set_writer(agent, NULL);
-    cut_assert_equal_uint(0, milter_writer_get_tag(writer));
+    cut_assert_equal_uint(29, milter_writer_get_tag(writer));
+
+    milter_reader_set_tag(reader, 2929);
+    cut_assert_equal_uint(2929, milter_reader_get_tag(reader));
+    milter_writer_set_tag(writer, 2929);
+    cut_assert_equal_uint(2929, milter_writer_get_tag(writer));
 
     milter_agent_set_reader(agent, reader);
     cut_assert_equal_uint(29, milter_reader_get_tag(reader));
