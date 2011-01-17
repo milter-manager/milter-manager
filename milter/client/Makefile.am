@@ -15,6 +15,7 @@ BUILT_SOURCES =
 milter_client_public_headers =		\
 	milter-client.h			\
 	milter-client-context.h		\
+	milter-client-runner.h		\
 	milter-client-objects.h
 
 enum_source_prefix = milter-client-enum-types
@@ -34,7 +35,8 @@ libmilter_client_la_SOURCES =		\
 	milter-client-enum-types.c	\
 	milter-client.c			\
 	milter-client-init.c		\
-	milter-client-context.c
+	milter-client-context.c		\
+	milter-client-runner.c
 
 libmilter_client_la_LIBADD =					\
 	$(top_builddir)/milter/core/libmilter-core.la		\
