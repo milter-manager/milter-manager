@@ -35,7 +35,7 @@ G_BEGIN_DECLS
 
 typedef enum
 {
-    MILTER_CLIENT_RUNNER_ERROR_TODO
+    MILTER_CLIENT_RUNNER_ERROR_RUNNING
 } MilterClientRunnerError;
 
 typedef struct _MilterClientRunner         MilterClientRunner;
@@ -58,8 +58,6 @@ struct _MilterClientRunnerClass
 GQuark               milter_client_runner_error_quark       (void);
 
 GType                milter_client_runner_get_type          (void) G_GNUC_CONST;
-
-MilterClientRunner  *milter_client_runner_new               (MilterClientRunner *runner);
 
 gboolean             milter_client_runner_run               (MilterClientRunner *runner,
                                                              GError            **error);
