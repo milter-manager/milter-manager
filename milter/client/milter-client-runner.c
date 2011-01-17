@@ -160,6 +160,15 @@ milter_client_runner_run (MilterClientRunner *runner, GError **error)
     return runner_class->run(runner, error);
 }
 
+void
+milter_client_runner_quit (MilterClientRunner *runner)
+{
+    MilterClientRunnerClass *runner_class;
+
+    runner_class = MILTER_CLIENT_RUNNER_GET_CLASS(runner);
+    runner_class->quit(runner);
+}
+
 MilterClient *
 milter_client_runner_get_client (MilterClientRunner *runner)
 {

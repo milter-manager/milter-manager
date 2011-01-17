@@ -41,6 +41,7 @@ G_DEFINE_TYPE(MilterClientSingleThreadRunner,
 static void     dispose        (GObject             *object);
 static gboolean run            (MilterClientRunner  *runner,
                                 GError             **error);
+static void     quit           (MilterClientRunner  *runner);
 
 static void
 milter_client_single_thread_runner_class_init (MilterClientSingleThreadRunnerClass *klass)
@@ -54,6 +55,7 @@ milter_client_single_thread_runner_class_init (MilterClientSingleThreadRunnerCla
     gobject_class->dispose      = dispose;
 
     runner_class->run = run;
+    runner_class->quit = quit;
 
     g_type_class_add_private(gobject_class,
                              sizeof(MilterClientSingleThreadRunnerPrivate));
@@ -97,6 +99,14 @@ run (MilterClientRunner *runner, GError **error)
     priv = MILTER_CLIENT_SINGLE_THREAD_RUNNER_GET_PRIVATE(runner);
 
     return TRUE;
+}
+
+static void
+quit (MilterClientRunner *runner)
+{
+    MilterClientSingleThreadRunnerPrivate *priv;
+
+    priv = MILTER_CLIENT_SINGLE_THREAD_RUNNER_GET_PRIVATE(runner);
 }
 
 /*

@@ -52,6 +52,7 @@ struct _MilterClientRunnerClass
 
     gboolean     (*run)                (MilterClientRunner *runner,
                                         GError            **error);
+    void         (*quit)               (MilterClientRunner *runner);
 };
 
 GQuark               milter_client_runner_error_quark       (void);
@@ -62,6 +63,7 @@ MilterClientRunner  *milter_client_runner_new               (MilterClientRunner 
 
 gboolean             milter_client_runner_run               (MilterClientRunner *runner,
                                                              GError            **error);
+void                 milter_client_runner_quit              (MilterClientRunner *runner);
 
 MilterClient        *milter_client_runner_get_client        (MilterClientRunner *runner);
 
