@@ -640,7 +640,7 @@ milter_agent_shutdown (MilterAgent *agent)
 
     priv->shutting_down = TRUE;
     if (priv->writer) {
-        milter_debug("[%u] [agent][shutdown][writer][shutdown]", priv->tag);
+        milter_debug("[%u] [agent][shutdown][writer]", priv->tag);
         milter_writer_shutdown(priv->writer);
     }
 
