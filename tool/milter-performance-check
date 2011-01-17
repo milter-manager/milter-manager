@@ -30,9 +30,10 @@ end
 
 class MilterBenchmark
   class Statistics
+    attr_reader :n_processed_messages
     def initialize
       @mutex = Mutex.new
-      @elapsed_time = 0
+      @elapsed_time = nil
 
       @sources = []
       @rejected_sources = []
@@ -43,7 +44,7 @@ class MilterBenchmark
       @temporary_failure_messages = []
       @reject_messages = []
       @error_messages = []
-      @n_processed_mails = 0
+      @n_processed_messages = 0
     end
 
     def update(source_file, response_time,
@@ -56,10 +57,9 @@ class MilterBenchmark
           @temporary_failure_sources << source_file if temporary_failure_message
         end
         @accumulated_response_time += response_time
-        @n_processed_mails += 1
+        @n_processed_messages += 1
         @max_response_time = [response_time, @max_response_time].max
-        @min_response_time = [response_time,
-                              @min_response_time || response_time].min
+        @min_response_time = [response_time, @min_response_time || response_time].min
         if temporary_failure_message
           @temporary_failure_messages << temporary_failure_message
         end
@@ -69,9 +69,9 @@ class MilterBenchmark
     end
 
     def measure
-      start_time = Time.now
+      @start_time = Time.now
       yield
-      @elapsed_time = Time.now - start_time
+      @elapsed_time = Time.now - @start_time
     end
 
     def format
@@ -94,23 +94,44 @@ class MilterBenchmark
       statistics
     end
 
-    private
-    def average(elapsed_time)
+    def throughput
+      elapsed_time = (@elapsed_time || (Time.now - @start_time))
       if elapsed_time.zero?
-        @n_processed_mails
+        @n_processed_messages
       else
-        @n_processed_mails / elapsed_time.to_f
+        @n_processed_messages / elapsed_time.to_f
       end
     end
 
-    def average_per_mail(elapsed_time)
-      if @n_processed_mails.zero?
-        elapsed_time.to_f
+    def max_response_time
+      @max_response_time
+    end
+
+    def min_response_time
+      @min_response_time || 0
+    end
+
+    def average_response_time
+      if @n_processed_messages.zero?
+        @accumulated_response_time.to_f
       else
-        elapsed_time.to_f / @n_processed_mails
+        @accumulated_response_time.to_f / @n_processed_messages
       end
     end
 
+    def n_temporary_failure_messages
+      @temporary_failure_messages.size
+    end
+
+    def n_reject_messages
+      @reject_messages.size
+    end
+
+    def n_error_messages
+      @error_messages.size
+    end
+
+    private
     def format_sources
       statistics = ""
       statistics << format_sent_sources
@@ -153,35 +174,33 @@ class MilterBenchmark
 
     def format_total
       statistics = "Total:\n"
-      statistics << "      N mails: %#6d\n" % @n_processed_mails
+      statistics << "      N mails: %#6d\n" % @n_processed_messages
       statistics << " Elapsed time: %#6.2f (sec)\n" % @elapsed_time
-      _average = average(@elapsed_time)
-      statistics << "      Average: %#6.2f (mails/sec)\n" % _average
+      statistics << "   Throughput: %#6.2f (mails/sec)\n" % throughput
       statistics
     end
 
     def format_per_mail
       statistics = "Per mail:\n"
-      statistics << "          Max: %#6.2f (sec)\n" % @max_response_time
-      statistics << "          Min: %#6.2f (sec)\n" % (@min_response_time || 0)
-      _average = average_per_mail(@accumulated_response_time)
-      statistics << "      Average: %#6.2f (sec)\n" % _average
+      statistics << "          Max: %#6.2f (sec)\n" % max_response_time
+      statistics << "          Min: %#6.2f (sec)\n" % min_response_time
+      statistics << "      Average: %#6.2f (sec)\n" % average_response_time
       statistics
     end
 
     def format_status_item(label, n_mails)
       " #{label}: %3d (%6.2f%%)\n" % [n_mails,
-                                      n_mails.to_f / @n_processed_mails * 100]
+                                      n_mails.to_f / @n_processed_messages * 100]
     end
 
     def format_status
       statistics = "Status:\n"
       statistics << format_status_item("Temporary failure",
-                                       @temporary_failure_messages.size)
+                                       n_temporary_failure_messages)
       statistics << format_status_item("           Reject",
-                                       @reject_messages.size)
+                                       n_reject_messages)
       statistics << format_status_item("            Error",
-                                       @error_messages.size)
+                                       n_error_messages)
       statistics
     end
 
@@ -224,6 +243,63 @@ class MilterBenchmark
     end
   end
 
+  class PeriodicalStatisticsReporter
+    attr_accessor :interval
+    attr_reader :statistics
+    def initialize
+      @interval = nil
+      @thread = nil
+      @stop = false
+      @statistics = Statistics.new
+    end
+
+    def run
+      @stop = false
+      if @interval
+        @thread = Thread.new do
+          report_header
+          until @stop
+            statistics = @statistics = Statistics.new
+            statistics.measure do
+              sleep(@interval)
+            end
+            report(statistics)
+          end
+        end
+      end
+      yield
+      stop
+    end
+
+    def stop
+      @stop = true
+    end
+
+    private
+    def report_items(items)
+      puts("%8s %5s %7s %6s %6s %6s %5s %5s %5s" % items)
+    end
+
+    def report_header
+      headers = ["Time", "Sent", "mails/s", "Max(s)", "Min(s)", "Avg(s)",
+                 "4XX", "5XX", "Error"]
+      report_items(headers)
+    end
+
+    def report(statistics)
+      items = [Time.now.strftime("%H:%M:%S"),
+               "%#5d" % statistics.n_processed_messages.to_s,
+               "%#6.2f" % statistics.throughput,
+               "%#6.2f" % statistics.max_response_time,
+               "%#6.2f" % statistics.min_response_time,
+               "%#6.2f" % statistics.average_response_time,
+               "%#5d" % statistics.n_temporary_failure_messages,
+               "%#5d" % statistics.n_reject_messages,
+               "%#5d" % statistics.n_error_messages]
+      report_items(items)
+    end
+  end
+
   def initialize
     @smtp_server = "localhost"
     @smtp_port = 25
@@ -246,7 +322,7 @@ class MilterBenchmark
     @statistics_data_reporter = StatisticsDataReporter.new
     @shuffle = false
     @report_failure_responses = false
-    @periodical_report_interval = nil
+    @periodical_statistics_reporter = PeriodicalStatisticsReporter.new
     @reading_timeout = Net::SMTP.new("localhost").read_timeout
     @mail_source_from_stdin = nil
   end
@@ -422,7 +498,7 @@ class MilterBenchmark
               "Report statistics at intervals of INTERVAL seconds/minutes/hours.",
               "If INTERVAL isn't specified, report each 1 second.") do |interval|
         interval ||= "1s"
-        @periodical_report_interval = parse_period(interval)
+        @periodical_statistics_reporter.interval = parse_period(interval)
       end
 
       opts.on("--reading-timeout=SECONDS", Integer,
@@ -443,20 +519,23 @@ class MilterBenchmark
 
     @statistics = Statistics.new
     @statistics_data_reporter.run do
-      @statistics.measure do
-        @stop_periodical_report = false
-        run_periodical_report_thread if @periodical_report_interval
-        if @n_workers > 1
-          run_multi_workers(mails)
-        else
-          run_single_worker(mails)
+      @periodical_statistics_reporter.run do
+        @statistics.measure do
+          @stop_periodical_report = false
+          run_periodical_report_thread if @periodical_report_interval
+          if @n_workers > 1
+            run_multi_workers(mails)
+          else
+            run_single_worker(mails)
+          end
+          @stop_periodical_report = true
         end
-        @stop_periodical_report = true
       end
     end
   end
 
   def report
+    puts unless @periodical_statistics_reporter.interval.nil?
     puts(@statistics.format)
     if @report_failure_responses
       formatted_unsent_messages = @statistics.format_unsent_messages
@@ -517,7 +596,7 @@ class MilterBenchmark
 
   def send_statistics_to_master(output)
     data = [
-      @n_processed_mails,
+      @n_processed_messages,
       @max_response_time,
       @min_response_time,
       @accumulated_response_time,
@@ -530,10 +609,10 @@ class MilterBenchmark
 
   def receive_statistics_from_worker(input)
     data = Marshal.load(input)
-    n_processed_mails, max_response_time, min_response_time, accumulated_response_time,
+    n_processed_messages, max_response_time, min_response_time, accumulated_response_time,
     temporary_failure_messages, reject_messages, error_messages = *data
 
-    @n_processed_mails += n_processed_mails
+    @n_processed_messages += n_processed_messages
     @max_response_time = [@max_response_time, max_response_time].compact.max
     @min_response_time = [@min_response_time, min_response_time].compact.min
     @accumulated_response_time += accumulated_response_time
@@ -678,6 +757,10 @@ class MilterBenchmark
                         wall_clock_time, response_time, source_size)
     @statistics.update(source_file, response_time, temporary_failure_message,
                        reject_message, error_message)
+    periodical_statistics = @periodical_statistics_reporter.statistics
+    periodical_statistics.update(source_file, response_time,
+                                 temporary_failure_message,
+                                 reject_message, error_message)
     @statistics_data_reporter.report(wall_clock_time,
                                      response_time,
                                      source_size)
@@ -801,38 +884,6 @@ EOM
 
   def random_tag
     Digest::SHA2.hexdigest("#{Time.now.to_i.to_s}.#{rand(Time.now.to_i)}")
-  end
-
-  def run_periodical_report_thread
-    Thread.new do
-      report_one_line_statistics_header
-      until @stop_periodical_report
-        reset_periodical_report_statistics
-        sleep(@periodical_report_interval)
-        aggregate_periodical_report_statistics
-        report_one_line_statistics
-      end
-    end
-  end
-
-  def reset_periodical_report_statistics
-  end
-
-  def aggregate_periodical_report_statistics
-  end
-
-  def report_one_line_statistics_items(items)
-    puts("%8s %6s %9s %5s %5s %5s %5s %5s %5s" % items)
-  end
-
-  def report_one_line_statistics_header
-    headers = ["Time", "Total", "Throughput", "Max", "Min", "Average",
-               "4XX", "5XX", "Error"]
-    report_one_line_statistics_items(headers)
-  end
-
-  def report_one_line_statistics
-    report_one_line_statistics_items(items)
   end
 end
 
