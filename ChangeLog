@@ -1,5 +1,7 @@
 2011-01-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client-single-thread-runner.[ch]: just add.
+
 	* milter/client/milter-client-runner.[ch]: just add.
 
 	* TODO: add: milter-server: disable define macros on HEADER and
