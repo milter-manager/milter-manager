@@ -2285,6 +2285,12 @@ milter_client_get_n_processing_sessions (MilterClient *client)
     return MILTER_CLIENT_GET_PRIVATE(client)->n_processing_sessions;
 }
 
+gboolean
+milter_client_is_processing (MilterClient *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->n_processing_sessions > 0;
+}
+
 void
 milter_client_start_syslog (MilterClient *client, const gchar *identify)
 {

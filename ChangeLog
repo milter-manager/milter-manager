@@ -1,5 +1,7 @@
 2011-01-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.[ch] (mitler_client_is_processing): add.
+
 	* milter/client/milter-client.[ch]
 	(milter_client_create_event_loop): publish.
 

@@ -752,6 +752,17 @@ guint                milter_client_get_n_processing_sessions
                                                      (MilterClient  *client);
 
 /**
+ * milter_client_is_processing:
+ * @client: a %MilterClient.
+ *
+ * Returns whether @client has one or more processing sessions or not.
+ *
+ * Returns: %TRUE if @client has one or more processsing
+ * sessions, %FALSE otherwise.
+ */
+gboolean             milter_client_is_processing     (MilterClient  *client);
+
+/**
  * milter_client_start_syslog:
  * @client: a %MilterClient.
  * @identify: the identify name in syslog.
