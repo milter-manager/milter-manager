@@ -1,5 +1,8 @@
 2011-01-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c	(run_master): remove needless
+	accept loop.
+
 	* milter/client/milter-client.c
 	(multi_thread_process_client_channel): fix a memory leak.
 

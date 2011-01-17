@@ -1832,7 +1832,7 @@ run_master (MilterClient *client, GError **error)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    if (priv->accept_loop) {
+    if (/* FIXME */ priv->accept_loop) {
         local_error = g_error_new(MILTER_CLIENT_ERROR,
                                   MILTER_CLIENT_ERROR_RUNNING,
                                   "The milter client is already running: <%p>",
@@ -1843,10 +1843,8 @@ run_master (MilterClient *client, GError **error)
         return FALSE;
     }
 
-    priv->accept_loop = milter_client_create_event_loop(client, TRUE);
     priv->quitting = FALSE;
-
-    single_thread_accept_loop_run(client, priv->accept_loop);
+    milter_event_loop_run(milter_client_get_process_loop(client));
 
     return TRUE;
 }
