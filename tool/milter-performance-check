@@ -22,6 +22,7 @@ require 'optparse'
 require 'net/smtp'
 require 'digest/sha2'
 require 'thread'
+require 'drb'
 
 # for ruby 1.8.5 on CentOS.
 unless Digest.const_defined?(:SHA2)
@@ -34,6 +35,7 @@ class MilterPerformanceChecker
     attr_reader :reject_messages, :error_messages
     attr_reader :accumulated_response_time
     def initialize
+      @mutex = Mutex.new
       @elapsed_time = nil
 
       @sources = []
@@ -69,26 +71,10 @@ class MilterPerformanceChecker
       end
     end
 
-    def merge(statistics)
-      @mutex.synchronize do
-        @n_processed_messages += statistics.n_processed_messages
-        @max_response_time = [@max_response_time,
-                              statistics.max_response_time].max
-        @min_response_time = [@min_response_time,
-                              statistics.min_response_time].compact.min
-        @accumulated_response_time += statistics.accumulated_response_time
-        @temporary_failure_messages.concat(statistics.temporary_failure_messages)
-        @reject_messages.concat(statistics.reject_messages)
-        @error_messages.concat(statistics.error_messages)
-      end
-    end
-
     def measure
-      @mutex = Mutex.new
       @start_time = Time.now
       yield
       @elapsed_time = Time.now - @start_time
-      @mutex = nil
     end
 
     def format
@@ -344,6 +330,7 @@ class MilterPerformanceChecker
     @periodical_statistics_reporter = PeriodicalStatisticsReporter.new
     @reading_timeout = Net::SMTP.new("localhost").read_timeout
     @mail_source_from_stdin = nil
+    @parent = nil
   end
 
   def parse_options(argv)
@@ -565,33 +552,64 @@ class MilterPerformanceChecker
     end
   end
 
+  def update_statistics(source_file,
+                        temporary_failure_message, reject_message, error_message,
+                        wall_clock_time, response_time, source_size)
+    if @parent
+      @parent.update_statistics(source_file,
+                                temporary_failure_message, reject_message,
+                                error_message,
+                                wall_clock_time, response_time, source_size)
+    else
+      @statistics.update(source_file, response_time, temporary_failure_message,
+                         reject_message, error_message)
+      periodical_statistics = @periodical_statistics_reporter.statistics
+      if periodical_statistics
+        periodical_statistics.update(source_file, response_time,
+                                     temporary_failure_message,
+                                     reject_message, error_message)
+      end
+      @statistics_data_reporter.report(wall_clock_time,
+                                       response_time,
+                                       source_size)
+    end
+  end
+
   private
   def run_multi_workers(mails)
-    worker_responses = []
+    start_sign_pipes = []
     @n_workers.times do
-      read, write = IO.pipe
-      worker_responses << read
-      pid = fork do
-        read.close
-        @statistics.measure do
-          run_single_worker(mails)
-        end
-        send_statistics_to_master(write)
+      parent_read, child_write = IO.pipe
+      child_read, parent_write = IO.pipe
+      start_sign_pipes << [parent_read, parent_write]
+      fork do
+        parent_write.close
+        parent_read.close
+        druby_uri = child_read.gets.chomp
+        @parent = DRbObject.new_with_uri(druby_uri)
+        run_single_worker(mails)
+        child_write.puts("finished")
+        child_write.close
         exit!
       end
-      write.close
+      child_read.close
+      child_write.close
     end
+
+    DRb.start_service("druby://localhost:0", self)
     @statistics.measure do
-      worker_responses.each do |response|
-        begin
-          receive_statistics_from_worker(response)
-        rescue EOFError, Errno::EPIPE
-        end
+      start_sign_pipes.each do |input, output|
+        output.puts(DRb.uri)
+      end
+
+      start_sign_pipes.each do |input, output|
+        input.gets
       end
     end
   ensure
-    worker_responses.each do |response|
-      response.close
+    start_sign_pipes.each do |input, output|
+      input.close unless input.closed?
+      output.close unless output.closed?
     end
   end
 
@@ -611,15 +629,6 @@ class MilterPerformanceChecker
       end
     rescue Interrupt
     end
-  end
-
-  def send_statistics_to_master(output)
-    Marshal.dump(@statistics, output)
-  end
-
-  def receive_statistics_from_worker(input)
-    statistics = Marshal.load(input)
-    @statistics.merge(statistics)
   end
 
   def expand_mails(mails)
@@ -751,22 +760,6 @@ class MilterPerformanceChecker
     update_statistics(mail_source_file,
                       temporary_failure_message, reject_message, error_message,
                       wall_clock_time, response_time, source.size)
-  end
-
-  def update_statistics(source_file,
-                        temporary_failure_message, reject_message, error_message,
-                        wall_clock_time, response_time, source_size)
-    @statistics.update(source_file, response_time, temporary_failure_message,
-                       reject_message, error_message)
-    periodical_statistics = @periodical_statistics_reporter.statistics
-    if periodical_statistics
-      periodical_statistics.update(source_file, response_time,
-                                   temporary_failure_message,
-                                   reject_message, error_message)
-    end
-    @statistics_data_reporter.report(wall_clock_time,
-                                     response_time,
-                                     source_size)
   end
 
   def read_mails_source_from_stdin
