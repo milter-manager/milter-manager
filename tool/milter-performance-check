@@ -28,7 +28,7 @@ unless Digest.const_defined?(:SHA2)
   Digest::SHA2 = Digest::SHA256
 end
 
-class MilterBenchmark
+class MilterPerformanceChecker
   class Statistics
     attr_reader :n_processed_messages
     def initialize
@@ -888,10 +888,10 @@ EOM
 end
 
 if __FILE__ == $0
-  benchmark = MilterBenchmark.new
-  benchmark.parse_options(ARGV)
-  benchmark.run
-  benchmark.report
+  checker = MilterPerformanceChecker.new
+  checker.parse_options(ARGV)
+  checker.run
+  checker.report
 end
 
 # vi:ts=2:nowrap:ai:expandtab:sw=2
