@@ -28,7 +28,7 @@ unless Digest.const_defined?(:SHA2)
   Digest::SHA2 = Digest::SHA256
 end
 
-class MilterPerformanceTool
+class MilterBenchmark
   class Statistics
     def initialize
       @mutex = Mutex.new
@@ -837,10 +837,10 @@ EOM
 end
 
 if __FILE__ == $0
-  performance_tool = MilterPerformanceTool.new
-  performance_tool.parse_options(ARGV)
-  performance_tool.run
-  performance_tool.report
+  benchmark = MilterBenchmark.new
+  benchmark.parse_options(ARGV)
+  benchmark.run
+  benchmark.report
 end
 
 # vi:ts=2:nowrap:ai:expandtab:sw=2
