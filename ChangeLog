@@ -1,5 +1,8 @@
 2011-01-17  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-performance-check: just add --report-periodically
+	option.
+
 	* milter/core/milter-agent.c (milter_agent_shutdown): shutdown
 	reader before writer.
 

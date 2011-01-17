@@ -51,6 +51,7 @@ class MilterPerformanceTool
     @report_file = nil
     @shuffle = false
     @report_failure_responses = false
+    @periodical_report_interval = nil
     @reading_timeout = Net::SMTP.new("localhost").read_timeout
     @mail_source_from_stdin = nil
     @mutex = Mutex.new
@@ -224,6 +225,13 @@ class MilterPerformanceTool
         @report_failure_responses = boolean
       end
 
+      opts.on('--report-periodically[=INTERVAL]',
+              "Report statistics at intervals of INTERVAL seconds/minutes/hours.",
+              "If INTERVAL isn't specified, report each 1 second.") do |interval|
+        interval ||= "1s"
+        @periodical_report_interval = parse_period(interval)
+      end
+
       opts.on("--reading-timeout=SECONDS", Integer,
               "Timeout after SECONDS seconds on reading a command.",
               "(#{@reading_timeout})") do |timeout|
@@ -252,11 +260,14 @@ class MilterPerformanceTool
 
     start_time = Time.now
 
+    @stop_periodical_report = false
+    run_periodical_report_thread if @periodical_report_interval
     if @n_workers > 1
       run_multi_workers(mails)
     else
       run_single_worker(mails)
     end
+    @stop_periodical_report = true
 
     @elapsed_time = Time.now - start_time
 
@@ -691,6 +702,38 @@ EOM
     messages.each_with_index do |message, i|
       puts("  %#{n_columns}d %s" % [i, message])
     end
+  end
+
+  def run_periodical_report_thread
+    Thread.new do
+      report_one_line_statistics_header
+      until @stop_periodical_report
+        reset_periodical_report_statistics
+        sleep(@periodical_report_interval)
+        aggregate_periodical_report_statistics
+        report_one_line_statistics
+      end
+    end
+  end
+
+  def reset_periodical_report_statistics
+  end
+
+  def aggregate_periodical_report_statistics
+  end
+
+  def report_one_line_statistics_items(items)
+    puts("%8s %6s %9s %5s %5s %5s %5s %5s %5s" % items)
+  end
+
+  def report_one_line_statistics_header
+    headers = ["Time", "Total", "Throughput", "Max", "Min", "Average",
+               "4XX", "5XX", "Error"]
+    report_one_line_statistics_items(headers)
+  end
+
+  def report_one_line_statistics
+    report_one_line_statistics_items(items)
   end
 end
 
