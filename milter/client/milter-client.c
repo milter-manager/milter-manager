@@ -232,8 +232,8 @@ _milter_client_class_init (MilterClientClass *klass)
     g_type_class_add_private(gobject_class, sizeof(MilterClientPrivate));
 }
 
-static MilterEventLoop *
-event_loop_new (MilterClient *client, gboolean use_default_context)
+MilterEventLoop *
+milter_client_create_event_loop (MilterClient *client, gboolean use_default_context)
 {
     MilterEventLoop *loop = NULL;
 
@@ -1246,7 +1246,7 @@ multi_thread_process_client_channel_thread (gpointer data_, gpointer user_data)
     MilterEventLoop *process_loop;
     GError *error = NULL;
 
-    process_loop = event_loop_new(client, FALSE);
+    process_loop = milter_client_create_event_loop(client, FALSE);
 
     context = MILTER_CLIENT_CONTEXT(data->context);
     agent = MILTER_AGENT(context);
@@ -1599,7 +1599,7 @@ milter_client_prepare (MilterClient *client, GIOFunc accept_func, GError **error
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
     if (!priv->accept_loop)
-        priv->accept_loop = event_loop_new(client, FALSE);
+        priv->accept_loop = milter_client_create_event_loop(client, FALSE);
 
     if (priv->listening_channel || priv->n_processing_sessions > 0) {
         local_error = g_error_new(MILTER_CLIENT_ERROR,
@@ -1843,7 +1843,7 @@ run_master (MilterClient *client, GError **error)
         return FALSE;
     }
 
-    priv->accept_loop = event_loop_new(client, TRUE);
+    priv->accept_loop = milter_client_create_event_loop(client, TRUE);
     priv->quitting = FALSE;
 
     single_thread_accept_loop_run(client, priv->accept_loop);
@@ -2309,7 +2309,7 @@ milter_client_get_process_loop (MilterClient *client)
         return NULL;
     } else {
         if (!priv->process_loop)
-            priv->process_loop = event_loop_new(client, TRUE);
+            priv->process_loop = milter_client_create_event_loop(client, TRUE);
         return priv->process_loop;
     }
 }

@@ -1,5 +1,8 @@
 2011-01-17  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.[ch]
+	(milter_client_create_event_loop): publish.
+
 	* milter/client/milter-client-runner.[ch],
 	milter/client/milter-client-single-thread-runner.c: add quit method.
 
