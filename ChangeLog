@@ -1,5 +1,7 @@
 2011-01-17  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-performance-check: re-support --n-workers.
+
 	* tool/milter-performance-check: MilterBenchmark ->
 	MilterPerformanceChecker.
 

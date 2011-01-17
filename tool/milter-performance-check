@@ -30,9 +30,10 @@ end
 
 class MilterPerformanceChecker
   class Statistics
-    attr_reader :n_processed_messages
+    attr_reader :n_processed_messages, :temporary_failure_messages
+    attr_reader :reject_messages, :error_messages
+    attr_reader :accumulated_response_time
     def initialize
-      @mutex = Mutex.new
       @elapsed_time = nil
 
       @sources = []
@@ -59,7 +60,7 @@ class MilterPerformanceChecker
         @accumulated_response_time += response_time
         @n_processed_messages += 1
         @max_response_time = [response_time, @max_response_time].max
-        @min_response_time = [response_time, @min_response_time || response_time].min
+        @min_response_time = [response_time, @min_response_time].compact.min
         if temporary_failure_message
           @temporary_failure_messages << temporary_failure_message
         end
@@ -68,10 +69,26 @@ class MilterPerformanceChecker
       end
     end
 
+    def merge(statistics)
+      @mutex.synchronize do
+        @n_processed_messages += statistics.n_processed_messages
+        @max_response_time = [@max_response_time,
+                              statistics.max_response_time].max
+        @min_response_time = [@min_response_time,
+                              statistics.min_response_time].compact.min
+        @accumulated_response_time += statistics.accumulated_response_time
+        @temporary_failure_messages.concat(statistics.temporary_failure_messages)
+        @reject_messages.concat(statistics.reject_messages)
+        @error_messages.concat(statistics.error_messages)
+      end
+    end
+
     def measure
+      @mutex = Mutex.new
       @start_time = Time.now
       yield
       @elapsed_time = Time.now - @start_time
+      @mutex = nil
     end
 
     def format
@@ -250,7 +267,7 @@ class MilterPerformanceChecker
       @interval = nil
       @thread = nil
       @stop = false
-      @statistics = Statistics.new
+      @statistics = nil
     end
 
     def run
@@ -259,9 +276,11 @@ class MilterPerformanceChecker
         @thread = Thread.new do
           report_header
           until @stop
-            statistics = @statistics = Statistics.new
+            statistics = Statistics.new
             statistics.measure do
+              @statistics = statistics
               sleep(@interval)
+              @statistics = nil
             end
             report(statistics)
           end
@@ -520,16 +539,16 @@ class MilterPerformanceChecker
     @statistics = Statistics.new
     @statistics_data_reporter.run do
       @periodical_statistics_reporter.run do
-        @statistics.measure do
-          @stop_periodical_report = false
-          run_periodical_report_thread if @periodical_report_interval
-          if @n_workers > 1
-            run_multi_workers(mails)
-          else
+        @stop_periodical_report = false
+        run_periodical_report_thread if @periodical_report_interval
+        if @n_workers > 1
+          run_multi_workers(mails)
+        else
+          @statistics.measure do
             run_single_worker(mails)
           end
-          @stop_periodical_report = true
         end
+        @stop_periodical_report = true
       end
     end
   end
@@ -548,31 +567,31 @@ class MilterPerformanceChecker
 
   private
   def run_multi_workers(mails)
-    workers = []
+    worker_responses = []
     @n_workers.times do
-      worker = IO.popen("-")
-      if worker
-        workers << worker
-      else
-        begin
+      read, write = IO.pipe
+      worker_responses << read
+      pid = fork do
+        read.close
+        @statistics.measure do
           run_single_worker(mails)
-          send_statistics_to_master(STDOUT)
-        rescue Exception
-          STDERR.puts("#{$!.message} (#{$!.class})")
-          STDERR.puts($@)
         end
+        send_statistics_to_master(write)
         exit!
       end
+      write.close
     end
-    workers.each do |worker|
-      begin
-        receive_statistics_from_worker(worker)
-      rescue EOFError, Errno::EPIPE
+    @statistics.measure do
+      worker_responses.each do |response|
+        begin
+          receive_statistics_from_worker(response)
+        rescue EOFError, Errno::EPIPE
+        end
       end
     end
   ensure
-    workers.each do |worker|
-      worker.close
+    worker_responses.each do |response|
+      response.close
     end
   end
 
@@ -595,30 +614,12 @@ class MilterPerformanceChecker
   end
 
   def send_statistics_to_master(output)
-    data = [
-      @n_processed_messages,
-      @max_response_time,
-      @min_response_time,
-      @accumulated_response_time,
-      @temporary_failure_messages,
-      @reject_messages,
-      @error_messages,
-    ]
-    Marshal.dump(data, output)
+    Marshal.dump(@statistics, output)
   end
 
   def receive_statistics_from_worker(input)
-    data = Marshal.load(input)
-    n_processed_messages, max_response_time, min_response_time, accumulated_response_time,
-    temporary_failure_messages, reject_messages, error_messages = *data
-
-    @n_processed_messages += n_processed_messages
-    @max_response_time = [@max_response_time, max_response_time].compact.max
-    @min_response_time = [@min_response_time, min_response_time].compact.min
-    @accumulated_response_time += accumulated_response_time
-    @temporary_failure_messages.concat(temporary_failure_messages)
-    @reject_messages.concat(reject_messages)
-    @error_messages.concat(error_messages)
+    statistics = Marshal.load(input)
+    @statistics.merge(statistics)
   end
 
   def expand_mails(mails)
@@ -758,9 +759,11 @@ class MilterPerformanceChecker
     @statistics.update(source_file, response_time, temporary_failure_message,
                        reject_message, error_message)
     periodical_statistics = @periodical_statistics_reporter.statistics
-    periodical_statistics.update(source_file, response_time,
-                                 temporary_failure_message,
-                                 reject_message, error_message)
+    if periodical_statistics
+      periodical_statistics.update(source_file, response_time,
+                                   temporary_failure_message,
+                                   reject_message, error_message)
+    end
     @statistics_data_reporter.report(wall_clock_time,
                                      response_time,
                                      source_size)
