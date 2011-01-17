@@ -1,5 +1,8 @@
 2011-01-18  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/client/milter-client.c	(run_worker): use the same event
+	loop for accept in worker.
+
 	* milter/client/milter-client.c	(run_master): remove needless
 	accept loop.
 

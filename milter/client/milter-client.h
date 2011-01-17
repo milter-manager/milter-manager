@@ -679,21 +679,6 @@ gboolean             milter_client_run_master        (MilterClient  *client,
                                                       GError       **error);
 
 /**
- * milter_client_run_worker:
- * @client: a %MilterClient.
- * @error: return location for an error, or %NULL.
- *
- * Runs main loop in child process. If the main loop isn't
- * quitted successfully and @error is not %NULL, error
- * detail is stored into @error.
- *
- * Returns: %TRUE if main loop is quitted successfully,
- * %FALSE otherwise.
- */
-gboolean             milter_client_run_worker        (MilterClient  *client,
-                                                      GError       **error);
-
-/**
  * milter_client_shutdown:
  * @client: a %MilterClient.
  *
