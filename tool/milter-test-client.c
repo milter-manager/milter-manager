@@ -158,7 +158,7 @@ static const GOptionEntry option_entries[] =
     {"n-workers", 0, 0, G_OPTION_ARG_INT, &n_workers,
      N_("Run N_WORKERS processes (default: 0)"), "N_WORKERS"},
     {"event-loop-backend", 0, 0, G_OPTION_ARG_CALLBACK, parse_event_loop_backend,
-     N_("Use BACKEND as event loop backend (default: glib)"), "[glib|livev]"},
+     N_("Use BACKEND as event loop backend (default: glib)"), "[glib|libev]"},
     {"packet-buffer-size", 0, 0, G_OPTION_ARG_INT, &packet_buffer_size,
      N_("Use SIZE as packet buffer size in bytes. 0 disables packet buffering. "
         "(default: 0; disabled)"), "SIZE"},
