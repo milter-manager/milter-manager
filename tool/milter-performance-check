@@ -29,6 +29,199 @@ unless Digest.const_defined?(:SHA2)
 end
 
 class MilterPerformanceTool
+  class Statistics
+    def initialize
+      @mutex = Mutex.new
+      @elapsed_time = 0
+
+      @sources = []
+      @rejected_sources = []
+      @temporary_failure_sources = []
+      @accumulated_response_time = 0
+      @max_response_time = 0
+      @min_response_time = nil
+      @temporary_failure_messages = []
+      @reject_messages = []
+      @error_messages = []
+      @n_processed_mails = 0
+    end
+
+    def update(source_file, response_time,
+               temporary_failure_message,
+               reject_message, error_message)
+      @mutex.synchronize do
+        if source_file
+          @sources << [response_time, source_file]
+          @rejected_sources << source_file if reject_message
+          @temporary_failure_sources << source_file if temporary_failure_message
+        end
+        @accumulated_response_time += response_time
+        @n_processed_mails += 1
+        @max_response_time = [response_time, @max_response_time].max
+        @min_response_time = [response_time, @min_response_time || response_time].min
+        if temporary_failure_message
+          @temporary_failure_messages << temporary_failure_message
+        end
+        @reject_messages << reject_message if reject_message
+        @error_messages << error_message if error_message
+      end
+    end
+
+    def measure
+      start_time = Time.now
+      yield
+      @elapsed_time = Time.now - start_time
+    end
+
+    def format
+      statistics = ""
+      statistics << format_sources
+      statistics << format_total
+      statistics << "\n"
+      statistics << format_per_mail
+      statistics << "\n"
+      statistics << format_status
+      statistics
+    end
+
+    def format_unsent_messages
+      statistics = []
+      statistics << format_messages("Temporary failures:",
+                                    @temporary_failure_messages)
+      statistics << format_messages("Rejects:", @reject_messages)
+      statistics << format_messages("Errors:", @error_messages)
+      statistics.join("\n")
+    end
+
+    private
+    def average(elapsed_time)
+      if elapsed_time.zero?
+        @n_processed_mails
+      else
+        @n_processed_mails / elapsed_time.to_f
+      end
+    end
+
+    def average_per_mail(elapsed_time)
+      if @n_processed_mails.zero?
+        elapsed_time.to_f
+      else
+        elapsed_time.to_f / @n_processed_mails
+      end
+    end
+
+    def format_sources
+      statistics = ""
+      statistics << format_sent_sources
+      statistics << format_rejected_sources
+      statistics << format_temporary_failure_sources
+      statistics
+    end
+
+    def format_sent_sources
+      return "" if @sources.empty?
+
+      slow_order_sources = @sources.sort_by do |elapsed_time, source_file|
+        -elapsed_time
+      end
+      statistics = ""
+      slow_order_sources[0, 10].collect do |elapsed_time, source_file|
+        statistics << "%#5.2f (sec): %s\n" % [elapsed_time, source_file]
+      end
+      statistics << "\n"
+    end
+
+    def format_unsent_sources(label, sources)
+      return "" if sources.empty?
+      statistics = "#{label}\n"
+      sources.each  do |source_file|
+        statistics << "#{source_file}\n"
+      end
+      statistics << "\n"
+      statistics
+    end
+
+    def format_rejected_sources
+      format_unsent_sources("Rejected mails:", @rejected_sources)
+    end
+
+    def format_temporary_failure_sources
+      format_unsent_sources("Temporary failed mails:",
+                            @temporary_failure_sources)
+    end
+
+    def format_total
+      statistics = "Total:\n"
+      statistics << "     N mails: %d\n" % @n_processed_mails
+      statistics << "Elapsed time: %#5.2f (sec)\n" % @elapsed_time
+      statistics << "     Average: %#5.2f (mails/sec)\n" % average(@elapsed_time)
+      statistics
+    end
+
+    def format_per_mail
+      statistics = "Per mail:\n"
+      statistics << "         Max: %#5.2f (sec)\n" % @max_response_time
+      statistics << "         Min: %#5.2f (sec)\n" % (@min_response_time || 0)
+      _average = average_per_mail(@accumulated_response_time)
+      statistics << "     Average: %#5.2f (sec)\n" % _average
+      statistics
+    end
+
+    def format_status_item(label, n_mails)
+      " #{label}: %3d (%6.2f%%)\n" % [n_mails,
+                                      n_mails.to_f / @n_processed_mails * 100]
+    end
+
+    def format_status
+      statistics = "Status:\n"
+      statistics << format_status_item("Temporary failure",
+                                       @temporary_failure_messages.size)
+      statistics << format_status_item("           Reject",
+                                       @reject_messages.size)
+      statistics << format_status_item("            Error",
+                                       @error_messages.size)
+      statistics
+    end
+
+    def format_messages(label, messages)
+      return "" if messages.empty?
+      statistics = "#{label}\n"
+      n_messages = messages.size
+      n_columns = Math.log10(n_messages).floor + 1
+      messages.each_with_index do |message, i|
+        statistics << "  %#{n_columns}d %s\n" % [i, message]
+      end
+      statistics
+    end
+  end
+
+  class StatisticsDataReporter
+    attr_accessor :path
+    def initialize
+      @path = nil
+      @output = nil
+      @mutex = Mutex.new
+    end
+
+    def run
+      return yield if @path.nil?
+      File.open(@path, "w") do |file|
+        @output = file
+        @output.puts("wall clock time,response time,message size")
+        yield
+      end
+    end
+
+    def report(wall_clock_time, response_time, source_size)
+      return if @output.nil?
+      @mutex.synchronize do
+        @output.puts([wall_clock_time.iso8601(6),
+                      response_time,
+                      source_size].join(","))
+      end
+    end
+  end
+
   def initialize
     @smtp_server = "localhost"
     @smtp_port = 25
@@ -48,13 +241,12 @@ class MilterPerformanceTool
     @period = nil
     @interval = nil
     @flood_mode = nil
-    @report_file = nil
+    @statistics_data_reporter = StatisticsDataReporter.new
     @shuffle = false
     @report_failure_responses = false
     @periodical_report_interval = nil
     @reading_timeout = Net::SMTP.new("localhost").read_timeout
     @mail_source_from_stdin = nil
-    @mutex = Mutex.new
   end
 
   def parse_options(argv)
@@ -206,11 +398,10 @@ class MilterPerformanceTool
         @flood_mode_period = parse_period(period)
       end
 
-      opts.on('--report-file=FILE',
+      opts.on('--report-statistics-data=FILE',
               "Write performance reports of each mail to FILE.",
               "No report is written if not specified.") do |file|
-        @report_file = File.open(file, "w")
-        @report_file.puts("wall clock time,response time,message size")
+        @report_statistics_data.path = file
       end
 
       opts.on("--[no-]shuffle",
@@ -244,78 +435,34 @@ class MilterPerformanceTool
 
   def run
     Thread.abort_on_exception = true
-    @sources = []
-    @rejected_sources = []
-    @temporary_failure_sources = []
-    @accumulated_response_time = 0
-    @max_response_time = 0
-    @min_response_time = nil
-    @temporary_failure_messages = []
-    @reject_messages = []
-    @error_messages = []
-    @n_processed_mails = 0
     mails = expand_mails(@mails)
     mails = [mails[0]] * @n_mails if mails.size <= 1
     mails = mails.sort_by {rand} if @shuffle
 
-    start_time = Time.now
-
-    @stop_periodical_report = false
-    run_periodical_report_thread if @periodical_report_interval
-    if @n_workers > 1
-      run_multi_workers(mails)
-    else
-      run_single_worker(mails)
-    end
-    @stop_periodical_report = true
-
-    @elapsed_time = Time.now - start_time
-
-    @report_file.close if @report_file
-  end
-
-  def report_sources
-    unless @sources.empty?
-      @sources.sort_by do |elapsed_time, source_file|
-        -elapsed_time
-      end[0, 10].each do |elapsed_time, source_file|
-        puts "%#5.2f (sec): %s" % [elapsed_time, source_file]
+    @statistics = Statistics.new
+    @statistics_data_reporter.run do
+      @statistics.measure do
+        @stop_periodical_report = false
+        run_periodical_report_thread if @periodical_report_interval
+        if @n_workers > 1
+          run_multi_workers(mails)
+        else
+          run_single_worker(mails)
+        end
+        @stop_periodical_report = true
       end
-      puts
-    end
-
-    [
-     ["Rejected mails:", @rejected_sources],
-     ["Temporary failed mails:", @temporary_failure_sources],
-    ].each do |label, sources|
-      next if sources.empty?
-      puts label
-      sources.each  do |source_file|
-        puts source_file
-      end
-      puts
     end
   end
 
   def report
-    report_sources
-    puts "Total:"
-    puts "     N mails: %d" % @n_processed_mails
-    puts "Elapsed time: %#5.2f (sec)" % @elapsed_time
-    puts "     Average: %#5.2f (mails/sec)" % average(@elapsed_time)
-    puts
-    puts "Per mail:"
-    puts "         Max: %#5.2f (sec)" % @max_response_time
-    puts "         Min: %#5.2f (sec)" % (@min_response_time || 0)
-    puts "     Average: %#5.2f (sec)" % average_per_mail(@accumulated_response_time)
-    puts
-    puts "Status:"
-    puts statistics_report("Temporary failure", @temporary_failure_messages.size)
-    puts statistics_report("           Reject", @reject_messages.size)
-    puts statistics_report("            Error", @error_messages.size)
-    report_messages("Temporary failures:", @temporary_failure_messages)
-    report_messages("Rejects:", @reject_messages)
-    report_messages("Errors:", @error_messages)
+    puts(@statistics.format)
+    if @report_failure_responses
+      formatted_unsent_sources = @statistics.format_unsent_sources
+      unless format_unsent_sources.empty?
+        puts
+        puts(format_unsent_sources)
+      end
+    end
   end
 
   private
@@ -519,36 +666,19 @@ class MilterPerformanceTool
     wall_clock_time = Time.now
     response_time = wall_clock_time - start_time
     STDERR.puts(error_message) if error_message
-    update_statistics(mail_source_file, source.size,
-                      wall_clock_time, response_time,
-                      temporary_failure_message, reject_message, error_message)
+    update_statistics(mail_source_file,
+                      temporary_failure_message, reject_message, error_message,
+                      wall_clock_time, response_time, source.size)
   end
 
-  def update_statistics(source_file, source_size,
-                        wall_clock_time, response_time,
-                        temporary_failure_message, reject_message, error_message)
-    @mutex.synchronize do
-      if source_file
-        @sources << [response_time, source_file]
-        @rejected_sources << source_file if reject_message
-        @temporary_failure_sources << source_file if temporary_failure_message
-      end
-      @accumulated_response_time += response_time
-      @n_processed_mails += 1
-      @max_response_time = [response_time, @max_response_time].max
-      @min_response_time = [response_time, @min_response_time || response_time].min
-      if temporary_failure_message
-        @temporary_failure_messages << temporary_failure_message
-      end
-      @reject_messages << reject_message if reject_message
-      @error_messages << error_message if error_message
-
-      if @report_file
-        @report_file.puts([wall_clock_time.iso8601(6),
-                           response_time,
-                           source_size].join(","))
-      end
-    end
+  def update_statistics(source_file,
+                        temporary_failure_message, reject_message, error_message,
+                        wall_clock_time, response_time, source_size)
+    @statistics.update(source_file, response_time, temporary_failure_message,
+                       reject_message, error_message)
+    @statistics_data_reporter.report(wall_clock_time,
+                                     response_time,
+                                     source_size)
   end
 
   def read_mails_source_from_stdin
@@ -669,39 +799,6 @@ EOM
 
   def random_tag
     Digest::SHA2.hexdigest("#{Time.now.to_i.to_s}.#{rand(Time.now.to_i)}")
-  end
-
-  def average(elapsed_time)
-    if elapsed_time.zero?
-      @n_processed_mails
-    else
-      @n_processed_mails / elapsed_time.to_f
-    end
-  end
-
-  def average_per_mail(elapsed_time)
-    if @n_processed_mails.zero?
-      elapsed_time.to_f
-    else
-      elapsed_time.to_f / @n_processed_mails
-    end
-  end
-
-  def statistics_report(label, n_mails)
-    " #{label}: %3d (%5.2f%%)" % [n_mails,
-                                  n_mails.to_f / @n_processed_mails * 100]
-  end
-
-  def report_messages(label, messages)
-    return unless @report_failure_responses
-    return if messages.empty?
-    puts
-    puts label
-    n_messages = messages.size
-    n_columns = Math.log10(n_messages).floor + 1
-    messages.each_with_index do |message, i|
-      puts("  %#{n_columns}d %s" % [i, message])
-    end
   end
 
   def run_periodical_report_thread
