@@ -58,7 +58,8 @@ class MilterPerformanceTool
         @accumulated_response_time += response_time
         @n_processed_mails += 1
         @max_response_time = [response_time, @max_response_time].max
-        @min_response_time = [response_time, @min_response_time || response_time].min
+        @min_response_time = [response_time,
+                              @min_response_time || response_time].min
         if temporary_failure_message
           @temporary_failure_messages << temporary_failure_message
         end
@@ -85,12 +86,12 @@ class MilterPerformanceTool
     end
 
     def format_unsent_messages
-      statistics = []
+      statistics = ""
       statistics << format_messages("Temporary failures:",
                                     @temporary_failure_messages)
       statistics << format_messages("Rejects:", @reject_messages)
       statistics << format_messages("Errors:", @error_messages)
-      statistics.join("\n")
+      statistics
     end
 
     private
@@ -152,18 +153,19 @@ class MilterPerformanceTool
 
     def format_total
       statistics = "Total:\n"
-      statistics << "     N mails: %d\n" % @n_processed_mails
-      statistics << "Elapsed time: %#5.2f (sec)\n" % @elapsed_time
-      statistics << "     Average: %#5.2f (mails/sec)\n" % average(@elapsed_time)
+      statistics << "      N mails: %#6d\n" % @n_processed_mails
+      statistics << " Elapsed time: %#6.2f (sec)\n" % @elapsed_time
+      _average = average(@elapsed_time)
+      statistics << "      Average: %#6.2f (mails/sec)\n" % _average
       statistics
     end
 
     def format_per_mail
       statistics = "Per mail:\n"
-      statistics << "         Max: %#5.2f (sec)\n" % @max_response_time
-      statistics << "         Min: %#5.2f (sec)\n" % (@min_response_time || 0)
+      statistics << "          Max: %#6.2f (sec)\n" % @max_response_time
+      statistics << "          Min: %#6.2f (sec)\n" % (@min_response_time || 0)
       _average = average_per_mail(@accumulated_response_time)
-      statistics << "     Average: %#5.2f (sec)\n" % _average
+      statistics << "      Average: %#6.2f (sec)\n" % _average
       statistics
     end
 
@@ -189,7 +191,7 @@ class MilterPerformanceTool
       n_messages = messages.size
       n_columns = Math.log10(n_messages).floor + 1
       messages.each_with_index do |message, i|
-        statistics << "  %#{n_columns}d %s\n" % [i, message]
+        statistics << "  %#{n_columns}d %s\n" % [i + 1, message.chomp]
       end
       statistics
     end
@@ -457,10 +459,10 @@ class MilterPerformanceTool
   def report
     puts(@statistics.format)
     if @report_failure_responses
-      formatted_unsent_sources = @statistics.format_unsent_sources
-      unless format_unsent_sources.empty?
+      formatted_unsent_messages = @statistics.format_unsent_messages
+      unless formatted_unsent_messages.empty?
         puts
-        puts(format_unsent_sources)
+        puts(formatted_unsent_messages)
       end
     end
   end
