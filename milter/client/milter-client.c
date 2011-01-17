@@ -1188,6 +1188,7 @@ multi_thread_process_client_channel (MilterClient *client, GIOChannel *channel,
         g_error_free(client_error);
 
         process_data_free(data);
+        priv->processing_data = g_list_remove(priv->processing_data, data);
     }
 }
 

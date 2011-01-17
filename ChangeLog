@@ -1,3 +1,11 @@
+2011-01-18  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/client/milter-client.c
+	(multi_thread_process_client_channel): fix a memory leak.
+
+	* milter/client/milter-client-runner.h (milter_client_runner_new):
+	remove needless declaration.
+
 2011-01-17  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/client/milter-client.[ch] (milter_client_session_started)
