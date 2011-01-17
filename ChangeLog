@@ -1,3 +1,9 @@
+2011-01-17  Kouhei Sutou  <kou@cozmixng.org>
+
+	* TODO: add: milter-server: disable define macros on HEADER and
+	BODY. Macro definitions on those states are invalid in
+	libmilter. Wow!
+
 2011-01-17  Kouhei Sutou  <kou@clear-code.com>
 
 	* tool/milter-performance-check: use dRuby for updating statistics

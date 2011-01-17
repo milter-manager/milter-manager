@@ -1,3 +1,6 @@
+* milter-server: disable define macros on HEADER and
+  BODY. Macro definitions on those states are invalid in
+  libmilter. Wow!
 * [1.7.x] support MAIL FROM parameters and RCPT TO parameters.
   * e.g.: MAIL FROM:<null@example.com> XVERP BODY=8BITMIME SIZE=5000
           -> "<null@example.com>\0XVERP\0BODY=8BITMIME\0SIZE=5000\0" packet.
