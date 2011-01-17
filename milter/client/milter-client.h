@@ -741,6 +741,22 @@ gboolean             milter_client_daemonize         (MilterClient  *client,
                                                       GError       **error);
 
 /**
+ * milter_client_session_started:
+ * @client: a %MilterClient.
+ *
+ * Calls this function when the @client starts a session.
+ */
+void                 milter_client_session_started   (MilterClient  *client);
+
+/**
+ * milter_client_session_finished:
+ * @client: a %MilterClient.
+ *
+ * Calls this function when the @client finished a session.
+ */
+void                 milter_client_session_finished  (MilterClient  *client);
+
+/**
  * milter_client_get_n_processing_sessions:
  * @client: a %MilterClient.
  *

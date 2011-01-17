@@ -358,8 +358,7 @@ finish_processing (MilterClientProcessData *data)
 
     data->priv->processing_data =
         g_list_remove(data->priv->processing_data, data);
-    data->priv->n_processing_sessions--;
-    data->priv->n_processed_sessions++;
+    milter_client_session_finished(data->client);
 
     if (data->priv->quitting && data->priv->process_loop) {
         n_processing_sessions = data->priv->n_processing_sessions;
@@ -987,7 +986,7 @@ accept_connection_fd (MilterClient *client, gint server_fd,
         return client_fd;
     }
 
-    priv->n_processing_sessions++;
+    milter_client_session_started(client);
     if (milter_need_debug_log()) {
         gchar *spec;
         spec = milter_connection_address_to_spec(&(address->address.base));
@@ -2277,6 +2276,25 @@ milter_client_processing_context_foreach (MilterClient *client,
         MilterClientProcessData *data = node->data;
         func(data->context, user_data);
     }
+}
+
+void
+milter_client_session_started (MilterClient *client)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    priv->n_processing_sessions++;
+}
+
+void
+milter_client_session_finished (MilterClient *client)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    priv->n_processing_sessions--;
+    priv->n_processed_sessions++;
 }
 
 guint
