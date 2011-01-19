@@ -30,7 +30,7 @@
     ((<manager.n_workers|configuration.rd.ja#manager.n_workers>))
     を追加。（実験的）
   * 送信パケットをバッファリングする量を指定する設定
-    ((<manager.packet_buffer_size|configuration.rd.ja#manager.packet_buffer_sizea>))
+    ((<manager.packet_buffer_size|configuration.rd.ja#manager.packet_buffer_size>))
     を追加。（実験的）
 
 ==== 修正
