@@ -312,6 +312,7 @@ We add the following milter configuration to
 
   milter_default_action = accept
   milter_protocol = 6
+  milter_connect_macros = j {daemon_name} v {client_addr}
   milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 
 Here are descriptions of the configuration.
@@ -330,6 +331,13 @@ Here are descriptions of the configuration.
 
    If you can recover milter, 'tempfail' will be better
    choice rather than 'accept'. Default is 'tempfail'.
+
+: milter_connect_macros = j {daemon_name} v {client_addr}
+
+   Postfix also passes connected client address.
+   The default value is (({j {daemon_name}
+   v})). (({{client_addr}})) which is connected client
+   address is added.
 
 : milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 

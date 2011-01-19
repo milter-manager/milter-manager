@@ -300,6 +300,7 @@ OPTION_ARGSをコメントアウトし、デーモンプロセスで起動する
 
   milter_protocol = 6
   milter_default_action = accept
+  milter_connect_macros = j {daemon_name} v {client_addr}
   milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 
 それぞれ以下のような設定です。
@@ -319,6 +320,12 @@ OPTION_ARGSをコメントアウトし、デーモンプロセスで起動する
    迅速に復旧できる体制がととのっているのであれば、acceptで
    はなく、tempfailを指定するのがよいでしょう。デフォルトで
    はtempfailになっています。
+
+: milter_connect_macros = j {daemon_name} v {client_addr}
+
+   接続元のアドレスもmilterに渡します。
+   (({j {daemon_name} v}))が既定値で、接続元のアドレスである
+   (({{client_addr}}))を追加しています。
 
 : milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 

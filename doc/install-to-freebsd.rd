@@ -8,7 +8,7 @@ This document describes how to install milter manager to
 FreeBSD. See ((<Install|install.rd>)) for general install
 information.
 
-This document assumes that FreeBSD 8.0-RELEASE is used.
+This document assumes that FreeBSD 8.1-RELEASE is used.
 
 == Install packages
 
@@ -375,16 +375,14 @@ We add the following milter configuration to
 
   milter_protocol = 6 # if Postfix >= 2.5
   milter_default_action = accept
+  milter_connect_macros = j {daemon_name} v {client_addr}
   milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 
 Here are descriptions of the configuration.
 
 : milter_protocol = 6
 
-   Postfix uses milter protocol version 6. This version is
-   default for Sendmail 8.14. But version 6 is supported
-   since Postfix 2.5. If you use Postfix <= 2.4, don't use
-   the option.
+   Postfix uses milter protocol version 6.
 
 : milter_default_action = accept
 
@@ -396,6 +394,13 @@ Here are descriptions of the configuration.
 
    If you can recover milter, 'tempfail' will be better
    choice rather than 'accept'. Default is 'tempfail'.
+
+: milter_connect_macros = j {daemon_name} v {client_addr}
+
+   Postfix also passes connected client address.
+   The default value is (({j {daemon_name}
+   v})). (({{client_addr}})) which is connected client
+   address is added.
 
 : milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 

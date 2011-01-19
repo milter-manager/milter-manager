@@ -1,5 +1,9 @@
 2011-01-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/install-to-*: add {client_addr} to milter_connect_macros in
+	Postfix configurations.
+	Suggested by Kenji Shiono. Thanks!!!
+
 	* doc/install-to-debian.rd*, doc/install-to-ubuntu.rd*: use
 	apt-key adv for register Debian package GPG key.
 

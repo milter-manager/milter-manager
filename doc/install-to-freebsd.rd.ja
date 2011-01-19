@@ -8,7 +8,7 @@ FreeBSDに特化したmilter managerのインストール方法について説�
 します。FreeBSDに依存しない一般的なインストール情報は((<イン
 ストール|install.rd.ja>))を見てください。
 
-FreeBSD 8.0-RELEASEを想定しています。
+FreeBSD 8.1-RELEASEを想定しています。
 
 == パッケージのインストール
 
@@ -380,16 +380,14 @@ milter_manager_debugをコメントアウトし、デーモンプロセスで起
 
   milter_protocol = 6 # Postfix 2.5以上の場合
   milter_default_action = accept
+  milter_connect_macros = j {daemon_name} v {client_addr}
   milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 
 それぞれ以下のような設定です。
 
 : milter_protocol = 6
 
-   milterプロトコルのバージョン6を使います。このバージョンは
-   Sendmail 8.14のデフォルトです。ただし、バージョン6は
-   Postfix 2.5以上でのサポートなので、Postfix 2.4以下を使用
-   している場合はこのオプションは指定しないでください。
+   milterプロトコルのバージョン6を使います。
 
 : milter_default_action = accept
 
@@ -402,6 +400,12 @@ milter_manager_debugをコメントアウトし、デーモンプロセスで起
    迅速に復旧できる体制がととのっているのであれば、acceptで
    はなく、tempfailを指定するのがよいでしょう。デフォルトで
    はtempfailになっています。
+
+: milter_connect_macros = j {daemon_name} v {client_addr}
+
+   接続元のアドレスもmilterに渡します。
+   (({j {daemon_name} v}))が既定値で、接続元のアドレスである
+   (({{client_addr}}))を追加しています。
 
 : milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 
