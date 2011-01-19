@@ -1,5 +1,9 @@
 2011-01-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/configuration.rd*: add a description about {client_addr}
+	into Sendmail Compatible applicable condition.
+	Suggested by Kenji Shiono. Thanks!!!
+
 	* doc/install-to-*: add {client_addr} to milter_connect_macros in
 	Postfix configurations.
 	Suggested by Kenji Shiono. Thanks!!!

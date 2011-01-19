@@ -75,9 +75,9 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
   manager.fallback_status = "accept"
   manager.fallback_status_at_disconnect = "temporary-failure"
   manager.event_loop_backend = "glib"
-  manager.connection_check_interval = 0
   manager.n_workers = 0
-  manager.
+  manager.packet_buffer_size = 0
+  manager.connection_check_interval = 0
 
   controller.connection_spec = nil
   controller.unix_socket_mode = 0660
@@ -1241,6 +1241,17 @@ SendmailでもPostfixでも動作するようになります。ただし、最�
 
 MTAがPostfixの場合にこの適用条件を設定しても悪影響はないので、
 安心してください。
+
+なお、この適用条件を使うときはPostfixのmain.cfの
+((<milter_connect_macros|URL:http://www.postfix.org/postconf.5.html#milter_connect_macros>))
+に(({{client_addr}}))を追加する必要があります。
+milter_connect_macrosの既定値は(({j {daemon_name} v}))なので
+以下のように設定するのがお勧めです。
+
+main.cf:
+  milter_connect_macros = j {daemon_name} v {client_addr}
+
+main.cfを変更したら忘れずにPostfixに変更を反映させてください。
 
 以下の例はSendmail用にビルドしたmilter-greylistをPostfixでも
 使えるようにする設定です。
