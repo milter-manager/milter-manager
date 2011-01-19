@@ -1248,6 +1248,7 @@ milter_assert_equal_n_received (GHashTable *expected_command_receives)
 void
 test_result (gconstpointer data)
 {
+    GError *error = NULL;
     TestData *test_data = (TestData *)data;
 
     setup_test_client("inet:9999@localhost", test_data);
@@ -1573,6 +1574,7 @@ data_option (void)
 void
 test_option (gconstpointer data)
 {
+    GError *error = NULL;
     OptionTestData *option_test_data = (OptionTestData*)data;
 
     setup_test_client("inet:9999@localhost", option_test_data->test_data);
@@ -1996,6 +1998,7 @@ data_end_of_message_action (void)
 void
 test_end_of_message_action (gconstpointer data)
 {
+    GError *error = NULL;
     EndOfMessageActionTestData *action_test_data;
 
     action_test_data = (EndOfMessageActionTestData*)data;
@@ -2211,8 +2214,8 @@ data_macro (void)
 void
 test_macro (gconstpointer data)
 {
-    MacroTestData *macro_test_data;
-    macro_test_data = (MacroTestData*)data;
+    GError *error = NULL;
+    MacroTestData *macro_test_data = (MacroTestData *)data;
 
     setup_test_client("inet:9999@localhost", macro_test_data->test_data);
     setup_server("inet:9999@localhost", NULL);
@@ -2281,7 +2284,8 @@ data_invalid_spec (void)
 void
 test_invalid_spec (gconstpointer data)
 {
-    InvalidSpecTestData *test_data = (InvalidSpecTestData*)data;
+    GError *error = NULL;
+    InvalidSpecTestData *test_data = (InvalidSpecTestData *)data;
 
     setup_server(test_data->spec, NULL);
     gcut_egg_hatch(server, &error);
