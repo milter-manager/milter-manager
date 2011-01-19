@@ -1,3 +1,8 @@
+2011-01-19  Kouhei Sutou  <kou@clear-code.com>
+
+	* doc/install-to-debian.rd*, doc/install-to-ubuntu.rd*: use
+	apt-key adv for register Debian package GPG key.
+
 2011-01-18  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/client/milter-client.c	(run_worker): use the same event

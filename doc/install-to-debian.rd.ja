@@ -56,8 +56,7 @@ milter managerのサイトで現在の安定版lennyと開発版squeezeと不
 パッケージはkou@clear-code.comの鍵でサインされています。信用
 する場合は鍵を登録します。
 
-  % gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1C837F31
-  % gpg --export 1C837F31 | sudo apt-key add -
+  % sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1C837F31
 
 milter managerをインストールします。
 

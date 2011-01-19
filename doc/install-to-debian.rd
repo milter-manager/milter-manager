@@ -56,8 +56,7 @@ lines out and enable comment outed the 2 lines.
 
 We register the key of the package repository:
 
-  % gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1C837F31
-  % gpg --export 1C837F31 | sudo apt-key add -
+  % sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1C837F31
 
 We install milter manager package:
 
