@@ -266,6 +266,7 @@ fi
 %{_libdir}/milter-manager/binding/lib/glib*.rb
 %{_libdir}/milter-manager/binding/lib/mkmf-gnome2.rb
 %{_libdir}/milter-manager/binding/lib/pkg-config.rb
+%{_libdir}/pkgconfig/ruby-milter.pc
 %{_datadir}/milter-manager/sample/ruby/*
 
 %files -n libmilter-compatible

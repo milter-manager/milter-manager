@@ -1,5 +1,7 @@
 2011-01-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* rpm/centos/milter-manager.spec.in: add missing ruby-milter.pc.
+
 	* doc/reference/Makefile.am (generated_xml_files): fix a typo.
 
 	* doc/milter-performance-check.rd*: add --n-additional-lines.
