@@ -1,5 +1,7 @@
 2011-01-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/manager/milter-manager.c: uses n_workers configuration.
+
 	* debian/rules: fix path.
 
 2011-01-19  Kouhei Sutou  <kou@cozmixng.org>

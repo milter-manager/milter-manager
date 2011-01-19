@@ -99,20 +99,23 @@ static void   set_effective_group         (MilterClient *client,
 static guint  get_maintenance_interval    (MilterClient *client);
 static void   set_maintenance_interval    (MilterClient *client,
                                            guint         n_sessions);
-static guint  get_default_packet_buffer_size
-                                          (MilterClient *client);
-static void   set_default_packet_buffer_size
-                                          (MilterClient *client,
-                                           guint         size);
 static void   maintain                    (MilterClient *client);
 static void   sessions_finished           (MilterClient *client,
                                            guint         n_finished_sessions);
 static void   cb_leader_finished          (MilterFinishedEmittable *emittable,
                                            gpointer user_data);
+static guint  get_n_workers               (MilterClient *client);
+static void   set_n_workers               (MilterClient *client,
+                                           guint         n_workers);
 static MilterClientEventLoopBackend get_event_loop_backend
                                           (MilterClient *client);
 static void   set_event_loop_backend      (MilterClient *client,
                                            MilterClientEventLoopBackend backend);
+static guint  get_default_packet_buffer_size
+                                          (MilterClient *client);
+static void   set_default_packet_buffer_size
+                                          (MilterClient *client,
+                                           guint         size);
 
 static void
 milter_manager_class_init (MilterManagerClass *klass)
@@ -145,6 +148,8 @@ milter_manager_class_init (MilterManagerClass *klass)
     client_class->set_effective_group = set_effective_group;
     client_class->get_maintenance_interval = get_maintenance_interval;
     client_class->set_maintenance_interval = set_maintenance_interval;
+    client_class->get_n_workers = get_n_workers;
+    client_class->set_n_workers = set_n_workers;
     client_class->get_event_loop_backend = get_event_loop_backend;
     client_class->set_event_loop_backend = set_event_loop_backend;
     client_class->get_default_packet_buffer_size =
@@ -1058,6 +1063,24 @@ sessions_finished (MilterClient *client, guint n_finished_sessions)
 
     priv = MILTER_MANAGER_GET_PRIVATE(client);
     dispose_finished_leaders(priv);
+}
+
+static guint
+get_n_workers (MilterClient *client)
+{
+    MilterManagerPrivate *priv;
+
+    priv = MILTER_MANAGER_GET_PRIVATE(client);
+    return milter_manager_configuration_get_n_workers(priv->configuration);
+}
+
+static void
+set_n_workers (MilterClient *client, guint n_workers)
+{
+    MilterManagerPrivate *priv;
+
+    priv = MILTER_MANAGER_GET_PRIVATE(client);
+    milter_manager_configuration_set_n_workers(priv->configuration, n_workers);
 }
 
 static MilterClientEventLoopBackend
