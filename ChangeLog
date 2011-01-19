@@ -1,5 +1,8 @@
 2011-01-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* test/lib/milter-manager-test-utils.c
+	(milter_manager_test_pair_compare): don't use g_strcmp0().
+
 	* doc/configuration.rd*: add a description about {client_addr}
 	into Sendmail Compatible applicable condition.
 	Suggested by Kenji Shiono. Thanks!!!

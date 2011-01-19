@@ -92,19 +92,33 @@ milter_manager_test_pair_equal (gconstpointer data1, gconstpointer data2)
         string_equal(pair1->value, pair2->value);
 }
 
+static gint
+compare_string (const gchar *string1, const gchar *string2)
+{
+    if (cut_equal_string(string1, string2))
+        return 0;
+
+    if (string1 == NULL)
+        return -1;
+    if (string2 == NULL)
+        return 1;
+
+    return strcmp(string1, string2);
+}
+
 gint
 milter_manager_test_pair_compare (gconstpointer data1, gconstpointer data2)
 {
     const MilterManagerTestPair *pair1 = data1;
-    const
-        MilterManagerTestPair *pair2 = data2;
+    const MilterManagerTestPair *pair2 = data2;
     gint compare;
 
-    compare = g_strcmp0(pair1->name, pair2->name);
-    if (compare == 0)
-        return g_strcmp0(pair1->value, pair2->value);
-    else
+    compare = compare_string(pair1->name, pair2->name);
+    if (compare == 0) {
+        return compare_string(pair1->value, pair2->value);
+    } else {
         return compare;
+    }
 }
 
 MilterManagerTestPair *
