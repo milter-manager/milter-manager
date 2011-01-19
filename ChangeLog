@@ -1,5 +1,8 @@
 2011-01-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* milter/client/milter-client.c: use one event loop by
+	default. This change make libev backend workable. Yey!
+
 	* doc/reference/Makefile.am,
 	doc/reference/milter-manager-docs.sgml: include
 	milter-report-statistics document.

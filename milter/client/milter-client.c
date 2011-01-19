@@ -832,12 +832,45 @@ milter_client_create_context (MilterClient *client)
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
     context = milter_client_context_new(client);
+
     milter_client_context_set_packet_buffer_size(
         context,
         priv->default_packet_buffer_size);
+    milter_client_context_set_timeout(context, priv->timeout);
 
     return context;
 }
+
+static gboolean
+milter_client_start_context (MilterClient *client,
+                             MilterClientContext *context,
+                             GIOChannel *channel,
+                             MilterGenericSocketAddress *address,
+                             GError **error)
+{
+    MilterClientPrivate *priv;
+    MilterAgent *agent;
+    MilterWriter *writer;
+    MilterReader *reader;
+
+    agent = MILTER_AGENT(context);
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+
+    milter_agent_set_event_loop(agent, priv->process_loop);
+
+    writer = milter_writer_io_channel_new(channel);
+    milter_agent_set_writer(agent, writer);
+    g_object_unref(writer);
+
+    reader = milter_reader_io_channel_new(channel);
+    milter_agent_set_reader(agent, reader);
+    g_object_unref(reader);
+
+    milter_client_context_set_socket_address(context, address);
+
+    return milter_agent_start(agent, error);
+}
+
 
 typedef struct _ClientChannelSetupData
 {
@@ -852,10 +885,8 @@ single_thread_client_channel_setup (MilterClient *client,
                                     MilterGenericSocketAddress *address)
 {
     MilterClientPrivate *priv;
-    MilterClientContext *context;
     MilterAgent *agent;
-    MilterWriter *writer;
-    MilterReader *reader;
+    MilterClientContext *context;
     MilterClientProcessData *data;
     GError *error = NULL;
 
@@ -863,20 +894,6 @@ single_thread_client_channel_setup (MilterClient *client,
 
     context = milter_client_create_context(client);
     agent = MILTER_AGENT(context);
-
-    milter_agent_set_event_loop(agent, priv->process_loop);
-
-    writer = milter_writer_io_channel_new(channel);
-    milter_agent_set_writer(agent, writer);
-    g_object_unref(writer);
-
-    reader = milter_reader_io_channel_new(channel);
-    milter_agent_set_reader(agent, reader);
-    g_object_unref(reader);
-
-    milter_client_context_set_timeout(context, priv->timeout);
-
-    milter_client_context_set_socket_address(context, address);
 
     data = g_new(MilterClientProcessData, 1);
     data->priv = priv;
@@ -892,7 +909,7 @@ single_thread_client_channel_setup (MilterClient *client,
 
     priv->processing_data = g_list_prepend(priv->processing_data, data);
 
-    if (milter_agent_start(agent, &error)) {
+    if (milter_client_start_context(client, context, channel, address, &error)) {
         g_signal_emit(client, signals[CONNECTION_ESTABLISHED], 0, context);
     } else {
         milter_error("[%u] [client][single-thread][start][error] %s",
@@ -901,8 +918,6 @@ single_thread_client_channel_setup (MilterClient *client,
         g_error_free(error);
         milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(context));
     }
-
-    g_io_channel_unref(channel);
 }
 
 static gboolean
@@ -913,6 +928,7 @@ single_thread_cb_idle_client_channel_setup (gpointer user_data)
     single_thread_client_channel_setup(setup_data->client,
                                        setup_data->channel,
                                        &setup_data->address);
+    g_io_channel_unref(setup_data->channel);
     g_free(setup_data);
 
     return FALSE;
@@ -1158,25 +1174,11 @@ multi_thread_process_client_channel (MilterClient *client, GIOChannel *channel,
     MilterClientPrivate *priv;
     MilterClientContext *context;
     MilterClientProcessData *data;
-    MilterWriter *writer;
-    MilterReader *reader;
     GError *error = NULL;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
     context = milter_client_create_context(client);
-
-    writer = milter_writer_io_channel_new(channel);
-    milter_agent_set_writer(MILTER_AGENT(context), writer);
-    g_object_unref(writer);
-
-    reader = milter_reader_io_channel_new(channel);
-    milter_agent_set_reader(MILTER_AGENT(context), reader);
-    g_object_unref(reader);
-
-    milter_client_context_set_timeout(context, priv->timeout);
-
-    milter_client_context_set_socket_address(context, address);
 
     data = g_new(MilterClientProcessData, 1);
     data->priv = priv;
@@ -1185,25 +1187,34 @@ multi_thread_process_client_channel (MilterClient *client, GIOChannel *channel,
     data->finished_handler_id = 0;
 
     priv->processing_data = g_list_prepend(priv->processing_data, data);
-    g_thread_pool_push(priv->worker_threads, data, &error);
-    if (error) {
-        GError *client_error;
+    if (milter_client_start_context(client, context, channel, address, &error)) {
+        g_thread_pool_push(priv->worker_threads, data, &error);
+        if (error) {
+            GError *client_error;
 
-        client_error = g_error_new(MILTER_CLIENT_ERROR,
-                                   MILTER_CLIENT_ERROR_THREAD,
-                                   "failed to push a data to thread pool: %s",
-                                   error->message);
-        g_error_free(error);
-        milter_error("[%u] [client][multi-thread][error] %s",
+            client_error = g_error_new(MILTER_CLIENT_ERROR,
+                                       MILTER_CLIENT_ERROR_THREAD,
+                                       "failed to push a data to thread pool: %s",
+                                       error->message);
+            g_error_free(error);
+            milter_error("[%u] [client][multi-thread][error] %s",
+                         milter_agent_get_tag(MILTER_AGENT(context)),
+                         client_error->message);
+            milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
+                                        client_error);
+            g_error_free(client_error);
+            milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(context));
+        }
+    } else {
+        milter_error("[%u] [client][multi-thread][start][error] %s",
                      milter_agent_get_tag(MILTER_AGENT(context)),
-                     client_error->message);
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
-                                    client_error);
-        g_error_free(client_error);
-
-        process_data_free(data);
-        priv->processing_data = g_list_remove(priv->processing_data, data);
+                     error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(context), error);
+        g_error_free(error);
+        milter_finished_emittable_emit(MILTER_FINISHED_EMITTABLE(context));
     }
+
+    g_io_channel_unref(channel);
 }
 
 static gboolean
@@ -1605,15 +1616,13 @@ accept_error_watch_func (GIOChannel *channel, GIOCondition condition,
 }
 
 static gboolean
-milter_client_prepare (MilterClient *client, GIOFunc accept_func, GError **error)
+milter_client_prepare (MilterClient *client, MilterEventLoop *loop,
+                       GIOFunc accept_func, GError **error)
 {
     MilterClientPrivate *priv;
     GError *local_error = NULL;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
-
-    if (!priv->accept_loop)
-        priv->accept_loop = milter_client_create_event_loop(client, FALSE);
 
     if (priv->listening_channel || priv->n_processing_sessions > 0) {
         local_error = g_error_new(MILTER_CLIENT_ERROR,
@@ -1643,12 +1652,12 @@ milter_client_prepare (MilterClient *client, GIOFunc accept_func, GError **error
     }
 
     priv->accept_watch_id =
-        milter_event_loop_watch_io(priv->accept_loop,
+        milter_event_loop_watch_io(loop,
                                    priv->listening_channel,
                                    G_IO_IN | G_IO_PRI,
                                    accept_func, client);
     priv->accept_error_watch_id =
-        milter_event_loop_watch_io(priv->accept_loop,
+        milter_event_loop_watch_io(loop,
                                    priv->listening_channel,
                                    G_IO_ERR | G_IO_HUP | G_IO_NVAL,
                                    accept_error_watch_func,
@@ -1781,6 +1790,58 @@ client_run_workers (MilterClient *client, guint n_workers, GError **error)
     return TRUE;
 }
 
+static gboolean
+single_thread_single_loop_accept_connection (MilterClient *client,
+                                             gint server_fd)
+{
+    gboolean accepted;
+    GIOChannel *client_channel;
+    MilterGenericSocketAddress address;
+    socklen_t address_size;
+
+    accepted = accept_connection(client, server_fd, &client_channel,
+                                 &address, &address_size);
+    if (accepted) {
+        single_thread_client_channel_setup(client, client_channel, &address);
+        g_io_channel_unref(client_channel);
+    }
+
+    return TRUE;
+}
+
+static gboolean
+single_thread_single_loop_accept_watch_func (GIOChannel *channel,
+                                             GIOCondition condition,
+                                             gpointer data)
+{
+    MilterClient *client = data;
+    gboolean keep_callback = TRUE;
+    gint fd;
+
+    fd = g_io_channel_unix_get_fd(channel);
+    keep_callback = single_thread_single_loop_accept_connection(client, fd);
+    if (!keep_callback)
+        milter_client_shutdown(client);
+    return keep_callback;
+}
+
+static gboolean
+single_thread_single_loop_run (MilterClient *client, GError **error)
+{
+    MilterEventLoop *loop;
+
+    loop = milter_client_get_process_loop(client);
+    if (!milter_client_prepare(client,
+                               loop,
+                               single_thread_single_loop_accept_watch_func,
+                               error)) {
+        return FALSE;
+    }
+    milter_event_loop_run(loop);
+
+    return TRUE;
+}
+
 gboolean
 milter_client_run (MilterClient *client, GError **error)
 {
@@ -1796,15 +1857,36 @@ milter_client_run (MilterClient *client, GError **error)
         }
         success = run_master(client, error);
     } else if (priv->multi_thread_mode) {
-        if (!milter_client_prepare(client, multi_thread_accept_watch_func,
-                                   error))
+        priv->accept_loop = milter_client_create_event_loop(client, FALSE);
+        if (!milter_client_prepare(client,
+                                   priv->accept_loop,
+                                   multi_thread_accept_watch_func,
+                                   error)) {
             return FALSE;
+        }
         success = multi_thread_start_accept(client, error);
     } else {
-        if (!milter_client_prepare(client, single_thread_accept_watch_func,
-                                   error))
-            return FALSE;
-        success = single_thread_start_accept(client, error);
+        const gchar *use_accept_loop_env;
+        gboolean use_accept_loop = FALSE;
+
+        use_accept_loop_env = g_getenv("MILTER_USE_ACCEPT_LOOP");
+        if (use_accept_loop_env && strcmp(use_accept_loop_env, "yes") == 0)
+            use_accept_loop = TRUE;
+
+        if (use_accept_loop) {
+            if (!priv->accept_loop)
+                priv->accept_loop = milter_client_create_event_loop(client,
+                                                                    FALSE);
+            if (!milter_client_prepare(client,
+                                       priv->accept_loop,
+                                       single_thread_accept_watch_func,
+                                       error)) {
+                return FALSE;
+            }
+            success = single_thread_start_accept(client, error);
+        } else {
+            success = single_thread_single_loop_run(client, error);
+        }
     }
 
     milter_client_cleanup(client);
