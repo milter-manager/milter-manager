@@ -1,5 +1,7 @@
 2011-01-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/milter-performance-check.rd*: add --report-periodically option.
+
 	* test/lib/milter-test-utils.h: use GLib compatible library.
 
 	* test/lib/milter-test-glib-compatible.[ch]: define

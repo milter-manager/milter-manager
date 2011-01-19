@@ -154,6 +154,15 @@ smtp-source is more better tool for you.
 
    The default is false. (don't report.)
 
+: --report-periodically[=INTERVAL]
+
+   Reports statistics at intervals of INTERVAL
+   seconds/minutes/hours. If INTERVAL is omitted, 1s (1
+   second) is used. INTERVAL is treated as seconds when its
+   unit is omitted.
+
+   The default is one. (Don't report statistics periodically.)
+
 : --reading-timeout=SECONDS
 
    Specifies timeout on reading a response from a SMTP server.
