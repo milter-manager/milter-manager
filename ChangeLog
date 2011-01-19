@@ -1,5 +1,8 @@
 2011-01-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* debian/control, debian/rules,
+	apt/milter-manager-depended-packages: don't use system Ruby/GLib2.
+
 	* debian/rules: add unexpected deleted configuration modules.
 
 	* configure.ac: 1.6.3 -> 1.6.4.

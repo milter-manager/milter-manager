@@ -166,8 +166,16 @@ install/libmilter-toolkit-ruby1.8::
 		debian/libmilter-toolkit-ruby1.8/usr/lib/pkgconfig/
 	cp -ar debian/tmp/usr/lib/ruby/* \
 		debian/libmilter-toolkit-ruby1.8/usr/lib/ruby/
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/ext/glib* \
+		debian/libmilter-toolkit-ruby1.8/usr/lib/milter-manager/binding/ext
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/ext/rbg* \
+		debian/libmilter-toolkit-ruby1.8/usr/lib/milter-manager/binding/ext
 	cp -ar debian/tmp/usr/lib/milter-manager/binding/ext/milter_toolkit.* \
 		debian/libmilter-toolkit-ruby1.8/usr/lib/milter-manager/binding/ext
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/g*.rb \
+		debian/libmilter-toolkit-ruby1.8/usr/lib/milter-manager/binding/lib/
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/mkmf-gnome2.rb \
+		debian/libmilter-toolkit-ruby1.8/usr/lib/milter-manager/binding/lib/
 	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter.rb \
 		debian/libmilter-toolkit-ruby1.8/usr/lib/milter-manager/binding/lib/
 	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter/compatible.rb \

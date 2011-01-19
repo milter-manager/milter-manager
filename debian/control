@@ -2,7 +2,7 @@ Source: milter-manager
 Section: mail
 Priority: optional
 Maintainer: Kouhei Sutou <kou@clear-code.com>, Jun Kobayashi <jkbys@ubuntu.com>
-Build-Depends: debhelper (>= 5), autotools-dev, libglib2.0-dev, ruby, ruby1.8-dev, libglib2-ruby1.8, cdbs, intltool
+Build-Depends: debhelper (>= 5), autotools-dev, libglib2.0-dev, ruby, ruby1.8-dev, cdbs, intltool
 Standards-Version: 3.7.3.0
 Homepage: http://milter-manager.sourceforge.net/
 
@@ -88,7 +88,7 @@ Section: ruby
 Architecture: any
 Replaces: milter-manager (<< 1.6.1-1)
 Breaks: milter-manager (<< 1.6.1-1)
-Depends: ${shlibs:Depends}, ${misc:Depends}, libmilter-toolkit (= ${binary:Version}), ruby, libglib2-ruby1.8
+Depends: ${shlibs:Depends}, ${misc:Depends}, libmilter-toolkit (= ${binary:Version}), ruby
 Description: Development files for milter toolkit
  milter toolkit includes "core", "client" and "server" libraries.
  "core" is a common library for "client" and "server" libraries.

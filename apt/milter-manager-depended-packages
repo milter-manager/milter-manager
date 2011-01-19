@@ -3,7 +3,5 @@ autotools-dev
 libglib2.0-dev
 ruby
 ruby1.8-dev
-libglib2-ruby1.8
-ruby-gnome2-dev
 cdbs
 intltool
