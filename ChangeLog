@@ -1,5 +1,7 @@
 2011-01-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* NEWS.ja: adding...
+
 	* doc/milter-performance-check.rd*: add --flood.
 
 	* tool/milter-performance-check: --flood-mode -> --flood.

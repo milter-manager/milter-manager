@@ -2,6 +2,58 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-1-6-3] 1.6.3: 2011-01-19
+
+パフォーマンス改善を目指したリリースです。パフォーマンス改善
+のための実験的な機能が入っています。これらの機能は1.8.0で正
+式な機能となる予定です。
+
+=== milter manager
+
+==== 改良
+
+  * バンドルしているRuby/GLib2を0.19.4から0.90.5へアップグレード。
+  * Ruby 1.9.2対応。
+
+=== milter-client
+
+==== 改良
+
+  * マルチプロセス対応。（実験的）
+  * イベントループバックエンドのlibev対応。（実験的）
+  * writeの非同期化。
+
+=== Ruby milter
+
+==== 改良
+
+  * マルチプロセス対応。（実験的）
+
+=== milter-test-client
+
+==== 改良
+
+  * サブプロセス数を指定する
+    ((<--n-workers|milter-test-client#--n-workers>))オプショ
+    ンを追加。（実験的）
+  * イベントループバックエンドを指定する
+    ((<--event-loop-backend|milter-test-client#--event-loop-backend>))
+    オプションを追加。（実験的）
+  * 送信パケットをバッファリングする量を指定する
+    ((<--packet-buffer-size|milter-test-client#--packet-buffer-size>))
+    オプションを追加。（実験的）
+
+=== milter-performance-check
+
+==== 改良
+
+  * ((<--n-additional-lines|milter-performance-check#--n-additional-lines>))
+    オプションの追加。
+
+=== 感謝
+
+  * ...
+
 == [release-1-6-2] 1.6.2: 2010-11-23
 
 1.6.1のバグフィックスリリースです。
