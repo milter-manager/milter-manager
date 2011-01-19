@@ -25,8 +25,9 @@
 
 #include <gcutter.h>
 #include "milter-test-compatible.h"
+#include "milter-test-glib-compatible.h"
 #include "milter-assertions.h"
-#include "milter-test-client.h"
+#include "milter-test-server.h"
 #include "milter-test-server.h"
 
 G_BEGIN_DECLS

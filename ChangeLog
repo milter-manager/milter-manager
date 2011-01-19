@@ -1,5 +1,7 @@
 2011-01-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* test/lib/milter-test-utils.h: use GLib compatible library.
+
 	* test/lib/milter-test-glib-compatible.[ch]: define
 	g_hash_table_get_keys() with old GLib < 2.14.0.
 
