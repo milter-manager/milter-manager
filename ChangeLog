@@ -1,5 +1,7 @@
 2011-01-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* apt/build-in-chroot.sh: support parallel build.
+
 	* NEWS*: add 1.6.3 entry.
 
 	* milter/client/milter-client.c (milter_client_create_event_loop):
