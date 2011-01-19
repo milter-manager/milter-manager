@@ -14,6 +14,36 @@
 
   * バンドルしているRuby/GLib2を0.19.4から0.90.5へアップグレード。
   * Ruby 1.9.2対応。
+  * milter manager内部で問題があったときにSMTPサーバへ返す
+    ステータスを指定する設定
+    ((<manager.fallback_status|configuration.rd.ja#manager.fallback_status>))
+    を追加。
+  * 切断検出時にSMTPサーバへ返すステータスを指定する設定
+    ((<manager.fallback_status_at_disconnect|configuration.rd.ja#manager.fallback_status_at_disconnect>))
+    を追加。 [Kenji Shionoさんが提案]
+  * SMTPサーバの利用するmilterプロトコルバージョンが4より小
+    さいときはDATAイベントをエミュレーションするようにした。
+  * イベントループバックエンドを指定する設定
+    ((<manager.event_loop_backend|configuration.rd.ja#manager.event_loop_backend>))
+    を追加。（実験的）
+  * サブプロセス数を指定する設定
+    ((<manager.n_workers|configuration.rd.ja#manager.n_workers>))
+    を追加。（実験的）
+  * 送信パケットをバッファリングする量を指定する設定
+    ((<manager.packet_buffer_size|configuration.rd.ja#manager.packet_buffer_sizea>))
+    を追加。（実験的）
+
+==== 修正
+
+  * Postfix 2.3で
+    ((<manager.use_netstat_connection_checker|configuration.rd.ja#manager.use_netstat_connection-checker>))
+    が誤動作する問題を修正。 [Kenji Shionoさんが報告]
+  * 複数の子milterがいるときにDATAイベントを送信するタイミン
+    グが遅かった問題を修正。 [Kenji Shionoさんが報告]
+
+=== ドキュメント
+
+  * Postfixの{client_addr}について追記。 [Kenji Shionoさんが報告]
 
 === milter-client
 
@@ -21,13 +51,32 @@
 
   * マルチプロセス対応。（実験的）
   * イベントループバックエンドのlibev対応。（実験的）
+    * libevは同梱。
   * writeの非同期化。
+  * 送信パケットのバッファリング対応。（実験的）
+
+=== milter-server
+
+==== 改良
+
+  * イベント発生時の状態チェックを強化。
+
+==== 修正
+
+  * タイムアウト検出が誤動作する問題を修正。 [Kenji Shionoさんが報告]
 
 === Ruby milter
 
 ==== 改良
 
   * マルチプロセス対応。（実験的）
+  * ruby-milter.pcの導入。
+  * 送信パケットをバッファリングする量を指定す
+    る--packet-buffer-sizeオプションを追加。（実験的）
+  * サブプロセス数を指定する--n-workersオプションを追加。
+    （実験的）
+  * イベントループバックエンドを指定する--event-loop-backend
+    オプションを追加。（実験的）
 
 === milter-test-client
 
@@ -47,12 +96,26 @@
 
 ==== 改良
 
-  * ((<--n-additional-lines|milter-performance-check#--n-additional-lines>))
+  * 本文サイズを大きくする
+    ((<--n-additional-lines|milter-performance-check#--n-additional-lines>))
     オプションの追加。
+  * 失敗したSMTPセッションの結果を報告する
+    ((<--report-failure-responses|milter-performance-check#--report-failure-responses>))
+    オプションの追加。
+
+=== milter-report-statistics
+
+==== 改良
+
+  * 追加: ((<milter-report-statistics.rd.ja>))
+
+=== パッケージ
+
+  * CentOS用パッケージリポジトリRPMを更新: 1.0.0-0 -> 1.0.0-1.
 
 === 感謝
 
-  * ...
+  * Kenji Shionoさん
 
 == [release-1-6-2] 1.6.2: 2010-11-23
 
