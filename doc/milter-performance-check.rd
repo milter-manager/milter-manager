@@ -109,6 +109,12 @@ smtp-source is more better tool for you.
 
    The default is 100.
 
+: --n-additional-lines=N
+
+   Adds N lines into mail body.
+
+   The default is none. (Doesn't add.)
+
 : --n-concurrent-connections=N
 
    Sends mails with N connections concurrently.
