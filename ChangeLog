@@ -1,5 +1,7 @@
 2011-01-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* debian/rules: add missing *.pc.
+
 	* rpm/centos/milter-manager.spec.in: add missing ruby-milter.pc.
 
 	* doc/reference/Makefile.am (generated_xml_files): fix a typo.
