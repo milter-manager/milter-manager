@@ -77,8 +77,6 @@ install/milter-manager::
 		debian/milter-manager/usr/lib/milter-manager/binding/ext
 	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter/manager* \
 		debian/milter-manager/usr/lib/milter-manager/binding/lib/milter/
-	cp -ar debian/tmp/usr/lib/pkgconfig/milter-manager.pc \
-		debian/milter-manager/usr/lib/milter-manager/pkgconfig/
 
 	cp -ar debian/tmp/usr/bin/milter-performance-check \
 		debian/milter-manager/usr/bin/
@@ -114,7 +112,7 @@ install/milter-manager-doc::
 
 install/milter-manager-dev::
 	cp -ar debian/tmp/usr/lib/pkgconfig/milter-manager.pc \
-		debian/milter-manager-dev/usr/lib/milter-manager/pkgconfig/
+		debian/milter-manager-dev/usr/lib/pkgconfig/
 	cp -ar debian/tmp/usr/include/milter-manager/milter/manager.h \
 		debian/milter-manager-dev/usr/include/milter-manager/milter/
 	cp -ar debian/tmp/usr/include/milter-manager/milter/manager/* \

@@ -1,3 +1,7 @@
+2011-01-20  Kouhei Sutou  <kou@cozmixng.org>
+
+	* debian/rules: fix path.
+
 2011-01-19  Kouhei Sutou  <kou@cozmixng.org>
 
 	* debian/rules: add missing *.pc.
