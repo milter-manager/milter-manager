@@ -108,7 +108,11 @@ a few performance improvement features but they are marked
     report on the last.
   * Added
     ((<--report-periodically|milter-performance-check#--report-periodically>))
-    options that enables periodical statistics report.
+    option that enables periodical statistics report.
+  * Added
+    ((<--flood|milter-performance-check#--flood>))
+    option that enables flood mood that sends flood of mails
+    in specified period.
 
 === milter-report-statistics
 

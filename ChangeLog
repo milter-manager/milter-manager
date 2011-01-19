@@ -1,5 +1,7 @@
 2011-01-19  Kouhei Sutou  <kou@cozmixng.org>
 
+	* NEWS*: add --flood option.
+
 	* apt/build-in-chroot.sh: support parallel build.
 
 	* NEWS*: add 1.6.3 entry.

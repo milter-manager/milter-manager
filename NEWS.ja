@@ -107,6 +107,9 @@
   * 定期的に統計情報を報告する
     ((<--report-periodically|milter-performance-check#--report-periodically>))
     オプションの追加。
+  * 指定した期間メールを送信し続ける
+    ((<--flood|milter-performance-check#--flood>))
+    オプションの追加。
 
 === milter-report-statistics
 
