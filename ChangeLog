@@ -1,5 +1,8 @@
 2011-01-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* test/server/test-server-context-command.c (pump_all_events): fix
+	double free.
+
 	* milter/client/milter-client.c: use one event loop by
 	default. This change make libev backend workable. Yey!
 
