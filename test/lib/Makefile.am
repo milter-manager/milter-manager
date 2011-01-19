@@ -41,6 +41,8 @@ libmilter_test_la_SOURCES =		\
 	milter-test-utils.c		\
 	milter-test-client.c		\
 	milter-test-server.c		\
+	milter-test-glib-compatible.c	\
+	milter-test-glib-compatible.h	\
 	milter-test-enum-types.c	\
 	milter-test-enum-types.h	\
 	milter-assertions.c		\

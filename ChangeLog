@@ -1,5 +1,8 @@
 2011-01-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* test/lib/milter-test-glib-compatible.[ch]: define
+	g_hash_table_get_keys() with old GLib < 2.14.0.
+
 	* test/lib/milter-manager-test-utils.c
 	(milter_manager_test_pair_compare): don't use g_strcmp0().
 
