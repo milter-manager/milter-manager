@@ -142,6 +142,14 @@ smtp-source is more better tool for you.
 
    The default is none.
 
+: --flood[=PERIOD]
+
+   Sends flood of mails in PERIOD seconds/minutes/hours. If
+   PERIOD is omitted, floods mails eternally. PERIOD is
+   treated as seconds when its unit is omitted.
+
+   The default is none.
+
 : --shuffle, --no-shuffle
 
    Shuffles target mails before sending.
