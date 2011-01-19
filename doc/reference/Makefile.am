@@ -160,7 +160,7 @@ generated_xml_files =				\
 	milter-test-client.xml.ja		\
 	milter-performance-check.xml		\
 	milter-performance-check.xml.ja		\
-	milter-report-statistics-check.xml	\
+	milter-report-statistics.xml		\
 	milter-report-statistics.xml.ja		\
 	milter-manager-log-analyzer.xml		\
 	milter-manager-log-analyzer.xml.ja	\
