@@ -1,5 +1,7 @@
 2011-01-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-performance-check: --flood-mode -> --flood.
+
 	* test/tool/test-server.c: fix double free.
 
 	* test/server/test-server-context-command.c (pump_all_events): fix

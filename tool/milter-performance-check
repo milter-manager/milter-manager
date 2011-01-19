@@ -323,7 +323,7 @@ class MilterPerformanceChecker
     @mails = []
     @period = nil
     @interval = nil
-    @flood_mode = nil
+    @flood = nil
     @statistics_data_reporter = StatisticsDataReporter.new
     @shuffle = false
     @report_failure_responses = false
@@ -468,7 +468,7 @@ class MilterPerformanceChecker
         @interval = parse_period(interval)
       end
 
-      opts.on('--flood-mode[=PERIOD]',
+      opts.on('--flood[=PERIOD]',
               "Flood of mails are sent for PERIOD seconds/minutes/hours.",
               "Endless if PERIOD is not specified.",
               "conflict option: --period, --interval") do |period|
@@ -478,8 +478,11 @@ class MilterPerformanceChecker
         if @interval
           raise OptionParser::InvalidOption, "can't use with --interval"
         end
-        @flood_mode = true
-        @flood_mode_period = parse_period(period)
+        if period.nil?
+          @flood = :endless
+        else
+          @flood = parse_period(period)
+        end
       end
 
       opts.on('--report-statistics-data=FILE',
@@ -619,8 +622,8 @@ class MilterPerformanceChecker
         threads = send_mails_in_interval(mails, @interval)
       elsif @period
         threads = send_mails_in_period(mails)
-      elsif @flood_mode
-        threads = send_mails_in_flood_mode(mails)
+      elsif @flood
+        threads = send_mails_in_flood(mails)
       else
         threads = send_mails_in_parallel(mails)
       end
@@ -677,21 +680,33 @@ class MilterPerformanceChecker
     threads
   end
 
-  def send_mails_in_flood_mode(mails)
+  def send_mails_in_flood(mails)
     threads = []
     n_mails = [0] * @n_concurrent_connections
-    start_time = Time.now
-    end_time = start_time + @flood_mode_period
+    if @flood == :endless
+      end_time = nil
+    else
+      start_time = Time.now
+      end_time = start_time + @flood
+    end
     @n_concurrent_connections.times do |i|
       threads << Thread.new do
-        keep_running = true
-        while keep_running
-          mails.each do |mail|
-            if end_time < Time.now
-              keep_running = false
-              break
+        if end_time
+          keep_running = true
+          while keep_running
+            mails.each do |mail|
+              if end_time < Time.now
+                keep_running = false
+                break
+              end
+              send_mail(mail)
             end
-            send_mail(mail)
+          end
+        else
+          loop do
+            mails.each do |mail|
+              send_mail(mail)
+            end
           end
         end
       end
