@@ -1,3 +1,8 @@
+2011-01-19  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/client/milter-client.c (milter_client_create_event_loop):
+	log the current event loop backend.
+
 2011-01-19  Kouhei Sutou  <kou@clear-code.com>
 
 	* NEWS.ja: adding...
