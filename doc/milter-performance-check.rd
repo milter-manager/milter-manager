@@ -145,7 +145,7 @@ smtp-source is more better tool for you.
 : --flood[=PERIOD]
 
    Sends flood of mails in PERIOD seconds/minutes/hours. If
-   PERIOD is omitted, floods mails eternally. PERIOD is
+   PERIOD is omitted, floods mails endlessly. PERIOD is
    treated as seconds when its unit is omitted.
 
    The default is none.
