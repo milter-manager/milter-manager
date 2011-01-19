@@ -1,5 +1,8 @@
 2011-01-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/milter-performance-check.rd*: change reference to
+	milter-report-statistics.
+
 	* doc/milter-report-statistics.rd*: add.
 
 	* doc/milter-performance-check.rd*: add --report-periodically option.

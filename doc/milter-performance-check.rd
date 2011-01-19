@@ -195,5 +195,4 @@ only 1 time because of --n-mails=1 option.
 
 == SEE ALSO
 
-((<milter-test-client.rd>))(1),
-((<milter-test-server.rd>))(1)
+((<milter-performance-check.rd.ja>))(1)
