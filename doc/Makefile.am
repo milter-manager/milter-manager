@@ -67,6 +67,8 @@ EXTRA_DIST =						\
 	milter-test-client.rd.ja			\
 	milter-performance-check.rd			\
 	milter-performance-check.rd.ja			\
+	milter-report-statistics.rd			\
+	milter-report-statistics.rd.ja			\
 	milter-manager-log-analyzer.rd			\
 	milter-manager-log-analyzer.rd.ja		\
 	milter-manager.rd				\
@@ -87,6 +89,7 @@ dist_man1_MANS =			\
 	milter-test-server.man		\
 	milter-test-client.man		\
 	milter-performance-check.man	\
+	milter-report-statistics.man	\
 	milter-manager-log-analyzer.man
 
 ja_man1dir = $(mandir)/ja/man1
@@ -95,6 +98,7 @@ dist_ja_man1_mans = 				\
 	milter-test-server.jman			\
 	milter-test-client.jman			\
 	milter-performance-check.jman		\
+	milter-report-statistics.jman		\
 	milter-manager-log-analyzer.jman
 
 EXTRA_DIST += $(dist_ja_man1_mans)
@@ -126,6 +130,7 @@ milter-manager.jman: milter-manager.rd.ja
 milter-test-server.jman: milter-test-server.rd.ja
 milter-test-client.jman: milter-test-client.rd.ja
 milter-performance-check.jman: milter-performance-check.rd.ja
+milter-report-statistics.jman: milter-report-statistics.rd.ja
 milter-manager-log-analyzer.jman: milter-manager-log-analyzer.rd.ja
 
 MAINTAINERCLEANFILES = $(dist_man1_MANS) $(dist_ja_man1_mans)

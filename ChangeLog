@@ -1,5 +1,9 @@
 2011-01-19  Kouhei Sutou  <kou@clear-code.com>
 
+	* doc/reference/Makefile.am,
+	doc/reference/milter-manager-docs.sgml: include
+	milter-report-statistics document.
+
 	* doc/milter-test-client.rd*: fix markup.
 
 	* doc/milter-performance-check.rd*: change reference to

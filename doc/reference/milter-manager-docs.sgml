@@ -18,6 +18,7 @@
       <xi:include href="milter-test-server.xml"/>
       <xi:include href="milter-test-client.xml"/>
       <xi:include href="milter-performance-check.xml"/>
+      <xi:include href="milter-report-statistics.xml"/>
       <xi:include href="milter-manager-log-analyzer.xml"/>
     </chapter>
     <xi:include href="introduction.xml"/>

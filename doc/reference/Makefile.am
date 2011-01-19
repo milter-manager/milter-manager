@@ -89,6 +89,7 @@ content_files =					\
 	milter-test-server.xml			\
 	milter-test-client.xml			\
 	milter-performance-check.xml		\
+	milter-report-statistics.xml		\
 	milter-manager-log-analyzer.xml		\
 	reverse-dictionary.xml			\
 	users.xml				\
@@ -159,6 +160,8 @@ generated_xml_files =				\
 	milter-test-client.xml.ja		\
 	milter-performance-check.xml		\
 	milter-performance-check.xml.ja		\
+	milter-report-statistics-check.xml	\
+	milter-report-statistics.xml.ja		\
 	milter-manager-log-analyzer.xml		\
 	milter-manager-log-analyzer.xml.ja	\
 	reverse-dictionary.xml			\
@@ -377,6 +380,12 @@ milter-performance-check.xml: $(top_srcdir)/doc/milter-performance-check.rd $(RD
 
 milter-performance-check.xml.ja: $(top_srcdir)/doc/milter-performance-check.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/milter-performance-check.rd.ja > milter-performance-check.xml.ja
+
+milter-report-statistics.xml: $(top_srcdir)/doc/milter-report-statistics.rd $(RD2REFENTRY_LIB) milter-report-statistics.xml.ja
+	$(RD2DOCBOOK) $(top_srcdir)/doc/milter-report-statistics.rd > milter-report-statistics.xml
+
+milter-report-statistics.xml.ja: $(top_srcdir)/doc/milter-report-statistics.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/milter-report-statistics.rd.ja > milter-report-statistics.xml.ja
 
 milter-manager-log-analyzer.xml: $(top_srcdir)/doc/milter-manager-log-analyzer.rd $(RD2REFENTRY_LIB) milter-manager-log-analyzer.xml.ja
 	$(RD2DOCBOOK) $(top_srcdir)/doc/milter-manager-log-analyzer.rd > milter-manager-log-analyzer.xml
