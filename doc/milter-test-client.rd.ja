@@ -102,7 +102,7 @@ milter-test-clientが役立つでしょう。
 : --event-loop-backend=BACKEND
 
    イベントループのバックエンドを指定します。
-   ((|BACKEND|))に指定できる値は、(('glib'))か(('libev'))のいずれかです。
+   ((|BACKEND|))に指定できる値は、((%glib%))か((%libev%))のいずれかです。
 
    ((*注意: この項目は実験的な機能扱いです。*))
 

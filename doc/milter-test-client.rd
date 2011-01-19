@@ -102,7 +102,7 @@ tool for looking into the problems.
 : --event-loop-backend=BACKEDN
 
    Uses ((|BACKEND|)) as event loop backend.
-   Availble values are (('glib'')) or (('libev')).
+   Availble values are ((%glib%)) or ((%libev%)).
 
    ((*NOTE: This item is an experimental feature.*))
 
