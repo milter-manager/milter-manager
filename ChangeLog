@@ -1,5 +1,7 @@
 2011-01-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* ./: 1.6.3 -> 1.6.4.
+
 	* milter/client/milter-client.c (milter_client_run): use accept
 	loop only for libev by default.
 
