@@ -1,6 +1,6 @@
 2011-01-19  Kouhei Sutou  <kou@cozmixng.org>
 
-	* NEWS.ja: add 1.6.3 entry.
+	* NEWS*: add 1.6.3 entry.
 
 	* milter/client/milter-client.c (milter_client_create_event_loop):
 	log the current event loop backend.

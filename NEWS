@@ -2,6 +2,128 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-6-3] 1.6.3: 2011-01-19
+
+A performance improvement release. This release includes
+a few performance improvement features but they are marked
+'experimental'. They will be 'stable' feature in 1.8.0.
+
+=== milter manager
+
+==== Improvements
+
+  * Upgraded bundled Ruby/GLib2 to 0.90.5 from 0.19.4.
+  * Supported Ruby 1.9.2.
+  * Added
+    ((<manager.fallback_status|configuration.rd.ja#manager.fallback_status>))
+    that specifies a status returned to SMTP server on
+    internal error.
+  * Added
+    ((<manager.fallback_status_at_disconnect|configuration.rd.ja#manager.fallback_status_at_disconnect>))
+    that specifies a status returned to SMTP server when
+    disconnection is detected. [Suggested by Kenji Shiono]
+  * Added DATA event emuration that is enabled when SMTP
+    server uses milter protocol version 3 or smaller.
+  * Added
+    ((<manager.event_loop_backend|configuration.rd.ja#manager.event_loop_backend>))
+    that specifies event loop backend. (experimiental)
+  * Added
+    ((<manager.n_workers|configuration.rd.ja#manager.n_workers>))
+    that specifies number of worker processes. (experimental)
+  * Added
+    ((<manager.packet_buffer_size|configuration.rd.ja#manager.packet_buffer_sizea>))
+    that specifies buffer size for send packets. (experimental)
+
+==== Fixes
+
+  * Fixed a bug that
+    ((<manager.use_netstat_connection_checker|configuration.rd.ja#manager.use_netstat_connection-checker>))
+    doesn't work with Postfix 2.3. [Reported by Kenji Shiono]
+  * Fixed a DATA event timing when some child milters exist.
+    [Reported by Kenji Shiono]
+
+=== Document
+
+==== Improvements
+
+  * Described about Postfix's {client_addr}. [Reported by Kenji Shiono]
+
+=== milter-client
+
+==== Improvements
+
+  * Supported multi process. (experimental)
+  * Supported libev as event loop backend. (experimental)
+    * Bundled libev 4.03.
+  * Made write asyncronize.
+  * Supported send packets buffering. (experimental)
+
+=== milter-server
+
+==== Improvements
+
+  * Added more condition checks on evnets.
+
+==== Fixes
+
+  * Fixed a bug that timeout detection doesn't work.
+    [Reported by Kenji Shiono]
+
+=== Ruby milter
+
+==== Improements
+
+  * Added ruby-milter.pc.
+  * Added --packet-buffer-size option that specifies send
+    packet buffer size. (experimental)
+  * Added --n-workers option thst specifies number of worker
+    processes. (epxerimental)
+  * Added --event-loop-backend option that specifies event
+    loop backend. (experimental)
+
+=== milter-test-client
+
+==== Improvements
+
+  * Added
+    ((<--n-workers|milter-test-client#--n-workers>)) option
+    that specifies number of worker processes. (experimental)
+  * Added
+    ((<--event-loop-backend|milter-test-client#--event-loop-backend>))
+    option that specifies event loop backend. (experimental)
+  * Added
+    ((<--packet-buffer-size|milter-test-client#--packet-buffer-size>))
+    option that specifies send packets buffer size. (experimental)
+
+=== milter-performance-check
+
+==== Improvements
+
+  * Added
+    ((<--n-additional-lines|milter-performance-check#--n-additional-lines>))
+    option that grows body size.
+  * Added
+    ((<--report-failure-responses|milter-performance-check#--report-failure-responses>))
+    option that enables failure SMTP sesseion response
+    report on the last.
+  * Added
+    ((<--report-periodically|milter-performance-check#--report-periodically>))
+    options that enables periodical statistics report.
+
+=== milter-report-statistics
+
+==== Improvements
+
+  * Added: ((<milter-report-statistics.rd.ja>))
+
+=== Packet
+
+  * Updated package repository RPM for CentOS: 1.0.0-0 -> 1.0.0-1.
+
+=== Thanks
+
+  * Kenji Shiono
+
 == [release-1-6-2] 1.6.2: 2010-11-23
 
 A bug fix release of 1.6.1.
