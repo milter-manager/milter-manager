@@ -2,7 +2,18 @@
 
 = NEWS --- The history of milter manager
 
-== [release-1-6-3] 1.6.3: 2011-01-21
+== [release-1-6-4] 1.6.4: 2011-01-21
+
+A bug fix release of 1.6.3.
+
+=== milter-client
+
+==== Fixes
+
+  * Used event loop usage as before when event loop backend
+    is GLib.
+
+== [release-1-6-3] 1.6.3: 2011-01-20
 
 A performance improvement release. This release includes
 a few performance improvement features but they are marked
