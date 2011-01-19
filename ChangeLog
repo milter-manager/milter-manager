@@ -1,5 +1,7 @@
 2011-01-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* configure.ac: 1.6.3 -> 1.6.4.
+
 	* NEWS*: 2011-01-19 -> 2011-01-21.
 
 	* milter/manager/milter-manager.c: uses n_workers configuration.
