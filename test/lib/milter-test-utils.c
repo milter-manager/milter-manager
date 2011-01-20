@@ -18,6 +18,10 @@
  */
 
 #include <unistd.h>
+#ifndef HAVE_MKDTEMP
+#include <sys/stat.h>
+#include <sys/types.h>
+#endif
 
 #include "milter-test-utils.h"
 
@@ -101,6 +105,23 @@ milter_test_get_source_dir (void)
 
     return source_dir;
 }
+
+#ifndef HAVE_MKDTEMP
+static char *
+simple_mkdtemp (char *template)
+{
+    if (!mktemp(template) || !*template) {
+        return NULL;
+    }
+
+    if (mkdir(template, 0700)) {
+        return NULL;
+    }
+
+    return template;
+}
+#define mkdtemp simple_mkdtemp
+#endif
 
 gchar *
 milter_test_get_tmp_dir (void)

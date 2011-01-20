@@ -142,6 +142,7 @@ AC_CHECK_HEADER(sys/un.h,
 
 AC_CHECK_TYPE([long long])
 AC_CHECK_TYPE([long double])
+AC_CHECK_FUNCS(mkdtemp)
 
 dnl **************************************************************
 dnl Check for network libraries.
