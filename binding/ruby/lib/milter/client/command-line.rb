@@ -15,6 +15,7 @@
 
 require 'optparse'
 require "ostruct"
+require "syslog"
 require "webrick/server"
 
 module Milter
@@ -42,7 +43,7 @@ module Milter
         client.on_error do |_client, error|
           Milter::Logger.error("[client][error] #{error.message}")
         end
-        client.start_syslog(@name) if @options.syslog
+        client.start_syslog(@name, @options.syslog_facility) if @options.syslog
         client.status_on_error = @options.status_on_error
         client.connection_spec = @options.connection_spec
         client.effective_user = @options.user
@@ -70,6 +71,7 @@ module Milter
         @options.unix_socket_group = nil
         @options.unix_socket_mode = nil
         @options.syslog = false
+        @options.syslog_facility = "mail"
         @options.event_loop_backend = Milter::Client::EVENT_LOOP_BACKEND_GLIB
         @options.n_workers = 0
         @options.packet_buffer_size = 0
@@ -207,6 +209,19 @@ module Milter
                           "Use syslog",
                           "(#{@options.syslog})") do |bool|
           @options.syslog = bool
+        end
+
+        facilities = Syslog.constants.find_all do |name|
+          /\ALOG_/ =~ name.to_s
+        end.collect do |name|
+          name.to_s.gsub(/\ALOG_/, '').downcase
+        end
+        available_values = "available values: [#{facilities.join(', ')}]"
+        @option_parser.on("--syslog-facility=FACILITY", facilities,
+                          "Use FACILITY as syslog facility.",
+                          "(#{@options.syslog_facility})",
+                          available_values) do |facility|
+          @options.syslog_facility = facility
         end
 
         @option_parser.on("--verbose",

@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -48,7 +48,8 @@ struct _MilterSyslogLoggerClass
 
 GType               milter_syslog_logger_get_type (void) G_GNUC_CONST;
 
-MilterSyslogLogger *milter_syslog_logger_new      (const gchar *identity);
+MilterSyslogLogger *milter_syslog_logger_new      (const gchar *identity,
+                                                   const gchar *facility);
 
 MilterLogLevelFlags milter_syslog_logger_get_target_level
                                               (MilterSyslogLogger  *logger);

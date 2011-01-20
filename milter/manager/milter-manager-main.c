@@ -382,7 +382,8 @@ start_process_launcher (GIOChannel *read_channel, GIOChannel *write_channel,
     MilterEventLoop *loop;
     GError *error = NULL;
 
-    logger = milter_syslog_logger_new("milter-manager-process-launcher");
+    logger = milter_syslog_logger_new("milter-manager-process-launcher",
+                                      NULL);
 
     reader = milter_reader_io_channel_new(read_channel);
     g_io_channel_unref(read_channel);

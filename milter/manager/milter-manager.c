@@ -181,7 +181,7 @@ milter_manager_init (MilterManager *manager)
     priv->leaders = NULL;
     priv->next_connection_checked_leader = NULL;
     priv->connection_checking = FALSE;
-    priv->logger = milter_syslog_logger_new("milter-manager");
+    priv->logger = milter_syslog_logger_new("milter-manager", NULL);
 
     priv->launcher_read_channel = NULL;
     priv->launcher_write_channel = NULL;

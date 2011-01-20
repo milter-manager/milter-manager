@@ -89,9 +89,14 @@ client_shutdown (VALUE self)
 }
 
 static VALUE
-client_start_syslog (VALUE self, VALUE identify)
+client_start_syslog (int argc, VALUE *argv, VALUE self)
 {
-    milter_client_start_syslog(SELF(self), RVAL2CSTR(identify));
+    VALUE identify, facility;
+
+    rb_scan_args(argc, argv, "11", &identify, &facility);
+    milter_client_start_syslog(SELF(self),
+			       RVAL2CSTR(identify),
+			       RVAL2CSTR(facility));
     return Qnil;
 }
 
@@ -274,7 +279,7 @@ Init_milter_client (void)
     rb_define_method(rb_cMilterClient, "run", client_run, 0);
     rb_define_method(rb_cMilterClient, "main", client_main, 0);
     rb_define_method(rb_cMilterClient, "shutdown", client_shutdown, 0);
-    rb_define_method(rb_cMilterClient, "start_syslog", client_start_syslog, 1);
+    rb_define_method(rb_cMilterClient, "start_syslog", client_start_syslog, -1);
     rb_define_method(rb_cMilterClient, "listen", client_listen, 0);
     rb_define_method(rb_cMilterClient, "create_context",
 		     client_create_context, 0);

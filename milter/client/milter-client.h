@@ -767,11 +767,13 @@ gboolean             milter_client_is_processing     (MilterClient  *client);
  * milter_client_start_syslog:
  * @client: a %MilterClient.
  * @identify: the identify name in syslog.
+ * @facility: the syslog facility. Maybe %NULL.
  *
  * Starts logging by syslog with @identify name.
  */
 void                 milter_client_start_syslog      (MilterClient  *client,
-                                                      const gchar   *identify);
+                                                      const gchar   *identify,
+                                                      const gchar   *facility);
 
 /**
  * milter_client_get_process_loop:

@@ -2397,7 +2397,8 @@ milter_client_is_processing (MilterClient *client)
 }
 
 void
-milter_client_start_syslog (MilterClient *client, const gchar *identify)
+milter_client_start_syslog (MilterClient *client, const gchar *identify,
+                            const gchar * facility)
 {
     MilterClientPrivate *priv;
 
@@ -2406,7 +2407,7 @@ milter_client_start_syslog (MilterClient *client, const gchar *identify)
     if (priv->syslog_logger) {
         g_object_unref(priv->syslog_logger);
     }
-    priv->syslog_logger = milter_syslog_logger_new(identify);
+    priv->syslog_logger = milter_syslog_logger_new(identify, facility);
 }
 
 MilterEventLoop *

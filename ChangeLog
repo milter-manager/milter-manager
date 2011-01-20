@@ -1,5 +1,15 @@
 2011-01-20  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/core/milter-syslog-logger.[ch],
+	milter/client/milter-client.[ch],
+	milter/manager/milter-manager-main.c,
+	milter/manager/milter-manager.c,
+	binding/ruby/src/toolkit/rb-milter-client.c,
+	tool/milter-test-client.c,
+	binding/ruby/lib/milter/client/command-line.rb,
+	test/core/test-syslog-logger.c: make syslog facility customizable
+	via API.
+
 	* configure.ac, test/lib/milter-test-utils.c: don't use mkdtemp().
 
 2011-01-20  Kouhei Sutou  <kou@clear-code.com>

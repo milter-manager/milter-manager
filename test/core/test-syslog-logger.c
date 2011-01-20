@@ -73,7 +73,7 @@ setup (void)
     original_log_level = milter_get_log_level();
     original_print_hander = NULL;
 
-    logger = milter_syslog_logger_new(MILTER_LOG_DOMAIN);
+    logger = milter_syslog_logger_new(MILTER_LOG_DOMAIN, NULL);
     syslog = NULL;
     actual = NULL;
     syslog_file_name = NULL;

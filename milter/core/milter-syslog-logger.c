@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -39,13 +39,15 @@ struct _MilterSyslogLoggerPrivate
     MilterLogger *logger;
     gchar *identity;
     MilterLogLevelFlags target_level;
+    gchar *facility;
 };
 
 enum
 {
     PROP_0,
     PROP_IDENTITY,
-    PROP_TARGET_LEVEL
+    PROP_TARGET_LEVEL,
+    PROP_FACILITY
 };
 
 G_DEFINE_TYPE(MilterSyslogLogger, milter_syslog_logger, G_TYPE_OBJECT)
@@ -92,6 +94,13 @@ milter_syslog_logger_class_init (MilterSyslogLoggerClass *klass)
                               MILTER_LOG_LEVEL_DEFAULT,
                               G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_TARGET_LEVEL, spec);
+
+    spec = g_param_spec_string("facility",
+                               NULL,
+                               NULL,
+                               NULL,
+                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class, PROP_FACILITY, spec);
 
     g_type_class_add_private(gobject_class,
                              sizeof(MilterSyslogLoggerPrivate));
@@ -208,8 +217,11 @@ setup_logger (MilterSyslogLoggerPrivate *priv)
     const gchar *facility_env;
 
     facility_env = g_getenv("MILTER_LOG_SYSLOG_FACILITY");
-    if (facility_env)
+    if (facility_env) {
         facility = resolve_syslog_facility(facility_env);
+    } else if (priv->facility) {
+        facility = resolve_syslog_facility(priv->facility);
+    }
     openlog(priv->identity, LOG_PID, facility);
     g_object_ref(priv->logger);
     g_signal_connect(priv->logger, "log", G_CALLBACK(cb_log), priv);
@@ -264,6 +276,7 @@ milter_syslog_logger_init (MilterSyslogLogger *logger)
     priv = MILTER_SYSLOG_LOGGER_GET_PRIVATE(logger);
 
     priv->identity = NULL;
+    priv->facility = NULL;
 }
 
 static void
@@ -276,6 +289,11 @@ dispose (GObject *object)
     if (priv->identity) {
         g_free(priv->identity);
         priv->identity = NULL;
+    }
+
+    if (priv->facility) {
+        g_free(priv->facility);
+        priv->facility = NULL;
     }
 
     if (priv->logger) {
@@ -304,6 +322,11 @@ set_property (GObject      *object,
     case PROP_TARGET_LEVEL:
         priv->target_level = g_value_get_flags(value);
         break;
+    case PROP_FACILITY:
+        if (priv->facility)
+            g_free(priv->facility);
+        priv->facility = g_strdup(g_value_get_string(value));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -326,6 +349,9 @@ get_property (GObject    *object,
     case PROP_TARGET_LEVEL:
         g_value_set_flags(value, priv->target_level);
         break;
+    case PROP_FACILITY:
+        g_value_set_string(value, priv->facility);
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -333,10 +359,11 @@ get_property (GObject    *object,
 }
 
 MilterSyslogLogger *
-milter_syslog_logger_new (const gchar *identity)
+milter_syslog_logger_new (const gchar *identity, const gchar *facility)
 {
     return g_object_new(MILTER_TYPE_SYSLOG_LOGGER,
                         "identity", identity,
+                        "facility", facility,
                         NULL);
 }
 
