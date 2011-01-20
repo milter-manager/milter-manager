@@ -1,3 +1,7 @@
+2011-01-20  Kouhei Sutou  <kou@clear-code.com>
+
+	* tool/milter-performance-check: flush at each periodical report.
+
 2011-01-20  Kouhei Sutou  <kou@cozmixng.org>
 
 	* NEWS*: add 1.6.4 entry.

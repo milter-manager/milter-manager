@@ -249,11 +249,12 @@ class MilterPerformanceChecker
   class PeriodicalStatisticsReporter
     attr_accessor :interval
     attr_reader :statistics
-    def initialize
+    def initialize(output=nil)
       @interval = nil
       @thread = nil
       @stop = false
       @statistics = nil
+      @output = output || $stdout
     end
 
     def run
@@ -282,7 +283,8 @@ class MilterPerformanceChecker
 
     private
     def report_items(items)
-      puts("%8s %5s %7s %6s %6s %6s %5s %5s %5s" % items)
+      @output.puts("%8s %5s %7s %6s %6s %6s %5s %5s %5s" % items)
+      @output.flush
     end
 
     def report_header
