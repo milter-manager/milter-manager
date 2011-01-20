@@ -1,3 +1,7 @@
+2011-01-20  Kouhei Sutou  <kou@cozmixng.org>
+
+	* configure.ac, test/lib/milter-test-utils.c: don't use mkdtemp().
+
 2011-01-20  Kouhei Sutou  <kou@clear-code.com>
 
 	* tool/milter-performance-check: flush at each periodical report.

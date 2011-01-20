@@ -18,10 +18,6 @@
  */
 
 #include <unistd.h>
-#ifndef HAVE_MKDTEMP
-#include <sys/stat.h>
-#include <sys/types.h>
-#endif
 
 #include "milter-test-utils.h"
 
@@ -106,23 +102,6 @@ milter_test_get_source_dir (void)
     return source_dir;
 }
 
-#ifndef HAVE_MKDTEMP
-static char *
-simple_mkdtemp (char *template)
-{
-    if (!mktemp(template) || !*template) {
-        return NULL;
-    }
-
-    if (mkdir(template, 0700)) {
-        return NULL;
-    }
-
-    return template;
-}
-#define mkdtemp simple_mkdtemp
-#endif
-
 gchar *
 milter_test_get_tmp_dir (void)
 {
@@ -131,10 +110,11 @@ milter_test_get_tmp_dir (void)
 
     dir = g_getenv("TMPDIR");
     if (!dir)
-        dir = "/tmp";
+        dir = milter_test_get_build_dir();
 
-    tmp_dir = g_build_filename(dir, "milter-test-XXXXXX", NULL);
-    if (!mkdtemp(tmp_dir)) {
+    tmp_dir = g_build_filename(dir, "milter-test", NULL);
+    cut_make_directory(tmp_dir, NULL);
+    if (!g_file_test(tmp_dir, G_FILE_TEST_IS_DIR)) {
         g_free(tmp_dir);
         return NULL;
     }
