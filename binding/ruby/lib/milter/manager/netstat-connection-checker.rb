@@ -16,7 +16,7 @@
 module Milter::Manager
   class NetstatConnectionChecker
     def initialize(options={})
-      @options = options || {}
+      @options = (options || {}).dup
       @database = nil
       @last_update = nil
       detect_netstat_command
@@ -52,6 +52,14 @@ module Milter::Manager
       true
     end
 
+    def database_lifetime
+      @options[:database_lifetime] || 5
+    end
+
+    def database_lifetime=(lifetime)
+      @options[:database_lifetime] = lifetime
+    end
+
     private
     def netstat
       result = `#{@netstat_command}`
@@ -75,10 +83,6 @@ module Milter::Manager
       return true if @database.nil?
       return true if @last_update.nil?
       Time.now - @last_update > database_lifetime
-    end
-
-    def database_lifetime
-      @options[:database_lifetime] || 5
     end
 
     def parse_netstat_result(result)

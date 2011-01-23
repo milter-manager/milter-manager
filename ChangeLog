@@ -1,3 +1,10 @@
+2011-01-24  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/lib/milter/manager.rb,
+	binding/ruby/lib/milter/manager/netstat-connection-checker.rb: add
+	manager.netstat_connection_checker to share the checker.
+	Suggested by Kenji Shiono. Thanks!!!
+
 2011-01-20  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/core/milter-syslog-logger.[ch],

@@ -79,6 +79,11 @@ module Milter::Manager
 
     def clear
       @maintained_hooks = nil
+      @netstat_connection_checker = nil
+    end
+
+    def netstat_connection_checker
+      @netstat_connection_checker ||= NetstatConnectionChecker.new
     end
   end
 
@@ -920,6 +925,10 @@ module Milter::Manager
         @configuration.fallback_status_at_disconnect = status
       end
 
+      def netstat_connection_checker
+        @configuration.netstat_connection_checker
+      end
+
       def define_connection_checker(name, &block)
         old_id = @connection_checker_ids[name]
         @configuration.signal_handler_disconnect(old_id) if old_id
@@ -935,8 +944,9 @@ module Milter::Manager
 
       def use_netstat_connection_checker(interval=5)
         self.connection_check_interval = interval
-        checker = NetstatConnectionChecker.new(:database_lifetime => interval)
-        self.define_connection_checker("netstat") do |context|
+        checker = netstat_connection_checker
+        checker.database_lifetime = interval
+        define_connection_checker("netstat") do |context|
           checker.connected?(context)
         end
       end
