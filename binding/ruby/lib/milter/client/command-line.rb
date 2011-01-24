@@ -57,11 +57,8 @@ module Milter
         client.n_workers = @options.n_workers
         yield(client, options) if block_given?
         daemonize if @options.run_as_daemon
-        begin
-          client.run
-        rescue Interrupt
-          client.shutdown
-        end
+        setup_signal_handler(client) if @options.handle_signal
+        client.run
       end
 
       private
@@ -79,6 +76,7 @@ module Milter
         @options.event_loop_backend = Milter::Client::EVENT_LOOP_BACKEND_GLIB
         @options.n_workers = 0
         @options.packet_buffer_size = 0
+        @options.handle_signal = true
       end
 
       def setup_option_parser
@@ -190,6 +188,12 @@ module Milter
           end
           @options.packet_buffer_size = size
         end
+
+        @option_parser.on("--[no-]handle-signal",
+                          "Handle SIGHUP, SIGINT and SIGTERM signals",
+                          "(#{@options.handle_signal})") do |boolean|
+          @options.handle_signal = boolean
+        end
       end
 
       def setup_logger_options
@@ -239,6 +243,17 @@ module Milter
         WEBrick::Daemon.start
       end
 
+      def setup_signal_handler(client)
+        trap(:HUP) {client.reload}
+        default_sigint_handler = trap(:INT) do
+          client.shutdown
+          trap(:INT, default_sigint_handler)
+        end
+        default_sigterm_handler = trap(:TERM) do
+          client.shutdown
+          trap(:TERM, default_sigterm_handler)
+        end
+      end
     end
   end
 end
