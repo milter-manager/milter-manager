@@ -15,6 +15,19 @@
 
 module Milter::Manager
   class NetstatConnectionChecker
+    class ConnectionInfo < Struct.new(:protocol,
+                                      :local_ip_address, :local_port,
+                                      :foreign_ip_address, :foreign_port,
+                                      :state)
+      def local_tcp_address
+        "#{local_ip_address}:#{local_port}"
+      end
+
+      def foreign_tcp_address
+        "#{foreign_ip_address}:#{foreign_port}"
+      end
+    end
+
     def initialize(options={})
       @options = (options || {}).dup
       @database = nil
@@ -23,33 +36,19 @@ module Milter::Manager
     end
 
     def connected?(context)
-      return true if @netstat_command.nil?
       return true unless context.smtp_server_address.local?
-      address = context.smtp_client_address
-      type = nil
-      case address
-      when Milter::SocketAddress::IPv4
-        type = :tcp
-      when Milter::SocketAddress::IPv6
-        type = :tcp6
-      end
-      return true if type.nil?
-
-      if address.port.zero?
-        message = "[netstat][warning] " +
-          "can't detect disconnected connection because " +
-          "SMTP client port address is unknown: " +
-          "<#{address}>"
-        smtp_server_name = context.smtp_server_name
-        message << ":<#{smtp_server_name}>" if smtp_server_name
-        Milter::Logger.warning(message)
-        return true
-      end
-
-      update_database
-      state = @database[type]["#{address.address}:#{address.port}"]
+      info = connection_info(context.smtp_client_address)
+      return true if info.nil?
+      state = info.state
       return false if state.nil? or state == "CLOSE_WAIT"
       true
+    end
+
+    def smtp_server_interface_ip_address(client_address)
+      info = connection_info(client_address, :retry => true)
+      return nil if info.nil?
+      return info.local_ip_address if info.state == "ESTABLISHED"
+      nil
     end
 
     def database_lifetime
@@ -73,9 +72,45 @@ module Milter::Manager
       end
     end
 
+    def connection_info(address, options={})
+      return nil if @netstat_command.nil?
+      type = nil
+      case address
+      when Milter::SocketAddress::IPv4
+        type = :tcp4
+      when Milter::SocketAddress::IPv6
+        type = :tcp6
+      end
+      return nil if type.nil?
+
+      if address.port.zero?
+        message = "[netstat][warning] " +
+          "can't detect disconnected connection because " +
+          "SMTP client port address is unknown: " +
+          "<#{address}>"
+        Milter::Logger.warning(message)
+        return nil
+      end
+
+      tcp_address = "#{address.address}:#{address.port}"
+      update_database
+      info = @database[type][tcp_address]
+      if info.nil? and options[:retry]
+        purge_cache
+        update_database
+        info = @database[type][tcp_address]
+      end
+      info
+    end
+
+    def purge_cache
+      @database = nil
+      @last_update = nil
+    end
+
     def update_database
       return unless need_database_update?
-      @database = {:tcp => {}, :tcp6 => {}}
+      @database = {:tcp4 => {}, :tcp6 => {}}
       parse_netstat_result(netstat)
     end
 
@@ -89,19 +124,32 @@ module Milter::Manager
       result.each_line do |line|
         next if line !~ /\Atcp/
         info = line.split
-        protocol, recv_q, recv_q, local_address, foreign_address, state = info
+        protocol, recv_q, send_q, \
+          local_tcp_address, foreign_tcp_address, state = info
 
-        components = foreign_address.split(/[:.]/)
-        target_port = components.pop
-        if protocol == "tcp6"
-          type = :tcp6
-          target_address = components.join(":")
-        else
-          type = :tcp
-          target_address = components.join(".")
-        end
-        @database[type]["#{target_address}:#{target_port}"] = state
+        protocol = "tcp4" if protocol == "tcp"
+        local_ip_address, local_port =
+          parse_tcp_address(protocol, local_tcp_address)
+        foreign_ip_address, foreign_port =
+          parse_tcp_address(protocol, foreign_tcp_address)
+        info = ConnectionInfo.new(protocol,
+                                  local_ip_address, local_port,
+                                  foreign_ip_address, foreign_port,
+                                  state)
+        @database[protocol.to_sym][info.foreign_tcp_address] = info
       end
+    end
+
+    def parse_tcp_address(protocol, tcp_address)
+      components = tcp_address.split(/[:.]/)
+      port = components.pop
+      case protocol
+      when "tcp6"
+        ip_address = components.join(":")
+      else
+        ip_address = components.join(".")
+      end
+      [ip_address, port]
     end
 
     def detect_netstat_command
