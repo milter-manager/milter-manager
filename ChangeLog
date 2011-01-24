@@ -1,5 +1,9 @@
 2011-01-24  Kouhei Sutou  <kou@cozmixng.org>
 
+	* data/applicable-conditions/sendmail-compatible.conf: guess
+	SMTP server address by netstat.
+	Patch by Kenji Shiono. Thanks!!!
+
 	* binding/ruby/lib/milter/manager/netstat-connection-checker.rb,
 	binding/ruby/test/manager/test-netstat-connection-checker.rb:
 	also collect local and foreign address from netstat.
