@@ -2,6 +2,8 @@
 
 	* milter/client/milter-client.c (milter_client_fork): set worker ID.
 	(milter_client_get_worker_id): new method to get worker ID.
+	(milter_client_fork): should set different worker IDs for each
+	processes.
 
 2011-01-24  Kouhei Sutou  <kou@clear-code.com>
 

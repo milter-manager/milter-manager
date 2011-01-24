@@ -1020,26 +1020,10 @@ test_default_packet_buffer_size (void)
                           milter_client_context_get_packet_buffer_size(context));
 }
 
-static GPid
-worker_fork_child (MilterClient *loop)
-{
-    return 0;
-}
-
 void
 test_worker_id (void)
 {
     cut_assert_equal_uint(0, milter_client_get_worker_id(client));
-
-    milter_client_set_custom_fork_func(client, worker_fork);
-    cut_assert_equal_uint(29, milter_client_fork(client));
-    cut_assert_equal_uint(0, milter_client_get_worker_id(client));
-
-    milter_client_set_custom_fork_func(client, worker_fork_child);
-    cut_assert_equal_uint(0, milter_client_fork(client));
-    cut_assert_equal_uint(1, milter_client_get_worker_id(client));
-    cut_assert_equal_uint(0, milter_client_fork(client));
-    cut_assert_equal_uint(2, milter_client_get_worker_id(client));
 }
 
 

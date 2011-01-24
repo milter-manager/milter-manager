@@ -1780,6 +1780,7 @@ client_run_workers (MilterClient *client, guint n_workers, GError **error)
         switch (pid) {
         case 0:
             close(pipe_fds[MILTER_UTILS_WRITE_PIPE]);
+            priv->workers.id = i + 1;
             milter_event_loop_watch_io(loop, priv->workers.control,
                                        G_IO_IN | G_IO_PRI | G_IO_ERR,
                                        worker_watch_master, client);
@@ -2516,9 +2517,6 @@ milter_client_fork (MilterClient *client)
     } else {
         client_class = MILTER_CLIENT_GET_CLASS(client);
         pid = client_class->fork(client);
-    }
-    if (pid == 0) {
-        ++priv->workers.id;
     }
     return pid;
 }
