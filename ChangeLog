@@ -1,3 +1,8 @@
+2011-01-24  Nobuyoshi Nakada  <nakada@clear-code.com>
+
+	* milter/client/milter-client.c (milter_client_fork): set worker ID.
+	(milter_client_get_worker_id): new method to get worker ID.
+
 2011-01-24  Kouhei Sutou  <kou@clear-code.com>
 
 	* binding/ruby/sample/Makefile.am (dist_sample_ruby_DATA): add
