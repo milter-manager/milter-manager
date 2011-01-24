@@ -1,5 +1,7 @@
 2011-01-24  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/sample/milter-reject-nil-sender.rb: add.
+
 	* binding/ruby/sample/milter-reject-empty-body.rb: add shebang.
 
 	* binding/ruby/lib/milter/client/command-line.rb:
