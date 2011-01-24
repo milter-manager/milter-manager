@@ -878,6 +878,18 @@ void                 milter_client_set_custom_fork_func (MilterClient *client,
 MilterClientCustomForkFunc
                      milter_client_get_custom_fork_func (MilterClient *client);
 
+/**
+ * milter_client_set_worker_id:
+ * @client: a %MilterClient.
+ *
+ * Gets the worker ID of the client. 0 in parent process, 1 or more in
+ * worker processes.
+ *
+ * Returns: the worker ID of the client.
+ */
+guint                milter_client_get_worker_id        (MilterClient *client);
+
+
 G_END_DECLS
 
 #endif /* __MILTER_CLIENT_CLIENT_H__ */

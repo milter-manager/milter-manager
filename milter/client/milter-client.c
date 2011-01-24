@@ -42,7 +42,8 @@ enum
     PROP_EVENT_LOOP_BACKEND,
     PROP_N_WORKERS,
     PROP_CUSTOM_FORK,
-    PROP_DEFAULT_PACKET_BUFFER_SIZE
+    PROP_DEFAULT_PACKET_BUFFER_SIZE,
+    PROP_WORKER_ID
 };
 
 enum
@@ -92,6 +93,7 @@ struct _MilterClientPrivate
     struct {
         GIOChannel *control;
         guint n_process;
+        guint id;
     } workers;
     struct sockaddr *address;
     socklen_t address_size;
@@ -193,6 +195,13 @@ _milter_client_class_init (MilterClientClass *klass)
     g_object_class_install_property(gobject_class,
                                     PROP_DEFAULT_PACKET_BUFFER_SIZE, spec);
 
+    spec = g_param_spec_uint("worker-id",
+                             "ID of worker processes",
+                             "The ID of worker processes of the client",
+                             0, MILTER_CLIENT_MAX_N_WORKERS, 0,
+                             G_PARAM_READABLE);
+    g_object_class_install_property(gobject_class, PROP_WORKER_ID, spec);
+
     signals[CONNECTION_ESTABLISHED] =
         g_signal_new("connection-established",
                      MILTER_TYPE_CLIENT,
@@ -293,6 +302,7 @@ _milter_client_init (MilterClient *client)
     priv->multi_thread_mode = FALSE;
     priv->worker_threads = NULL;
     priv->workers.n_process = 0;
+    priv->workers.id = 0;
     priv->workers.control = NULL;
     priv->address = NULL;
     priv->address_size = 0;
@@ -636,6 +646,9 @@ get_property (GObject    *object,
     case PROP_DEFAULT_PACKET_BUFFER_SIZE:
         g_value_set_uint(value,
                          milter_client_get_default_packet_buffer_size(client));
+        break;
+    case PROP_WORKER_ID:
+        g_value_set_uint(value, priv->workers.id);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -2493,15 +2506,21 @@ milter_client_fork (MilterClient *client)
 {
     MilterClientClass *client_class;
     MilterClientPrivate *priv;
+    GPid pid;
 
     g_return_val_if_fail(client != NULL, -1);
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
-    if (priv->custom_fork)
-        return priv->custom_fork(client);
-
-    client_class = MILTER_CLIENT_GET_CLASS(client);
-    return client_class->fork(client);
+    if (priv->custom_fork) {
+        pid = priv->custom_fork(client);
+    } else {
+        client_class = MILTER_CLIENT_GET_CLASS(client);
+        pid = client_class->fork(client);
+    }
+    if (pid == 0) {
+        ++priv->workers.id;
+    }
+    return pid;
 }
 
 GPid
@@ -2568,6 +2587,15 @@ milter_client_get_default_packet_buffer_size (MilterClient *client)
         priv = MILTER_CLIENT_GET_PRIVATE(client);
         return priv->default_packet_buffer_size;
     }
+}
+
+guint
+milter_client_get_worker_id (MilterClient *client)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    return priv->workers.id;
 }
 
 /*
