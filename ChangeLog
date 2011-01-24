@@ -1,5 +1,8 @@
 2011-01-24  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/sample/Makefile.am (dist_sample_ruby_DATA): add
+	milter-reject-nil-sender.rb.
+
 	* binding/ruby/sample/milter-reject-nil-sender.rb: add.
 
 	* binding/ruby/sample/milter-reject-empty-body.rb: add shebang.
