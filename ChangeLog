@@ -1,5 +1,7 @@
 2011-01-24  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/client.rb: support reload callback.
+
 	* binding/ruby/lib/milter/client/command-line.rb
 	(Milter::Client::CommandLine#run): handle interrupt.
 

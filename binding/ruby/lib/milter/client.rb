@@ -41,6 +41,17 @@ module Milter
       end
     end
 
+    def reload
+      reload_callbacks.each do |callback|
+        callback.call(self)
+      end
+    end
+
+    def on_reload(&callback)
+      raise ArgumentError, "callback block on reload is missing" if callback.nil?
+      reload_callbacks << callback
+    end
+
     private
     def setup_session(context, session_class, session_new_arguments)
       session_context = ClientSessionContext.new(context)
@@ -67,6 +78,10 @@ module Milter
           end
         end
       end
+    end
+
+    def reload_callbacks
+      @reload_callbacks ||= []
     end
   end
 
