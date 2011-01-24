@@ -57,7 +57,11 @@ module Milter
         client.n_workers = @options.n_workers
         yield(client, options) if block_given?
         daemonize if @options.run_as_daemon
-        client.run
+        begin
+          client.run
+        rescue Interrupt
+          client.shutdown
+        end
       end
 
       private
