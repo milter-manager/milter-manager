@@ -7,6 +7,8 @@
 
 2011-01-24  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/milter-performance-analyzer, tool/Makefile.am: add.
+
 	* binding/ruby/sample/Makefile.am (dist_sample_ruby_DATA): add
 	milter-reject-nil-sender.rb.
 

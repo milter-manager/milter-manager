@@ -1,0 +1,115 @@
+#!/usr/bin/env ruby
+#
+# Copyright (C) 2011  Kouhei Sutou <kou@clear-code.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+require 'tempfile'
+require 'optparse'
+require 'pathname'
+
+class MilterPerformanceAnalyzer
+  def initialize
+    @output_dir = "."
+  end
+
+  def parse_options(argv)
+    parser = OptionParser.new do |_parser|
+      _parser.separator ""
+      _parser.separator "Help options:"
+
+      _parser.on("-h", "--help", "Show this message") do
+        puts _parser
+        exit(0)
+      end
+
+      _parser.separator ""
+      _parser.separator "Application options:"
+
+      _parser.on("--output=PATH",
+              "Outputs analyzed results to PATH",
+              "(#{@output_dir})") do |path|
+        @output_dir = path
+      end
+    end
+    parser.parse!(argv)
+  end
+
+  def run
+    headers = nil
+    base_time = nil
+    @data_set = []
+    ARGF.each_line do |line|
+      if headers.nil?
+        headers = line.strip.split
+      else
+        line = line.chomp
+        break if line.empty?
+        data = {}
+        line.split.each_with_index do |item, i|
+          header = headers[i]
+          if header == "Time"
+            time = Time.local(1970, 1, 1, *item.split(/:/).collect(&:to_i))
+            base_time ||= time
+            item = (time - base_time).to_i
+          end
+          data[header] = item
+        end
+        @data_set << data
+      end
+    end
+  end
+
+  def report
+    data_file = Tempfile.new("milter-perfomance-analyzer-data-set")
+    @data_set.each do |data|
+      data_file.puts([data["Time"],
+                      data["Sent"],
+                      data["Max(s)"],
+                      data["Min(s)"],
+                      data["Avg(s)"]].join("\t"))
+    end
+    data_file.close
+
+    gnuplot_script = Tempfile.new("milter-perfomance-analyzer-gnuplot")
+    eps = Tempfile.new("milter-perfomance-analyzer-eps")
+    gnuplot_script.puts(<<-EOS)
+# set key outside center top horizontal reverse Left samplen 2
+# unset border
+# set grid ytics lw 0.1 lt -1
+set style line 1 lt 1 lc rgbcolor "#354E66" lw 12 pt 7 ps 2
+set style line 2 lt 1 lc rgbcolor "#8D484A" lw 12 pt 7 ps 2
+set terminal postscript eps enhanced color
+set output "#{eps.path}"
+# plot "#{data_file.path}" using 1:3 with linespoint linestyle 1 title "Max", \
+#      "#{data_file.path}" using 1:4 with linespoint linestyle 2 title "Min"
+plot "#{data_file.path}" using 1:3 with lines title "Max", \
+     "#{data_file.path}" using 1:4 with lines title "Min", \
+     "#{data_file.path}" using 1:5 with lines title "Avg"
+    EOS
+    gnuplot_script.close
+    system("gnuplot", gnuplot_script.path)
+
+    puts(File.read(eps.path))
+  end
+end
+
+if __FILE__ == $0
+  analyzer = MilterPerformanceAnalyzer.new
+  analyzer.parse_options(ARGV)
+  analyzer.run
+  analyzer.report
+end
+
+# vi:ts=2:nowrap:ai:expandtab:sw=2
