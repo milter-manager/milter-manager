@@ -117,8 +117,11 @@ module Milter
       code = options[:code]
       extended_code = options[:extended_code]
       reason = options[:reason]
-      if code
+      if code or extended_code or reason
 	# TODO: validate parameters.
+        code ||= 550
+        extended_code ||= "5.7.1"
+        reason ||= "Command rejected"
         @context.set_reply(code, extended_code, reason)
       else
         @context.status = :reject
@@ -129,8 +132,11 @@ module Milter
       code = options[:code]
       extended_code = options[:extended_code]
       reason = options[:reason]
-      if code
+      if code or extended_code or reason
 	# TODO: validate parameters.
+        code ||= 451
+        extended_code ||= "4.7.1"
+        reason ||= "Service unavailable - try again later"
         @context.set_reply(code, extended_code, reason)
       else
         @context.status = :temporary_failure
