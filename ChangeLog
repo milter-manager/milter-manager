@@ -1,3 +1,9 @@
+2011-01-24  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/lib/milter/manager/netstat-connection-checker.rb
+	(Milter::NetstatConnectionChecker#connected): fix a typo.
+	Patch by Kenji Shiono. Thanks!!!
+
 2011-01-24  Nobuyoshi Nakada  <nakada@clear-code.com>
 
 	* milter/client/milter-client.c (milter_client_fork): set worker ID.

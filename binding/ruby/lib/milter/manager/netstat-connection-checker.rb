@@ -38,7 +38,7 @@ module Milter::Manager
       if address.port.zero?
         message = "[netstat][warning] " +
           "can't detect disconnected connection because " +
-          "SMTP client port address is unknwon: " +
+          "SMTP client port address is unknown: " +
           "<#{address}>"
         smtp_server_name = context.smtp_server_name
         message << ":<#{smtp_server_name}>" if smtp_server_name
