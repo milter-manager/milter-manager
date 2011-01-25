@@ -1,3 +1,8 @@
+2011-01-25  Kouhei Sutou  <kou@cozmixng.org>
+
+	* milter/server/milter-server-context.c: use common debug log
+	format for server name.
+
 2011-01-24  Kouhei Sutou  <kou@cozmixng.org>
 
 	* data/applicable-conditions/sendmail-compatible.conf: guess
