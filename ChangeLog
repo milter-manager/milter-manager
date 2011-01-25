@@ -1,5 +1,25 @@
 2011-01-25  Kouhei Sutou  <kou@cozmixng.org>
 
+	* milter/server/milter-server-context.c: check reply after "quit"
+	is sent. This case is caused when milter manager's connection
+	checker detects disconnection when a server sends a request but
+	doesn't receive response.
+	e.g.:
+	  MTA          milter-manager           server           milter
+	     -header->
+	                              -header->
+	                                                -header->
+	           (detect disconnection)
+	                                      (not read)(<-continue-)
+	    <-temp-fail-
+	                              -abort->
+	                                                 -abort->
+	                              -quit->
+	                                                 -quit->
+	                                        (read)   <-continue-
+                                             UNEXPECTED!!!
+	Reported by Kenji Shiono. Thanks!!!
+
 	* milter/server/milter-server-context.c: use common debug log
 	format for server name.
 

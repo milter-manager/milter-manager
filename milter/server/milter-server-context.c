@@ -2310,6 +2310,32 @@ milter_server_context_abort (MilterServerContext *context)
                         MILTER_SERVER_CONTEXT_STATE_ABORT);
 }
 
+static gboolean
+check_reply_after_quit (MilterServerContext *context,
+                        MilterServerContextState state,
+                        const gchar *reply_name)
+{
+    MilterServerContextPrivate *priv;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    if (!priv->quitted)
+        return TRUE;
+
+    if (milter_need_warning_log()) {
+        gchar *state_name;
+
+        state_name = milter_utils_get_enum_nick_name(
+            MILTER_TYPE_SERVER_CONTEXT_STATE, state);
+        milter_warning("[%u] [server][reply][quitted][%s][%s] [%s]",
+                       milter_agent_get_tag(MILTER_AGENT(context)),
+                       state_name, reply_name,
+                       milter_server_context_get_name(context));
+        g_free(state_name);
+    }
+
+    return FALSE;
+}
+
 static void
 invalid_state (MilterServerContext *context,
                MilterServerContextState state,
@@ -2329,6 +2355,8 @@ invalid_state (MilterServerContext *context,
     g_timer_stop(priv->elapsed);
     milter_debug("[%u] [server][timer][stop] [%s] <%g>",
                  tag, name, g_timer_elapsed(priv->elapsed, NULL));
+
+    check_reply_after_quit(context, state, action);
 
     state_name =
         milter_utils_get_enum_nick_name(MILTER_TYPE_SERVER_CONTEXT_STATE,
@@ -2404,11 +2432,14 @@ cb_decoder_negotiate_reply (MilterDecoder *decoder,
         g_timer_stop(priv->elapsed);
         milter_debug("[%u] [server][timer][stop] [%s] <%g>",
                      tag, name, g_timer_elapsed(priv->elapsed, NULL));
-        g_signal_emit_by_name(context, "negotiate-reply",
-                              option, macros_requests);
-        milter_protocol_agent_set_macros_requests(MILTER_PROTOCOL_AGENT(context),
-                                                  macros_requests);
-        priv->negotiated = TRUE;
+        if (check_reply_after_quit(context, state, "negotiate-reply")) {
+            MilterProtocolAgent *agent;
+            agent = MILTER_PROTOCOL_AGENT(context);
+            g_signal_emit_by_name(context, "negotiate-reply",
+                                  option, macros_requests);
+            milter_protocol_agent_set_macros_requests(agent, macros_requests);
+            priv->negotiated = TRUE;
+        }
     } else {
         invalid_state(context, state, "negotiate-reply", "negotiate");
     }
@@ -2501,12 +2532,14 @@ cb_decoder_continue (MilterReplyDecoder *decoder, gpointer user_data)
 
     switch (priv->state) {
       case MILTER_SERVER_CONTEXT_STATE_BODY:
-        decrement_process_body_count(context);
-        if (priv->body->len > 0) {
-            if (!flush_body(context)) {
-                milter_debug("[%u] [server][receive][continue]"
-                             "[body][flush][error] [%s]",
-                             tag, name);
+        if (check_reply_after_quit(context, priv->state, "continue")) {
+            decrement_process_body_count(context);
+            if (priv->body->len > 0) {
+                if (!flush_body(context)) {
+                    milter_debug("[%u] [server][receive][continue]"
+                                 "[body][flush][error] [%s]",
+                                 tag, name);
+                }
             }
         }
         break;
@@ -2522,9 +2555,11 @@ cb_decoder_continue (MilterReplyDecoder *decoder, gpointer user_data)
         g_timer_stop(priv->elapsed);
         milter_debug("[%u] [server][timer][stop] [%s] <%g>",
                      tag, name, g_timer_elapsed(priv->elapsed, NULL));
-        g_signal_emit_by_name(context, "continue");
-        if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
-            emit_message_processed_signal(context);
+        if (check_reply_after_quit(context, priv->state, "continue")) {
+            g_signal_emit_by_name(context, "continue");
+            if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE)
+                emit_message_processed_signal(context);
+        }
         break;
       default:
           invalid_state(context, priv->state, "continue",
@@ -2589,7 +2624,9 @@ cb_decoder_reply_code (MilterReplyDecoder *decoder,
 
     switch (state) {
     case MILTER_SERVER_CONTEXT_STATE_BODY:
-        clear_process_body_count(context);
+        if (check_reply_after_quit(context, state, "reply-code")) {
+            clear_process_body_count(context);
+        }
     case MILTER_SERVER_CONTEXT_STATE_CONNECT:
     case MILTER_SERVER_CONTEXT_STATE_HELO:
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
@@ -2602,12 +2639,14 @@ cb_decoder_reply_code (MilterReplyDecoder *decoder,
         g_timer_stop(priv->elapsed);
         milter_debug("[%u] [server][timer][stop] [%s] %g",
                      tag, name, g_timer_elapsed(priv->elapsed, NULL));
-        g_signal_emit_by_name(context, "reply-code",
-                              code, extended_code, message);
-        if (MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM <= priv->state &&
-            priv->state <= MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE &&
-            priv->state != MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT) {
-            emit_message_processed_signal(context);
+        if (check_reply_after_quit(context, state, "reply-code")) {
+            g_signal_emit_by_name(context, "reply-code",
+                                  code, extended_code, message);
+            if (MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM <= priv->state &&
+                priv->state <= MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE &&
+                priv->state != MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT) {
+                emit_message_processed_signal(context);
+            }
         }
         break;
     default:
@@ -2661,6 +2700,9 @@ cb_decoder_temporary_failure (MilterReplyDecoder *decoder, gpointer user_data)
         milter_debug("[%u] [server][timer][stop] [%s] %g",
                      tag, name, g_timer_elapsed(priv->elapsed, NULL));
     }
+
+    if (!check_reply_after_quit(context, priv->state, "temporary-failure"))
+        return;
 
     g_signal_emit_by_name(context, "temporary-failure");
     if (MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM <= priv->state &&
@@ -2721,6 +2763,9 @@ cb_decoder_reject (MilterReplyDecoder *decoder, gpointer user_data)
                      tag, name, g_timer_elapsed(priv->elapsed, NULL));
     }
 
+    if (!check_reply_after_quit(context, priv->state, "reject"))
+        return;
+
     g_signal_emit_by_name(context, "reject");
     if (MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM <= priv->state &&
         priv->state <= MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE &&
@@ -2768,6 +2813,9 @@ cb_decoder_accept (MilterReplyDecoder *decoder, gpointer user_data)
                      tag, name, g_timer_elapsed(priv->elapsed, NULL));
     }
 
+    if (!check_reply_after_quit(context, priv->state, "accept"))
+        return;
+
     g_signal_emit_by_name(context, "accept");
     if (MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM <= priv->state &&
         priv->state <= MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
@@ -2813,6 +2861,9 @@ cb_decoder_discard (MilterReplyDecoder *decoder, gpointer user_data)
                      tag, name, g_timer_elapsed(priv->elapsed, NULL));
     }
 
+    if (!check_reply_after_quit(context, priv->state, "discard"))
+        return;
+
     g_signal_emit_by_name(context, "discard");
     if (MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM <= priv->state &&
         priv->state <= MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
@@ -2846,6 +2897,9 @@ cb_decoder_add_header (MilterReplyDecoder *decoder,
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         MilterHeaders *headers;
 
+        if (!check_reply_after_quit(context, priv->state, "add-header"))
+            return;
+
         g_signal_emit_by_name(context, "add-header", name, value);
 
         ensure_message_result(priv);
@@ -2875,6 +2929,9 @@ cb_decoder_insert_header (MilterReplyDecoder *decoder,
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         MilterHeaders *headers;
+
+        if (!check_reply_after_quit(context, priv->state, "insert-header"))
+            return;
 
         g_signal_emit_by_name(context, "insert-header", index, name, value);
 
@@ -2906,6 +2963,9 @@ cb_decoder_change_header (MilterReplyDecoder *decoder,
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         MilterHeaders *headers;
 
+        if (!check_reply_after_quit(context, priv->state, "change-header"))
+            return;
+
         g_signal_emit_by_name(context, "change-header", name, index, value);
 
         ensure_message_result(priv);
@@ -2935,6 +2995,9 @@ cb_decoder_delete_header (MilterReplyDecoder *decoder,
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         MilterHeaders *headers;
 
+        if (!check_reply_after_quit(context, priv->state, "delete-header"))
+            return;
+
         g_signal_emit_by_name(context, "delete-header", name, index);
 
         ensure_message_result(priv);
@@ -2962,6 +3025,8 @@ cb_decoder_change_from (MilterReplyDecoder *decoder,
                  from, parameters);
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
+        if (!check_reply_after_quit(context, priv->state, "change-from"))
+            return;
         g_signal_emit_by_name(context, "change-from", from, parameters);
     } else {
         invalid_state(context, priv->state, "change-from", "end-of-message");
@@ -2985,6 +3050,8 @@ cb_decoder_add_recipient (MilterReplyDecoder *decoder,
                  recipient, parameters);
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
+        if (!check_reply_after_quit(context, priv->state, "add-recipient"))
+            return;
         g_signal_emit_by_name(context, "add-recipient", recipient, parameters);
     } else {
         invalid_state(context, priv->state, "add-recipient", "end-of-message");
@@ -3007,6 +3074,8 @@ cb_decoder_delete_recipient (MilterReplyDecoder *decoder,
                  recipient);
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
+        if (!check_reply_after_quit(context, priv->state, "delete-recipient"))
+            return;
         g_signal_emit_by_name(user_data, "delete-recipient", recipient);
     } else {
         invalid_state(context, priv->state,
@@ -3032,6 +3101,8 @@ cb_decoder_replace_body (MilterReplyDecoder *decoder,
                  body_size);
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
+        if (!check_reply_after_quit(context, priv->state, "replace-body"))
+            return;
         g_signal_emit_by_name(context, "replace-body", body, body_size);
     } else {
         invalid_state(context, priv->state, "replace-body", "end-of-message");
@@ -3051,6 +3122,8 @@ cb_decoder_progress (MilterReplyDecoder *decoder, gpointer user_data)
                  milter_server_context_get_name(context));
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
+        if (!check_reply_after_quit(context, priv->state, "progress"))
+            return;
         reset_end_of_message_timeout(context);
         g_signal_emit_by_name(context, "progress");
     } else {
@@ -3075,6 +3148,9 @@ cb_decoder_quarantine (MilterReplyDecoder *decoder,
                  reason);
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
+        if (!check_reply_after_quit(context, priv->state, "quarantine"))
+            return;
+
         g_signal_emit_by_name(user_data, "quarantine", reason);
 
         ensure_message_result(priv);
@@ -3110,6 +3186,8 @@ cb_decoder_connection_failure (MilterReplyDecoder *decoder, gpointer user_data)
                      tag, name, g_timer_elapsed(priv->elapsed, NULL));
     }
 
+    if (!check_reply_after_quit(context, priv->state, "connection-failure"))
+        return;
     g_signal_emit_by_name(user_data, "connection-failure");
 }
 
@@ -3136,6 +3214,8 @@ cb_decoder_shutdown (MilterReplyDecoder *decoder, gpointer user_data)
                      tag, name, g_timer_elapsed(priv->elapsed, NULL));
     }
 
+    if (!check_reply_after_quit(context, priv->state, "shutdown"))
+        return;
     g_signal_emit_by_name(user_data, "shutdown");
 }
 
@@ -3162,6 +3242,8 @@ cb_decoder_skip (MilterReplyDecoder *decoder, gpointer user_data)
         g_timer_stop(priv->elapsed);
         milter_debug("[%u] [server][timer][stop] [%s] <%g>",
                      tag, name, g_timer_elapsed(priv->elapsed, NULL));
+        if (!check_reply_after_quit(context, priv->state, "skip"))
+            return;
         g_signal_emit_by_name(context, "skip");
         clear_process_body_count(context);
         priv->skip_body = TRUE;
