@@ -814,6 +814,7 @@ EODS
 
     # TODO: fix this method.
     #   see below urls to know formal definition of "Authentication-Results" header.
+    #   see section 2.2. of RFC5451 and section 3.2.2, 3.2.3 of RFC5322.
     #   http://www.ietf.org/rfc/rfc5451.txt
     #   http://www.ietf.org/rfc/rfc5322.txt
     def parse_authentication_results(value)
