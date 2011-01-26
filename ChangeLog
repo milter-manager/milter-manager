@@ -1,3 +1,8 @@
+2011-01-26  Kouhei Sutou  <kou@clear-code.com>
+
+	* binding/ruby/src/toolkit/rb-milter-client.c: bind
+	milter_client_drop_privilege().
+
 2011-01-26  Kenji Okimoto  <okimoto@clear-code.com>
 
 	* tool/milter-manager-log-analyzer
