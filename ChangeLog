@@ -1,5 +1,7 @@
 2011-01-26  Kouhei Sutou  <kou@clear-code.com>
 
+	* configure.ac: 1.6.4 -> 1.6.5.
+
 	* NEWS*: add 1.6.5 entry.
 
 	* tool/Makefile.am: don't install milter-performance-analyzer.
