@@ -45,4 +45,4 @@ dist_bin_SCRIPTS =			\
 	milter-manager-log-analyzer	\
 	milter-report-statistics
 
-#	milter-performance-analyzer	\
+#	milter-performance-analyzer
