@@ -2,6 +2,36 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-1-6-5] 1.6.5: 2011-01-26
+
+1.6.4のバグフィックスリリースです。
+
+=== milter manager
+
+==== 修正
+
+  * 「Sendmail Compatible」適用条件でif_addrとid_nameに
+    Sendmailの場合と同じ値を設定していなかった問題を修正。
+    [Kenji Shionoさんがパッチ作成]
+  * SMTPクライアントの切断を検出した時にクラッシュする問題を
+    修正。 [Kenji Shionoさんが報告]
+
+=== milter-manager-log-analyzer
+
+==== 改良
+
+  * ENMAの追加するAuthentication-Resultsの解析に対応。
+
+=== Ruby milter
+
+==== 改良
+
+  * 実行ユーザー・グループの変更に対応。
+
+=== 感謝
+
+  * Kenji Shionoさん
+
 == [release-1-6-4] 1.6.4: 2011-01-21
 
 1.6.3のバグフィックスリリースです。

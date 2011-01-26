@@ -2,6 +2,38 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-6-5] 1.6.5: 2011-01-26
+
+A bug fix release of 1.6.4.
+
+=== milter manager
+
+==== Fixes
+
+  * Fixed a bug that "Sendmail Compatible" applicable
+    condition doesn't set applicable if_addr and id_name
+    macro value.
+    [Patch by Kenji Shiono]
+  * Fixed a crash bug that may be caused SMTP client
+    disconnection is detected.
+    [Reported by Kenji Shiono]
+
+=== milter-manager-log-analyzer
+
+==== Improvements
+
+  * Supported parsing Authentication-Results added by ENMA.
+
+=== Ruby milter
+
+==== Improvements
+
+  * Supported effective user and group change.
+
+=== Thanks
+
+  * Kenji Shiono
+
 == [release-1-6-4] 1.6.4: 2011-01-21
 
 A bug fix release of 1.6.3.
