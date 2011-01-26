@@ -1,5 +1,7 @@
 2011-01-26  Kouhei Sutou  <kou@clear-code.com>
 
+	* tool/Makefile.am: don't install milter-performance-analyzer.
+
 	* binding/ruby/lib/milter/client/command-line.rb: work --user and
 	--group.
 
