@@ -56,6 +56,8 @@ module Milter
         client.default_packet_buffer_size = @options.packet_buffer_size
         client.n_workers = @options.n_workers
         yield(client, options) if block_given?
+        client.listen
+        client.drop_privilege
         daemonize if @options.run_as_daemon
         setup_signal_handler(client) if @options.handle_signal
         client.run

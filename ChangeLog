@@ -1,5 +1,8 @@
 2011-01-26  Kouhei Sutou  <kou@clear-code.com>
 
+	* binding/ruby/lib/milter/client/command-line.rb: work --user and
+	--group.
+
 	* binding/ruby/src/toolkit/rb-milter-client.c: bind
 	milter_client_drop_privilege().
 
