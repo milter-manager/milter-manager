@@ -5,7 +5,7 @@ AC_PREREQ(2.59)
 
 m4_define([milter_manager_version_major], [1])
 m4_define([milter_manager_version_minor], [6])
-m4_define([milter_manager_version_micro], [5])
+m4_define([milter_manager_version_micro], [6])
 m4_define([milter_manager_version],
           [milter_manager_version_major.milter_manager_version_minor.milter_manager_version_micro])
 

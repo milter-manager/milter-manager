@@ -1,3 +1,7 @@
+2011-01-27  Kouhei Sutou  <kou@cozmixng.org>
+
+	* configure.ac: 1.6.5 -> 1.6.6.
+
 2011-01-26  Kouhei Sutou  <kou@cozmixng.org>
 
 	* binding/ruby/Makefile.am (ruby_glib2_0_90_5_files): add missing
