@@ -151,6 +151,23 @@ class TestLogAnalyzer < Test::Unit::TestCase
                  fetch(milter_report_rrd, start_time, end_time))
   end
 
+  def test_parse_authentication_results
+    report_graph_generator = MilterManagerLogAnalyzer::MilterManagerReportGraphGenerator.new(nil, Time.now)
+    value =<<EOH
+Authentication-Results: mail.example.com;
+     spf=none smtp.mailfrom=list@lists.example.com;
+     sender-id=none header.From=foo@example.com;
+     dkim=pass;
+     dkim-adsp=pass header.From=foo@example.com
+EOH
+    expected = ["dkim-pass", "dkim-adsp-pass"]
+    results = []
+    report_graph_generator.__send__(:parse_authentication_results, value) do |result|
+      results << result
+    end
+    assert_equal(expected, results)
+  end
+
   private
   def assert_received(subject, &block)
     block.call(received(subject)).call

@@ -815,7 +815,7 @@ EODS
     def parse_authentication_results(value)
       id, *results = value.split(/;\s*/)
       results.each do |result|
-        if /\A(.+?)=(.+?)\s+/ =~ result
+        if /\A(\S+?)=(\S+)\s*/ =~ result
           type = $1
           result = $2
           other_info = $POSTMATCH

@@ -1,3 +1,12 @@
+2011-01-26  Kenji Okimoto  <okimoto@clear-code.com>
+
+	* tool/milter-manager-log-analyzer
+	(MilterManagerReportGraphGenerator#parse_authentication_results):
+	fix regular expression.
+
+	* test/tool/test-log-analyzer.rb
+	(TestLogAnalyzer#test_parse_authentication_results): add.
+
 2011-01-25  Kouhei Sutou  <kou@cozmixng.org>
 
 	* milter/server/milter-server-context.c: check reply after "quit"
