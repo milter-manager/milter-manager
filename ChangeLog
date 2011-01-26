@@ -2,7 +2,8 @@
 
 	* tool/milter-manager-log-analyzer
 	(MilterManagerReportGraphGenerator#parse_authentication_results):
-	fix regular expression.
+	fix regular expression. Add TODO comment and about formal
+	definition of "Authentication-Results" header.
 
 	* test/tool/test-log-analyzer.rb
 	(TestLogAnalyzer#test_parse_authentication_results): add.

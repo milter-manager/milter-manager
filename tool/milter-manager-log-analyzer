@@ -812,6 +812,10 @@ EODS
       end
     end
 
+    # TODO: fix this method.
+    #   see below urls to know formal definition of "Authentication-Results" header.
+    #   http://www.ietf.org/rfc/rfc5451.txt
+    #   http://www.ietf.org/rfc/rfc5322.txt
     def parse_authentication_results(value)
       id, *results = value.split(/;\s*/)
       results.each do |result|
