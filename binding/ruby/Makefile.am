@@ -272,6 +272,7 @@ ruby_glib2_0_90_5_files =						\
 	glib-0.90.5/lib/glib2.rb					\
 	glib-0.90.5/lib/gnome2-win32-binary-downloader.rb		\
 	glib-0.90.5/lib/mkmf-gnome2.rb					\
+	glib-0.90.5/lib/pkg-config.rb					\
 	glib-0.90.5/sample/bookmarkfile.rb				\
 	glib-0.90.5/sample/completion.rb				\
 	glib-0.90.5/sample/idle.rb					\

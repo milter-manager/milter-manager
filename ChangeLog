@@ -1,3 +1,8 @@
+2011-01-26  Kouhei Sutou  <kou@cozmixng.org>
+
+	* binding/ruby/Makefile.am (ruby_glib2_0_90_5_files): add missing
+	pkg-config.rb.
+
 2011-01-26  Kouhei Sutou  <kou@clear-code.com>
 
 	* ./: 1.6.4 -> 1.6.5.
