@@ -293,6 +293,9 @@ fi
 %config %{_sysconfdir}/munin/plugin-conf.d/
 
 %changelog
+* Wed Jan 26 2011 Kouhei Sutou <kou@clear-code.com> - 1.6.5-0
+- new upstream release.
+
 * Fri Jan 21 2011 Kouhei Sutou <kou@clear-code.com> - 1.6.4-0
 - new upstream release.
 

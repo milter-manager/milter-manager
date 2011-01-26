@@ -1,5 +1,7 @@
 2011-01-26  Kouhei Sutou  <kou@clear-code.com>
 
+	* ./: 1.6.4 -> 1.6.5.
+
 	* tool/Makefile.am: remove a garbage slash.
 
 	* configure.ac: 1.6.4 -> 1.6.5.
