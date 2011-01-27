@@ -56,3 +56,7 @@ Makefile.in
 /doc/reference/reverse-dictionary.xml*
 /doc/reference/performance.xml*
 /doc/reference/milter-report-statistics.xml*
+/binding/ruby/glib-0.16.0/mkmf.log
+/binding/ruby/glib-0.16.0/src/glib-enum-types.c
+/binding/ruby/glib-0.16.0/src/glib-enum-types.h
+/binding/ruby/glib-0.16.0/src/glib2.so

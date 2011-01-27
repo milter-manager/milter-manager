@@ -237,7 +237,6 @@ else
                 [AC_MSG_WARN([$RUBY is not found. Disable milter manager.])])
 fi
 
-use_bundled_ruby_glib2=no
 if test "$ruby_available" = "yes"; then
   rbconfig="$RUBY -rrbconfig -rshellwords -e "
 
@@ -302,38 +301,44 @@ if test "$ruby_available" = "yes"; then
     AC_MSG_ERROR([Ruby is required.])
   fi
 
+  AC_ARG_WITH([bundled-ruby-glib2],
+	      AS_HELP_STRING([--with-bundled-ruby-glib2],
+			     [Use bundled Ruby/GLib2
+                              (default: try system Ruby/GLib2 and them
+                                            bundled Ruby/GLib2)]),
+	      [use_bundled_ruby_glib2="$withval"],
+              [use_bundled_ruby_glib2="auto"])
+
   RUBY_GLIB2_CFLAGS=""
-  if test "x$ruby_available" = "xyes"; then
+  ruby_glib2_available=no
+  if test "x$use_bundled_ruby_glib2" != "xyes"; then
     CFLAGS="$CFLAGS $GLIB_CFLAGS"
     AC_CHECK_HEADERS(rbgobject.h, [],
-		     [ruby_available="no"],
+		     [ruby_glib2_available="no"],
 		     [$ruby_undef_package_macros])
-  fi
-  if test "$ruby_available" = "yes"; then
-    AC_TRY_COMPILE([
-                    $ruby_undef_package_macros
-                    #include <rbgobject.h>
-                   ],
-                   [
-                    #if RBGLIB_MINOR_VERSION == 17
-                    #  error "Ruby/GLib2 0.17.0 has GC related bug."
-                    #endif
-                    #if RBGLIB_MINOR_VERSION == 18
-                    #  error "Ruby/GLib2 0.18.x has memory leak bugs."
-                    #endif
-                    #if RBGLIB_MINOR_VERSION == 19 && RBGLIB_MICRO_VERSION < 4
-                    #  error "Ruby/GLib2 0.19.[0123] have memory leak bugs."
-                    #endif
-                   ],
-                   [],
-		   [ruby_available="no"
-                    try_to_use_bundled_ruby_glib2_0_90_5="yes"])
-  else
-    if test $ruby_minor_version$ruby_micro_version -gt 85; then
-      try_to_use_bundled_ruby_glib2_0_90_5="yes"
+    if test "$ruby_glib2_available" = "yes"; then
+      AC_TRY_COMPILE([
+		      $ruby_undef_package_macros
+		      #include <rbgobject.h>
+		     ],
+		     [
+		      #if RBGLIB_MINOR_VERSION == 17
+		      #  error "Ruby/GLib2 0.17.0 has GC related bug."
+		      #endif
+		      #if RBGLIB_MINOR_VERSION == 18
+		      #  error "Ruby/GLib2 0.18.x has memory leak bugs."
+		      #endif
+		      #if RBGLIB_MINOR_VERSION == 19 && RBGLIB_MICRO_VERSION < 4
+		      #  error "Ruby/GLib2 0.19.[0123] have memory leak bugs."
+		      #endif
+		     ],
+		     [],
+		     [ruby_glib2_available="no"])
     fi
   fi
-  if test "$ruby_available" != "yes"; then
+
+  if test "x$use_bundled_ruby_glib2" != "xno" -a \
+          "x$ruby_glib2_available" != "xyes"; then
     if test "$exec_prefix" = "NONE"; then
       if test "$prefix" = "NONE"; then
         ac_ruby_glib2_exec_prefix=$ac_default_prefix
@@ -344,22 +349,20 @@ if test "$ruby_available" = "yes"; then
       ac_ruby_glib2_exec_prefix=$exec_prefix
     fi
 
-    if test "$try_to_use_bundled_ruby_glib2_0_90_5" = "yes"; then
-      ac_ruby_glib2_version=0.90.5
+    if test $ruby_minor_version$ruby_micro_version -gt 85; then
+      ac_used_bundled_ruby_glib2_version=0.90.5
     else
-      ac_ruby_glib2_version=0.16.0
+      ac_used_bundled_ruby_glib2_version=0.16.0
     fi
-    AC_MSG_NOTICE([checking bundled Ruby/GLib2 $ac_ruby_glib2_version])
-    ac_ruby_glib2_dir="binding/ruby/glib-$ac_ruby_glib2_version"
+    AC_MSG_NOTICE([checking bundled Ruby/GLib2 $ac_used_bundled_ruby_glib2_version])
+    ac_ruby_glib2_dir="binding/ruby/glib-$ac_used_bundled_ruby_glib2_version"
     if $RUBY -run -e mkdir -- -p $ac_ruby_glib2_dir && \
        (cd $ac_ruby_glib2_dir && \
         $RUBY ../../../$srcdir/$ac_ruby_glib2_dir/extconf.rb); then
-      ruby_available=yes
-      if test "$try_to_use_bundled_ruby_glib2_0_90_5" = "yes"; then
-        ac_use_bundled_ruby_glib2_0_90_5=yes
+      ruby_glib2_available=yes
+      if test "$ac_used_bundled_ruby_glib2_version" = "0.90.5"; then
 	ac_ruby_glib2_source_dir="$ac_ruby_glib2_dir/ext/glib2"
       else
-        ac_use_bundled_ruby_glib2_0_16_0=yes
         ac_ruby_glib2_source_dir="$ac_ruby_glib2_dir/src"
       fi
       RUBY_GLIB2_CFLAGS="-I \$(top_srcdir)/$ac_ruby_glib2_source_dir"
@@ -392,7 +395,7 @@ EOM
     fi
   fi
 
-  if test "$ac_use_bundled_ruby_glib2_0_16_0" != "yes"; then
+  if test "$ac_used_bundled_ruby_glib2_version" != "0.16.0"; then
     $RUBY -run -e mkdir -- -p binding/ruby/glib-0.16.0
     cat <<EOM > binding/ruby/glib-0.16.0/Makefile
 all:
@@ -401,7 +404,7 @@ distclean:
 uninstall:
 EOM
   fi
-  if test "$ac_use_bundled_ruby_glib2_0_90_5" != "yes"; then
+  if test "$ac_used_bundled_ruby_glib2_version" != "0.90.5"; then
     $RUBY -run -e mkdir -- -p binding/ruby/glib-0.90.5
     cat <<EOM > binding/ruby/glib-0.90.5/Makefile
 all:
@@ -411,7 +414,7 @@ uninstall:
 EOM
   fi
 
-  if test "$ruby_available" != "yes"; then
+  if test "$ruby_glib2_available" != "yes"; then
     AC_MSG_ERROR([Ruby/GLib2 is required.])
   fi
 
@@ -451,9 +454,9 @@ AC_SUBST(sample_rubydir)
 
 AM_CONDITIONAL([WITH_RUBY], [test "$ruby_available" = "yes"])
 AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_0_16_0],
-               [test "$ac_use_bundled_ruby_glib2_0_16_0" = "yes"])
+               [test "$ac_used_bundled_ruby_glib2_version" = "0.16.0"])
 AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_0_90_5],
-               [test "$ac_use_bundled_ruby_glib2_0_90_5" = "yes"])
+               [test "$ac_used_bundled_ruby_glib2_version" = "0.90.5"])
 AM_CONDITIONAL([WITH_RUBY_MILTER], [test -n "$ruby_milterdir"])
 
 dnl **************************************************************
@@ -859,6 +862,7 @@ echo
 echo "  GLib                    : $glib_version"
 echo "  libev                   : $libev_configure_result"
 echo "  Ruby                    : $RUBY"
+echo "  Ruby/GLib2              : $RUBY_GLIB2_CFLAGS"
 echo "  Ruby milter PATH        : $ruby_milterdir"
 echo
 echo "  GTK-Doc                 : $enable_gtk_doc"
