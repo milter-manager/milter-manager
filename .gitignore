@@ -45,3 +45,14 @@ Makefile.in
 /rpm/centos/milter-manager.spec
 /ruby-milter.pc
 /tool/milter-test-client-libmilter
+/doc/reference/html/
+/doc/reference/tmpl/
+/doc/reference/xml/
+/doc/reference/users.xml*
+/doc/reference/available-milters.xml*
+/doc/reference/install-*
+/doc/reference/upgrade-*
+/doc/reference/ruby-milter-*
+/doc/reference/reverse-dictionary.xml*
+/doc/reference/performance.xml*
+/doc/reference/milter-report-statistics.xml*
