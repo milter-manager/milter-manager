@@ -35,7 +35,6 @@ endif
 
 EXTRA_DIST =					\
 	autogen.sh				\
-	ChangeLog.toolkit			\
 	README					\
 	README.ja				\
 	NEWS					\
