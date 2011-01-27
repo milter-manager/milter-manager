@@ -14,6 +14,9 @@ if [ ! -d config/po ]; then
     ln -s ../po config/po
 fi
 
+cutter_repository=https://cutter.svn.sourceforge.net/svnroot/cutter/cutter
+svn export --force ${cutter_repository}/trunk/misc
+
 run ${ACLOCAL:-aclocal} $ACLOCAL_OPTIONS
 run ${LIBTOOLIZE:-libtoolize} --copy --force
 run ${INTLTOOLIZE:-intltoolize} --force --copy
