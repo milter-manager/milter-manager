@@ -380,7 +380,6 @@ milter_manager_debugをコメントアウトし、デーモンプロセスで起
 
   milter_protocol = 6 # Postfix 2.5以上の場合
   milter_default_action = accept
-  milter_connect_macros = j {daemon_name} v {client_addr}
   milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 
 それぞれ以下のような設定です。
@@ -400,12 +399,6 @@ milter_manager_debugをコメントアウトし、デーモンプロセスで起
    迅速に復旧できる体制がととのっているのであれば、acceptで
    はなく、tempfailを指定するのがよいでしょう。デフォルトで
    はtempfailになっています。
-
-: milter_connect_macros = j {daemon_name} v {client_addr}
-
-   接続元のアドレスもmilterに渡します。
-   (({j {daemon_name} v}))が既定値で、接続元のアドレスである
-   (({{client_addr}}))を追加しています。
 
 : milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 

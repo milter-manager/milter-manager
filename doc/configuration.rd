@@ -1262,16 +1262,6 @@ Sendmail and Postfix. It's good things.
 We can use this applicable condition with Postfix, it
 doesn't have adverse affect for Postfix.
 
-We need to add (({{client_addr}})) to ((<milter_connect_macros|URL:http://www.postfix.org/postconf.5.html#milter_connect_macros>))
-in Postfix's main.cf. Here is a recommended configuration
-because the default value of
-milter_connect_macros is (({j {daemon_name} v})).
-
-main.cf:
-  milter_connect_macros = j {daemon_name} v {client_addr}
-
-Don't forget to reflect the changed configuration in main.cf.
-
 Here is an example that we use milter-greylist built for
 Sendmail with Postfix.
 
