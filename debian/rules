@@ -9,6 +9,7 @@ DEB_CONFIGURE_USER_FLAGS =							\
 	--with-default-socket-group=mail					\
 	--with-default-pid-file=/var/run/milter-manager/milter-manager.pid	\
 	--with-default-connection-spec=unix:/var/run/milter-manager/milter-manager.sock \
+	--with-bundled-ruby-glib2						\
 	--enable-ruby-milter=$$(ruby -rrbconfig -e 'print Config::CONFIG["rubylibdir"]')
 
 DEB_INSTALL_DIRS_milter-manager =			\

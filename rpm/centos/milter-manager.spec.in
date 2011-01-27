@@ -92,6 +92,7 @@ This package contains the munin plugins for munin-node.
     --with-default-socket-group=smmsp					\
     --with-default-pid-file=/var/run/milter-manager/milter-manager.pid	\
     --with-default-connection-spec=unix:/var/run/milter-manager/milter-manager.sock \
+    --with-bundled-ruby-glib2						\
     --enable-ruby-milter=$(ruby -rrbconfig -e 'print Config::CONFIG["rubylibdir"]')
 make %{?_smp_mflags}
 
