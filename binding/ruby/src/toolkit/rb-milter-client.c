@@ -245,19 +245,6 @@ client_set_default_unix_socket_mode (VALUE self, VALUE rb_mode)
     return Qnil;
 }
 
-static VALUE
-client_get_default_packet_buffer_size (VALUE self)
-{
-    return UINT2NUM(milter_client_get_default_packet_buffer_size(SELF(self)));
-}
-
-static VALUE
-client_set_default_packet_buffer_size (VALUE self, VALUE size)
-{
-    milter_client_set_default_packet_buffer_size(SELF(self), NUM2UINT(size));
-    return Qnil;
-}
-
 static void
 mark (gpointer data)
 {
@@ -320,10 +307,6 @@ Init_milter_client (void)
                      client_get_default_unix_socket_mode, 0);
     rb_define_method(rb_cMilterClient, "set_default_unix_socket_mode",
                      client_set_default_unix_socket_mode, 1);
-    rb_define_method(rb_cMilterClient, "default_packet_buffer_size",
-                     client_get_default_packet_buffer_size, 0);
-    rb_define_method(rb_cMilterClient, "set_default_packet_buffer_size",
-                     client_set_default_packet_buffer_size, 1);
 
     G_DEF_SETTERS(rb_cMilterClient);
 
