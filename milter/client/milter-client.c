@@ -43,6 +43,7 @@ enum
     PROP_N_WORKERS,
     PROP_CUSTOM_FORK,
     PROP_DEFAULT_PACKET_BUFFER_SIZE,
+    PROP_MAINTENANCE_INTERVAL,
     PROP_WORKER_ID
 };
 
@@ -194,6 +195,17 @@ _milter_client_class_init (MilterClientClass *klass)
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class,
                                     PROP_DEFAULT_PACKET_BUFFER_SIZE, spec);
+
+    spec = g_param_spec_uint("maintenance-interval",
+                             "Maintenance interval",
+                             "Maintenance interval of the client. "
+                             "each 'maintenance-interval' sessions finished "
+                             "'maintenance' signal is emitted. "
+                             "0 means 'disabled'.",
+                             0, G_MAXUINT, 0,
+                             G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class,
+                                    PROP_MAINTENANCE_INTERVAL, spec);
 
     spec = g_param_spec_uint("worker-id",
                              "ID of worker processes",
@@ -616,6 +628,9 @@ set_property (GObject      *object,
         milter_client_set_default_packet_buffer_size(client,
                                                      g_value_get_uint(value));
         break;
+    case PROP_MAINTENANCE_INTERVAL:
+        milter_client_set_maintenance_interval(client, g_value_get_uint(value));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -646,6 +661,10 @@ get_property (GObject    *object,
     case PROP_DEFAULT_PACKET_BUFFER_SIZE:
         g_value_set_uint(value,
                          milter_client_get_default_packet_buffer_size(client));
+        break;
+    case PROP_MAINTENANCE_INTERVAL:
+        g_value_set_uint(value,
+                         milter_client_get_maintenance_interval(client));
         break;
     case PROP_WORKER_ID:
         g_value_set_uint(value, priv->workers.id);
