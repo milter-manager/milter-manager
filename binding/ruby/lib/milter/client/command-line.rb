@@ -55,6 +55,11 @@ module Milter
         client.event_loop_backend = @options.event_loop_backend
         client.default_packet_buffer_size = @options.packet_buffer_size
         client.maintenance_interval = @options.maintenance_interval
+        if @options.run_gc_on_maintain
+          client.on_maintain do
+            GC.start
+          end
+        end
         client.n_workers = @options.n_workers
         yield(client, options) if block_given?
         client.listen
@@ -81,6 +86,7 @@ module Milter
         @options.packet_buffer_size = 0
         @options.handle_signal = true
         @options.maintenance_interval = 100
+        @options.run_gc_on_maintain = true
       end
 
       def setup_option_parser
@@ -203,6 +209,12 @@ module Milter
                           "Run maintenance callback after each N sessions",
                           "(#{@options.maintenance_interval})") do |interval|
           @options.maintenance_interval = interval
+        end
+
+        @option_parser.on("--[no-]run-gc-on-maintain",
+                          "Run GC in each maintenance callback",
+                          "(#{@options.run_gc_on_maintain})") do |boolean|
+          @options.run_gc_on_maintain = boolean
         end
       end
 
