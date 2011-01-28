@@ -54,6 +54,7 @@ module Milter
         end
         client.event_loop_backend = @options.event_loop_backend
         client.default_packet_buffer_size = @options.packet_buffer_size
+        client.maintenance_interval = @options.maintenance_interval
         client.n_workers = @options.n_workers
         yield(client, options) if block_given?
         client.listen
@@ -79,6 +80,7 @@ module Milter
         @options.n_workers = 0
         @options.packet_buffer_size = 0
         @options.handle_signal = true
+        @options.maintenance_interval = 100
       end
 
       def setup_option_parser
@@ -195,6 +197,12 @@ module Milter
                           "Handle SIGHUP, SIGINT and SIGTERM signals",
                           "(#{@options.handle_signal})") do |boolean|
           @options.handle_signal = boolean
+        end
+
+        @option_parser.on("--maintenance-interval=N",
+                          "Run maintenance callback after each N sessions",
+                          "(#{@options.maintenance_interval})") do |interval|
+          @options.maintenance_interval = interval
         end
       end
 
