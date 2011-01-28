@@ -102,4 +102,10 @@ class TestClient < Test::Unit::TestCase
     assert_equal(4096, @client.default_packet_buffer_size)
     assert_equal(4096, @client.create_context.packet_buffer_size)
   end
+
+  def test_maintenance_interval
+    assert_equal(0, @client.maintenance_interval)
+    @client.maintenance_interval = 100
+    assert_equal(100, @client.maintenance_interval)
+  end
 end
