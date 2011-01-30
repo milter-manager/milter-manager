@@ -178,6 +178,17 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
     xxfi_header()は1つのヘッダにつき1回呼ばれるので、ヘッダ
     が複数個ある場合はその分だけxxfi_header()が呼ばれます。
 
+: --end-of-header-macro=NAME:VALUE
+
+   xxfi_eoh()コールバック時に送信するマクロを追加します。
+   マクロの名前はNAMEで値はVALUEになります。複数のマクロを設
+   定する場合はこのオプションを複数指定します。
+
+   xxfi_eoh()コールバック時にn_headersという名前で値が100の
+   マクロを送信したい場合は以下のように指定します。
+
+     --end-of-header-macro n_headers:100
+
 : --body=CHUNK
 
     本文の一片としてCHUNKを追加します。複数のまとまりを追加

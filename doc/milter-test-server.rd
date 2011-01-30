@@ -177,6 +177,18 @@ automated unit tests.
     The header is passed to milter's xxfi_header() callback.
     xxfi_header() is called for each header.
 
+: --end-of-header-macro=NAME:VALUE
+
+   Adds a macro that is sent on xxfi_eoh() callback. The
+   macro has NAME name and VALUE value. This option can be
+   specified N-times for N additional macros.
+
+   Here is an example that a macro that has
+   "n_headers" name and "100" value is sent on
+   xxfi_eoh() callback:
+
+     --end-of-header-macro n_headers:100
+
 : --body=CHUNK
 
     Adds CHUNK as body chunk. If you want to multiple
