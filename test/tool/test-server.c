@@ -1556,14 +1556,13 @@ option_test_assert_authenticated_author (void)
 }
 
 static const gchar *
-get_mail_option (const gchar *file_name)
+mail_file_option (const gchar *file_name)
 {
-    gchar *mail_option, *file_path;
+    gchar *file_path;
 
     file_path = g_build_filename(fixtures_path, file_name, NULL);
     cut_take_string(file_path);
-    mail_option = g_strdup_printf("--mail-file=%s", file_path);
-    return cut_take_string(mail_option);
+    return cut_take_printf("--mail-file=%s", file_path);
 }
 
 void
@@ -1610,10 +1609,10 @@ data_option (void)
         "--output-message",
         option_test_assert_output_message);
     ADD("mail-file",
-        get_mail_option("parse-test.mail"),
+        mail_file_option("parse-test.mail"),
         option_test_assert_mail_file);
     ADD("large-file",
-        get_mail_option("large.mail"),
+        mail_file_option("large.mail"),
         option_test_assert_large_mail);
     ADD("authentication-name",
         "--authenticated-name=user",
