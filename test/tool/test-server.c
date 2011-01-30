@@ -1588,12 +1588,12 @@ data_option (void)
         "--helo-fqdn=test-host",
         option_test_assert_helo_fqdn);
     ADD("envelope-from",
-        "--from=from@example.com",
+        "--envelope-from=from@example.com",
         option_test_assert_from);
-    ADD("recipients",
-        "--recipient=recipient1@example.com "
-        "--recipient=recipient2@example.com "
-        "--recipient=recipient3@example.com",
+    ADD("envelope-recipients",
+        "--envelope-recipient=recipient1@example.com "
+        "--envelope-recipient=recipient2@example.com "
+        "--envelope-recipient=recipient3@example.com",
         option_test_assert_recipients);
     ADD("headers",
         "--header=X-TestHeader1:TestHeader1Value "

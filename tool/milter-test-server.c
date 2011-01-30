@@ -1372,16 +1372,25 @@ static const GOptionEntry option_entries[] =
      N_("Add a macro that has NAME name and VALUE value on xxfi_helo(). "
         "To add N macros, use --helo-macro option N times."),
      "NAME:VALUE"},
-    {"from", 'f', 0, G_OPTION_ARG_STRING, &envelope_from,
+    {"from", 0, G_OPTION_FLAG_HIDDEN, G_OPTION_ARG_STRING, &envelope_from,
+     N_("Use FROM as a sender address. "
+         "(Deprecated. Use --envelope-from instead.)"), "FROM"},
+    {"envelope-from", 'f', 0, G_OPTION_ARG_STRING, &envelope_from,
      N_("Use FROM as a sender address"), "FROM"},
     {"envelope-from-macro", 0, 0, G_OPTION_ARG_CALLBACK,
      parse_envelope_from_macro_arg,
      N_("Add a macro that has NAME name and VALUE value on xxfi_envfrom(). "
         "To add N macros, use --envelope-from-macro option N times."),
      "NAME:VALUE"},
-    {"recipient", 'r', 0, G_OPTION_ARG_STRING_ARRAY, &recipients,
+    {"recipient", 0, G_OPTION_FLAG_HIDDEN, G_OPTION_ARG_STRING_ARRAY,
+     &recipients,
      N_("Add a recipient RECIPIENT. "
-        "To add N recipients, use --recipient option N times."),
+        "To add N recipients, use --recipient option N times. "
+        "(Deprecated. Use --envelope-recipient instead."),
+     "RECIPIENT"},
+    {"envelope-recipient", 'r', 0, G_OPTION_ARG_STRING_ARRAY, &recipients,
+     N_("Add a recipient RECIPIENT. "
+        "To add N recipients, use --envelope-recipient option N times."),
      "RECIPIENT"},
     {"header", 'h', 0, G_OPTION_ARG_CALLBACK, parse_header_arg,
      N_("Add a header. To add n headers, use --header option n times."),

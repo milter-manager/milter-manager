@@ -116,7 +116,7 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
 
      --helo-macro client_ptr:unknown
 
-: --from=FROM
+: --envelope-from=FROM, -fFROM
 
     MAIL FROM時の引数としてFROMを使用します。
 
@@ -134,11 +134,11 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
 
      --envelope-from-macro client_addr:192.168.0.1
 
-: --recipient=RECIPIENT
+: --envelope-recipient=RECIPIENT, -rRECIPIENT
 
     RCPT TO時の引数としてRECIPIENTを使用します。複数の宛先を
-    指定したい場合は--recipientオプションを複数回指定してく
-    ださい。
+    指定したい場合は--envelope-recipientオプションを複数回指
+    定してください。
 
     このアドレスはmilterのxxfi_envrcpt()コールバックに渡りま
     す。xxfi_envrcpt()は1つの宛先につき1回呼ばれるので、宛先

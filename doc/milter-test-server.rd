@@ -117,7 +117,7 @@ automated unit tests.
 
      --helo-macro client_ptr:unknown
 
-: --from=FROM
+: --envelope-from=FROM, -fFROM
 
     Uses FROM for 'MAIL FROM' SMTP command.
 
@@ -135,11 +135,11 @@ automated unit tests.
 
      --envelope-from-macro client_addr:192.168.0.1
 
-: --recipient=RECIPIENT
+: --envelope-recipient=RECIPIENT, -rRECIPIENT
 
     Uses RECIPIENT for 'RCPT TO' SMTP command. If you want
-    to use multiple recipients, specify --recipient option
-    n-times.
+    to use multiple recipients, specify --envelope-recipient
+    option n-times.
 
     The address is passed to milter's xxfi_envrcpt()
     callback. xxfi_envrcpt() is called for each recipient.
