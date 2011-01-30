@@ -156,6 +156,18 @@ automated unit tests.
 
      --envelope-recipient-macro client_ptr:2929
 
+: --data-macro=NAME:VALUE
+
+   Adds a macro that is sent on xxfi_data() callback. The
+   macro has NAME name and VALUE value. This option can be
+   specified N-times for N additional macros.
+
+   Here is an example that a macro that has
+   "client_name" name and "unknown" value is sent on
+   xxfi_data() callback:
+
+     --data-macro client_name:unknown
+
 : --header=NAME:VALUE
 
     Adds a header that names NAME and its value is VALUE. If

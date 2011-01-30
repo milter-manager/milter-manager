@@ -156,6 +156,18 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
 
      --envelope-recipient-macro client_port:2929
 
+: --data-macro=NAME:VALUE
+
+   xxfi_data()コールバック時に送信するマクロを追加します。
+   マクロの名前はNAMEで値はVALUEになります。複数のマクロを設
+   定する場合はこのオプションを複数指定します。
+
+   xxfi_data()コールバック時にclient_nameという名
+   前で値がunknownのマクロを送信したい場合は以下のように
+   指定します。
+
+     --data-macro client_name:unknown
+
 : --header=NAME:VALUE
 
     名前がNAMEで値がVALUEのヘッダを追加します。複数のヘッダ

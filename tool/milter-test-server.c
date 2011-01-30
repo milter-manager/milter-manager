@@ -54,6 +54,7 @@ static gchar *envelope_from = NULL;
 static GHashTable *envelope_from_macros = NULL;
 static gchar **recipients = NULL;
 static GHashTable *envelope_recipient_macros = NULL;
+static GHashTable *data_macros = NULL;
 static gchar **body_chunks = NULL;
 static gchar *unknown_command = NULL;
 static gchar *authenticated_name = NULL;
@@ -201,6 +202,9 @@ set_macros_for_envelope_recipient (MilterProtocolAgent *agent,
 static void
 set_macros_for_data (MilterProtocolAgent *agent)
 {
+    milter_protocol_agent_set_macros_hash_table(agent,
+                                                MILTER_COMMAND_DATA,
+                                                data_macros);
 }
 
 static void
@@ -1065,6 +1069,15 @@ parse_envelope_recipient_macro_arg (const gchar *option_name,
 }
 
 static gboolean
+parse_data_macro_arg (const gchar *option_name,
+                      const gchar *value,
+                      gpointer data,
+                      GError **error)
+{
+    return parse_macro_arg(data_macros, option_name, value, data, error);
+}
+
+static gboolean
 parse_header_arg (const gchar *option_name,
                   const gchar *value,
                   gpointer data,
@@ -1408,6 +1421,10 @@ static const GOptionEntry option_entries[] =
      N_("Add a macro that has NAME name and VALUE value on xxfi_envrcpt(). "
         "To add N macros, use --envelope-recipient-macro option N times."),
      "NAME:VALUE"},
+    {"data-macro", 0, 0, G_OPTION_ARG_CALLBACK, parse_data_macro_arg,
+     N_("Add a macro that has NAME name and VALUE value on xxfi_data(). "
+        "To add N macros, use --data-macro option N times."),
+     "NAME:VALUE"},
     {"header", 'h', 0, G_OPTION_ARG_CALLBACK, parse_header_arg,
      N_("Add a header. To add n headers, use --header option n times."),
      "NAME:VALUE"},
@@ -1584,6 +1601,7 @@ pre_option_parse (GOptionContext *option_context,
     helo_macros = macros_new();
     envelope_from_macros = macros_new();
     envelope_recipient_macros = macros_new();
+    data_macros = macros_new();
 
     return TRUE;
 }
@@ -1645,12 +1663,18 @@ apply_options_to_envelope_recipient_macros (void)
 }
 
 static void
+apply_options_to_data_macros (void)
+{
+}
+
+static void
 apply_options_to_macros (void)
 {
     apply_options_to_connect_macros();
     apply_options_to_helo_macros();
     apply_options_to_envelope_from_macros();
     apply_options_to_envelope_recipient_macros();
+    apply_options_to_data_macros();
 }
 
 static gboolean
@@ -1714,6 +1738,8 @@ free_option_values (void)
         g_hash_table_unref(envelope_from_macros);
     if (envelope_recipient_macros)
         g_hash_table_unref(envelope_recipient_macros);
+    if (data_macros)
+        g_hash_table_unref(data_macros);
 }
 
 static void
