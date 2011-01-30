@@ -66,16 +66,6 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
      * inet6:10025@localhost
      * inet6:10025@[::1]
 
-: --connect-macro=NAME:VALUE
-
-   connect時に送信するマクロを追加します。マクロの名前はNAME
-   で値はVALUEになります。
-
-   connect時にclient_connectionsという名前で値が1のマクロを
-   送信したい場合は以下のように指定します。
-
-     --connect-macro client_connections:1
-
 : --negotiate-version=VERSION
 
     クライアントへ送信するmilterプロトコルのバージョンとして
@@ -97,6 +87,16 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
 
     このアドレスはmilterのxxfi_connect()コールバックに渡りま
     す。
+
+: --connect-macro=NAME:VALUE
+
+   xxfi_connect()コールバック時に送信するマクロを追加します。
+   マクロの名前はNAMEで値はVALUEになります。
+
+   xxfi_connect()コールバック時にclient_connectionsという名
+   前で値が1のマクロを送信したい場合は以下のように指定します。
+
+     --connect-macro client_connections:1
 
 : --helo-fqdn=FQDN
 
