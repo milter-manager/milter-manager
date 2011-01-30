@@ -2193,6 +2193,33 @@ data_macro (void)
         "--envelope-from-macro client_addr:192.168.0.3 "
         "--envelope-from-macro client_name:local-sender.example.net");
 
+    ADD("envelope-recipient-macro",
+        gcut_list_string_new("command:connect",
+                             "daemon_name", "milter-test-server",
+                             "if_addr", "127.0.0.1",
+                             "if_name", "localhost",
+                             "j", "mail.example.com",
+                             "command:helo",
+                             "cert_issuer", "cert_issuer",
+                             "cert_subject", "cert_subject",
+                             "cipher", "0",
+                             "cipher_bits", "0",
+                             "tls_version", "0",
+                             "command:envelope-from",
+                             "i", "i",
+                             "mail_addr", "mail_addr",
+                             "mail_host", "mail_host",
+                             "mail_mailer", "mail_mailer",
+                             "command:envelope-recipient",
+                             "client_port", "2929",
+                             "rcpt_addr", "<receiver@example.org>",
+                             "rcpt_host", "rcpt_host",
+                             "rcpt_mailer", "rcpt_mailer",
+                             "command:end-of-message",
+                             "msg-id", "msg-id",
+                             NULL),
+        "--envelope-recipient-macro client_port:2929");
+
 #undef ADD
 }
 

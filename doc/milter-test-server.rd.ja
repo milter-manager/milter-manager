@@ -144,6 +144,18 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
     す。xxfi_envrcpt()は1つの宛先につき1回呼ばれるので、宛先
     が複数個ある場合はその分だけxxfi_envrcpt()が呼ばれます。
 
+: --envelope-recipient-macro=NAME:VALUE
+
+   xxfi_envrcpt()コールバック時に送信するマクロを追加します。
+   マクロの名前はNAMEで値はVALUEになります。複数のマクロを設
+   定する場合はこのオプションを複数指定します。
+
+   xxfi_envrcpt()コールバック時にclient_portという名
+   前で値が2929のマクロを送信したい場合は以下のように
+   指定します。
+
+     --envelope-recipient-macro client_port:2929
+
 : --header=NAME:VALUE
 
     名前がNAMEで値がVALUEのヘッダを追加します。複数のヘッダ

@@ -144,6 +144,18 @@ automated unit tests.
     The address is passed to milter's xxfi_envrcpt()
     callback. xxfi_envrcpt() is called for each recipient.
 
+: --envelope-recipient-macro=NAME:VALUE
+
+   Adds a macro that is sent on xxfi_envrcpt() callback. The
+   macro has NAME name and VALUE value. This option can be
+   specified N-times for N additional macros.
+
+   Here is an example that a macro that has
+   "client_ptr" name and "2929" value is sent on
+   xxfi_envrcpt() callback:
+
+     --envelope-recipient-macro client_ptr:2929
+
 : --header=NAME:VALUE
 
     Adds a header that names NAME and its value is VALUE. If

@@ -53,6 +53,7 @@ static GHashTable *helo_macros = NULL;
 static gchar *envelope_from = NULL;
 static GHashTable *envelope_from_macros = NULL;
 static gchar **recipients = NULL;
+static GHashTable *envelope_recipient_macros = NULL;
 static gchar **body_chunks = NULL;
 static gchar *unknown_command = NULL;
 static gchar *authenticated_name = NULL;
@@ -185,17 +186,16 @@ set_macros_for_envelope_from (MilterProtocolAgent *agent)
 }
 
 static void
-set_macros_for_envelope_recipient (MilterProtocolAgent *agent)
+set_macros_for_envelope_recipient (MilterProtocolAgent *agent,
+                                   const gchar *recipient)
 {
-    gchar *recipients_address;
+    milter_protocol_agent_set_macros_hash_table(agent,
+                                                MILTER_COMMAND_ENVELOPE_RECIPIENT,
+                                                envelope_recipient_macros);
 
-    recipients_address = g_strjoinv(",", recipients);
     milter_protocol_agent_set_macros(agent, MILTER_COMMAND_ENVELOPE_RECIPIENT,
-                                     "{rcpt_mailer}", "rcpt_mailer",
-                                     "{rcpt_host}", "rcpt_host",
-                                     "{rcpt_addr}", recipients_address,
+                                     "{rcpt_addr}", recipient,
                                      NULL);
-    g_free(recipients_address);
 }
 
 static void
@@ -295,12 +295,13 @@ send_envelope_recipient (MilterServerContext *context, ProcessData *data)
 {
     gchar *recipient;
 
-    set_macros_for_envelope_recipient(MILTER_PROTOCOL_AGENT(context));
-    if (milter_option_get_step(data->option) & MILTER_STEP_NO_ENVELOPE_RECIPIENT)
-        return FALSE;
-
     recipient = recipients[data->current_recipient];
     if (!recipient)
+        return FALSE;
+
+    set_macros_for_envelope_recipient(MILTER_PROTOCOL_AGENT(context),
+                                      recipient);
+    if (milter_option_get_step(data->option) & MILTER_STEP_NO_ENVELOPE_RECIPIENT)
         return FALSE;
 
     milter_server_context_envelope_recipient(context, recipient);
@@ -1054,6 +1055,16 @@ parse_envelope_from_macro_arg (const gchar *option_name,
 }
 
 static gboolean
+parse_envelope_recipient_macro_arg (const gchar *option_name,
+                                    const gchar *value,
+                                    gpointer data,
+                                    GError **error)
+{
+    return parse_macro_arg(envelope_recipient_macros, option_name, value,
+                           data, error);
+}
+
+static gboolean
 parse_header_arg (const gchar *option_name,
                   const gchar *value,
                   gpointer data,
@@ -1392,6 +1403,11 @@ static const GOptionEntry option_entries[] =
      N_("Add a recipient RECIPIENT. "
         "To add N recipients, use --envelope-recipient option N times."),
      "RECIPIENT"},
+    {"envelope-recipient-macro", 0, 0, G_OPTION_ARG_CALLBACK,
+     parse_envelope_recipient_macro_arg,
+     N_("Add a macro that has NAME name and VALUE value on xxfi_envrcpt(). "
+        "To add N macros, use --envelope-recipient-macro option N times."),
+     "NAME:VALUE"},
     {"header", 'h', 0, G_OPTION_ARG_CALLBACK, parse_header_arg,
      N_("Add a header. To add n headers, use --header option n times."),
      "NAME:VALUE"},
@@ -1567,6 +1583,7 @@ pre_option_parse (GOptionContext *option_context,
     connect_macros = macros_new();
     helo_macros = macros_new();
     envelope_from_macros = macros_new();
+    envelope_recipient_macros = macros_new();
 
     return TRUE;
 }
@@ -1619,11 +1636,21 @@ apply_options_to_envelope_from_macros (void)
 }
 
 static void
+apply_options_to_envelope_recipient_macros (void)
+{
+    add_macro_values(envelope_recipient_macros,
+                     "{rcpt_mailer}", "rcpt_mailer",
+                     "{rcpt_host}", "rcpt_host",
+                     NULL);
+}
+
+static void
 apply_options_to_macros (void)
 {
     apply_options_to_connect_macros();
     apply_options_to_helo_macros();
     apply_options_to_envelope_from_macros();
+    apply_options_to_envelope_recipient_macros();
 }
 
 static gboolean
@@ -1685,6 +1712,8 @@ free_option_values (void)
         g_hash_table_unref(helo_macros);
     if (envelope_from_macros)
         g_hash_table_unref(envelope_from_macros);
+    if (envelope_recipient_macros)
+        g_hash_table_unref(envelope_recipient_macros);
 }
 
 static void
