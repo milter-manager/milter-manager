@@ -91,7 +91,8 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
 : --connect-macro=NAME:VALUE
 
    xxfi_connect()コールバック時に送信するマクロを追加します。
-   マクロの名前はNAMEで値はVALUEになります。
+   マクロの名前はNAMEで値はVALUEになります。複数のマクロを設
+   定する場合はこのオプションを複数指定します。
 
    xxfi_connect()コールバック時にclient_connectionsという名
    前で値が1のマクロを送信したい場合は以下のように指定します。
@@ -107,7 +108,8 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
 : --helo-macro=NAME:VALUE
 
    xxfi_helo()コールバック時に送信するマクロを追加します。
-   マクロの名前はNAMEで値はVALUEになります。
+   マクロの名前はNAMEで値はVALUEになります。複数のマクロを設
+   定する場合はこのオプションを複数指定します。
 
    xxfi_helo()コールバック時にclient_ptrという名
    前で値がunknownのマクロを送信したい場合は以下のように指定します。

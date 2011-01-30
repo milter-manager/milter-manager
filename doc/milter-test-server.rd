@@ -90,7 +90,8 @@ automated unit tests.
 : --connect-macro=NAME:VALUE
 
    Adds a macro that is sent on xxfi_connect() callback. The
-   macro has NAME name and VALUE value.
+   macro has NAME name and VALUE value. This option can be
+   specified N-times for N additional macros.
 
    Here is an example that a macro that has
    "client_connections" name and "1" value is sent on
@@ -107,7 +108,8 @@ automated unit tests.
 : --helo-macro=NAME:VALUE
 
    Adds a macro that is sent on xxfi_helo() callback. The
-   macro has NAME name and VALUE value.
+   macro has NAME name and VALUE value. This option can be
+   specified N-times for N additional macros.
 
    Here is an example that a macro that has
    "client_ptr" name and "unknown" value is sent on
