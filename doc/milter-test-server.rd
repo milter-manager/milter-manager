@@ -104,6 +104,17 @@ automated unit tests.
 
     The FQDN is passed to milter's xxfi_helo() callback.
 
+: --helo-macro=NAME:VALUE
+
+   Adds a macro that is sent on xxfi_helo() callback. The
+   macro has NAME name and VALUE value.
+
+   Here is an example that a macro that has
+   "client_ptr" name and "unknown" value is sent on
+   xxfi_helo() callback:
+
+     --helo-macro client_ptr:unknown
+
 : --from=FROM
 
     Uses FROM for 'MAIL FROM' SMTP command.

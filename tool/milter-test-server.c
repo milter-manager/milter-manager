@@ -49,6 +49,7 @@ static struct sockaddr *connect_address = NULL;
 static socklen_t connect_address_length = 0;
 static GHashTable *connect_macros = NULL;
 static gchar *helo_host = NULL;
+static GHashTable *helo_macros = NULL;
 static gchar *envelope_from = NULL;
 static gchar **recipients = NULL;
 static gchar **body_chunks = NULL;
@@ -170,13 +171,8 @@ set_macros_for_connect (MilterProtocolAgent *agent)
 static void
 set_macros_for_helo (MilterProtocolAgent *agent)
 {
-    milter_protocol_agent_set_macros(agent, MILTER_COMMAND_HELO,
-                                     "{tls_version}", "0",
-                                     "{cipher}", "0",
-                                     "{cipher_bits}", "0",
-                                     "{cert_subject}", "cert_subject",
-                                     "{cert_issuer}", "cert_issuer",
-                                     NULL);
+    milter_protocol_agent_set_macros_hash_table(agent, MILTER_COMMAND_HELO,
+                                                helo_macros);
 }
 
 static void
@@ -1019,10 +1015,11 @@ parse_connect_address_arg (const gchar *option_name,
 }
 
 static gboolean
-parse_connect_macro_arg (const gchar *option_name,
-                         const gchar *value,
-                         gpointer data,
-                         GError **error)
+parse_macro_arg (GHashTable *macros,
+                 const gchar *option_name,
+                 const gchar *value,
+                 gpointer data,
+                 GError **error)
 {
     gboolean success = TRUE;
     gchar **macro;
@@ -1036,13 +1033,29 @@ parse_connect_macro_arg (const gchar *option_name,
                     value);
         success = FALSE;
     } else {
-        g_hash_table_insert(connect_macros,
-                            g_strdup(macro[0]),
-                            g_strdup(macro[1]));
+        g_hash_table_insert(macros, g_strdup(macro[0]), g_strdup(macro[1]));
     }
     g_strfreev(macro);
 
     return success;
+}
+
+static gboolean
+parse_connect_macro_arg (const gchar *option_name,
+                         const gchar *value,
+                         gpointer data,
+                         GError **error)
+{
+    return parse_macro_arg(connect_macros, option_name, value, data, error);
+}
+
+static gboolean
+parse_helo_macro_arg (const gchar *option_name,
+                      const gchar *value,
+                      gpointer data,
+                      GError **error)
+{
+    return parse_macro_arg(helo_macros, option_name, value, data, error);
 }
 
 static gboolean
@@ -1359,6 +1372,9 @@ static const GOptionEntry option_entries[] =
      "NAME:VALUE"},
     {"helo-fqdn", 0, 0, G_OPTION_ARG_STRING, &helo_host,
      N_("Use FQDN for HELO/EHLO command"), "FQDN"},
+    {"helo-macro", 0, 0, G_OPTION_ARG_CALLBACK, parse_helo_macro_arg,
+     N_("Add a macro that has NAME name and VALUE value on helo."),
+     "NAME:VALUE"},
     {"from", 'f', 0, G_OPTION_ARG_STRING, &envelope_from,
      N_("Use a sender address"), "FROM"},
     {"recipient", 'r', 0, G_OPTION_ARG_STRING_ARRAY, &recipients,
@@ -1537,12 +1553,13 @@ pre_option_parse (GOptionContext *option_context,
     use_color = milter_utils_guess_console_color_usability();
 
     connect_macros = macros_new();
+    helo_macros = macros_new();
 
     return TRUE;
 }
 
 static void
-apply_options_to_macros_connect (void)
+apply_options_to_connect_macros (void)
 {
     add_macro_values(connect_macros,
                      "{daemon_name}", g_get_prgname(),
@@ -1553,9 +1570,22 @@ apply_options_to_macros_connect (void)
 }
 
 static void
+apply_options_to_helo_macros (void)
+{
+    add_macro_values(helo_macros,
+                     "{tls_version}", "0",
+                     "{cipher}", "0",
+                     "{cipher_bits}", "0",
+                     "{cert_subject}", "cert_subject",
+                     "{cert_issuer}", "cert_issuer",
+                     NULL);
+}
+
+static void
 apply_options_to_macros (void)
 {
-    apply_options_to_macros_connect();
+    apply_options_to_connect_macros();
+    apply_options_to_helo_macros();
 }
 
 static gboolean

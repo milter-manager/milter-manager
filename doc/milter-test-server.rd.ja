@@ -104,6 +104,16 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
 
     このfqdnはmilterのxxfi_helo()コールバックに渡ります。
 
+: --helo-macro=NAME:VALUE
+
+   xxfi_helo()コールバック時に送信するマクロを追加します。
+   マクロの名前はNAMEで値はVALUEになります。
+
+   xxfi_helo()コールバック時にclient_ptrという名
+   前で値がunknownのマクロを送信したい場合は以下のように指定します。
+
+     --helo-macro client_ptr:unknown
+
 : --from=FROM
 
     MAIL FROM時の引数としてFROMを使用します。

@@ -2137,6 +2137,33 @@ data_macro (void)
                              NULL),
         "--connect-macro client_connections:10");
 
+    ADD("helo",
+        gcut_list_string_new("command:connect",
+                             "daemon_name", "milter-test-server",
+                             "if_addr", "127.0.0.1",
+                             "if_name", "localhost",
+                             "j", "mail.example.com",
+                             "command:helo",
+                             "cert_issuer", "cert_issuer",
+                             "cert_subject", "cert_subject",
+                             "cipher", "0",
+                             "cipher_bits", "0",
+                             "client_ptr", "unknown",
+                             "tls_version", "0",
+                             "command:envelope-from",
+                             "i", "i",
+                             "mail_addr", "mail_addr",
+                             "mail_host", "mail_host",
+                             "mail_mailer", "mail_mailer",
+                             "command:envelope-recipient",
+                             "rcpt_addr", "<receiver@example.org>",
+                             "rcpt_host", "rcpt_host",
+                             "rcpt_mailer", "rcpt_mailer",
+                             "command:end-of-message",
+                             "msg-id", "msg-id",
+                             NULL),
+        "--helo-macro client_ptr:unknown");
+
 #undef ADD
 }
 
