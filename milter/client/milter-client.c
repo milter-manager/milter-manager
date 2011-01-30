@@ -1917,7 +1917,7 @@ milter_client_run (MilterClient *client, GError **error)
         }
 
         if (use_accept_loop) {
-            miler_debug("[client][single-thread][accept-loop]");
+            milter_debug("[client][single-thread][accept-loop]");
             if (!priv->accept_loop)
                 priv->accept_loop = milter_client_create_event_loop(client,
                                                                     FALSE);
@@ -1929,7 +1929,7 @@ milter_client_run (MilterClient *client, GError **error)
             }
             success = single_thread_start_accept(client, error);
         } else {
-            miler_debug("[client][single-thread][single-loop]");
+            milter_debug("[client][single-thread][single-loop]");
             success = single_thread_single_loop_run(client, error);
         }
     }
