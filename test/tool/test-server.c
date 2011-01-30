@@ -561,14 +561,19 @@ setup_server (const gchar *spec, const gchar *option_string)
     g_array_append_val(command, spec);
 
     if (option_string) {
-        gchar **options;
-        gint i;
+        gint i, argc;
+        gchar **argv;
+        GError *error = NULL;
 
-        options = g_strsplit(option_string, " ", -1);
-        for (i = 0; i < g_strv_length(options); i++) {
-            g_array_append_val(command, options[i]);
+        if (!g_shell_parse_argv(option_string, &argc, &argv, &error)) {
+            gcut_assert_error(error);
         }
-        g_free(options);
+        for (i = 0; i < argc; i++) {
+            gchar *arg;
+            arg = g_strdup(argv[i]);
+            g_array_append_val(command, arg);
+        }
+        g_strfreev(argv);
     }
 
     server = gcut_egg_new_array(command);
@@ -2077,8 +2082,7 @@ data_macro (void)
     gcut_add_datum(label,                                       \
                    "expected", G_TYPE_POINTER, expected,        \
                    gcut_list_string_free,                       \
-                   "arguments", G_TYPE_POINTER, arguments,      \
-                   gcut_list_string_free,                       \
+                   "arguments", G_TYPE_STRING, arguments,       \
                    NULL)
 
     ADD("default",
@@ -2086,7 +2090,7 @@ data_macro (void)
                              "daemon_name", "milter-test-server",
                              "if_addr", "127.0.0.1",
                              "if_name", "localhost",
-                             "j", "milter-test-server",
+                             "j", "mail.example.com",
                              "command:helo",
                              "cert_issuer", "cert_issuer",
                              "cert_subject", "cert_subject",
@@ -2107,6 +2111,33 @@ data_macro (void)
                              NULL),
         NULL);
 
+    ADD("connect",
+        gcut_list_string_new("command:connect",
+                             "client_connections", "10",
+                             "daemon_name", "milter-test-server",
+                             "if_addr", "127.0.0.1",
+                             "if_name", "localhost",
+                             "j", "mail.example.com",
+                             "command:helo",
+                             "cert_issuer", "cert_issuer",
+                             "cert_subject", "cert_subject",
+                             "cipher", "0",
+                             "cipher_bits", "0",
+                             "tls_version", "0",
+                             "command:envelope-from",
+                             "i", "i",
+                             "mail_addr", "mail_addr",
+                             "mail_host", "mail_host",
+                             "mail_mailer", "mail_mailer",
+                             "command:envelope-recipient",
+                             "rcpt_addr", "<receiver@example.org>",
+                             "rcpt_host", "rcpt_host",
+                             "rcpt_mailer", "rcpt_mailer",
+                             "command:end-of-message",
+                             "msg-id", "msg-id",
+                             NULL),
+        "--connect-macro client_connections:10");
+
 #undef ADD
 }
 
@@ -2114,17 +2145,10 @@ void
 test_macro (gconstpointer data)
 {
     GError *error = NULL;
-    const GList *node;
 
     setup_test_client("inet:9999@localhost", NULL);
-    setup_server("inet:9999@localhost", NULL);
-    for (node = gcut_data_get_pointer(data, "arguments");
-         node;
-         node = g_list_next(node)) {
-        gchar *argument;
-        argument = g_strdup(node->data);
-        g_array_append_val(command, argument);
-    }
+    setup_server("inet:9999@localhost",
+                 gcut_data_get_pointer(data, "arguments"));
 
     gcut_egg_hatch(server, &error);
     gcut_assert_error(error);

@@ -67,6 +67,16 @@ automated unit tests.
      * inet6:10025@localhost
      * inet6:10025@[::1]
 
+: --connect-macro=NAME:VALUE
+
+   Adds a macro that is sent on connect. The macro has NAME
+   name and VALUE value.
+
+   Here is an example that a macro that has
+   "client_connections" name and "1" value is sent on connect:
+
+     --connect-macro client_connections:1
+
 : --negotiate-version=VERSION
 
     Uses VERSION as milter protocol version sent to milter.

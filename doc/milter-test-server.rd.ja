@@ -66,6 +66,16 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
      * inet6:10025@localhost
      * inet6:10025@[::1]
 
+: --connect-macro=NAME:VALUE
+
+   connect時に送信するマクロを追加します。マクロの名前はNAME
+   で値はVALUEになります。
+
+   connect時にclient_connectionsという名前で値が1のマクロを
+   送信したい場合は以下のように指定します。
+
+     --connect-macro client_connections:1
+
 : --negotiate-version=VERSION
 
     クライアントへ送信するmilterプロトコルのバージョンとして

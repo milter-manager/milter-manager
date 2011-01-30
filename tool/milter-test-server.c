@@ -47,6 +47,7 @@ static gint n_threads = 0;
 static gchar *connect_host = NULL;
 static struct sockaddr *connect_address = NULL;
 static socklen_t connect_address_length = 0;
+static GHashTable *connect_macros = NULL;
 static gchar *helo_host = NULL;
 static gchar *envelope_from = NULL;
 static gchar **recipients = NULL;
@@ -162,12 +163,8 @@ set_macro (gpointer key, gpointer value, gpointer user_data)
 static void
 set_macros_for_connect (MilterProtocolAgent *agent)
 {
-    milter_protocol_agent_set_macros(agent, MILTER_COMMAND_CONNECT,
-                                     "{daemon_name}", g_get_prgname(),
-                                     "{if_name}", "localhost",
-                                     "{if_addr}", "127.0.0.1",
-                                     "j", "milter-test-server",
-                                     NULL);
+    milter_protocol_agent_set_macros_hash_table(agent, MILTER_COMMAND_CONNECT,
+                                                connect_macros);
 }
 
 static void
@@ -1022,6 +1019,33 @@ parse_connect_address_arg (const gchar *option_name,
 }
 
 static gboolean
+parse_connect_macro_arg (const gchar *option_name,
+                         const gchar *value,
+                         gpointer data,
+                         GError **error)
+{
+    gboolean success = TRUE;
+    gchar **macro;
+
+    macro = g_strsplit(value, ":", 2);
+    if (!macro[1]) {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    "macro name and value delimiter ':' doesn't exist: <%s>",
+                    value);
+        success = FALSE;
+    } else {
+        g_hash_table_insert(connect_macros,
+                            g_strdup(macro[0]),
+                            g_strdup(macro[1]));
+    }
+    g_strfreev(macro);
+
+    return success;
+}
+
+static gboolean
 parse_header_arg (const gchar *option_name,
                   const gchar *value,
                   gpointer data,
@@ -1208,6 +1232,7 @@ parse_mail_contents (const gchar *contents, GError **error)
                                   body_string->len - strlen("\r\n")));
     }
     g_string_free(body_string, TRUE);
+    g_ptr_array_add(chunks, NULL);
     body_chunks = (gchar **)g_ptr_array_free(chunks, FALSE);
 
     if (recipient_list) {
@@ -1329,6 +1354,9 @@ static const GOptionEntry option_entries[] =
      N_("Use SPEC for address on connect. "
         "(unix:PATH|inet:PORT[@HOST]|inet6:PORT[@HOST])"),
      "SPEC"},
+    {"connect-macro", 0, 0, G_OPTION_ARG_CALLBACK, parse_connect_macro_arg,
+     N_("Add a macro that has NAME name and VALUE value on connect."),
+     "NAME:VALUE"},
     {"helo-fqdn", 0, 0, G_OPTION_ARG_STRING, &helo_host,
      N_("Use FQDN for HELO/EHLO command"), "FQDN"},
     {"from", 'f', 0, G_OPTION_ARG_STRING, &envelope_from,
@@ -1476,6 +1504,29 @@ free_process_data (ProcessData *data)
         g_error_free(data->error);
 }
 
+static void
+add_macro_values (GHashTable *macros, const gchar *name, ...)
+{
+    va_list args;
+
+    va_start(args, name);
+    while (name) {
+        const gchar *value;
+
+        value = va_arg(args, const gchar *);
+        g_hash_table_insert(macros, g_strdup(name), g_strdup(value));
+
+        name = va_arg(args, const gchar *);
+    }
+    va_end(args);
+}
+
+static GHashTable *
+macros_new (void)
+{
+    return g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
+}
+
 static gboolean
 pre_option_parse (GOptionContext *option_context,
                   GOptionGroup *option_group,
@@ -1485,7 +1536,26 @@ pre_option_parse (GOptionContext *option_context,
     option_headers = milter_headers_new();
     use_color = milter_utils_guess_console_color_usability();
 
+    connect_macros = macros_new();
+
     return TRUE;
+}
+
+static void
+apply_options_to_macros_connect (void)
+{
+    add_macro_values(connect_macros,
+                     "{daemon_name}", g_get_prgname(),
+                     "{if_name}", "localhost",
+                     "{if_addr}", "127.0.0.1",
+                     "j", "mail.example.com",
+                     NULL);
+}
+
+static void
+apply_options_to_macros (void)
+{
+    apply_options_to_macros_connect();
 }
 
 static gboolean
@@ -1529,6 +1599,8 @@ post_option_parse (GOptionContext *option_context,
             "La de da de da 4.";
         body_chunks = g_strsplit(body, ",", -1);
     }
+
+    apply_options_to_macros();
 
     return TRUE;
 }
