@@ -89,6 +89,7 @@ static gint n_quits;
 static gint n_unknowns;
 
 static GHashTable *actual_defined_macros;
+static GList *actual_defined_macros_list;
 static gchar *actual_connect_host;
 static gchar *actual_connect_address;
 static gchar *actual_helo_fqdn;
@@ -141,25 +142,67 @@ cb_negotiate (MilterCommandDecoder *decoder, MilterOption *option,
     const gchar *packet;
     gsize packet_size;
     MilterOption *reply_option;
+    MilterMacrosRequests *macros_requests;
 
-    reply_option = milter_option_new(6, test_data->actions, test_data->steps);
+    if (test_data) {
+        reply_option = milter_option_new(6,
+                                         test_data->actions,
+                                         test_data->steps);
+        macros_requests = test_data->macros_requests;
+        g_object_ref(macros_requests);
+    } else {
+        reply_option = milter_option_copy(option);
+        milter_option_remove_step(reply_option, MILTER_STEP_NO_MASK);
+        macros_requests = milter_macros_requests_new();
+    }
     milter_reply_encoder_encode_negotiate(encoder,
                                           &packet, &packet_size,
                                           reply_option,
-                                          test_data->macros_requests);
+                                          macros_requests);
     write_data(packet, packet_size);
     g_object_unref(reply_option);
+    g_object_unref(macros_requests);
 
     n_negotiates++;
 }
 
 static void
-cb_define_macro (MilterDecoder *decoder, MilterCommand context,
+append_to_actual_defined_macros_list (MilterCommand command,
+                                      GHashTable *macros)
+{
+    gchar *command_nick_name;
+    GList *keys, *node;
+
+    command_nick_name = milter_utils_get_enum_nick_name(MILTER_TYPE_COMMAND,
+                                                        command);
+    actual_defined_macros_list =
+        g_list_append(actual_defined_macros_list,
+                      g_strdup_printf("command:%s", command_nick_name));
+    g_free(command_nick_name);
+
+    keys = g_hash_table_get_keys(macros);
+    keys = g_list_sort(keys, (GCompareFunc)strcmp);
+    for (node = keys; node; node = g_list_next(node)) {
+        const gchar *key = node->data;
+
+        actual_defined_macros_list =
+            g_list_append(actual_defined_macros_list, g_strdup(key));
+        actual_defined_macros_list =
+            g_list_append(actual_defined_macros_list,
+                          g_strdup(g_hash_table_lookup(macros, key)));
+    }
+    g_list_free(keys);
+}
+
+static void
+cb_define_macro (MilterDecoder *decoder, MilterCommand command,
                  GHashTable *macros, gpointer user_data)
 {
     g_hash_table_replace(actual_defined_macros,
-                         GINT_TO_POINTER(context),
+                         GINT_TO_POINTER(command),
                          g_hash_table_ref(macros));
+
+    append_to_actual_defined_macros_list(command, macros);
 
     n_define_macros++;
 }
@@ -171,9 +214,11 @@ send_reply (MilterCommand command, TestData *test_data)
     gsize packet_size;
     MilterReply reply;
     gint additional_flag;
-    GList *reply_pair;
+    GList *reply_pair = NULL;
 
-    reply_pair = g_list_find(test_data->replies, GINT_TO_POINTER(command));
+    if (test_data)
+        reply_pair = g_list_find(test_data->replies, GINT_TO_POINTER(command));
+
     if (reply_pair) {
         GList *reply_value;
 
@@ -235,7 +280,7 @@ cb_connect (MilterCommandDecoder *decoder, const gchar *host_name,
             const struct sockaddr *address, socklen_t address_size,
             TestData *test_data)
 {
-    if (!(test_data->steps & MILTER_STEP_NO_REPLY_CONNECT))
+    if (!test_data || !(test_data->steps & MILTER_STEP_NO_REPLY_CONNECT))
         send_reply(MILTER_COMMAND_CONNECT, test_data);
 
     n_connects++;
@@ -246,7 +291,7 @@ cb_connect (MilterCommandDecoder *decoder, const gchar *host_name,
 static void
 cb_helo (MilterCommandDecoder *decoder, const gchar *fqdn, TestData *test_data)
 {
-    if (!(test_data->steps & MILTER_STEP_NO_REPLY_HELO))
+    if (!test_data || !(test_data->steps & MILTER_STEP_NO_REPLY_HELO))
         send_reply(MILTER_COMMAND_HELO, test_data);
 
     n_helos++;
@@ -257,7 +302,7 @@ static void
 cb_envelope_from (MilterCommandDecoder *decoder, const gchar *from,
                   TestData *test_data)
 {
-    if (!(test_data->steps & MILTER_STEP_NO_REPLY_ENVELOPE_FROM))
+    if (!test_data || !(test_data->steps & MILTER_STEP_NO_REPLY_ENVELOPE_FROM))
         send_reply(MILTER_COMMAND_ENVELOPE_FROM, test_data);
 
     n_envelope_froms++;
@@ -268,7 +313,8 @@ static void
 cb_envelope_recipient (MilterCommandDecoder *decoder, const gchar *to,
                        TestData *test_data)
 {
-    if (!(test_data->steps & MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT))
+    if (!test_data ||
+        !(test_data->steps & MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT))
         send_reply(MILTER_COMMAND_ENVELOPE_RECIPIENT, test_data);
 
     n_envelope_recipients++;
@@ -278,7 +324,7 @@ cb_envelope_recipient (MilterCommandDecoder *decoder, const gchar *to,
 static void
 cb_data (MilterCommandDecoder *decoder, TestData *test_data)
 {
-    if (!(test_data->steps & MILTER_STEP_NO_REPLY_DATA))
+    if (!test_data || !(test_data->steps & MILTER_STEP_NO_REPLY_DATA))
         send_reply(MILTER_COMMAND_DATA, test_data);
 
     n_datas++;
@@ -288,7 +334,7 @@ static void
 cb_header (MilterCommandDecoder *decoder, const gchar *name, const gchar *value,
            TestData *test_data)
 {
-    if (!(test_data->steps & MILTER_STEP_NO_REPLY_HEADER))
+    if (!test_data || !(test_data->steps & MILTER_STEP_NO_REPLY_HEADER))
         send_reply(MILTER_COMMAND_HEADER, test_data);
 
     n_headers++;
@@ -298,7 +344,7 @@ cb_header (MilterCommandDecoder *decoder, const gchar *name, const gchar *value,
 static void
 cb_end_of_header (MilterCommandDecoder *decoder, TestData *test_data)
 {
-    if (!(test_data->steps & MILTER_STEP_NO_REPLY_END_OF_HEADER))
+    if (!test_data || !(test_data->steps & MILTER_STEP_NO_REPLY_END_OF_HEADER))
         send_reply(MILTER_COMMAND_END_OF_HEADER, test_data);
 
     n_end_of_headers++;
@@ -308,7 +354,7 @@ static void
 cb_body (MilterCommandDecoder *decoder, const gchar *chunk, gsize size,
          TestData *test_data)
 {
-    if (!(test_data->steps & MILTER_STEP_NO_REPLY_BODY))
+    if (!test_data || !(test_data->steps & MILTER_STEP_NO_REPLY_BODY))
         send_reply(MILTER_COMMAND_BODY, test_data);
 
     n_bodies++;
@@ -319,7 +365,7 @@ static void
 cb_end_of_message (MilterCommandDecoder *decoder, const gchar *chunk, gsize size,
                    TestData *test_data)
 {
-    if (test_data->action_func)
+    if (test_data && test_data->action_func)
         test_data->action_func();
 
     send_reply(MILTER_COMMAND_END_OF_MESSAGE, test_data);
@@ -427,6 +473,7 @@ cut_setup (void)
         g_hash_table_new_full(g_direct_hash, g_direct_equal,
                               NULL,
                               (GDestroyNotify)g_hash_table_unref);
+    actual_defined_macros_list = NULL;
     exit_status = EXIT_FAILURE;
 }
 
@@ -469,6 +516,10 @@ cut_teardown (void)
         g_string_free(actual_body_string, TRUE);
     if (actual_defined_macros)
         g_hash_table_unref(actual_defined_macros);
+    if (actual_defined_macros_list) {
+        g_list_foreach(actual_defined_macros_list, (GFunc)g_free, NULL);
+        g_list_free(actual_defined_macros_list);
+    }
 }
 
 static void
@@ -2019,194 +2070,42 @@ test_end_of_message_action (gconstpointer data)
     action_test_data->assert_func();
 }
 
-typedef void (*MacroTestAssertFunc) (GHashTable *expected_macros_table);
-
-typedef struct _MacroTestData
-{
-    TestData *test_data;
-    GHashTable *expected_macros_table;
-    MacroTestAssertFunc assert_func;
-} MacroTestData;
-
-static MacroTestData *
-macro_test_data_new (GHashTable *expected_macros_table,
-                     MilterMacrosRequests *macros_requests,
-                     MacroTestAssertFunc assert_func)
-{
-    MacroTestData *test_data;
-
-    test_data = g_new0(MacroTestData, 1);
-    test_data->test_data = result_test_data_new(NULL,
-                                                MILTER_ACTION_NONE,
-                                                MILTER_STEP_NONE,
-                                                MILTER_STATUS_NOT_CHANGE,
-                                                NULL,
-                                                NULL,
-                                                macros_requests,
-                                                NULL);
-    test_data->expected_macros_table = expected_macros_table;
-    test_data->assert_func = assert_func;
-
-    return test_data;
-}
-
-static void
-macro_test_data_free (MacroTestData *data)
-{
-    result_test_data_free(data->test_data);
-    g_hash_table_unref(data->expected_macros_table);
-    g_free(data);
-}
-
-static GHashTable *
-create_macro_hash_table (const gchar *first_key, ...)
-{
-    va_list var_args;
-    GHashTable *macros;
-    const gchar *key;
-
-    macros = g_hash_table_new_full(g_str_hash, g_str_equal,
-                                   g_free, g_free);
-
-    va_start(var_args, first_key);
-    key = first_key;
-    while (key) {
-        const gchar *value;
-        value = va_arg(var_args, gchar *);
-        g_hash_table_insert(macros, g_strdup(key), g_strdup(value));
-        key = va_arg(var_args, gchar *);
-    }
-    va_end(var_args);
-
-    return macros;
-}
-
-static GHashTable *
-create_expected_default_macros_table (void)
-{
-    GHashTable *expected_macros_table;
-    expected_macros_table = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-                                                  NULL,
-                                                  (GDestroyNotify)g_hash_table_unref);
-    g_hash_table_insert(expected_macros_table,
-                        GINT_TO_POINTER(MILTER_COMMAND_CONNECT),
-                        create_macro_hash_table("daemon_name", "milter-test-server",
-                                                "if_name", "localhost",
-                                                "if_addr", "127.0.0.1",
-                                                "j", "milter-test-server",
-                                                NULL));
-    g_hash_table_insert(expected_macros_table,
-                        GINT_TO_POINTER(MILTER_COMMAND_HELO),
-                        create_macro_hash_table("tls_version", "0",
-                                                "cipher", "0",
-                                                "cipher_bits", "0",
-                                                "cert_subject", "cert_subject",
-                                                "cert_issuer", "cert_issuer",
-                                                NULL));
-    g_hash_table_insert(expected_macros_table,
-                        GINT_TO_POINTER(MILTER_COMMAND_ENVELOPE_FROM),
-                        create_macro_hash_table("i", "i",
-                                                "mail_mailer", "mail_mailer",
-                                                "mail_host", "mail_host",
-                                                "mail_addr", "mail_addr",
-                                                NULL));
-    g_hash_table_insert(expected_macros_table,
-                        GINT_TO_POINTER(MILTER_COMMAND_ENVELOPE_RECIPIENT),
-                        create_macro_hash_table("rcpt_mailer", "rcpt_mailer",
-                                                "rcpt_host", "rcpt_host",
-                                                "rcpt_addr", "<receiver@example.org>",
-                                                NULL));
-    g_hash_table_insert(expected_macros_table,
-                        GINT_TO_POINTER(MILTER_COMMAND_END_OF_MESSAGE),
-                        create_macro_hash_table("msg-id", "msg-id",
-                                                NULL));
-    return expected_macros_table;
-}
-
-static GHashTable *
-create_expected_connect_macros_table (void)
-{
-    GHashTable *expected_macros_table;
-    GHashTable *connect_macros;
-
-    expected_macros_table = create_expected_default_macros_table();
-    connect_macros = g_hash_table_lookup(expected_macros_table,
-                                         GINT_TO_POINTER(MILTER_COMMAND_CONNECT));
-
-    g_hash_table_insert(connect_macros,
-                        g_strdup("macro_name"),
-                        g_strdup("{macro_name}"));
-
-    return expected_macros_table;
-}
-
-static void
-assert_each_macros (gpointer key, gpointer value, gpointer user_data)
-{
-    GHashTable *actual_macros = value;
-    GHashTable *expected_macros_table = user_data;
-    GHashTable *expected_macros;
-
-    expected_macros = g_hash_table_lookup(expected_macros_table, key);
-    cut_assert_not_null(expected_macros);
-
-    gcut_assert_equal_hash_table_string_string(expected_macros,
-                                               actual_macros);
-}
-
-static void
-default_macro_test_assert (GHashTable *expected_macros_table)
-{
-    cut_trace(g_hash_table_foreach(actual_defined_macros,
-              (GHFunc)assert_each_macros, expected_macros_table));
-}
-
-static MilterMacrosRequests *
-create_macros_requests (MilterCommand first_command, ...)
-{
-    va_list var_args;
-    MilterCommand command;
-    MilterMacrosRequests *macros_requests;
-
-    macros_requests = milter_macros_requests_new();
-
-    va_start(var_args, first_command);
-    command = first_command;
-    while (command) {
-        gchar **symbols;
-        symbols = va_arg(var_args, gchar**);
-        milter_macros_requests_set_symbols_string_array(macros_requests,
-                                                        command,
-                                                        (const gchar**)symbols);
-        command = va_arg(var_args, gint);
-    }
-    va_end(var_args);
-
-    return macros_requests;
-}
-
 void
 data_macro (void)
 {
-    const gchar *connect_macros[] = {"{macro_name}", NULL};
-
-#define ADD(label, expected_macros_table, macros_requests, assert_func) \
-    cut_add_data(label,                                                 \
-                 macro_test_data_new(expected_macros_table,             \
-                                     macros_requests,                   \
-                                     assert_func),                      \
-                 macro_test_data_free,                                  \
-                 NULL)
+#define ADD(label, expected, arguments)                         \
+    gcut_add_datum(label,                                       \
+                   "expected", G_TYPE_POINTER, expected,        \
+                   gcut_list_string_free,                       \
+                   "arguments", G_TYPE_POINTER, arguments,      \
+                   gcut_list_string_free,                       \
+                   NULL)
 
     ADD("default",
-        create_expected_default_macros_table(),
-        NULL,
-        default_macro_test_assert);
-    ADD("connect macro",
-        create_expected_connect_macros_table(),
-        create_macros_requests(MILTER_COMMAND_CONNECT,
-                               connect_macros, NULL),
-        default_macro_test_assert);
+        gcut_list_string_new("command:connect",
+                             "daemon_name", "milter-test-server",
+                             "if_addr", "127.0.0.1",
+                             "if_name", "localhost",
+                             "j", "milter-test-server",
+                             "command:helo",
+                             "cert_issuer", "cert_issuer",
+                             "cert_subject", "cert_subject",
+                             "cipher", "0",
+                             "cipher_bits", "0",
+                             "tls_version", "0",
+                             "command:envelope-from",
+                             "i", "i",
+                             "mail_addr", "mail_addr",
+                             "mail_host", "mail_host",
+                             "mail_mailer", "mail_mailer",
+                             "command:envelope-recipient",
+                             "rcpt_addr", "<receiver@example.org>",
+                             "rcpt_host", "rcpt_host",
+                             "rcpt_mailer", "rcpt_mailer",
+                             "command:end-of-message",
+                             "msg-id", "msg-id",
+                             NULL),
+        NULL);
 
 #undef ADD
 }
@@ -2215,10 +2114,17 @@ void
 test_macro (gconstpointer data)
 {
     GError *error = NULL;
-    MacroTestData *macro_test_data = (MacroTestData *)data;
+    const GList *node;
 
-    setup_test_client("inet:9999@localhost", macro_test_data->test_data);
+    setup_test_client("inet:9999@localhost", NULL);
     setup_server("inet:9999@localhost", NULL);
+    for (node = gcut_data_get_pointer(data, "arguments");
+         node;
+         node = g_list_next(node)) {
+        gchar *argument;
+        argument = g_strdup(node->data);
+        g_array_append_val(command, argument);
+    }
 
     gcut_egg_hatch(server, &error);
     gcut_assert_error(error);
@@ -2227,10 +2133,11 @@ test_macro (gconstpointer data)
     cut_assert_equal_int(EXIT_SUCCESS, exit_status);
 
     gcut_assert_equal_enum(MILTER_TYPE_STATUS,
-                           macro_test_data->test_data->expected_status,
+                           MILTER_STATUS_NOT_CHANGE,
                            actual_status);
 
-    macro_test_data->assert_func(macro_test_data->expected_macros_table);
+    gcut_assert_equal_list_string(gcut_data_get_pointer(data, "expected"),
+                                  actual_defined_macros_list);
 }
 
 typedef struct _InvalidSpecTestData
