@@ -51,6 +51,7 @@ static GHashTable *connect_macros = NULL;
 static gchar *helo_host = NULL;
 static GHashTable *helo_macros = NULL;
 static gchar *envelope_from = NULL;
+static GHashTable *envelope_from_macros = NULL;
 static gchar **recipients = NULL;
 static gchar **body_chunks = NULL;
 static gchar *unknown_command = NULL;
@@ -178,25 +179,9 @@ set_macros_for_helo (MilterProtocolAgent *agent)
 static void
 set_macros_for_envelope_from (MilterProtocolAgent *agent)
 {
-    milter_protocol_agent_set_macros(agent, MILTER_COMMAND_ENVELOPE_FROM,
-                                     "i", "i",
-                                     "{mail_mailer}", "mail_mailer",
-                                     "{mail_host}", "mail_host",
-                                     "{mail_addr}", "mail_addr",
-                                     NULL);
-
-    if (authenticated_name)
-        milter_protocol_agent_set_macros(agent, MILTER_COMMAND_ENVELOPE_FROM,
-                                         "{auth_authen}", authenticated_name,
-                                         NULL);
-    if (authenticated_type)
-        milter_protocol_agent_set_macros(agent, MILTER_COMMAND_ENVELOPE_FROM,
-                                         "{auth_type}", authenticated_type,
-                                         NULL);
-    if (authenticated_author)
-        milter_protocol_agent_set_macros(agent, MILTER_COMMAND_ENVELOPE_FROM,
-                                         "{auth_author}", authenticated_author,
-                                         NULL);
+    milter_protocol_agent_set_macros_hash_table(agent,
+                                                MILTER_COMMAND_ENVELOPE_FROM,
+                                                envelope_from_macros);
 }
 
 static void
@@ -1059,6 +1044,16 @@ parse_helo_macro_arg (const gchar *option_name,
 }
 
 static gboolean
+parse_envelope_from_macro_arg (const gchar *option_name,
+                               const gchar *value,
+                               gpointer data,
+                               GError **error)
+{
+    return parse_macro_arg(envelope_from_macros, option_name, value,
+                           data, error);
+}
+
+static gboolean
 parse_header_arg (const gchar *option_name,
                   const gchar *value,
                   gpointer data,
@@ -1368,17 +1363,25 @@ static const GOptionEntry option_entries[] =
         "(unix:PATH|inet:PORT[@HOST]|inet6:PORT[@HOST])"),
      "SPEC"},
     {"connect-macro", 0, 0, G_OPTION_ARG_CALLBACK, parse_connect_macro_arg,
-     N_("Add a macro that has NAME name and VALUE value on connect."),
+     N_("Add a macro that has NAME name and VALUE value on xxfi_connect(). "
+        "To add N macros, use --connect-macro option N times."),
      "NAME:VALUE"},
     {"helo-fqdn", 0, 0, G_OPTION_ARG_STRING, &helo_host,
      N_("Use FQDN for HELO/EHLO command"), "FQDN"},
     {"helo-macro", 0, 0, G_OPTION_ARG_CALLBACK, parse_helo_macro_arg,
-     N_("Add a macro that has NAME name and VALUE value on helo."),
+     N_("Add a macro that has NAME name and VALUE value on xxfi_helo(). "
+        "To add N macros, use --helo-macro option N times."),
      "NAME:VALUE"},
     {"from", 'f', 0, G_OPTION_ARG_STRING, &envelope_from,
-     N_("Use a sender address"), "FROM"},
+     N_("Use FROM as a sender address"), "FROM"},
+    {"envelope-from-macro", 0, 0, G_OPTION_ARG_CALLBACK,
+     parse_envelope_from_macro_arg,
+     N_("Add a macro that has NAME name and VALUE value on xxfi_envfrom(). "
+        "To add N macros, use --envelope-from-macro option N times."),
+     "NAME:VALUE"},
     {"recipient", 'r', 0, G_OPTION_ARG_STRING_ARRAY, &recipients,
-     N_("Add a recipient. To add n recipients, use --recipient option n times."),
+     N_("Add a recipient RECIPIENT. "
+        "To add N recipients, use --recipient option N times."),
      "RECIPIENT"},
     {"header", 'h', 0, G_OPTION_ARG_CALLBACK, parse_header_arg,
      N_("Add a header. To add n headers, use --header option n times."),
@@ -1554,6 +1557,7 @@ pre_option_parse (GOptionContext *option_context,
 
     connect_macros = macros_new();
     helo_macros = macros_new();
+    envelope_from_macros = macros_new();
 
     return TRUE;
 }
@@ -1582,10 +1586,35 @@ apply_options_to_helo_macros (void)
 }
 
 static void
+apply_options_to_envelope_from_macros (void)
+{
+    add_macro_values(envelope_from_macros,
+                     "i", "i",
+                     "{mail_mailer}", "mail_mailer",
+                     "{mail_host}", "mail_host",
+                     "{mail_addr}", "mail_addr",
+                     NULL);
+
+    if (authenticated_name)
+        add_macro_values(envelope_from_macros,
+                         "{auth_authen}", authenticated_name,
+                         NULL);
+    if (authenticated_type)
+        add_macro_values(envelope_from_macros,
+                         "{auth_type}", authenticated_type,
+                         NULL);
+    if (authenticated_author)
+        add_macro_values(envelope_from_macros,
+                         "{auth_author}", authenticated_author,
+                         NULL);
+}
+
+static void
 apply_options_to_macros (void)
 {
     apply_options_to_connect_macros();
     apply_options_to_helo_macros();
+    apply_options_to_envelope_from_macros();
 }
 
 static gboolean
@@ -1640,6 +1669,13 @@ free_option_values (void)
 {
     if (option_headers)
         g_object_unref(option_headers);
+
+    if (connect_macros)
+        g_hash_table_unref(connect_macros);
+    if (helo_macros)
+        g_hash_table_unref(helo_macros);
+    if (envelope_from_macros)
+        g_hash_table_unref(envelope_from_macros);
 }
 
 static void

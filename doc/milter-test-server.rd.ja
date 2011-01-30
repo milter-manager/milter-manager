@@ -122,6 +122,18 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
 
     このアドレスはmilterのxxfi_envfrom()コールバックに渡ります。
 
+: --envelope-from-macro=NAME:VALUE
+
+   xxfi_envfrom()コールバック時に送信するマクロを追加します。
+   マクロの名前はNAMEで値はVALUEになります。複数のマクロを設
+   定する場合はこのオプションを複数指定します。
+
+   xxfi_envfrom()コールバック時にclient_addrという名
+   前で値が192.168.0.1のマクロを送信したい場合は以下のように
+   指定します。
+
+     --envelope-from-macro client_addr:192.168.0.1
+
 : --recipient=RECIPIENT
 
     RCPT TO時の引数としてRECIPIENTを使用します。複数の宛先を

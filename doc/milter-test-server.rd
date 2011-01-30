@@ -123,6 +123,18 @@ automated unit tests.
 
     The address is passed to milter's xxfi_envfrom() callback.
 
+: --envelope-from-macro=NAME:VALUE
+
+   Adds a macro that is sent on xxfi_envfrom() callback. The
+   macro has NAME name and VALUE value. This option can be
+   specified N-times for N additional macros.
+
+   Here is an example that a macro that has
+   "client_addr" name and "192.168.0.1" value is sent on
+   xxfi_envfrom() callback:
+
+     --envelope-from-macro client_addr:192.168.0.1
+
 : --recipient=RECIPIENT
 
     Uses RECIPIENT for 'RCPT TO' SMTP command. If you want
