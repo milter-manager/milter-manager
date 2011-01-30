@@ -2106,7 +2106,7 @@ data_macro (void)
                              "rcpt_host", "rcpt_host",
                              "rcpt_mailer", "rcpt_mailer",
                              "command:end-of-message",
-                             "msg-id", "msg-id",
+                             "i", "message-id",
                              NULL),
         NULL);
 
@@ -2133,7 +2133,7 @@ data_macro (void)
                              "rcpt_host", "rcpt_host",
                              "rcpt_mailer", "rcpt_mailer",
                              "command:end-of-message",
-                             "msg-id", "msg-id",
+                             "i", "message-id",
                              NULL),
         "--connect-macro client_connections:10");
 
@@ -2160,7 +2160,7 @@ data_macro (void)
                              "rcpt_host", "rcpt_host",
                              "rcpt_mailer", "rcpt_mailer",
                              "command:end-of-message",
-                             "msg-id", "msg-id",
+                             "i", "message-id",
                              NULL),
         "--helo-macro client_ptr:unknown");
 
@@ -2188,7 +2188,7 @@ data_macro (void)
                              "rcpt_host", "rcpt_host",
                              "rcpt_mailer", "rcpt_mailer",
                              "command:end-of-message",
-                             "msg-id", "msg-id",
+                             "i", "message-id",
                              NULL),
         "--envelope-from-macro client_addr:192.168.0.3 "
         "--envelope-from-macro client_name:local-sender.example.net");
@@ -2216,7 +2216,7 @@ data_macro (void)
                              "rcpt_host", "rcpt_host",
                              "rcpt_mailer", "rcpt_mailer",
                              "command:end-of-message",
-                             "msg-id", "msg-id",
+                             "i", "message-id",
                              NULL),
         "--envelope-recipient-macro client_port:2929");
 
@@ -2244,7 +2244,7 @@ data_macro (void)
                              "command:data",
                              "i", "queue-id-2929",
                              "command:end-of-message",
-                             "msg-id", "msg-id",
+                             "i", "message-id",
                              NULL),
         "--data-macro i:queue-id-2929");
 
@@ -2272,9 +2272,36 @@ data_macro (void)
                              "command:end-of-header",
                              "n-headers", "100",
                              "command:end-of-message",
-                             "msg-id", "msg-id",
+                             "i", "message-id",
                              NULL),
         "--end-of-header-macro n-headers:100");
+
+    ADD("end-of-message",
+        gcut_list_string_new("command:connect",
+                             "daemon_name", "milter-test-server",
+                             "if_addr", "127.0.0.1",
+                             "if_name", "localhost",
+                             "j", "mail.example.com",
+                             "command:helo",
+                             "cert_issuer", "cert_issuer",
+                             "cert_subject", "cert_subject",
+                             "cipher", "0",
+                             "cipher_bits", "0",
+                             "tls_version", "0",
+                             "command:envelope-from",
+                             "i", "i",
+                             "mail_addr", "mail_addr",
+                             "mail_host", "mail_host",
+                             "mail_mailer", "mail_mailer",
+                             "command:envelope-recipient",
+                             "rcpt_addr", "<receiver@example.org>",
+                             "rcpt_host", "rcpt_host",
+                             "rcpt_mailer", "rcpt_mailer",
+                             "command:end-of-message",
+                             "elapsed", "0.29",
+                             "i", "message-id",
+                             NULL),
+        "--end-of-message-macro elapsed:0.29");
 
 #undef ADD
 }

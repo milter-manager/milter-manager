@@ -197,6 +197,18 @@ automated unit tests.
     The chunk is passed to milter's xxfi_body()
     callback. xxfi_body() is called for each chunk.
 
+: --end-of-message-macro=NAME:VALUE
+
+   Adds a macro that is sent on xxfi_eom() callback. The
+   macro has NAME name and VALUE value. This option can be
+   specified N-times for N additional macros.
+
+   Here is an example that a macro that has
+   "elapsed" name and "0.29" value is sent on
+   xxfi_eom() callback:
+
+     --end-of-message-macro elapsed:0.29
+
 : --unknown=COMMAND
 
     Uses COMMAND as unknown SMTP command.

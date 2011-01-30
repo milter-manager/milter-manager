@@ -199,6 +199,17 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
     まとまりが複数個ある場合はその分だけxxfi_body()が呼ばれま
     す。
 
+: --end-of-message-macro=NAME:VALUE
+
+   xxfi_eom()コールバック時に送信するマクロを追加します。
+   マクロの名前はNAMEで値はVALUEになります。複数のマクロを設
+   定する場合はこのオプションを複数指定します。
+
+   xxfi_eom()コールバック時にelapsedという名前で値が0.29の
+   マクロを送信したい場合は以下のように指定します。
+
+     --end-of-message-macro elapsed:0.29
+
 : --unknown=COMMAND
 
     未知のSMTPコマンドとしてCOMMANDを使います。

@@ -57,6 +57,7 @@ static GHashTable *envelope_recipient_macros = NULL;
 static GHashTable *data_macros = NULL;
 static GHashTable *end_of_header_macros = NULL;
 static gchar **body_chunks = NULL;
+static GHashTable *end_of_message_macros = NULL;
 static gchar *unknown_command = NULL;
 static gchar *authenticated_name = NULL;
 static gchar *authenticated_type = NULL;
@@ -229,9 +230,9 @@ set_macros_for_body (MilterProtocolAgent *agent)
 static void
 set_macros_for_end_of_message (MilterProtocolAgent *agent)
 {
-    milter_protocol_agent_set_macros(agent, MILTER_COMMAND_END_OF_MESSAGE,
-                                     "{msg-id}", "msg-id",
-                                     NULL);
+    milter_protocol_agent_set_macros_hash_table(agent,
+                                                MILTER_COMMAND_END_OF_MESSAGE,
+                                                end_of_message_macros);
 }
 
 static void
@@ -1117,6 +1118,16 @@ parse_end_of_header_macro_arg (const gchar *option_name,
 }
 
 static gboolean
+parse_end_of_message_macro_arg (const gchar *option_name,
+                                const gchar *value,
+                                gpointer data,
+                                GError **error)
+{
+    return parse_macro_arg(end_of_message_macros, option_name, value,
+                           data, error);
+}
+
+static gboolean
 set_envelope_from (const gchar *from)
 {
     if (envelope_from)
@@ -1450,6 +1461,11 @@ static const GOptionEntry option_entries[] =
     {"body", 'b', 0, G_OPTION_ARG_STRING_ARRAY, &body_chunks,
      N_("Add a body chunk. To add n body chunks, use --body option n times."),
      "CHUNK"},
+    {"end-of-message-macro", 0, 0, G_OPTION_ARG_CALLBACK,
+     parse_end_of_message_macro_arg,
+     N_("Add a macro that has NAME name and VALUE value on xxfi_eom(). "
+        "To add N macros, use --end-of-message-macro option N times."),
+     "NAME:VALUE"},
     {"unknown", 0, 0, G_OPTION_ARG_STRING, &unknown_command,
      N_("Use COMMAND for unknown SMTP command."), "COMMAND"},
     {"authenticated-name", 0, 0, G_OPTION_ARG_STRING, &authenticated_name,
@@ -1622,6 +1638,7 @@ pre_option_parse (GOptionContext *option_context,
     envelope_recipient_macros = macros_new();
     data_macros = macros_new();
     end_of_header_macros = macros_new();
+    end_of_message_macros = macros_new();
 
     return TRUE;
 }
@@ -1693,6 +1710,14 @@ apply_options_to_end_of_header_macros (void)
 }
 
 static void
+apply_options_to_end_of_message_macros (void)
+{
+    add_macro_values(end_of_message_macros,
+                     "i", "message-id",
+                     NULL);
+}
+
+static void
 apply_options_to_macros (void)
 {
     apply_options_to_connect_macros();
@@ -1701,6 +1726,7 @@ apply_options_to_macros (void)
     apply_options_to_envelope_recipient_macros();
     apply_options_to_data_macros();
     apply_options_to_end_of_header_macros();
+    apply_options_to_end_of_message_macros();
 }
 
 static gboolean
@@ -1768,6 +1794,8 @@ free_option_values (void)
         g_hash_table_unref(data_macros);
     if (end_of_header_macros)
         g_hash_table_unref(end_of_header_macros);
+    if (end_of_message_macros)
+        g_hash_table_unref(end_of_message_macros);
 }
 
 static void
