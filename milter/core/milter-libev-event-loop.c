@@ -309,12 +309,15 @@ watch_io (MilterEventLoop *loop,
           GIOFunc          function,
           gpointer         data)
 {
-    int fd = g_io_channel_unix_get_fd(channel);
+    int fd;
     struct io_callback_data *cb;
     MilterLibevEventLoopPrivate *priv;
 
+    fd = g_io_channel_unix_get_fd(channel);
+    if (fd == -1)
+        return 0;
+
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
-    if (fd == -1) return 0;
     cb = new_callback(io);
     cb->channel = channel;
     cb->function = function;
