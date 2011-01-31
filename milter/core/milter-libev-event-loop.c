@@ -139,6 +139,18 @@ dispose (GObject *object)
 }
 
 MilterEventLoop *
+milter_libev_event_loop_default (void)
+{
+    static MilterEventLoop *default_event_loop = NULL;
+
+    if (!default_event_loop) {
+        default_event_loop = milter_libev_event_loop_new();
+    }
+
+    return default_event_loop;
+}
+
+MilterEventLoop *
 milter_libev_event_loop_new (void)
 {
     return g_object_new(MILTER_TYPE_LIBEV_EVENT_LOOP,

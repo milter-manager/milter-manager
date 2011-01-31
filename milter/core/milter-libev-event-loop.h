@@ -47,6 +47,8 @@ struct _MilterLibevEventLoopClass
 
 GType                milter_libev_event_loop_get_type     (void) G_GNUC_CONST;
 
+MilterEventLoop     *milter_libev_event_loop_default      (void);
+
 MilterEventLoop     *milter_libev_event_loop_new          (void);
 
 
