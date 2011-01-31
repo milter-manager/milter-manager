@@ -235,8 +235,11 @@ feed (const gchar *packet, gsize packet_size)
     GError *error = NULL;
 
     milter_client_context_feed(context, packet, packet_size, &error);
-    if (!error)
+    if (!error) {
+        if (MILTER_IS_LIBEV_EVENT_LOOP(loop))
+            cut_omit("MilterLibevEventLoop doesn't support GCutStringIOChannel.");
         milter_test_pump_all_events(loop);
+    }
 
     return error;
 }
