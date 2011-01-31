@@ -194,9 +194,7 @@ set_property (GObject      *object,
     case PROP_EVENT_LOOP:
         if (priv->event_loop)
             g_object_unref(priv->event_loop);
-        priv->event_loop = g_value_get_object(value);
-        if (priv->event_loop)
-            g_object_ref(priv->event_loop);
+        priv->event_loop = g_value_dup_object(value);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
