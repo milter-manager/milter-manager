@@ -335,7 +335,7 @@ milter_utils_macro_stage_to_command (MilterMacroStage stage)
 
 void
 milter_utils_set_error_with_sub_error (GError **error,
-                                       GQuark domain, 
+                                       GQuark domain,
                                        gint error_code,
                                        GError *sub_error,
                                        const gchar *format,
