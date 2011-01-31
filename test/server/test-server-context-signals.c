@@ -414,6 +414,7 @@ cut_setup (void)
     loop = milter_test_event_loop_new();
 
     context = milter_server_context_new();
+    milter_server_context_set_name(context, "test-server-context-signals");
     milter_agent_set_event_loop(MILTER_AGENT(context), loop);
     setup_signals(context);
 
