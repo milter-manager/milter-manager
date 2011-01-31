@@ -206,6 +206,9 @@ feed (const gchar *packet, gsize packet_size)
         gcut_assert_error(error_in_callback);
     }
 
+    if (MILTER_IS_LIBEV_EVENT_LOOP(loop))
+        cut_omit("MilterLibevEventLoop doesn't support GCutStringIOChannel.");
+
     milter_test_pump_all_events(loop);
 
     return error;
