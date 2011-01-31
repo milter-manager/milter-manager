@@ -182,6 +182,9 @@ clear_watch_id (MilterReaderPrivate *priv)
     if (priv->channel_watch_id) {
         milter_event_loop_remove(priv->loop, priv->channel_watch_id);
         priv->channel_watch_id = 0;
+    }
+
+    if (priv->loop) {
         g_object_unref(priv->loop);
         priv->loop = NULL;
     }
@@ -255,6 +258,7 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     if (!keep_callback) {
         milter_debug("[%u] [reader][callback][removing] ...", priv->tag);
         priv->channel_watch_id = 0;
+        clear_watch_id(priv);
         finish(reader);
     }
 
