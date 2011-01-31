@@ -41,7 +41,8 @@ struct _MilterReaderPrivate
 {
     GIOChannel *io_channel;
     MilterEventLoop *loop;
-    guint channel_watch_id;
+    guint read_watch_id;
+    guint error_watch_id;
     gboolean processing;
     gboolean shutdown_requested;
     guint tag;
@@ -123,7 +124,8 @@ milter_reader_init (MilterReader *reader)
     priv = MILTER_READER_GET_PRIVATE(reader);
     priv->io_channel = NULL;
     priv->loop = NULL;
-    priv->channel_watch_id = 0;
+    priv->read_watch_id = 0;
+    priv->error_watch_id = 0;
     priv->processing = FALSE;
     priv->shutdown_requested = FALSE;
     priv->tag = 0;
@@ -179,9 +181,14 @@ read_from_channel (MilterReader *reader, GIOChannel *channel)
 static void
 clear_watch_id (MilterReaderPrivate *priv)
 {
-    if (priv->channel_watch_id) {
-        milter_event_loop_remove(priv->loop, priv->channel_watch_id);
-        priv->channel_watch_id = 0;
+    if (priv->read_watch_id) {
+        milter_event_loop_remove(priv->loop, priv->read_watch_id);
+        priv->read_watch_id = 0;
+    }
+
+    if (priv->error_watch_id) {
+        milter_event_loop_remove(priv->loop, priv->error_watch_id);
+        priv->error_watch_id = 0;
     }
 
     if (priv->loop) {
@@ -202,35 +209,61 @@ finish (MilterReader *reader)
 }
 
 static gboolean
-channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
+read_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 {
     MilterReaderPrivate *priv;
     MilterReader *reader = data;
     gboolean keep_callback = TRUE;
-    gboolean error_occurred = FALSE;
 
     priv = MILTER_READER_GET_PRIVATE(reader);
     priv->processing = TRUE;
-    milter_debug("[%d] [reader][precess][start]", priv->tag);
+    milter_debug("[%d] [reader][callback][read][precess][start]", priv->tag);
 
     if (!priv->shutdown_requested) {
-        if (condition & (G_IO_IN | G_IO_PRI)) {
-            milter_debug("[%d] [reader][reading] ...", priv->tag);
-            keep_callback = read_from_channel(reader, channel);
-        } else if (condition & G_IO_HUP) {
-            milter_debug("[%d] [reader][closed]", priv->tag);
-            priv->shutdown_requested = TRUE;
-        }
+        milter_debug("[%d] [reader][callback][read][reading] ...", priv->tag);
+        keep_callback = read_from_channel(reader, channel);
+    }
+
+    if (priv->shutdown_requested) {
+        milter_debug("[%u] [reader][callback][read][shutdown-requested]",
+                     priv->tag);
+        keep_callback = FALSE;
+    }
+
+    if (!keep_callback) {
+        milter_debug("[%u] [reader][callback][read][removing] ...", priv->tag);
+        priv->read_watch_id = 0;
+        clear_watch_id(priv);
+        finish(reader);
+    }
+
+    milter_debug("[%d] [reader][callback][read][precess][done]", priv->tag);
+    priv->processing = FALSE;
+
+    return keep_callback;
+}
+
+static gboolean
+error_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
+{
+    MilterReaderPrivate *priv;
+    MilterReader *reader = data;
+    gboolean keep_callback = FALSE;
+    gboolean error_occurred = FALSE;
+
+    priv = MILTER_READER_GET_PRIVATE(reader);
+    milter_debug("[%d] [reader][callback][error][start]", priv->tag);
+
+    if (!priv->shutdown_requested && (condition & G_IO_HUP)) {
+        milter_debug("[%d] [reader][callback][error][closed]", priv->tag);
+        priv->shutdown_requested = TRUE;
     }
 
     if (condition & G_IO_ERR)
         error_occurred = TRUE;
-    if (!priv->shutdown_requested) {
-        if (!keep_callback && (condition & G_IO_HUP))
-            error_occurred = TRUE;
-        if (condition & G_IO_NVAL)
-            error_occurred = TRUE;
-    }
+    if (!priv->shutdown_requested && (condition & (G_IO_HUP | G_IO_NVAL)))
+        error_occurred = TRUE;
+
     if (error_occurred) {
         gchar *message;
         GError *error = NULL;
@@ -242,28 +275,22 @@ channel_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
                     MILTER_READER_ERROR,
                     MILTER_READER_ERROR_IO_ERROR,
                     "%s", message);
-        milter_error("[%u] [reader][error][read] %s", priv->tag, message);
+        milter_error("[%u] [reader][callback][error] %s", priv->tag, message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(reader),
                                     error);
         g_error_free(error);
         g_free(message);
-        keep_callback = FALSE;
     }
 
     if (priv->shutdown_requested) {
-        milter_debug("[%u] [reader][shutdown-requested]", priv->tag);
-        keep_callback = FALSE;
+        milter_debug("[%u] [reader][callback][error][shutdown-requested]",
+                     priv->tag);
     }
 
-    if (!keep_callback) {
-        milter_debug("[%u] [reader][callback][removing] ...", priv->tag);
-        priv->channel_watch_id = 0;
-        clear_watch_id(priv);
-        finish(reader);
-    }
-
-    milter_debug("[%d] [reader][precess][done]", priv->tag);
-    priv->processing = FALSE;
+    milter_debug("[%u] [reader][callback][error][removing] ...", priv->tag);
+    priv->error_watch_id = 0;
+    clear_watch_id(priv);
+    finish(reader);
 
     return keep_callback;
 }
@@ -275,24 +302,35 @@ watch_io_channel (MilterReader *reader, MilterEventLoop *loop)
 
     priv = MILTER_READER_GET_PRIVATE(reader);
 
-    priv->channel_watch_id =
-        milter_event_loop_watch_io(loop,
-                                   priv->io_channel,
-                                   G_IO_IN | G_IO_PRI |
-                                   G_IO_ERR | G_IO_HUP | G_IO_NVAL,
-                                   channel_watch_func, reader);
-    if (priv->channel_watch_id > 0) {
-        g_object_ref(loop);
-        if (priv->loop) {
-            g_object_unref(priv->loop);
-        }
-        priv->loop = loop;
-    } else {
-        milter_error("[%u] [reader][watch][fail] TODO: raise error",
+    priv->read_watch_id = milter_event_loop_watch_io(loop,
+                                                     priv->io_channel,
+                                                     G_IO_IN | G_IO_PRI,
+                                                     read_watch_func, reader);
+    if (priv->read_watch_id == 0) {
+        milter_error("[%u] [reader][watch][read][fail] TODO: raise error",
                      priv->tag);
+    } else {
+        priv->error_watch_id =
+            milter_event_loop_watch_io(loop,
+                                       priv->io_channel,
+                                       G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+                                       error_watch_func, reader);
+        if (priv->error_watch_id == 0) {
+            milter_event_loop_remove(loop, priv->read_watch_id);
+            priv->read_watch_id = 0;
+            milter_error("[%u] [reader][watch][error][fail] TODO: raise error",
+                         priv->tag);
+        } else {
+            g_object_ref(loop);
+            if (priv->loop) {
+                g_object_unref(priv->loop);
+            }
+            priv->loop = loop;
+        }
     }
 
-    milter_debug("[%u] [reader][watch] <%u>", priv->tag, priv->channel_watch_id);
+    milter_debug("[%u] [reader][watch] <%u>:<%u>",
+                 priv->tag, priv->read_watch_id, priv->error_watch_id);
 }
 
 static void
@@ -380,14 +418,14 @@ milter_reader_start (MilterReader *reader, MilterEventLoop *loop)
     MilterReaderPrivate *priv;
 
     priv = MILTER_READER_GET_PRIVATE(reader);
-    if (priv->io_channel && priv->channel_watch_id == 0)
+    if (priv->io_channel && priv->read_watch_id == 0)
         watch_io_channel(reader, loop);
 }
 
 gboolean
 milter_reader_is_watching (MilterReader *reader)
 {
-    return MILTER_READER_GET_PRIVATE(reader)->channel_watch_id > 0;
+    return MILTER_READER_GET_PRIVATE(reader)->read_watch_id > 0;
 }
 
 void
@@ -398,7 +436,7 @@ milter_reader_shutdown (MilterReader *reader)
 
     priv = MILTER_READER_GET_PRIVATE(reader);
 
-    if (priv->channel_watch_id == 0)
+    if (priv->read_watch_id == 0)
         return;
 
     if (priv->shutdown_requested)
