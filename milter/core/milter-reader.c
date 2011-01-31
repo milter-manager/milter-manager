@@ -271,7 +271,6 @@ watch_io_channel (MilterReader *reader, MilterEventLoop *loop)
 
     priv = MILTER_READER_GET_PRIVATE(reader);
 
-    priv->loop = loop;
     priv->channel_watch_id =
         milter_event_loop_watch_io(loop,
                                    priv->io_channel,
@@ -279,9 +278,14 @@ watch_io_channel (MilterReader *reader, MilterEventLoop *loop)
                                    G_IO_ERR | G_IO_HUP | G_IO_NVAL,
                                    channel_watch_func, reader);
     if (priv->channel_watch_id > 0) {
-        g_object_ref(priv->loop);
+        g_object_ref(loop);
+        if (priv->loop) {
+            g_object_unref(priv->loop);
+        }
+        priv->loop = loop;
     } else {
-        priv->loop = NULL;
+        milter_error("[%u] [reader][watch][fail] TODO: raise error",
+                     priv->tag);
     }
 
     milter_debug("[%u] [reader][watch] <%u>", priv->tag, priv->channel_watch_id);
