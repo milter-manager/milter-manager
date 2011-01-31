@@ -555,8 +555,27 @@ cb_connection_established (MilterClient *client, MilterClientContext *context,
 }
 
 static void
+setup_milter_client_event_loop_backend (MilterClient *client)
+{
+    const gchar *backend_env;
+    MilterClientEventLoopBackend backend;
+
+    backend_env = g_getenv("MILTER_EVENT_LOOP_BACKEND");
+    if (!backend_env)
+        return;
+
+    backend = milter_utils_enum_from_string(MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND,
+                                            backend_env);
+    if (backend == 0)
+        return;
+
+    milter_client_set_event_loop_backend(client, backend);
+}
+
+static void
 setup_milter_client (MilterClient *client)
 {
+    setup_milter_client_event_loop_backend(client);
     milter_client_set_connection_spec(client, connection_spec, NULL);
     milter_client_set_listen_channel(client, listen_channel);
     milter_client_set_listen_backlog(client, listen_backlog);
