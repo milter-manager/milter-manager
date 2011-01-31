@@ -272,7 +272,12 @@ milter_client_create_event_loop (MilterClient *client, gboolean use_default_cont
         break;
     case MILTER_CLIENT_EVENT_LOOP_BACKEND_LIBEV:
         milter_debug("[cilent][event-loop][libev]");
-        loop = milter_libev_event_loop_new();
+        if (use_default_context) {
+            loop = milter_libev_event_loop_default();
+            g_object_ref(loop);
+        } else {
+            loop = milter_libev_event_loop_new();
+        }
         break;
     }
 
