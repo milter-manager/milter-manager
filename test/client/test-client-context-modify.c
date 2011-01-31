@@ -178,6 +178,8 @@ test_add_header (gconstpointer data)
                                          gcut_data_get_string(data, "name"),
                                          gcut_data_get_string(data, "value"),
                                          &actual_error);
+    if (MILTER_IS_LIBEV_EVENT_LOOP(loop))
+        cut_omit("MilterLibevEventLoop doesn't support GCutStringIOChannel.");
     milter_test_pump_all_events(loop);
 
     expected_error = gcut_data_get_pointer(data, "error");
@@ -284,6 +286,8 @@ test_insert_header (gconstpointer data)
                                             gcut_data_get_string(data, "name"),
                                             gcut_data_get_string(data, "value"),
                                             &actual_error);
+    if (MILTER_IS_LIBEV_EVENT_LOOP(loop))
+        cut_omit("MilterLibevEventLoop doesn't support GCutStringIOChannel.");
     milter_test_pump_all_events(loop);
 
     expected_error = gcut_data_get_pointer(data, "error");
@@ -385,6 +389,8 @@ test_change_header (gconstpointer data)
                                             gcut_data_get_uint(data, "index"),
                                             gcut_data_get_string(data, "value"),
                                             &actual_error);
+    if (MILTER_IS_LIBEV_EVENT_LOOP(loop))
+        cut_omit("MilterLibevEventLoop doesn't support GCutStringIOChannel.");
     milter_test_pump_all_events(loop);
 
     expected_error = gcut_data_get_pointer(data, "error");
@@ -481,6 +487,8 @@ test_delete_header (gconstpointer data)
                                             gcut_data_get_string(data, "name"),
                                             gcut_data_get_uint(data, "index"),
                                             &actual_error);
+    if (MILTER_IS_LIBEV_EVENT_LOOP(loop))
+        cut_omit("MilterLibevEventLoop doesn't support GCutStringIOChannel.");
     milter_test_pump_all_events(loop);
 
     expected_error = gcut_data_get_pointer(data, "error");
