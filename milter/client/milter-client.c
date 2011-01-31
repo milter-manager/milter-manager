@@ -1904,9 +1904,6 @@ milter_client_run (MilterClient *client, GError **error)
         const gchar *use_accept_loop_env;
         gboolean use_accept_loop = FALSE;
 
-        if (priv->event_loop_backend == MILTER_CLIENT_EVENT_LOOP_BACKEND_LIBEV)
-            use_accept_loop = TRUE;
-
         use_accept_loop_env = g_getenv("MILTER_USE_ACCEPT_LOOP");
         if (use_accept_loop_env) {
             if (strcmp(use_accept_loop_env, "yes") == 0) {
