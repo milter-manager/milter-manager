@@ -386,8 +386,12 @@ cut_teardown (void)
 static void
 pump_all_events (void)
 {
+    GError *error;
+
     milter_test_pump_all_events(loop);
-    gcut_assert_error(actual_error);
+    error = actual_error;
+    actual_error = NULL;
+    gcut_assert_error(error);
 }
 
 static GError *
