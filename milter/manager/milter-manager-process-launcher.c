@@ -152,7 +152,7 @@ process_data_new (MilterEventLoop *loop, GPid pid, guint watch_id,
 
     data = g_new0(ProcessData, 1);
 
-    data->loop = loop;
+    data->loop = g_object_ref(loop);
     data->pid = pid;
     data->watch_id = watch_id;
     data->command_line = g_strdup(command_line);
