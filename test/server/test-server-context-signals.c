@@ -578,6 +578,9 @@ pump_all_events (void)
 {
     GError *error;
 
+    if (MILTER_IS_LIBEV_EVENT_LOOP(loop))
+        cut_omit("MilterLibevEventLoop doesn't support GCutStringIOChannel.");
+
     milter_test_pump_all_events(loop);
     error = actual_error;
     actual_error = NULL;
@@ -1403,6 +1406,9 @@ void
 test_write_error (void)
 {
     GError *error = NULL;
+
+    if (MILTER_IS_LIBEV_EVENT_LOOP(loop))
+        cut_omit("MilterLibevEventLoop doesn't support GCutStringIOChannel.");
 
     g_io_channel_set_buffered(write_channel, FALSE);
     g_io_channel_set_flags(write_channel, G_IO_FLAG_NONBLOCK, &error);
