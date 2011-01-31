@@ -685,6 +685,9 @@ milter_agent_set_event_loop (MilterAgent *agent, MilterEventLoop *loop)
     MilterAgentPrivate *priv;
 
     priv = MILTER_AGENT_GET_PRIVATE(agent);
+    if (loop == priv->event_loop)
+        return;
+
     if (priv->event_loop)
         g_object_unref(priv->event_loop);
     priv->event_loop = loop;
