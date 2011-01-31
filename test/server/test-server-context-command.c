@@ -200,6 +200,9 @@ pump_all_events (void)
 {
     GError *error;
 
+    if (MILTER_IS_LIBEV_EVENT_LOOP(loop))
+        cut_omit("MilterLibevEventLoop doesn't support GCutStringIOChannel.");
+
     milter_test_pump_all_events(loop);
     error = actual_error;
     actual_error = NULL;
