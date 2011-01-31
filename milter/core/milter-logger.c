@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -317,6 +317,22 @@ log_message (GString *log, MilterLogLevelFlags level, const gchar *message)
     }
 }
 
+static inline void
+check_milter_debug (MilterLogLevelFlags level)
+{
+    if (MILTER_LOG_LEVEL_CRITICAL <= level &&
+        level <= MILTER_LOG_LEVEL_WARNING) {
+        const gchar *milter_debug;
+
+        milter_debug = g_getenv("MILTER_DEBUG");
+        if (milter_debug &&
+            (strcmp(milter_debug, "fatal-warnings") == 0 ||
+             strcmp(milter_debug, "fatal_warnings") == 0)) {
+            abort();
+        }
+    }
+}
+
 void
 milter_logger_default_log_handler (MilterLogger *logger, const gchar *domain,
                                    MilterLogLevelFlags level,
@@ -334,6 +350,8 @@ milter_logger_default_log_handler (MilterLogger *logger, const gchar *domain,
     target_level = milter_logger_get_resolved_target_level(logger);
     if (!(level & target_level))
         return;
+
+    check_milter_debug(level);
 
     log = g_string_new(NULL);
 
