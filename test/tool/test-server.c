@@ -142,18 +142,18 @@ cb_negotiate (MilterCommandDecoder *decoder, MilterOption *option,
     const gchar *packet;
     gsize packet_size;
     MilterOption *reply_option;
-    MilterMacrosRequests *macros_requests;
+    MilterMacrosRequests *macros_requests = NULL;
 
     if (test_data) {
         reply_option = milter_option_new(6,
                                          test_data->actions,
                                          test_data->steps);
         macros_requests = test_data->macros_requests;
-        g_object_ref(macros_requests);
+        if (macros_requests)
+            g_object_ref(macros_requests);
     } else {
         reply_option = milter_option_copy(option);
         milter_option_remove_step(reply_option, MILTER_STEP_NO_MASK);
-        macros_requests = milter_macros_requests_new();
     }
     milter_reply_encoder_encode_negotiate(encoder,
                                           &packet, &packet_size,
@@ -161,7 +161,8 @@ cb_negotiate (MilterCommandDecoder *decoder, MilterOption *option,
                                           macros_requests);
     write_data(packet, packet_size);
     g_object_unref(reply_option);
-    g_object_unref(macros_requests);
+    if (macros_requests)
+        g_object_unref(macros_requests);
 
     n_negotiates++;
 }
