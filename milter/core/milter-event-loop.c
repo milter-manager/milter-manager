@@ -34,7 +34,6 @@ G_DEFINE_ABSTRACT_TYPE(MilterEventLoop, milter_event_loop, G_TYPE_OBJECT)
 typedef struct _MilterEventLoopPrivate	MilterEventLoopPrivate;
 struct _MilterEventLoopPrivate
 {
-    gboolean new_context;
     MilterEventLoopCustomRunFunc custom_run;
 };
 
