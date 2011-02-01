@@ -182,6 +182,19 @@ write_packet (const gchar *packet, gsize packet_size)
     gcut_assert_error(error);
 }
 
+#define pump_all_events()                       \
+    cut_trace_with_info_expression(             \
+        pump_all_events_helper(),               \
+        pump_all_events())
+
+static void
+pump_all_events_helper (void)
+{
+    if (MILTER_IS_LIBEV_EVENT_LOOP(loop))
+        cut_omit("MilterLibevEventLoop doesn't support GCutStringIOChannel.");
+    milter_test_pump_all_events(loop);
+}
+
 void
 test_set_configuration (void)
 {
@@ -197,7 +210,8 @@ test_set_configuration (void)
         &packet, &packet_size,
         configuration, strlen(configuration));
     cut_trace(write_packet(packet, packet_size));
-    milter_test_pump_all_events(loop);
+
+    pump_all_events();
 
     cut_assert_path_exist(custom_config_path);
 
@@ -230,7 +244,8 @@ test_set_configuration_failed (void)
         &packet, &packet_size,
         configuration, strlen(configuration));
     cut_trace(write_packet(packet, packet_size));
-    milter_test_pump_all_events(loop);
+
+    pump_all_events();
 
     cut_assert_path_not_exist(custom_config_path);
 
@@ -279,7 +294,7 @@ test_reload (void)
     milter_manager_control_command_encoder_encode_reload(command_encoder,
                                                          &packet, &packet_size);
     cut_trace(write_packet(packet, packet_size));
-    milter_test_pump_all_events(loop);
+    pump_all_events();
     cut_assert_true(milter_manager_configuration_is_privilege_mode(config));
 
     milter_manager_control_reply_encoder_encode_success(reply_encoder,
