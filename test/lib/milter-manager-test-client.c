@@ -709,7 +709,7 @@ milter_manager_test_client_run (MilterManagerTestClient *client, GError **error)
         return FALSE;
 
     while (!priv->ready && !priv->reaped)
-        milter_event_loop_iterate(priv->loop, TRUE);
+        g_main_context_iteration(NULL, TRUE);
 
     return !priv->reaped;
 }
