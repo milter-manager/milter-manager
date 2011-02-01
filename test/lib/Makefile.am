@@ -46,7 +46,9 @@ libmilter_test_la_SOURCES =		\
 	milter-test-enum-types.c	\
 	milter-test-enum-types.h	\
 	milter-assertions.c		\
-	milter-assertions.h
+	milter-assertions.h		\
+	gcut-milter-event-loop.c	\
+	gcut-milter-event-loop.h
 
 libmilter_manager_test_la_SOURCES =	\
 	milter-manager-test-utils.c	\
