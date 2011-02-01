@@ -364,6 +364,9 @@ cut_teardown (void)
 static void
 pump_all_events_without_error_check_helper (void)
 {
+    if (MILTER_IS_LIBEV_EVENT_LOOP(loop))
+        cut_omit("MilterLibevEventLoop doesn't support GCutStringIOChannel.");
+
     milter_test_pump_all_events(loop);
 }
 
