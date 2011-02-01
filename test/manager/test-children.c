@@ -734,6 +734,10 @@ setup_process_launcher (MilterManagerChildren *children)
     GIOChannel *read_channel, *write_channel;
     MilterReader *reader;
     MilterWriter *writer;
+    GError *error = NULL;
+
+    if (MILTER_IS_LIBEV_EVENT_LOOP(loop))
+        cut_omit("MilterLibevEventLoop doesn't support GCutStringIOChannel.");
 
     launcher = milter_manager_process_launcher_new();
     milter_agent_set_event_loop(MILTER_AGENT(launcher), loop);
@@ -753,7 +757,8 @@ setup_process_launcher (MilterManagerChildren *children)
     g_io_channel_unref(read_channel);
     g_io_channel_unref(write_channel);
 
-    milter_agent_start(MILTER_AGENT(launcher), NULL);
+    milter_agent_start(MILTER_AGENT(launcher), &error);
+    gcut_assert_error(error);
 }
 
 static void
@@ -2006,6 +2011,9 @@ test_writing_timeout (void)
     GIOChannel *channel;
     MilterWriter *writer;
     MilterManagerChild *child;
+
+    if (MILTER_IS_LIBEV_EVENT_LOOP(loop))
+        cut_omit("MilterLibevEventLoop doesn't support GCutStringIOChannel.");
 
     cut_trace(test_negotiate());
 
