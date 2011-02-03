@@ -53,6 +53,7 @@ enum
     LISTEN_STARTED,
     MAINTAIN,
     SESSIONS_FINISHED,
+    EVENT_LOOP_CREATED,
     LAST_SIGNAL
 };
 
@@ -250,6 +251,15 @@ _milter_client_class_init (MilterClientClass *klass)
                      g_cclosure_marshal_VOID__UINT,
                      G_TYPE_NONE, 1, G_TYPE_UINT);
 
+    signals[EVENT_LOOP_CREATED] =
+        g_signal_new("event-loop-created",
+                     MILTER_TYPE_CLIENT,
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MilterClientClass, event_loop_created),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__OBJECT,
+                     G_TYPE_NONE, 1, MILTER_TYPE_EVENT_LOOP);
+
     g_type_class_add_private(gobject_class, sizeof(MilterClientPrivate));
 }
 
@@ -280,6 +290,7 @@ milter_client_create_event_loop (MilterClient *client, gboolean use_default_cont
         }
         break;
     }
+    g_signal_emit(client, signals[EVENT_LOOP_CREATED], 0, loop);
 
     return loop;
 }

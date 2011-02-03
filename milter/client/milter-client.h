@@ -169,6 +169,8 @@ struct _MilterClientClass
     void   (*maintain)                    (MilterClient *client);
     void   (*sessions_finished)           (MilterClient *client,
                                            guint         n_finished_sessions);
+    void   (*event_loop_created)          (MilterClient *client,
+                                           MilterEventLoop *loop);
     MilterClientEventLoopBackend
            (*get_event_loop_backend)      (MilterClient *client);
     void   (*set_event_loop_backend)      (MilterClient *client,
