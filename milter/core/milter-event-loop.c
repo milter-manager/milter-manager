@@ -35,6 +35,7 @@ typedef struct _MilterEventLoopPrivate	MilterEventLoopPrivate;
 struct _MilterEventLoopPrivate
 {
     MilterEventLoopCustomRunFunc custom_run;
+    guint depth;
 };
 
 enum
@@ -86,6 +87,10 @@ milter_event_loop_class_init (MilterEventLoopClass *klass)
 static void
 milter_event_loop_init (MilterEventLoop *loop)
 {
+    MilterEventLoopPrivate *priv;
+
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(loop);
+    priv->depth = 0;
 }
 
 static void
@@ -156,11 +161,25 @@ milter_event_loop_run (MilterEventLoop *loop)
 
     priv = MILTER_EVENT_LOOP_GET_PRIVATE(loop);
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
+    priv->depth++;
     if (priv->custom_run) {
         priv->custom_run(loop);
-        return;
+    } else {
+        loop_class->run(loop);
     }
-    loop_class->run(loop);
+}
+
+gboolean
+milter_event_loop_is_running (MilterEventLoop *loop)
+{
+    MilterEventLoopClass *loop_class;
+    MilterEventLoopPrivate *priv;
+
+    g_return_val_if_fail(loop != NULL, FALSE);
+
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(loop);
+    loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
+    return priv->depth > 0;
 }
 
 void
@@ -211,12 +230,17 @@ milter_event_loop_iterate (MilterEventLoop *loop, gboolean may_block)
 void
 milter_event_loop_quit (MilterEventLoop *loop)
 {
+    MilterEventLoopPrivate *priv;
     MilterEventLoopClass *loop_class;
 
     g_return_if_fail(loop != NULL);
 
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
     loop_class->quit(loop);
+
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(loop);
+    g_return_if_fail(priv->depth > 0);
+    priv->depth--;
 }
 
 guint
