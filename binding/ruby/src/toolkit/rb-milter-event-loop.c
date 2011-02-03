@@ -17,6 +17,15 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#  include "../../../../config.h"
+#  undef PACKAGE_NAME
+#  undef PACKAGE_TARNAME
+#  undef PACKAGE_VERSION
+#  undef PACKAGE_STRING
+#  undef PACKAGE_BUGREPORT
+#endif /* HAVE_CONFIG_H */
+
 #include "rb-milter-core-private.h"
 #ifdef RUBY_UBF_IO
 #  define USE_BLOCKING_REGION 1
@@ -31,15 +40,15 @@
 
 #if USE_BLOCKING_REGION
 static VALUE
-blocking_run (void *arg)
+rb_loop_run_block (void *arg)
 {
     MilterEventLoop *loop = arg;
-    milter_event_loop_run_without_custom(loop);
+    milter_event_loop_iterate(loop, TRUE);
     return Qnil;
 }
 
 static void
-quit_run (void *arg)
+rb_loop_run_unblock (void *arg)
 {
     MilterEventLoop *loop = arg;
     milter_event_loop_quit(loop);
@@ -49,15 +58,23 @@ quit_run (void *arg)
 static void
 rb_loop_run (MilterEventLoop *loop)
 {
+    while (milter_event_loop_is_running(loop)) {
 #if USE_BLOCKING_REGION
-    rb_thread_blocking_region(blocking_run, loop, quit_run, loop);
+	rb_thread_blocking_region(rb_loop_run_block, loop,
+				  rb_loop_run_unblock, loop);
 #else
-    TRAP_BEG;
-    milter_event_loop_run_without_custom(loop);
-    TRAP_END;
+	TRAP_BEG;
+	milter_event_loop_iterate(loop, TRUE);
+	TRAP_END;
 #endif
+    }
 }
 
+static VALUE
+glib_setup (VALUE self)
+{
+    return Qnil;
+}
 
 static VALUE
 glib_initialize (int argc, VALUE *argv, VALUE self)
@@ -69,8 +86,16 @@ glib_initialize (int argc, VALUE *argv, VALUE self)
 
     event_loop = milter_glib_event_loop_new(RVAL2GOBJ(main_context));
     G_INITIALIZE(self, event_loop);
+    glib_setup(self);
 
     return Qnil;
+}
+
+static VALUE
+libev_setup (VALUE self)
+{
+    milter_event_loop_set_custom_run_func(SELF(self), rb_loop_run);
+    return self;
 }
 
 static VALUE
@@ -80,7 +105,8 @@ libev_initialize (VALUE self)
 
     event_loop = milter_libev_event_loop_new();
     G_INITIALIZE(self, event_loop);
-    milter_event_loop_set_custom_run_func(event_loop, rb_loop_run);
+    libev_setup(self);
+
     return Qnil;
 }
 
@@ -98,6 +124,7 @@ Init_milter_event_loop (void)
                                           "GLibEventLoop", rb_mMilter);
 
     rb_define_method(rb_cMilterGLibEventLoop, "initialize", glib_initialize, -1);
+    rb_define_method(rb_cMilterGLibEventLoop, "setup", glib_setup, 0);
 
     G_DEF_SETTERS(rb_cMilterGLibEventLoop);
 
@@ -105,6 +132,7 @@ Init_milter_event_loop (void)
                                           "LibevEventLoop", rb_mMilter);
 
     rb_define_method(rb_cMilterLibevEventLoop, "initialize", libev_initialize, 0);
+    rb_define_method(rb_cMilterLibevEventLoop, "setup", libev_setup, 0);
 
     G_DEF_SETTERS(rb_cMilterGLibEventLoop);
 }

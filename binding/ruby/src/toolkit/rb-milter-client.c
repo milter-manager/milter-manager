@@ -50,6 +50,14 @@ client_custom_fork (MilterClient *client)
 #endif
 }
 
+static void
+cb_event_loop_created (MilterClient *client,
+		       MilterEventLoop *loop,
+		       gpointer user_data)
+{
+    rb_funcall2(GOBJ2RVAL(loop), rb_intern("setup"), 0, 0);
+}
+
 static VALUE
 client_initialize (VALUE self)
 {
@@ -58,6 +66,8 @@ client_initialize (VALUE self)
     client = milter_client_new();
     G_INITIALIZE(self, client);
     milter_client_set_custom_fork_func(client, client_custom_fork);
+    g_signal_connect(client, "event-loop-created",
+		     G_CALLBACK(cb_event_loop_created), NULL);
     return Qnil;
 }
 
