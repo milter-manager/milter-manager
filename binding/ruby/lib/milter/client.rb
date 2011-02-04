@@ -116,16 +116,16 @@ module Milter
       @context.status = :accept
     end
 
+    def discard
+      @context.status = :discard
+    end
+
     def continue
       @context.status = :continue
     end
 
     def delay_response
       @context.status = :progress
-    end
-
-    def discard
-      @context.status = :discard
     end
 
     def progress
