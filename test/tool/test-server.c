@@ -60,7 +60,7 @@ static MilterEventLoop *loop;
 static MilterTestClient *client;
 static MilterDecoder *decoder;
 static MilterReplyEncoder *encoder;
-static GCutEgg *server;
+static GCutProcess *server;
 static GArray *command;
 static gchar *server_path;
 static gchar *fixtures_path;
@@ -524,21 +524,21 @@ cut_teardown (void)
 }
 
 static void
-cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
+cb_output_received (GCutProcess *process, const gchar *chunk, gsize size,
                     gpointer user_data)
 {
     g_string_append_len(output_string, chunk, size);
 }
 
 static void
-cb_error_received (GCutEgg *egg, const gchar *chunk, gsize size,
+cb_error_received (GCutProcess *process, const gchar *chunk, gsize size,
                    gpointer user_data)
 {
     g_string_append_len(error_string, chunk, size);
 }
 
 static void
-cb_reaped (GCutEgg *egg, gint status, gpointer user_data)
+cb_reaped (GCutProcess *process, gint status, gpointer user_data)
 {
     reaped = TRUE;
     exit_status = status;
@@ -577,7 +577,7 @@ setup_server (const gchar *spec, const gchar *option_string)
         g_strfreev(argv);
     }
 
-    server = gcut_egg_new_array(command);
+    server = gcut_process_new_array(command);
 
 #define CONNECT(name)                                                   \
     g_signal_connect(server, #name, G_CALLBACK(cb_ ## name), NULL)
@@ -1311,7 +1311,7 @@ test_result (gconstpointer data)
     setup_test_client("inet:9999@localhost", test_data);
     setup_server("inet:9999@localhost", test_data->option_string);
 
-    gcut_egg_hatch(server, &error);
+    gcut_process_run(server, &error);
     gcut_assert_error(error);
 
     wait_for_reaping(TRUE);
@@ -1637,7 +1637,7 @@ test_option (gconstpointer data)
     setup_server("inet:9999@localhost",
                  option_test_data->test_data->option_string);
 
-    gcut_egg_hatch(server, &error);
+    gcut_process_run(server, &error);
     gcut_assert_error(error);
 
     wait_for_reaping(TRUE);
@@ -2062,7 +2062,7 @@ test_end_of_message_action (gconstpointer data)
     setup_test_client("inet:9999@localhost", action_test_data->test_data);
     setup_server("inet:9999@localhost", "--output-message");
 
-    gcut_egg_hatch(server, &error);
+    gcut_process_run(server, &error);
     gcut_assert_error(error);
 
     wait_for_reaping(TRUE);
@@ -2316,7 +2316,7 @@ test_macro (gconstpointer data)
     setup_server("inet:9999@localhost",
                  gcut_data_get_pointer(data, "arguments"));
 
-    gcut_egg_hatch(server, &error);
+    gcut_process_run(server, &error);
     gcut_assert_error(error);
 
     wait_for_reaping(TRUE);
@@ -2385,7 +2385,7 @@ test_invalid_spec (gconstpointer data)
     InvalidSpecTestData *test_data = (InvalidSpecTestData *)data;
 
     setup_server(test_data->spec, NULL);
-    gcut_egg_hatch(server, &error);
+    gcut_process_run(server, &error);
     gcut_assert_error(error);
 
     wait_for_reaping(FALSE);
