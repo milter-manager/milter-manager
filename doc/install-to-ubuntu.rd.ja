@@ -248,10 +248,12 @@ Postfixと一緒に動作するように/etc/default/milter-managerを編
 集します。
 
 変更前:
-  # SOCKET_GROUP=postfix
-  # CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
+  #GROUP=postfix
+  #SOCKET_GROUP=postfix
+  #CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
 変更後:
+  GROUP=postfix
   SOCKET_GROUP=postfix
   CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
