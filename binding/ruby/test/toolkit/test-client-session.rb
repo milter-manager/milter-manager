@@ -84,4 +84,13 @@ class TestClientSession < Test::Unit::TestCase
       @session.send(:add_recipient, "<webmaster@example.com>")
     end
   end
+
+  def test_delete_recipient
+    @context.option = Milter::Option.new
+    @context.option.add_action(Milter::ACTION_DELETE_ENVELOPE_RECIPIENT)
+    @context.state = Milter::ClientContext::STATE_END_OF_MESSAGE
+    assert_nothing_raised do
+      @session.send(:delete_recipient, "<webmaster@example.com>")
+    end
+  end
 end

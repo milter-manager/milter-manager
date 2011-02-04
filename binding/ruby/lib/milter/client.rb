@@ -195,6 +195,10 @@ module Milter
       @context.add_recipient(recipient, parameters)
     end
 
+    def delete_recipient(recipient)
+      @context.delete_recipient(recipient)
+    end
+
     def postfix?
       @context.postfix?
     end
