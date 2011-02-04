@@ -191,6 +191,10 @@ module Milter
       @context.change_from(from)
     end
 
+    def add_recipient(recipient, parameters=nil)
+      @context.add_recipient(recipient, parameters)
+    end
+
     def postfix?
       @context.postfix?
     end
