@@ -119,4 +119,18 @@ class TestClientSession < Test::Unit::TestCase
     assert_equal("a virus is detected.", @context.quarantine_reason)
     assert_equal(Milter::Status::ACCEPT, @session_context.status)
   end
+
+  def test_delay_response
+    assert_equal(Milter::Status::DEFAULT, @session_context.status)
+    @session.send(:delay_response)
+    assert_equal(Milter::Status::PROGRESS, @session_context.status)
+  end
+
+  def test_progress
+    @context.option = Milter::Option.new
+    @context.state = Milter::ClientContext::STATE_END_OF_MESSAGE
+    assert_nothing_raised do
+      @session.send(:progress)
+    end
+  end
 end

@@ -120,12 +120,16 @@ module Milter
       @context.status = :continue
     end
 
-    def progress
+    def delay_response
       @context.status = :progress
     end
 
     def discard
       @context.status = :discard
+    end
+
+    def progress
+      @context.progress
     end
 
     def reject(options={})
