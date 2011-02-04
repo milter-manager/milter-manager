@@ -81,8 +81,8 @@ milter_syslog_logger_class_init (MilterSyslogLoggerClass *klass)
     gobject_class->get_property = get_property;
 
     spec = g_param_spec_string("identity",
-                               NULL,
-                               NULL,
+                               "Identity",
+                               "The identity of syslog",
                                NULL,
                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_IDENTITY, spec);
