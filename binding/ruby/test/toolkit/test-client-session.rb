@@ -19,7 +19,8 @@ class TestClientSession < Test::Unit::TestCase
   def setup
     @context = Milter::ClientContext.new
     @context.event_loop = Milter::GLibEventLoop.new
-    @session = Milter::ClientSession.new(@context)
+    @session_context = Milter::ClientSessionContext.new(@context)
+    @session = Milter::ClientSession.new(@session_context)
   end
 
   def test_add_header
@@ -92,5 +93,11 @@ class TestClientSession < Test::Unit::TestCase
     assert_nothing_raised do
       @session.send(:delete_recipient, "<webmaster@example.com>")
     end
+  end
+
+  def test_accept
+    assert_equal(Milter::Status::DEFAULT, @session_context.status)
+    @session.send(:accept)
+    assert_equal(Milter::Status::ACCEPT, @session_context.status)
   end
 end
