@@ -100,4 +100,10 @@ class TestClientSession < Test::Unit::TestCase
     @session.send(:accept)
     assert_equal(Milter::Status::ACCEPT, @session_context.status)
   end
+
+  def test_reject
+    assert_equal(Milter::Status::DEFAULT, @session_context.status)
+    @session.send(:reject)
+    assert_equal(Milter::Status::REJECT, @session_context.status)
+  end
 end
