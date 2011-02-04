@@ -187,6 +187,10 @@ module Milter
       @context.replace_body(chunk)
     end
 
+    def change_from(from)
+      @context.change_from(from)
+    end
+
     def postfix?
       @context.postfix?
     end

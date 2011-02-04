@@ -66,4 +66,13 @@ class TestClientSession < Test::Unit::TestCase
       @session.send(:replace_body, "Hello")
     end
   end
+
+  def test_change_from
+    @context.option = Milter::Option.new
+    @context.option.add_action(Milter::ACTION_CHANGE_ENVELOPE_FROM)
+    @context.state = Milter::ClientContext::STATE_END_OF_MESSAGE
+    assert_nothing_raised do
+      @session.send(:change_from, "<info@example.com>")
+    end
+  end
 end
