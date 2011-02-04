@@ -175,6 +175,10 @@ module Milter
       @context.change_header(name, index, value)
     end
 
+    def delete_header(name, index)
+      @context.delete_header(name, index)
+    end
+
     def postfix?
       @context.postfix?
     end
