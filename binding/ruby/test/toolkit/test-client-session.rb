@@ -112,4 +112,11 @@ class TestClientSession < Test::Unit::TestCase
     @session.send(:temporary_failure)
     assert_equal(Milter::Status::TEMPORARY_FAILURE, @session_context.status)
   end
+
+  def test_quarantine
+    assert_equal(Milter::Status::DEFAULT, @session_context.status)
+    @session.send(:quarantine, "a virus is detected.")
+    assert_equal("a virus is detected.", @context.quarantine_reason)
+    assert_equal(Milter::Status::ACCEPT, @session_context.status)
+  end
 end
