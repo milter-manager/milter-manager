@@ -106,4 +106,10 @@ class TestClientSession < Test::Unit::TestCase
     @session.send(:reject)
     assert_equal(Milter::Status::REJECT, @session_context.status)
   end
+
+  def test_temporary_failure
+    assert_equal(Milter::Status::DEFAULT, @session_context.status)
+    @session.send(:temporary_failure)
+    assert_equal(Milter::Status::TEMPORARY_FAILURE, @session_context.status)
+  end
 end
