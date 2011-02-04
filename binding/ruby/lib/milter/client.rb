@@ -171,6 +171,10 @@ module Milter
       @context.add_header(name, value)
     end
 
+    def insert_header(index, name, value)
+      @context.insert_header(index, name, value)
+    end
+
     def change_header(name, index, value)
       @context.change_header(name, index, value)
     end
