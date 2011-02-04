@@ -119,6 +119,12 @@ class TestClientSession < Test::Unit::TestCase
     assert_equal(Milter::Status::DISCARD, @session_context.status)
   end
 
+  def test_continue
+    assert_equal(Milter::Status::DEFAULT, @session_context.status)
+    @session.send(:continue)
+    assert_equal(Milter::Status::CONTINUE, @session_context.status)
+  end
+
   def test_quarantine
     assert_equal(Milter::Status::DEFAULT, @session_context.status)
     @session.send(:quarantine, "a virus is detected.")
