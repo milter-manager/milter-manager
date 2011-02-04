@@ -31,15 +31,6 @@ class TestClientSession < Test::Unit::TestCase
     end
   end
 
-  def test_add_header
-    @context.option = Milter::Option.new
-    @context.option.add_action(Milter::ACTION_ADD_HEADERS)
-    @context.state = Milter::ClientContext::STATE_END_OF_MESSAGE
-    assert_nothing_raised do
-      @session.send(:add_header, "X-Tag", "spam")
-    end
-  end
-
   def test_insert_header
     @context.option = Milter::Option.new
     @context.option.add_action(Milter::ACTION_ADD_HEADERS)
@@ -64,6 +55,15 @@ class TestClientSession < Test::Unit::TestCase
     @context.state = Milter::ClientContext::STATE_END_OF_MESSAGE
     assert_nothing_raised do
       @session.send(:delete_header, "X-Tag", 1)
+    end
+  end
+
+  def test_replace_body
+    @context.option = Milter::Option.new
+    @context.option.add_action(Milter::ACTION_CHANGE_BODY)
+    @context.state = Milter::ClientContext::STATE_END_OF_MESSAGE
+    assert_nothing_raised do
+      @session.send(:replace_body, "Hello")
     end
   end
 end

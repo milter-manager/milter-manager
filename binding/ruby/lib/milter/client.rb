@@ -183,6 +183,10 @@ module Milter
       @context.delete_header(name, index)
     end
 
+    def replace_body(chunk)
+      @context.replace_body(chunk)
+    end
+
     def postfix?
       @context.postfix?
     end
