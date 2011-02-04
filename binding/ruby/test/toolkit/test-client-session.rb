@@ -49,6 +49,15 @@ class TestClientSession < Test::Unit::TestCase
     end
   end
 
+  def test_change_header
+    @context.option = Milter::Option.new
+    @context.option.add_action(Milter::ACTION_CHANGE_HEADERS)
+    @context.state = Milter::ClientContext::STATE_END_OF_MESSAGE
+    assert_nothing_raised do
+      @session.send(:change_header, "X-Tag", 1, "Ruby")
+    end
+  end
+
   def test_delete_header
     @context.option = Milter::Option.new
     @context.option.add_action(Milter::ACTION_CHANGE_HEADERS)
