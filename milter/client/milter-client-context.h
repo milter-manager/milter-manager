@@ -772,6 +772,8 @@ guint                milter_client_context_get_timeout       (MilterClientContex
  * @state: a %MilterClientContextState.
  *
  * Sets the current state.
+ *
+ * <note>This is for testing. Don't use it directory for normal use.</note>
  */
 void                 milter_client_context_set_state         (MilterClientContext *context,
                                                               MilterClientContextState state);
@@ -782,9 +784,37 @@ void                 milter_client_context_set_state         (MilterClientContex
  *
  * Gets the current state.
  *
+ * <note>This is for testing. Don't use it directory for normal use.</note>
+ *
  * Returns: the current state.
  */
 MilterClientContextState milter_client_context_get_state     (MilterClientContext *context);
+
+/**
+ * milter_client_context_set_quarantine_reason:
+ * @context: a %MilterClientContext.
+ * @reason: a quarantine reason.
+ *
+ * Sets the quarantine reason.
+ *
+ * <note>This is for testing. Don't use it directory for normal use.</note>
+ */
+void                 milter_client_context_set_quarantine_reason
+                                                             (MilterClientContext *context,
+                                                              const gchar         *reason);
+
+/**
+ * milter_client_context_get_quarantine_reason:
+ * @context: a %MilterClientContext.
+ *
+ * Gets the quarantine reason.
+ *
+ * <note>This is for testing. Don't use it directory for normal use.</note>
+ *
+ * Returns: the quarantine reason.
+ */
+const gchar         *milter_client_context_get_quarantine_reason
+                                                             (MilterClientContext *context);
 
 /**
  * milter_client_context_get_last_state:

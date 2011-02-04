@@ -33,6 +33,7 @@ void test_tag (void);
 void test_socket_address (void);
 void test_n_processing_sessions (void);
 void test_packet_buffer_size (void);
+void test_quarantine_reason (void);
 
 static MilterClientContext *context;
 
@@ -152,6 +153,18 @@ test_packet_buffer_size (void)
     milter_client_context_set_packet_buffer_size(context, 4096);
     cut_assert_equal_uint(4096,
                           milter_client_context_get_packet_buffer_size(context));
+}
+
+void
+test_quarantine_reason (void)
+{
+    cut_assert_equal_string(
+        NULL,
+        milter_client_context_get_quarantine_reason(context));
+    milter_client_context_set_quarantine_reason(context, "maybe a virus.");
+    cut_assert_equal_string(
+        "maybe a virus.",
+        milter_client_context_get_quarantine_reason(context));
 }
 
 /*

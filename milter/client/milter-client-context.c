@@ -71,6 +71,7 @@ enum
     PROP_CLIENT,
     PROP_STATE,
     PROP_OPTION,
+    PROP_QUARANTINE_REASON,
     PROP_MESSAGE_RESULT,
     PROP_PACKET_BUFFER_SIZE
 };
@@ -262,6 +263,13 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                                MILTER_TYPE_OPTION,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_OPTION, spec);
+
+    spec = g_param_spec_string("quarantine-reason",
+                               "Quarantine reason",
+                               "The quarantine reason of client context",
+                               NULL,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_QUARANTINE_REASON, spec);
 
     spec = g_param_spec_object("message-result",
                                "Message result",
@@ -1667,6 +1675,10 @@ set_property (GObject      *object,
     case PROP_OPTION:
         milter_client_context_set_option(context, g_value_get_object(value));
         break;
+    case PROP_QUARANTINE_REASON:
+        milter_client_context_set_quarantine_reason(context,
+                                                    g_value_get_string(value));
+        break;
     case PROP_MESSAGE_RESULT:
         milter_client_context_set_message_result(context,
                                                  g_value_get_object(value));
@@ -1699,6 +1711,9 @@ get_property (GObject    *object,
         break;
     case PROP_OPTION:
         g_value_set_object(value, priv->option);
+        break;
+    case PROP_QUARANTINE_REASON:
+        g_value_set_string(value, priv->quarantine_reason);
         break;
     case PROP_MESSAGE_RESULT:
         g_value_set_object(value, priv->message_result);
@@ -3734,6 +3749,24 @@ MilterStatus
 milter_client_context_get_status (MilterClientContext *context)
 {
     return MILTER_CLIENT_CONTEXT_GET_PRIVATE(context)->status;
+}
+
+void
+milter_client_context_set_quarantine_reason (MilterClientContext *context,
+                                             const gchar *reason)
+{
+    MilterClientContextPrivate *priv;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    if (priv->quarantine_reason)
+        g_free(priv->quarantine_reason);
+    priv->quarantine_reason = g_strdup(reason);
+}
+
+const gchar *
+milter_client_context_get_quarantine_reason (MilterClientContext *context)
+{
+    return MILTER_CLIENT_CONTEXT_GET_PRIVATE(context)->quarantine_reason;
 }
 
 void
