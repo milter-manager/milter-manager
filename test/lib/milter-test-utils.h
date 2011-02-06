@@ -24,6 +24,7 @@
 #include <errno.h>
 
 #include <gcutter.h>
+#include "gcut-milter-event-loop.h"
 #include "milter-test-compatible.h"
 #include "milter-test-glib-compatible.h"
 #include "milter-assertions.h"
