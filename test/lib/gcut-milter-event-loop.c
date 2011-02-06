@@ -109,10 +109,11 @@ gcut_milter_event_loop_class_init (GCutMilterEventLoopClass *klass)
     klass->parent_class.add_idle_full = add_idle_full;
     klass->parent_class.remove = remove;
 
-    spec = g_param_spec_pointer("loop",
-                                "loop",
-                                "Use the MilterEventLoop for the GCutEventLoop",
-                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+    spec = g_param_spec_object("loop",
+                               "loop",
+                               "Use the MilterEventLoop for the GCutEventLoop",
+                               MILTER_TYPE_EVENT_LOOP,
+                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
     g_object_class_install_property(gobject_class, PROP_LOOP, spec);
 
     g_type_class_add_private(gobject_class, sizeof(GCutMilterEventLoopPrivate));
