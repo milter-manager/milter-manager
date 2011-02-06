@@ -23,6 +23,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "milter-libev-event-loop.h"
+#include "milter-logger.h"
 #include <math.h>
 #include <ev.h>
 
@@ -142,8 +143,9 @@ dispose (GObject *object)
 {
     MilterLibevEventLoopPrivate *priv;
 
-    if (default_event_loop == MILTER_EVENT_LOOP(object))
+    if (default_event_loop == MILTER_EVENT_LOOP(object)) {
         default_event_loop = NULL;
+    }
 
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(object);
 
@@ -204,9 +206,12 @@ MilterEventLoop *
 milter_libev_event_loop_default (void)
 {
     if (!default_event_loop) {
-        default_event_loop = g_object_new(MILTER_TYPE_LIBEV_EVENT_LOOP,
-                                          "ev-loop", ev_default_loop(0),
-                                          NULL);
+        default_event_loop =
+            g_object_new(MILTER_TYPE_LIBEV_EVENT_LOOP,
+                         "ev-loop", ev_default_loop(EVFLAG_FORKCHECK),
+                         NULL);
+    } else {
+        g_object_ref(default_event_loop);
     }
 
     return default_event_loop;
@@ -216,7 +221,7 @@ MilterEventLoop *
 milter_libev_event_loop_new (void)
 {
     return g_object_new(MILTER_TYPE_LIBEV_EVENT_LOOP,
-                        "ev-loop", ev_loop_new(0),
+                        "ev-loop", ev_loop_new(EVFLAG_FORKCHECK),
                         NULL);
 }
 
