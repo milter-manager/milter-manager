@@ -88,6 +88,9 @@ cut_teardown (void)
 static void
 pump_all_events (void)
 {
+    if (MILTER_IS_LIBEV_EVENT_LOOP(loop))
+        cut_omit("MilterLibevEventLoop doesn't support GCutStringIOChannel.");
+
     milter_test_pump_all_events(loop);
     gcut_assert_error(actual_error);
 }
@@ -180,6 +183,8 @@ test_writer_error (void)
     milter_writer_write(writer, "test-data", strlen("test-data"), &error);
     gcut_assert_error(error);
 
+    if (MILTER_IS_LIBEV_EVENT_LOOP(loop))
+        cut_omit("MilterLibevEventLoop doesn't support GCutStringIOChannel.");
     milter_test_pump_all_events(loop);
 
     expected_error = g_error_new(MILTER_WRITER_ERROR,
