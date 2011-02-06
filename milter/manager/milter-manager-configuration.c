@@ -109,7 +109,7 @@ enum
     PROP_CUSTOM_CONFIGURATION_DIRECTORY,
     PROP_CONNECTION_CHECK_INTERVAL,
     PROP_EVENT_LOOP_BACKEND,
-    PROP_N_WORKER_PROCESSES,
+    PROP_N_WORKERS,
     PROP_DEFAULT_PACKET_BUFFER_SIZE
 };
 
@@ -406,7 +406,7 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                              "The number of worker processes of the client",
                              0, MILTER_CLIENT_MAX_N_WORKERS, 0,
                              G_PARAM_READWRITE);
-    g_object_class_install_property(gobject_class, PROP_N_WORKER_PROCESSES, spec);
+    g_object_class_install_property(gobject_class, PROP_N_WORKERS, spec);
 
     spec = g_param_spec_uint("default-packet-buffer-size",
                              "Default packet buffer size",
@@ -619,7 +619,7 @@ set_property (GObject      *object,
         milter_manager_configuration_set_event_loop_backend(
             config, g_value_get_enum(value));
         break;
-    case PROP_N_WORKER_PROCESSES:
+    case PROP_N_WORKERS:
         milter_manager_configuration_set_n_workers(config, g_value_get_uint(value));
         break;
     case PROP_DEFAULT_PACKET_BUFFER_SIZE:
@@ -721,7 +721,7 @@ get_property (GObject    *object,
     case PROP_EVENT_LOOP_BACKEND:
         g_value_set_enum(value, priv->event_loop_backend);
         break;
-    case PROP_N_WORKER_PROCESSES:
+    case PROP_N_WORKERS:
         g_value_set_uint(value, priv->n_workers);
         break;
     case PROP_DEFAULT_PACKET_BUFFER_SIZE:
