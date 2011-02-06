@@ -47,6 +47,8 @@ enum
     PROP_EV_LOOP
 };
 
+static MilterEventLoop *default_event_loop = NULL;
+
 static void     dispose          (GObject         *object);
 static void     set_property     (GObject         *object,
                                   guint            prop_id,
@@ -140,6 +142,9 @@ dispose (GObject *object)
 {
     MilterLibevEventLoopPrivate *priv;
 
+    if (default_event_loop == MILTER_EVENT_LOOP(object))
+        default_event_loop = NULL;
+
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(object);
 
     if (priv->callbacks) {
@@ -198,8 +203,6 @@ get_property (GObject    *object,
 MilterEventLoop *
 milter_libev_event_loop_default (void)
 {
-    static MilterEventLoop *default_event_loop = NULL;
-
     if (!default_event_loop) {
         default_event_loop = g_object_new(MILTER_TYPE_LIBEV_EVENT_LOOP,
                                           "ev-loop", ev_default_loop(0),

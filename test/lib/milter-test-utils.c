@@ -319,7 +319,7 @@ milter_test_event_loop_new (void)
 {
     const gchar *env = g_getenv("MILTER_EVENT_LOOP_BACKEND");
     if (env && strcmp(env, "libev") == 0) {
-        return g_object_ref(milter_libev_event_loop_default());
+        return milter_libev_event_loop_default();
     } else {
         return milter_glib_event_loop_new(NULL);
     }
