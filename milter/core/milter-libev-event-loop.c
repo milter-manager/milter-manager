@@ -225,7 +225,7 @@ milter_libev_event_loop_new (void)
                         NULL);
 }
 
-typedef void (*CallbackFunc) (struct ev_loop *loop, void *data);
+typedef void (*CallbackFunc) (struct ev_loop *loop, gpointer data);
 
 struct callback_funcs {
     CallbackFunc stop;
@@ -363,7 +363,7 @@ struct io_callback_data {
     ev_io event;
     GIOChannel *channel;
     GIOFunc function;
-    void *user_data;
+    gpointer user_data;
 };
 
 static void
@@ -410,7 +410,7 @@ watch_io (MilterEventLoop *loop,
 struct child_callback_data {
     ev_child event;
     GChildWatchFunc  function;
-    void            *user_data;
+    gpointer         user_data;
     GDestroyNotify   notify;
 };
 
@@ -453,7 +453,7 @@ watch_child_full (MilterEventLoop *loop,
 struct timer_callback_data {
     ev_timer event;
     GSourceFunc function;
-    void *user_data;
+    gpointer user_data;
 };
 
 static void
@@ -496,7 +496,7 @@ add_timeout_full (MilterEventLoop *loop,
 struct idle_callback_data {
     ev_idle event;
     GSourceFunc function;
-    void *user_data;
+    gpointer user_data;
 };
 
 static void
