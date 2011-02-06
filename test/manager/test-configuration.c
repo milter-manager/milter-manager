@@ -870,6 +870,7 @@ test_clear (void)
     test_suspend_time_on_unacceptable();
     test_max_connections();
     test_max_file_descriptors();
+    test_event_loop_backend();
     test_connection_check_interval();
     test_n_workers();
     test_default_packet_buffer_size();

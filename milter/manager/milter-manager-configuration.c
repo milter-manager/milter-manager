@@ -1811,6 +1811,7 @@ clear_manager (MilterManagerConfigurationPrivate *priv)
     priv->max_connections = 0;
     priv->max_file_descriptors = 0;
     priv->connection_check_interval = DEFAULT_CONNECTION_CHECK_INTERVAL;
+    priv->event_loop_backend = MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
     priv->n_workers = 0;
     priv->default_packet_buffer_size = 0;
 }
