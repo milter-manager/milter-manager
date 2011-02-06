@@ -33,7 +33,7 @@
 typedef struct _MilterManagerTestClientPrivate MilterManagerTestClientPrivate;
 struct _MilterManagerTestClientPrivate
 {
-    GCutEgg *egg;
+    GCutProcess *process;
     guint port;
     gchar *name;
     MilterEventLoop *loop;
@@ -98,7 +98,7 @@ milter_manager_test_client_init (MilterManagerTestClient *test_client)
 
     priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(test_client);
 
-    priv->egg = NULL;
+    priv->process = NULL;
     priv->port = 0;
     priv->name = NULL;
     priv->command = NULL;
@@ -387,7 +387,7 @@ split_response (const gchar *response, gsize size)
 }
 
 static void
-cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
+cb_output_received (GCutProcess *process, const gchar *chunk, gsize size,
                     gpointer user_data)
 {
     MilterManagerTestClient *client = user_data;
@@ -398,9 +398,9 @@ cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
     priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client);
 
     g_string_append_len(priv->output_received, chunk, size);
-    output_channel = gcut_egg_get_output(egg);
+    output_channel = gcut_process_get_output_channel(process);
     if (chunk[size - 1] != '\n' ||
-        size == 4096 /* FIXME: 4096 is GCutEgg's buffer size */ ||
+        size == 4096 /* FIXME: 4096 is GCutProcess's buffer size */ ||
         g_io_channel_get_buffer_condition(output_channel) == G_IO_IN) {
         return;
     }
@@ -469,7 +469,7 @@ cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
 }
 
 static void
-cb_error_received (GCutEgg *egg, const gchar *chunk, gsize size,
+cb_error_received (GCutProcess *process, const gchar *chunk, gsize size,
                    gpointer user_data)
 {
     GString *string;
@@ -480,7 +480,7 @@ cb_error_received (GCutEgg *egg, const gchar *chunk, gsize size,
 }
 
 static void
-cb_reaped (GCutEgg *egg, gint status, gpointer user_data)
+cb_reaped (GCutProcess *process, gint status, gpointer user_data)
 {
     MilterManagerTestClient *client = user_data;
     MilterManagerTestClientPrivate *priv;
@@ -490,10 +490,10 @@ cb_reaped (GCutEgg *egg, gint status, gpointer user_data)
 }
 
 static void
-setup_egg_signals (GCutEgg *egg, MilterManagerTestClient *client)
+setup_process_signals (GCutProcess *process, MilterManagerTestClient *client)
 {
 #define CONNECT(name)                                                   \
-    g_signal_connect(egg, #name, G_CALLBACK(cb_ ## name), client)
+    g_signal_connect(process, #name, G_CALLBACK(cb_ ## name), client)
 
     CONNECT(output_received);
     CONNECT(error_received);
@@ -503,10 +503,10 @@ setup_egg_signals (GCutEgg *egg, MilterManagerTestClient *client)
 }
 
 static void
-teardown_egg_signals (GCutEgg *egg, MilterManagerTestClient *client)
+teardown_process_signals (GCutProcess *process, MilterManagerTestClient *client)
 {
 #define DISCONNECT(name)                                                \
-    g_signal_handlers_disconnect_by_func(egg,                           \
+    g_signal_handlers_disconnect_by_func(process,                           \
                                          G_CALLBACK(cb_ ## name),       \
                                          client)
 
@@ -518,10 +518,10 @@ teardown_egg_signals (GCutEgg *egg, MilterManagerTestClient *client)
 }
 
 static void
-egg_free (GCutEgg *egg, MilterManagerTestClient *client)
+process_free (GCutProcess *process, MilterManagerTestClient *client)
 {
-    teardown_egg_signals(egg, client);
-    g_object_unref(egg);
+    teardown_process_signals(process, client);
+    g_object_unref(process);
 }
 
 static void
@@ -634,9 +634,9 @@ dispose (GObject *object)
         priv->name = NULL;
     }
 
-    if (priv->egg) {
-        egg_free(priv->egg, client);
-        priv->egg = NULL;
+    if (priv->process) {
+        process_free(priv->process, client);
+        priv->process = NULL;
     }
 
     if (priv->command) {
@@ -694,18 +694,18 @@ milter_manager_test_client_run (MilterManagerTestClient *client, GError **error)
 
     priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client);
 
-    if (priv->egg)
-        egg_free(priv->egg, client);
+    if (priv->process)
+        process_free(priv->process, client);
 
     if (!priv->command)
         milter_manager_test_client_set_arguments(client, NULL);
 
-    priv->egg = gcut_egg_new_array(priv->command);
+    priv->process = gcut_process_new_array(priv->command);
 
-    setup_egg_signals(priv->egg, client);
+    setup_process_signals(priv->process, client);
     priv->ready = FALSE;
     priv->reaped = FALSE;
-    if (!gcut_egg_hatch(priv->egg, error))
+    if (!gcut_process_run(priv->process, error))
         return FALSE;
 
     while (!priv->ready && !priv->reaped)

@@ -59,17 +59,17 @@ static gchar *original_lang;
 
 static gchar *tmp_dir;
 
-typedef struct _EggData
+typedef struct _ProcessData
 {
-    GCutEgg *egg;
+    GCutProcess *process;
     gchar *command_path;
     GString *output_string;
     GString *error_string;
     gboolean reaped;
-} EggData;
+} ProcessData;
 
-static EggData *manager_data;
-static EggData *server_data;
+static ProcessData *manager_data;
+static ProcessData *server_data;
 
 static gchar *
 build_manager_path (void)
@@ -91,13 +91,13 @@ build_server_path (void)
 
 typedef gchar *(*BuildPathFunc) (void);
 
-static EggData *
-egg_data_new (BuildPathFunc path_func)
+static ProcessData *
+process_data_new (BuildPathFunc path_func)
 {
-    EggData *data;
+    ProcessData *data;
 
-    data = g_new0(EggData, 1);
-    data->egg = NULL;
+    data = g_new0(ProcessData, 1);
+    data->process = NULL;
     data->command_path = path_func();
     data->output_string = g_string_new(NULL);
     data->error_string = g_string_new(NULL);
@@ -115,8 +115,8 @@ cb_timeout_emitted (gpointer data)
     return FALSE;
 }
 
-#define manager_egg manager_data->egg
-#define server_egg server_data->egg
+#define manager_process manager_data->process
+#define server_process server_data->process
 
 #define wait_for_server_reaping()               \
     cut_trace(wait_for_reaping(server_data, TRUE))
@@ -125,7 +125,7 @@ cb_timeout_emitted (gpointer data)
     cut_trace(wait_for_reaping(manager_data, TRUE))
 
 static void
-wait_for_reaping (EggData *data, gboolean must)
+wait_for_reaping (ProcessData *data, gboolean must)
 {
     gboolean timeout_emitted = FALSE;
     guint timeout_id;
@@ -147,13 +147,16 @@ wait_for_reaping (EggData *data, gboolean must)
 }
 
 static void
-egg_data_free (EggData *data)
+process_data_free (ProcessData *data)
 {
-    if (data->egg) {
-        if (!data->reaped && gcut_egg_get_pid(data->egg) > 0)
-            gcut_egg_kill(data->egg, SIGINT);
+    if (data->process) {
+        if (!data->reaped && gcut_process_get_pid(data->process) > 0) {
+            GError *error = NULL;
+            gcut_process_kill(data->process, SIGINT, &error);
+            gcut_assert_error(error);
+        }
         wait_for_reaping(manager_data, FALSE);
-        g_object_unref(data->egg);
+        g_object_unref(data->process);
     }
 
     if (data->command_path)
@@ -183,8 +186,8 @@ cut_setup (void)
 
     main_scenario = NULL;
 
-    manager_data = egg_data_new(build_manager_path);
-    server_data = egg_data_new(build_server_path);
+    manager_data = process_data_new(build_manager_path);
+    server_data = process_data_new(build_server_path);
 
     lt_milter_manager = g_build_filename(milter_test_get_build_dir(),
                                          "src",
@@ -209,9 +212,9 @@ cut_teardown (void)
         g_object_unref(main_scenario);
 
     if (manager_data)
-        egg_data_free(manager_data);
+        process_data_free(manager_data);
     if (server_data)
-        egg_data_free(server_data);
+        process_data_free(server_data);
 
     if (milter_manager_program_name)
         g_free(milter_manager_program_name);
@@ -233,30 +236,30 @@ cut_teardown (void)
 }
 
 static void
-cb_output_received (GCutEgg *egg, const gchar *chunk, gsize size,
+cb_output_received (GCutProcess *process, const gchar *chunk, gsize size,
                     gpointer user_data)
 {
-    EggData *data = user_data;
+    ProcessData *data = user_data;
     g_string_append_len(data->output_string, chunk, size);
 }
 
 static void
-cb_error_received (GCutEgg *egg, const gchar *chunk, gsize size,
+cb_error_received (GCutProcess *process, const gchar *chunk, gsize size,
                    gpointer user_data)
 {
-    EggData *data = user_data;
+    ProcessData *data = user_data;
     g_string_append_len(data->error_string, chunk, size);
 }
 
 static void
-cb_reaped (GCutEgg *egg, gint status, gpointer user_data)
+cb_reaped (GCutProcess *process, gint status, gpointer user_data)
 {
-    EggData *data = user_data;
+    ProcessData *data = user_data;
     data->reaped = TRUE;
 }
 
 static void
-setup_egg (EggData *data, const gchar *first_arg, ...)
+setup_process (ProcessData *data, const gchar *first_arg, ...)
 {
     va_list var_args;
     const gchar *arg;
@@ -282,11 +285,11 @@ setup_egg (EggData *data, const gchar *first_arg, ...)
     if (strings)
         g_list_free(strings);
 
-    data->egg = gcut_egg_new_argv(argc, argv);
+    data->process = gcut_process_new_argv(argc, argv);
     g_strfreev(argv);
 
 #define CONNECT(name)                                                   \
-    g_signal_connect(data->egg, #name, G_CALLBACK(cb_ ## name), data)
+    g_signal_connect(data->process, #name, G_CALLBACK(cb_ ## name), data)
 
     CONNECT(output_received);
     CONNECT(error_received);
@@ -347,8 +350,8 @@ start_manager (void)
     GError *error = NULL;
     const gchar spec[] = "inet:19999@localhost";
 
-    setup_egg(manager_data, "-s", spec, "--config-dir", scenario_dir, NULL);
-    gcut_egg_hatch(manager_egg, &error);
+    setup_process(manager_data, "-s", spec, "--config-dir", scenario_dir, NULL);
+    gcut_process_run(manager_process, &error);
     gcut_assert_error(error);
     cut_trace(wait_for_manager_ready(spec));
 
@@ -362,8 +365,8 @@ start_server (void)
     GError *error = NULL;
     const gchar spec[] = "inet:19999@localhost";
 
-    setup_egg(server_data, "--unknown='!'", "-s", spec, NULL);
-    gcut_egg_hatch(server_egg, &error);
+    setup_process(server_data, "--unknown='!'", "-s", spec, NULL);
+    gcut_process_run(server_process, &error);
     gcut_assert_error(error);
 }
 
@@ -372,8 +375,8 @@ test_version (void)
 {
     GError *error = NULL;
 
-    setup_egg(manager_data, "--version", NULL);
-    gcut_egg_hatch(manager_egg, &error);
+    setup_process(manager_data, "--version", NULL);
+    gcut_process_run(manager_process, &error);
     gcut_assert_error(error);
 
     wait_for_manager_reaping();
@@ -387,8 +390,8 @@ test_invalid_spec (void)
 {
     GError *error = NULL;
 
-    setup_egg(manager_data, "-s", "XXXX@localhost", NULL);
-    gcut_egg_hatch(manager_egg, &error);
+    setup_process(manager_data, "-s", "XXXX@localhost", NULL);
+    gcut_process_run(manager_process, &error);
     gcut_assert_error(error);
 
     wait_for_manager_reaping();
@@ -403,8 +406,8 @@ test_unknown_option (void)
 {
     GError *error = NULL;
 
-    setup_egg(manager_data, "--nonexistent", NULL);
-    gcut_egg_hatch(manager_egg, &error);
+    setup_process(manager_data, "--nonexistent", NULL);
+    gcut_process_run(manager_process, &error);
     gcut_assert_error(error);
 
     wait_for_manager_reaping();
@@ -538,8 +541,8 @@ test_check_controller_port (void)
 {
     GError *error = NULL;
 
-    setup_egg(manager_data, "--config-dir", scenario_dir, NULL);
-    gcut_egg_hatch(manager_egg, &error);
+    setup_process(manager_data, "--config-dir", scenario_dir, NULL);
+    gcut_process_run(manager_process, &error);
     gcut_assert_error(error);
     cut_trace(wait_for_manager_ready("inet:2929@localhost"));
 }
@@ -554,8 +557,8 @@ test_unix_socket_mode (void)
 
     path = cut_take_printf("%s/milter.sock", tmp_dir);
     spec = cut_take_printf("unix:%s", path);
-    setup_egg(manager_data, "-s", spec, NULL);
-    gcut_egg_hatch(manager_egg, &error);
+    setup_process(manager_data, "-s", spec, NULL);
+    gcut_process_run(manager_process, &error);
     gcut_assert_error(error);
 
     cut_trace(wait_for_manager_ready(spec));
@@ -577,16 +580,18 @@ test_remove_manager_unix_socket_on_close (void)
     cut_assert_false(g_file_test(path, G_FILE_TEST_EXISTS));
 
     spec = cut_take_printf("unix:%s", path);
-    setup_egg(manager_data,
+    setup_process(manager_data,
               "-s", spec,
               "--config-dir", scenario_dir, NULL);
-    gcut_egg_hatch(manager_egg, &error);
+    gcut_process_run(manager_process, &error);
     gcut_assert_error(error);
 
     cut_trace(wait_for_manager_ready(spec));
     cut_assert_true(g_file_test(path, G_FILE_TEST_EXISTS));
 
-    gcut_egg_kill(manager_egg, SIGINT);
+    gcut_process_kill(manager_process, SIGINT, &error);
+    gcut_assert_error(error);
+
     cut_trace(wait_for_reaping(manager_data, TRUE));
     cut_assert_false(g_file_test(path, G_FILE_TEST_EXISTS));
 }
