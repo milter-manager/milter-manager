@@ -344,7 +344,14 @@ wait_for_manager_ready (const gchar *spec)
         close(socket_fd);
 
     errno = errno_keep;
-    cut_assert_errno(cut_message("spec: <%s>", spec));
+    cut_assert_errno(cut_message("timeout: <%s>\n"
+                                 "spec: <%s>\n"
+                                 "OUTPUT: <%s>\n"
+                                 "ERROR: <%s>",
+                                 timeout_emitted ? "true" : "false",
+                                 spec,
+                                 manager_data->output_string->str,
+                                 manager_data->error_string->str));
 
     cut_assert_false(timeout_emitted);
 }
