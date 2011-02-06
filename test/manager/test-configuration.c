@@ -208,6 +208,7 @@ test_children (void)
 
     child = milter_manager_egg_hatch(egg);
     milter_manager_children_add_child(expected_children, child);
+    g_object_unref(child);
 
     cut_assert_false(attached_to);
     actual_children = milter_manager_children_new(config, loop);
