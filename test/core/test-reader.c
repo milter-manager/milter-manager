@@ -121,6 +121,19 @@ cb_finished (MilterFinishedEmittable *emittable)
     finished = TRUE;
 }
 
+#define pump_all_events()                       \
+    cut_trace_with_info_expression(             \
+        pump_all_events_helper(),               \
+        pump_all_events())
+
+static void
+pump_all_events_helper (void)
+{
+    if (MILTER_IS_LIBEV_EVENT_LOOP(loop))
+        cut_omit("MilterLibevEventLoop doesn't support GCutStringIOChannel.");
+    milter_test_pump_all_events(loop);
+}
+
 static void
 write_data (GIOChannel *channel, const gchar *data, gsize size)
 {
@@ -135,7 +148,7 @@ write_data (GIOChannel *channel, const gchar *data, gsize size)
     g_io_channel_seek_position(channel, read_offset, G_SEEK_CUR, &error);
     gcut_assert_error(error);
 
-    milter_test_pump_all_events(loop);
+    pump_all_events();
 }
 
 void
@@ -213,7 +226,7 @@ test_finished_signal (void)
                             actual_read_string->str, actual_read_size);
     cut_assert_false(finished);
     g_io_channel_close(channel);
-    milter_test_pump_all_events(loop);
+    pump_all_events();
     cut_assert_true(finished);
 }
 
