@@ -691,6 +691,7 @@ gboolean
 milter_manager_test_client_run (MilterManagerTestClient *client, GError **error)
 {
     MilterManagerTestClientPrivate *priv;
+    GCutEventLoop *gcut_event_loop;
 
     priv = MILTER_MANAGER_TEST_CLIENT_GET_PRIVATE(client);
 
@@ -702,6 +703,10 @@ milter_manager_test_client_run (MilterManagerTestClient *client, GError **error)
 
     priv->process = gcut_process_new_array(priv->command);
 
+    gcut_event_loop = gcut_milter_event_loop_new(priv->loop);
+    gcut_process_set_event_loop(priv->process, gcut_event_loop);
+    g_object_unref(gcut_event_loop);
+
     setup_process_signals(priv->process, client);
     priv->ready = FALSE;
     priv->reaped = FALSE;
@@ -709,7 +714,7 @@ milter_manager_test_client_run (MilterManagerTestClient *client, GError **error)
         return FALSE;
 
     while (!priv->ready && !priv->reaped)
-        g_main_context_iteration(NULL, TRUE);
+        milter_event_loop_iterate(priv->loop, TRUE);
 
     return !priv->reaped;
 }
