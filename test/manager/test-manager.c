@@ -266,6 +266,7 @@ setup_process (ProcessData *data, const gchar *first_arg, ...)
     gint argc = 1, i;
     gchar **argv;
     GList *strings = NULL, *node;
+    GCutEventLoop *gcut_event_loop;
 
     va_start(var_args, first_arg);
     arg = first_arg;
@@ -287,6 +288,10 @@ setup_process (ProcessData *data, const gchar *first_arg, ...)
 
     data->process = gcut_process_new_argv(argc, argv);
     g_strfreev(argv);
+
+    gcut_event_loop = gcut_milter_event_loop_new(loop);
+    gcut_process_set_event_loop(data->process, gcut_event_loop);
+    g_object_unref(gcut_event_loop);
 
 #define CONNECT(name)                                                   \
     g_signal_connect(data->process, #name, G_CALLBACK(cb_ ## name), data)
