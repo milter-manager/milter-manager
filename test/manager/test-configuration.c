@@ -211,6 +211,8 @@ test_children (void)
     g_object_unref(child);
 
     cut_assert_false(attached_to);
+    if (actual_children)
+        g_object_unref(actual_children);
     actual_children = milter_manager_children_new(config, loop);
     milter_manager_configuration_setup_children(config, actual_children, NULL);
     milter_assert_equal_children(expected_children, actual_children);
