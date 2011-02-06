@@ -539,6 +539,7 @@ if test "x$with_libev" != "xno"; then
     LDFLAGS="$_SAVE_LDFLAGS"
     if test "x$libev_available" != "xno"; then
       LIBEV_CFLAGS="-I$libev_prefix/include"
+      LIBEV_LA=""
       LIBEV_LIBS="-L$libev_prefix/lib -lev"
       break
     fi
@@ -549,12 +550,14 @@ if test "x$with_libev" != "xno"; then
     m4_include([libev-4.03/libev.m4])
     AC_DEFINE(HAVE_LIBEV, [1], [Define to 1 if libev is available.])
     LIBEV_CFLAGS='-I$(top_srcdir)/libev-4.03'
-    LIBEV_LIBS='$(top_builddir)/libev-4.03/libev.la'
+    LIBEV_LA='$(top_builddir)/libev-4.03/libev.la'
+    LIBEV_LIBS='$(LIBEV_LA)'
   fi
   AC_DEFINE(HAVE_LIBEV, [1], [Define to 1 if libev is available.])
 fi
 AM_CONDITIONAL(WITH_LIBEV, [test "x$libev_available" != xno])
 AC_SUBST(LIBEV_CFLAGS)
+AC_SUBST(LIBEV_LA)
 AC_SUBST(LIBEV_LIBS)
 
 dnl **************************************************************
