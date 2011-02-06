@@ -176,6 +176,19 @@ write_packet (const gchar *packet, gsize packet_size)
     gcut_assert_error(error);
 }
 
+#define pump_all_events()                       \
+    cut_trace_with_info_expression(             \
+        pump_all_events_helper(),               \
+        pump_all_events())
+
+static void
+pump_all_events_helper (void)
+{
+    if (MILTER_IS_LIBEV_EVENT_LOOP(loop))
+        cut_omit("MilterLibevEventLoop doesn't support GCutStringIOChannel.");
+    milter_test_pump_all_events(loop);
+}
+
 void
 test_launch (void)
 {
@@ -190,7 +203,7 @@ test_launch (void)
                                                         &packet, &packet_size,
                                                         command_line, user_name);
     cut_trace(write_packet(packet, packet_size));
-    milter_test_pump_all_events(loop);
+    pump_all_events();
 
     milter_manager_reply_encoder_encode_success(reply_encoder,
                                                 &packet, &packet_size);
@@ -215,7 +228,7 @@ test_already_launched (void)
                                                         command_line, user_name);
     cut_trace(write_packet(packet, packet_size));
     cut_trace(write_packet(packet, packet_size));
-    milter_test_pump_all_events(loop);
+    pump_all_events();
 
     milter_manager_reply_encoder_encode_success(reply_encoder,
                                                 &packet, &packet_size);
@@ -288,7 +301,7 @@ test_launch_error (gconstpointer data)
                                                         &packet, &packet_size,
                                                         command, user_name);
     cut_trace(write_packet(packet, packet_size));
-    milter_test_pump_all_events(loop);
+    pump_all_events();
 
     milter_manager_reply_encoder_encode_error(reply_encoder,
                                               &packet, &packet_size,
@@ -324,7 +337,7 @@ test_run (void)
     gboolean timeout_emitted = FALSE;
 
     idle_id = milter_event_loop_add_idle(loop, cb_idle_shutdown, launcher);
-    timeout_id = milter_event_loop_add_timeout(loop, 0.1,
+    timeout_id = milter_event_loop_add_timeout(loop, 0.5,
                                                cb_timeout_mark_emitted,
                                                &timeout_emitted);
 
