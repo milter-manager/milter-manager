@@ -36,7 +36,7 @@ G_DEFINE_TYPE(MilterLibevEventLoop, milter_libev_event_loop, MILTER_TYPE_EVENT_L
 typedef struct _MilterLibevEventLoopPrivate	MilterLibevEventLoopPrivate;
 struct _MilterLibevEventLoopPrivate
 {
-    struct ev_loop *base;
+    struct ev_loop *ev_loop;
     guint tag;
     GHashTable *callbacks;
 };
@@ -129,7 +129,7 @@ milter_libev_event_loop_init (MilterLibevEventLoop *loop)
     MilterLibevEventLoopPrivate *priv;
 
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
-    priv->base = NULL;
+    priv->ev_loop = NULL;
     priv->tag = 0;
     priv->callbacks = g_hash_table_new_full(g_direct_hash, g_direct_equal,
                                             NULL, destroy_callback);
@@ -147,9 +147,9 @@ dispose (GObject *object)
         priv->callbacks = NULL;
     }
 
-    if (priv->base) {
-        ev_loop_destroy(priv->base);
-        priv->base = NULL;
+    if (priv->ev_loop) {
+        ev_loop_destroy(priv->ev_loop);
+        priv->ev_loop = NULL;
     }
 
     G_OBJECT_CLASS(milter_libev_event_loop_parent_class)->dispose(object);
@@ -166,9 +166,9 @@ set_property (GObject      *object,
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(object);
     switch (prop_id) {
     case PROP_EV_LOOP:
-        if (priv->base)
-            ev_loop_destroy(priv->base);
-        priv->base = g_value_get_pointer(value);
+        if (priv->ev_loop)
+            ev_loop_destroy(priv->ev_loop);
+        priv->ev_loop = g_value_get_pointer(value);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -187,7 +187,7 @@ get_property (GObject    *object,
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(object);
     switch (prop_id) {
     case PROP_EV_LOOP:
-        g_value_set_pointer(value, priv->base);
+        g_value_set_pointer(value, priv->ev_loop);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -274,7 +274,7 @@ destroy_callback (gpointer data)
     --header;
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(header->header.loop);
     funcs = header->header.funcs;
-    funcs->stop(priv->base, data);
+    funcs->stop(priv->ev_loop, data);
     g_free(header);
 }
 
@@ -293,7 +293,7 @@ run (MilterEventLoop *loop)
     MilterLibevEventLoopPrivate *priv;
 
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
-    ev_run(priv->base, 0);
+    ev_run(priv->ev_loop, 0);
 }
 
 static gboolean
@@ -303,9 +303,9 @@ iterate (MilterEventLoop *loop, gboolean may_block)
 
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
     if (may_block) {
-        ev_run(priv->base, EVRUN_ONCE);
+        ev_run(priv->ev_loop, EVRUN_ONCE);
     } else {
-        ev_run(priv->base, EVRUN_NOWAIT | EVRUN_ONCE);
+        ev_run(priv->ev_loop, EVRUN_NOWAIT | EVRUN_ONCE);
     }
     return TRUE;
 }
@@ -316,7 +316,7 @@ quit (MilterEventLoop *loop)
     MilterLibevEventLoopPrivate *priv;
 
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
-    ev_break(priv->base, EVBREAK_ONE);
+    ev_break(priv->ev_loop, EVBREAK_ONE);
 }
 
 static short
@@ -395,7 +395,7 @@ watch_io (MilterEventLoop *loop,
     cb->function = function;
     cb->user_data = data;
     ev_io_init(&cb->event, io_func, fd, evcond_from_g_io_condition(condition));
-    ev_io_start(priv->base, &cb->event);
+    ev_io_start(priv->ev_loop, &cb->event);
     return add_callback(priv, cb);
 }
 
@@ -438,7 +438,7 @@ watch_child_full (MilterEventLoop *loop,
     cb->user_data = data;
     cb->notify = notify;
     ev_child_init(&cb->event, child_func, pid, FALSE);
-    ev_child_start(priv->base, &cb->event);
+    ev_child_start(priv->ev_loop, &cb->event);
     return add_callback(priv, cb);
 }
 
@@ -481,7 +481,7 @@ add_timeout_full (MilterEventLoop *loop,
     cb->function = function;
     cb->user_data = data;
     ev_timer_init(&cb->event, timer_func, interval_in_seconds, interval_in_seconds);
-    ev_timer_start(priv->base, &cb->event);
+    ev_timer_start(priv->ev_loop, &cb->event);
     return add_callback(priv, cb);
 }
 
@@ -522,7 +522,7 @@ add_idle_full (MilterEventLoop *loop,
     cb->function = function;
     cb->user_data = data;
     ev_idle_init(&cb->event, idle_func);
-    ev_idle_start(priv->base, &cb->event);
+    ev_idle_start(priv->ev_loop, &cb->event);
     return add_callback(priv, cb);
 }
 
