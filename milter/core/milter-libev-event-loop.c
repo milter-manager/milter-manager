@@ -44,10 +44,18 @@ struct _MilterLibevEventLoopPrivate
 enum
 {
     PROP_0,
-    PROP_LAST
+    PROP_EV_LOOP
 };
 
 static void     dispose          (GObject         *object);
+static void     set_property     (GObject         *object,
+                                  guint            prop_id,
+                                  const GValue    *value,
+                                  GParamSpec      *pspec);
+static void     get_property     (GObject         *object,
+                                  guint            prop_id,
+                                  GValue          *value,
+                                  GParamSpec      *pspec);
 
 static void     destroy_callback (gpointer         callback);
 
@@ -89,10 +97,13 @@ static void
 milter_libev_event_loop_class_init (MilterLibevEventLoopClass *klass)
 {
     GObjectClass *gobject_class;
+    GParamSpec *spec;
 
     gobject_class = G_OBJECT_CLASS(klass);
 
     gobject_class->dispose      = dispose;
+    gobject_class->set_property = set_property;
+    gobject_class->get_property = get_property;
 
     klass->parent_class.run = run;
     klass->parent_class.iterate = iterate;
@@ -103,6 +114,12 @@ milter_libev_event_loop_class_init (MilterLibevEventLoopClass *klass)
     klass->parent_class.add_idle_full = add_idle_full;
     klass->parent_class.remove = remove;
 
+    spec = g_param_spec_pointer("ev-loop",
+                                "EV loop",
+                                "The ev_loop instance for the event loop",
+                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+    g_object_class_install_property(gobject_class, PROP_EV_LOOP, spec);
+
     g_type_class_add_private(gobject_class, sizeof(MilterLibevEventLoopPrivate));
 }
 
@@ -112,7 +129,7 @@ milter_libev_event_loop_init (MilterLibevEventLoop *loop)
     MilterLibevEventLoopPrivate *priv;
 
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
-    priv->base = ev_loop_new(0);
+    priv->base = NULL;
     priv->tag = 0;
     priv->callbacks = g_hash_table_new_full(g_direct_hash, g_direct_equal,
                                             NULL, destroy_callback);
@@ -138,13 +155,55 @@ dispose (GObject *object)
     G_OBJECT_CLASS(milter_libev_event_loop_parent_class)->dispose(object);
 }
 
+static void
+set_property (GObject      *object,
+              guint         prop_id,
+              const GValue *value,
+              GParamSpec   *pspec)
+{
+    MilterLibevEventLoopPrivate *priv;
+
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(object);
+    switch (prop_id) {
+    case PROP_EV_LOOP:
+        if (priv->base)
+            ev_loop_destroy(priv->base);
+        priv->base = g_value_get_pointer(value);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
+get_property (GObject    *object,
+              guint       prop_id,
+              GValue     *value,
+              GParamSpec *pspec)
+{
+    MilterLibevEventLoopPrivate *priv;
+
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(object);
+    switch (prop_id) {
+    case PROP_EV_LOOP:
+        g_value_set_pointer(value, priv->base);
+        break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
+        break;
+    }
+}
+
 MilterEventLoop *
 milter_libev_event_loop_default (void)
 {
     static MilterEventLoop *default_event_loop = NULL;
 
     if (!default_event_loop) {
-        default_event_loop = milter_libev_event_loop_new();
+        default_event_loop = g_object_new(MILTER_TYPE_LIBEV_EVENT_LOOP,
+                                          "ev-loop", ev_default_loop(0),
+                                          NULL);
     }
 
     return default_event_loop;
@@ -154,6 +213,7 @@ MilterEventLoop *
 milter_libev_event_loop_new (void)
 {
     return g_object_new(MILTER_TYPE_LIBEV_EVENT_LOOP,
+                        "ev-loop", ev_loop_new(0),
                         NULL);
 }
 
