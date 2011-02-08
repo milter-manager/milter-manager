@@ -19,17 +19,19 @@ class TestEventLoop < Test::Unit::TestCase
 
   def setup
     @loop = create_event_loop
-    @tag = nil
+    @tags = []
   end
 
   def teardown
-    @loop.remove(@tag) if @tag
+    @tags.each do |tag|
+      @loop.remove(tag)
+    end
   end
 
   def test_timeout
     timeouted = false
     interval = 0.001
-    @tag = @loop.add_timeout(interval) do
+    @tags << @loop.add_timeout(interval) do
       timeouted = true
       false
     end
@@ -41,7 +43,7 @@ class TestEventLoop < Test::Unit::TestCase
   def test_timeout_not_timeouted
     timeouted = false
     interval = 1
-    @tag = @loop.add_timeout(interval) do
+    @tags << @loop.add_timeout(interval) do
       timeouted = true
       false
     end
@@ -51,13 +53,13 @@ class TestEventLoop < Test::Unit::TestCase
 
   def test_timeout_without_block
     assert_raise(ArgumentError.new("timeout block is missing")) do
-      @loop.add_timeout(1)
+      @tags << @loop.add_timeout(1)
     end
   end
 
   def test_idle
     idled = false
-    @tag = @loop.add_idle do
+    @tags << @loop.add_idle do
       idled = true
       false
     end
@@ -65,9 +67,22 @@ class TestEventLoop < Test::Unit::TestCase
     assert_true(idled)
   end
 
+  def test_idle_not_idled
+    idled = false
+    @tags << @loop.add_idle do
+      idled = true
+      false
+    end
+    @tags << @loop.add_timeout(0.000001) do
+      false
+    end
+    assert_true(@loop.iterate(:may_block => false))
+    assert_false(idled)
+  end
+
   def test_idle_without_block
     assert_raise(ArgumentError.new("idle block is missing")) do
-      @loop.add_idle
+      @tags << @loop.add_idle
     end
   end
 end
