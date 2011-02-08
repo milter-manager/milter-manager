@@ -97,7 +97,7 @@
 	  企業導入など有償でのサポートや導入支援が必要な場合は<a href="http://www.clear-code.com/services/milter-manager.html">クリアコードが提供するmilter manager関連サービス</a>を検討してください。
 	</p>
 
-	<h2 id="development">開発版リリース</h2>
+	<h2 id="development-release">開発版リリース</h2>
 	<p>
 	  2010-08-03に開発版1.5.3がリリースされました。開発版には多くの新機能が含まれていますが、安定して動作しない可能性があります。実運用には安定版を利用してください。
         </p>
@@ -151,6 +151,13 @@ deb-src http://milter-manager.sourceforge.net/debian/development/ lenny main</pr
 	<p>
 	  yumリポジトリを登録したら以下のコマンドでインストールできます。
 	  <pre class="command">% sudo yum install --enablerepo=milter-manager-development -y milter-manager</pre>
+	</p>
+
+	<h2 id="development">milter managerの開発に参加</h2>
+	<p>
+	  milter managerはGitHubの<a href="https://github.com/milter-manager/milter-manager">gitリポジトリ</a>を利用して開発を行っています。ソースコードは以下のように取得できます。
+	  <pre class="command">% git clone https://github.com/milter-manager/milter-manager.git</pre>
+	  新機能や問題修正のパッチがある場合は、リポジトリをforkしてpull requestを送ってください。または<a href="https://lists.sourceforge.net/lists/listinfo/milter-manager-users-ja">メーリングリスト</a>でも受け付けています。
 	</p>
       </div>
 
