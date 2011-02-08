@@ -64,4 +64,10 @@ class TestEventLoop < Test::Unit::TestCase
     assert_true(@loop.iterate(:may_block => false))
     assert_true(idled)
   end
+
+  def test_idle_without_block
+    assert_raise(ArgumentError.new("idle block is missing")) do
+      @loop.add_idle
+    end
+  end
 end
