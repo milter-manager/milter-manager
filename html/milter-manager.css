@@ -249,7 +249,7 @@ div.sponsors
 {
   border-top: solid black 1px;
   position: relative;
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 div.sponsors p
@@ -271,17 +271,24 @@ div.sponsors p#sponsor-sf-net
   right: 50px;
 }
 
-div.sponsors p#sponsor-tango
+div.sponsors p#sponsor-github
 {
   position: absolute;
   top: 55px;
   right: 50px;
 }
 
+div.sponsors p#sponsor-tango
+{
+  position: absolute;
+  top: 110px;
+  right: 50px;
+}
+
 div.sponsors p#sponsor-famfamfam
 {
   position: absolute;
-  top: 118px;
+  top: 173px;
   right: 50px;
   padding-bottom: 50px;
 }
