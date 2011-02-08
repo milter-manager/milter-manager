@@ -38,6 +38,114 @@
 
 #define SELF(self) RVAL2EVENT_LOOP(self)
 
+typedef struct _CallbackContext CallbackContext;
+struct _CallbackContext
+{
+    VALUE event_loop;
+    VALUE callback;
+};
+
+static CallbackContext *
+callback_context_new (VALUE event_loop, VALUE callback)
+{
+    CallbackContext *context;
+    VALUE callbacks;
+
+    context = g_new(CallbackContext, 1);
+    context->event_loop = event_loop;
+    context->callback = callback;
+
+    callbacks = rb_iv_get(context->event_loop, "callbacks");
+    if (NIL_P(callbacks)) {
+	callbacks = rb_ary_new();
+	rb_iv_set(context->event_loop, "callbacks", callbacks);
+    }
+    rb_ary_push(callbacks, callback);
+
+    return context;
+}
+
+static void
+callback_context_free (CallbackContext *context)
+{
+    VALUE callback, callbacks;
+    VALUE *callbacks_raw;
+    long i, length;
+
+    callback = context->callback;
+    callbacks = rb_iv_get(context->event_loop, "callbacks");
+    callbacks_raw = RARRAY_PTR(callbacks);
+    length = RARRAY_LEN(callbacks);
+    for (i = 0; i < length; i++) {
+	if (rb_equal(callbacks_raw[i], callback)) {
+	    rb_ary_delete_at(callbacks, i);
+	    break;
+	}
+    }
+    g_free(context);
+}
+
+static gboolean
+cb_timeout (gpointer user_data)
+{
+    CallbackContext *context = user_data;
+
+    return RVAL2CBOOL(rb_funcall(context->callback, rb_intern("call"), 0));
+}
+
+static void
+cb_timeout_notify (gpointer user_data)
+{
+    CallbackContext *context = user_data;
+    callback_context_free(context);
+}
+
+static VALUE
+add_timeout (int argc, VALUE *argv, VALUE self)
+{
+    VALUE rb_interval, rb_priority, rb_options, rb_block;
+    CallbackContext *context;
+    gdouble interval;
+    gint priority = G_PRIORITY_DEFAULT;
+    guint tag;
+
+    rb_scan_args(argc, argv, "11&", &rb_interval, &rb_options, &rb_block);
+
+    interval = NUM2DBL(rb_interval);
+
+    rb_milter__scan_options(rb_options,
+			    "priority", &rb_priority,
+			    NULL);
+
+    if (!NIL_P(rb_priority))
+	priority = NUM2INT(rb_priority);
+
+    context = callback_context_new(self, rb_block);
+    tag = milter_event_loop_add_timeout_full(SELF(self),
+					     priority,
+					     interval,
+					     cb_timeout,
+					     context,
+					     cb_timeout_notify);
+
+    return UINT2NUM(tag);
+}
+
+static VALUE
+iterate (int argc, VALUE *argv, VALUE self)
+{
+    VALUE rb_may_block, rb_options;
+    gboolean may_block, event_processed;
+
+    rb_scan_args(argc, argv, "01", &rb_options);
+    rb_milter__scan_options(rb_options,
+			    "may_block", &rb_may_block,
+			    NULL);
+    may_block = RVAL2CBOOL(rb_may_block);
+    event_processed = milter_event_loop_iterate(SELF(self), may_block);
+    return CBOOL2RVAL(event_processed);
+}
+
 #if USE_BLOCKING_REGION
 static VALUE
 rb_loop_run_block (void *arg)
@@ -117,6 +225,9 @@ Init_milter_event_loop (void)
 
     rb_cMilterEventLoop = G_DEF_CLASS(MILTER_TYPE_EVENT_LOOP,
                                       "EventLoop", rb_mMilter);
+
+    rb_define_method(rb_cMilterEventLoop, "add_timeout", add_timeout, -1);
+    rb_define_method(rb_cMilterEventLoop, "iterate", iterate, -1);
 
     G_DEF_SETTERS(rb_cMilterEventLoop);
 
