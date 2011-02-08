@@ -68,11 +68,13 @@ static gboolean iterate          (MilterEventLoop *loop,
                                   gboolean         may_block);
 static void     quit             (MilterEventLoop *loop);
 
-static guint    watch_io         (MilterEventLoop *loop,
+static guint    watch_io_full    (MilterEventLoop *loop,
+                                  gint             priority,
                                   GIOChannel      *channel,
                                   GIOCondition     condition,
                                   GIOFunc          function,
-                                  gpointer         data);
+                                  gpointer         data,
+                                  GDestroyNotify   notify);
 
 static guint    watch_child_full (MilterEventLoop *loop,
                                   gint             priority,
@@ -112,7 +114,7 @@ milter_libev_event_loop_class_init (MilterLibevEventLoopClass *klass)
     klass->parent_class.run = run;
     klass->parent_class.iterate = iterate;
     klass->parent_class.quit = quit;
-    klass->parent_class.watch_io = watch_io;
+    klass->parent_class.watch_io_full = watch_io_full;
     klass->parent_class.watch_child_full = watch_child_full;
     klass->parent_class.add_timeout_full = add_timeout_full;
     klass->parent_class.add_idle_full = add_idle_full;
@@ -405,11 +407,13 @@ io_func (struct ev_loop *loop, ev_io *watcher, int revents)
 }
 
 static guint
-watch_io (MilterEventLoop *loop,
-          GIOChannel      *channel,
-          GIOCondition     condition,
-          GIOFunc          function,
-          gpointer         user_data)
+watch_io_full (MilterEventLoop *loop,
+               gint             priority,
+               GIOChannel      *channel,
+               GIOCondition     condition,
+               GIOFunc          function,
+               gpointer         user_data,
+               GDestroyNotify   notify)
 {
     guint tag;
     int fd;
@@ -434,7 +438,7 @@ watch_io (MilterEventLoop *loop,
                       (ev_watcher *)watcher,
                       WATCHER_STOP_FUNC(ev_io_stop),
                       io_watcher_destroy,
-                      NULL, user_data);
+                      notify, user_data);
 
     ev_io_init(watcher, io_func, fd, evcond_from_g_io_condition(condition));
     ev_io_start(priv->ev_loop, watcher);

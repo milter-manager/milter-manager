@@ -69,7 +69,7 @@ milter_event_loop_class_init (MilterEventLoopClass *klass)
 
     klass->run = NULL;
     klass->quit = NULL;
-    klass->watch_io = NULL;
+    klass->watch_io_full = NULL;
     klass->watch_child_full = NULL;
     klass->add_timeout_full = NULL;
     klass->add_idle_full = NULL;
@@ -250,12 +250,28 @@ milter_event_loop_watch_io (MilterEventLoop *loop,
                             GIOFunc          function,
                             gpointer         data)
 {
+    return milter_event_loop_watch_io_full(loop, G_PRIORITY_DEFAULT,
+                                           channel, condition,
+                                           function, data,
+                                           NULL);
+}
+
+guint
+milter_event_loop_watch_io_full (MilterEventLoop *loop,
+                                 gint             priority,
+                                 GIOChannel      *channel,
+                                 GIOCondition     condition,
+                                 GIOFunc          function,
+                                 gpointer         data,
+                                 GDestroyNotify   notify)
+{
     MilterEventLoopClass *loop_class;
 
     g_return_val_if_fail(loop != NULL, 0);
 
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
-    return loop_class->watch_io(loop, channel, condition, function, data);
+    return loop_class->watch_io_full(loop, priority, channel, condition,
+                                     function, data, notify);
 }
 
 guint

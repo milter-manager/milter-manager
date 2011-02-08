@@ -65,11 +65,13 @@ static gboolean iterate          (MilterEventLoop *loop,
                                   gboolean         may_block);
 static void     quit             (MilterEventLoop *loop);
 
-static guint    watch_io         (MilterEventLoop *loop,
+static guint    watch_io_full    (MilterEventLoop *loop,
+                                  gint             priority,
                                   GIOChannel      *channel,
                                   GIOCondition     condition,
                                   GIOFunc          function,
-                                  gpointer         data);
+                                  gpointer         data,
+                                  GDestroyNotify   notify);
 
 static guint    watch_child_full (MilterEventLoop *loop,
                                   gint             priority,
@@ -110,7 +112,7 @@ milter_glib_event_loop_class_init (MilterGLibEventLoopClass *klass)
     klass->parent_class.run = run;
     klass->parent_class.iterate = iterate;
     klass->parent_class.quit = quit;
-    klass->parent_class.watch_io = watch_io;
+    klass->parent_class.watch_io_full = watch_io_full;
     klass->parent_class.watch_child_full = watch_child_full;
     klass->parent_class.add_timeout_full = add_timeout_full;
     klass->parent_class.add_idle_full = add_idle_full;
@@ -254,22 +256,25 @@ quit (MilterEventLoop *loop)
 }
 
 static guint
-watch_io (MilterEventLoop *loop,
-          GIOChannel      *channel,
-          GIOCondition     condition,
-          GIOFunc          function,
-          gpointer         data)
+watch_io_full (MilterEventLoop *loop,
+               gint             priority,
+               GIOChannel      *channel,
+               GIOCondition     condition,
+               GIOFunc          function,
+               gpointer         data,
+               GDestroyNotify   notify)
 {
     MilterGLibEventLoopPrivate *priv;
     guint watch_tag;
-    GSource *watch_source;
+    GSource *source;
 
     priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
-    watch_source = g_io_create_watch(channel, condition);
-    g_source_set_callback(watch_source, (GSourceFunc)function, data, NULL);
-    watch_tag = g_source_attach(watch_source,
-                                g_main_loop_get_context(priv->loop));
-    g_source_unref(watch_source);
+    source = g_io_create_watch(channel, condition);
+    if (priority != G_PRIORITY_DEFAULT)
+        g_source_set_priority(source, priority);
+    g_source_set_callback(source, (GSourceFunc)function, data, notify);
+    watch_tag = g_source_attach(source, g_main_loop_get_context(priv->loop));
+    g_source_unref(source);
 
     return watch_tag;
 }

@@ -56,11 +56,13 @@ struct _MilterEventLoopClass
                                   gboolean         may_block);
     void     (*quit)             (MilterEventLoop *loop);
 
-    guint    (*watch_io)         (MilterEventLoop *loop,
+    guint    (*watch_io_full)    (MilterEventLoop *loop,
+                                  gint             priority,
                                   GIOChannel      *channel,
                                   GIOCondition     condition,
                                   GIOFunc          function,
-                                  gpointer         data);
+                                  gpointer         data,
+                                  GDestroyNotify   notify);
     guint    (*watch_child_full) (MilterEventLoop *loop,
                                   gint             priority,
                                   GPid             pid,
@@ -104,6 +106,14 @@ guint                milter_event_loop_watch_io          (MilterEventLoop *loop,
                                                           GIOCondition     condition,
                                                           GIOFunc          function,
                                                           gpointer         data);
+guint                milter_event_loop_watch_io_full     (MilterEventLoop *loop,
+                                                          gint             priority,
+                                                          GIOChannel      *channel,
+                                                          GIOCondition     condition,
+                                                          GIOFunc          function,
+                                                          gpointer         data,
+                                                          GDestroyNotify   notify);
+
 
 guint                milter_event_loop_watch_child       (MilterEventLoop *loop,
                                                           GPid             pid,
