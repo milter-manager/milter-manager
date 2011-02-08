@@ -279,6 +279,20 @@ rb_loop_iterate (int argc, VALUE *argv, VALUE self)
 }
 
 static VALUE
+rb_loop_run (VALUE self)
+{
+    milter_event_loop_run(SELF(self));
+    return Qnil;
+}
+
+static VALUE
+rb_loop_quit (VALUE self)
+{
+    milter_event_loop_quit(SELF(self));
+    return Qnil;
+}
+
+static VALUE
 rb_loop_remove (VALUE self, VALUE tag)
 {
     milter_event_loop_remove(SELF(self), NUM2UINT(tag));
@@ -287,7 +301,7 @@ rb_loop_remove (VALUE self, VALUE tag)
 
 #if USE_BLOCKING_REGION
 static VALUE
-rb_loop_run_block (void *arg)
+rb_custom_loop_run_block (void *arg)
 {
     MilterEventLoop *loop = arg;
     milter_event_loop_iterate(loop, TRUE);
@@ -295,7 +309,7 @@ rb_loop_run_block (void *arg)
 }
 
 static void
-rb_loop_run_unblock (void *arg)
+rb_custom_loop_run_unblock (void *arg)
 {
     MilterEventLoop *loop = arg;
     milter_event_loop_quit(loop);
@@ -303,12 +317,12 @@ rb_loop_run_unblock (void *arg)
 #endif
 
 static void
-rb_loop_run (MilterEventLoop *loop)
+rb_custom_loop_run (MilterEventLoop *loop)
 {
     while (milter_event_loop_is_running(loop)) {
 #if USE_BLOCKING_REGION
-	rb_thread_blocking_region(rb_loop_run_block, loop,
-				  rb_loop_run_unblock, loop);
+	rb_thread_blocking_region(rb_custom_loop_run_block, loop,
+				  rb_custom_loop_run_unblock, loop);
 #else
 	TRAP_BEG;
 	milter_event_loop_iterate(loop, TRUE);
@@ -341,7 +355,7 @@ glib_initialize (int argc, VALUE *argv, VALUE self)
 static VALUE
 libev_setup (VALUE self)
 {
-    milter_event_loop_set_custom_run_func(SELF(self), rb_loop_run);
+    milter_event_loop_set_custom_run_func(SELF(self), rb_custom_loop_run);
     return self;
 }
 
@@ -388,6 +402,8 @@ Init_milter_event_loop (void)
     rb_define_method(rb_cMilterEventLoop, "add_idle",
 		     rb_loop_add_idle, -1);
     rb_define_method(rb_cMilterEventLoop, "iterate", rb_loop_iterate, -1);
+    rb_define_method(rb_cMilterEventLoop, "run", rb_loop_run, 0);
+    rb_define_method(rb_cMilterEventLoop, "quit", rb_loop_quit, 0);
     rb_define_method(rb_cMilterEventLoop, "remove", rb_loop_remove, 1);
 
     G_DEF_SETTERS(rb_cMilterEventLoop);

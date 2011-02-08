@@ -154,4 +154,20 @@ class TestEventLoop < Test::Unit::TestCase
       @tags << @loop.watch_io(input, GLib::IOChannel::IN)
     end
   end
+
+  def test_run
+    n_called = 0
+    quitted = false
+    @tags << @loop.add_idle do
+      n_called += 1
+      if n_called == 3
+        @loop.quit
+        false
+      else
+        true
+      end
+    end
+    @loop.run
+    assert_equal(3, n_called)
+  end
 end
