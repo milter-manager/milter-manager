@@ -99,4 +99,13 @@ class TestEventLoop < Test::Unit::TestCase
     assert_true(@loop.iterate(:may_block => false))
     assert_equal([pid, 0], callback_arguments)
   end
+
+  def test_watch_child_without_block
+    pid = fork do
+      exit!(true)
+    end
+    assert_raise(ArgumentError.new("watch child block is missing")) do
+      @tags << @loop.watch_child(pid)
+    end
+  end
 end
