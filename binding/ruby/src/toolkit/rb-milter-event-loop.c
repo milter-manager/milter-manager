@@ -101,7 +101,7 @@ cb_timeout_notify (gpointer user_data)
 }
 
 static VALUE
-add_timeout (int argc, VALUE *argv, VALUE self)
+rb_loop_add_timeout (int argc, VALUE *argv, VALUE self)
 {
     VALUE rb_interval, rb_priority, rb_options, rb_block;
     CallbackContext *context;
@@ -135,7 +135,7 @@ add_timeout (int argc, VALUE *argv, VALUE self)
 }
 
 static VALUE
-iterate (int argc, VALUE *argv, VALUE self)
+rb_loop_iterate (int argc, VALUE *argv, VALUE self)
 {
     VALUE rb_may_block, rb_options;
     gboolean may_block, event_dispatched;
@@ -147,6 +147,13 @@ iterate (int argc, VALUE *argv, VALUE self)
     may_block = RVAL2CBOOL(rb_may_block);
     event_dispatched = milter_event_loop_iterate(SELF(self), may_block);
     return CBOOL2RVAL(event_dispatched);
+}
+
+static VALUE
+rb_loop_remove (VALUE self, VALUE tag)
+{
+    milter_event_loop_remove(SELF(self), NUM2UINT(tag));
+    return Qnil;
 }
 
 #if USE_BLOCKING_REGION
@@ -229,8 +236,10 @@ Init_milter_event_loop (void)
     rb_cMilterEventLoop = G_DEF_CLASS(MILTER_TYPE_EVENT_LOOP,
                                       "EventLoop", rb_mMilter);
 
-    rb_define_method(rb_cMilterEventLoop, "add_timeout", add_timeout, -1);
-    rb_define_method(rb_cMilterEventLoop, "iterate", iterate, -1);
+    rb_define_method(rb_cMilterEventLoop, "add_timeout",
+		     rb_loop_add_timeout, -1);
+    rb_define_method(rb_cMilterEventLoop, "iterate", rb_loop_iterate, -1);
+    rb_define_method(rb_cMilterEventLoop, "remove", rb_loop_remove, 1);
 
     G_DEF_SETTERS(rb_cMilterEventLoop);
 

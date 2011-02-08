@@ -22,6 +22,10 @@ class TestEventLoop < Test::Unit::TestCase
     @tag = nil
   end
 
+  def teardown
+    @loop.remove(@tag) if @tag
+  end
+
   def test_timeout
     timeouted = false
     interval = 0.001
