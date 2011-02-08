@@ -40,6 +40,7 @@ struct _MilterLibevEventLoopPrivate
     ev_loop *ev_loop;
     guint tag;
     GHashTable *watchers;
+    guint n_called;
 };
 
 enum
@@ -136,6 +137,7 @@ milter_libev_event_loop_init (MilterLibevEventLoop *loop)
     priv->tag = 0;
     priv->watchers = g_hash_table_new_full(g_direct_hash, g_direct_equal,
                                            NULL, destroy_watcher);
+    priv->n_called = 0;
 }
 
 static void
@@ -311,12 +313,13 @@ iterate (MilterEventLoop *loop, gboolean may_block)
     MilterLibevEventLoopPrivate *priv;
 
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
+    priv->n_called = 0;
     if (may_block) {
         ev_run(priv->ev_loop, EVRUN_ONCE);
     } else {
         ev_run(priv->ev_loop, EVRUN_NOWAIT | EVRUN_ONCE);
     }
-    return TRUE;
+    return priv->n_called > 0;
 }
 
 static void
@@ -392,6 +395,7 @@ io_func (struct ev_loop *loop, ev_io *watcher, int revents)
     watcher_priv = WATCHER_PRIVATE(io_watcher_priv);
 
     milter_event_loop = watcher_priv->loop;
+    MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(milter_event_loop)->n_called++;
     tag = watcher_priv->tag;
     if (!io_watcher_priv->function(io_watcher_priv->channel,
                                    evcond_to_g_io_condition(revents),
@@ -456,6 +460,7 @@ child_func (struct ev_loop *loop, ev_child *watcher, int revents)
     watcher_priv = WATCHER_PRIVATE(child_watcher_priv);
 
     milter_event_loop = watcher_priv->loop;
+    MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(milter_event_loop)->n_called++;
     tag = watcher_priv->tag;
     child_watcher_priv->function((GPid)(watcher->rpid),
                                  watcher->rstatus,
@@ -513,6 +518,7 @@ timer_func (struct ev_loop *loop, ev_timer *watcher, int revents)
     watcher_priv = WATCHER_PRIVATE(timer_watcher_priv);
 
     milter_event_loop = watcher_priv->loop;
+    MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(milter_event_loop)->n_called++;
     tag = watcher_priv->tag;
     if (!timer_watcher_priv->function(watcher_priv->user_data)) {
         remove_watcher(milter_event_loop, tag);
@@ -572,6 +578,7 @@ idle_func (struct ev_loop *loop, ev_idle *watcher, int revents)
     watcher_priv = WATCHER_PRIVATE(idle_watcher_priv);
 
     milter_event_loop = watcher_priv->loop;
+    MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(milter_event_loop)->n_called++;
     tag = watcher_priv->tag;
     if (!idle_watcher_priv->function(watcher_priv->user_data)) {
         remove_watcher(milter_event_loop, tag);
