@@ -142,4 +142,16 @@ class TestEventLoop < Test::Unit::TestCase
     assert_equal([[input.class, GLib::IOChannel::IN], "child\n"],
                  [callback_arguments, read_data])
   end
+
+  def test_watch_io_without_block
+    parent_read, child_write = IO.pipe
+    pid = fork do
+      child_write.puts("child")
+      exit!(true)
+    end
+    input = GLib::IOChannel.new(parent_read)
+    assert_raise(ArgumentError.new("watch IO block is missing")) do
+      @tags << @loop.watch_io(input, GLib::IOChannel::IN)
+    end
+  end
 end
