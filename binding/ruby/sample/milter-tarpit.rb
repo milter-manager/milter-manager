@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2010-2011  Kouhei Sutou <kou@clear-code.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,13 +19,12 @@ require 'milter'
 
 class MilterTarpit < Milter::ClientSession
   def end_of_message(*args)
-    p [:eom, args]
-    GLib::Timeout.add(5000) do
+    add_timeout(5) do
       accept
       @context.signal_emit("end_of_message_response", @context.status)
       false
     end
-    @context.status = :progress
+    delay_response
   end
 
   def abort(*args)
