@@ -138,15 +138,15 @@ static VALUE
 iterate (int argc, VALUE *argv, VALUE self)
 {
     VALUE rb_may_block, rb_options;
-    gboolean may_block, event_processed;
+    gboolean may_block, event_dispatched;
 
     rb_scan_args(argc, argv, "01", &rb_options);
     rb_milter__scan_options(rb_options,
 			    "may_block", &rb_may_block,
 			    NULL);
     may_block = RVAL2CBOOL(rb_may_block);
-    event_processed = milter_event_loop_iterate(SELF(self), may_block);
-    return CBOOL2RVAL(event_processed);
+    event_dispatched = milter_event_loop_iterate(SELF(self), may_block);
+    return CBOOL2RVAL(event_dispatched);
 }
 
 #if USE_BLOCKING_REGION

@@ -19,17 +19,30 @@ class TestEventLoop < Test::Unit::TestCase
 
   def setup
     @loop = create_event_loop
+    @tag = nil
   end
 
   def test_timeout
     timeouted = false
     interval = 0.001
-    @loop.add_timeout(interval) do
+    @tag = @loop.add_timeout(interval) do
       timeouted = true
+      false
     end
     sleep(interval)
     assert_true(@loop.iterate(:may_block => false))
     assert_true(timeouted)
+  end
+
+  def test_timeout_not_timeouted
+    timeouted = false
+    interval = 1
+    @tag = @loop.add_timeout(interval) do
+      timeouted = true
+      false
+    end
+    assert_false(@loop.iterate(:may_block => false))
+    assert_false(timeouted)
   end
 
   def test_timeout_without_block
