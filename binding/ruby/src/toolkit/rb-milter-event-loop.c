@@ -134,6 +134,51 @@ rb_loop_add_timeout (int argc, VALUE *argv, VALUE self)
     return UINT2NUM(tag);
 }
 
+static gboolean
+cb_idle (gpointer user_data)
+{
+    CallbackContext *context = user_data;
+
+    return RVAL2CBOOL(rb_funcall(context->callback, rb_intern("call"), 0));
+}
+
+static void
+cb_idle_notify (gpointer user_data)
+{
+    CallbackContext *context = user_data;
+    callback_context_free(context);
+}
+
+static VALUE
+rb_loop_add_idle (int argc, VALUE *argv, VALUE self)
+{
+    VALUE rb_priority, rb_options, rb_block;
+    CallbackContext *context;
+    gint priority = G_PRIORITY_DEFAULT_IDLE;
+    guint tag;
+
+    rb_scan_args(argc, argv, "01&", &rb_options, &rb_block);
+
+    rb_milter__scan_options(rb_options,
+			    "priority", &rb_priority,
+			    NULL);
+
+    if (!NIL_P(rb_priority))
+	priority = NUM2INT(rb_priority);
+
+    if (NIL_P(rb_block))
+	rb_raise(rb_eArgError, "idle block is missing");
+
+    context = callback_context_new(self, rb_block);
+    tag = milter_event_loop_add_idle_full(SELF(self),
+					  priority,
+					  cb_idle,
+					  context,
+					  cb_idle_notify);
+
+    return UINT2NUM(tag);
+}
+
 static VALUE
 rb_loop_iterate (int argc, VALUE *argv, VALUE self)
 {
@@ -238,6 +283,8 @@ Init_milter_event_loop (void)
 
     rb_define_method(rb_cMilterEventLoop, "add_timeout",
 		     rb_loop_add_timeout, -1);
+    rb_define_method(rb_cMilterEventLoop, "add_idle",
+		     rb_loop_add_idle, -1);
     rb_define_method(rb_cMilterEventLoop, "iterate", rb_loop_iterate, -1);
     rb_define_method(rb_cMilterEventLoop, "remove", rb_loop_remove, 1);
 

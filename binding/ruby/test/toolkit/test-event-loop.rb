@@ -54,4 +54,14 @@ class TestEventLoop < Test::Unit::TestCase
       @loop.add_timeout(1)
     end
   end
+
+  def test_idle
+    idled = false
+    @tag = @loop.add_idle do
+      idled = true
+      false
+    end
+    assert_true(@loop.iterate(:may_block => false))
+    assert_true(idled)
+  end
 end
