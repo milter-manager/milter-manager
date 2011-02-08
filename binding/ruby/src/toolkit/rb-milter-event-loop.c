@@ -120,6 +120,9 @@ add_timeout (int argc, VALUE *argv, VALUE self)
     if (!NIL_P(rb_priority))
 	priority = NUM2INT(rb_priority);
 
+    if (NIL_P(rb_block))
+	rb_raise(rb_eArgError, "timeout block is missing");
+
     context = callback_context_new(self, rb_block);
     tag = milter_event_loop_add_timeout_full(SELF(self),
 					     priority,

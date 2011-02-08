@@ -31,4 +31,10 @@ class TestEventLoop < Test::Unit::TestCase
     assert_true(@loop.iterate(:may_block => false))
     assert_true(timeouted)
   end
+
+  def test_timeout_without_block
+    assert_raise(ArgumentError.new("timeout block is missing")) do
+      @loop.add_timeout(1)
+    end
+  end
 end
