@@ -85,19 +85,62 @@ callback_context_free (CallbackContext *context)
     g_free(context);
 }
 
+static void
+cb_callback_context_notify (gpointer user_data)
+{
+    CallbackContext *context = user_data;
+    callback_context_free(context);
+}
+
+static void
+cb_watch_child (GPid pid, gint status, gpointer user_data)
+{
+    CallbackContext *context = user_data;
+
+    rb_funcall(context->callback, rb_intern("call"), 2,
+	       INT2NUM(pid), INT2NUM(status));
+}
+
+static VALUE
+rb_loop_watch_child (int argc, VALUE *argv, VALUE self)
+{
+    VALUE rb_pid, rb_priority, rb_options, rb_block;
+    CallbackContext *context;
+    GPid pid;
+    gint priority = G_PRIORITY_DEFAULT;
+    guint tag;
+
+    rb_scan_args(argc, argv, "11&", &rb_pid, &rb_options, &rb_block);
+
+    pid = (GPid)NUM2INT(rb_pid);
+
+    rb_milter__scan_options(rb_options,
+			    "priority", &rb_priority,
+			    NULL);
+
+    if (!NIL_P(rb_priority))
+	priority = NUM2INT(rb_priority);
+
+    if (NIL_P(rb_block))
+	rb_raise(rb_eArgError, "watch child block is missing");
+
+    context = callback_context_new(self, rb_block);
+    tag = milter_event_loop_watch_child_full(SELF(self),
+					     priority,
+					     pid,
+					     cb_watch_child,
+					     context,
+					     cb_callback_context_notify);
+
+    return UINT2NUM(tag);
+}
+
 static gboolean
 cb_timeout (gpointer user_data)
 {
     CallbackContext *context = user_data;
 
     return RVAL2CBOOL(rb_funcall(context->callback, rb_intern("call"), 0));
-}
-
-static void
-cb_timeout_notify (gpointer user_data)
-{
-    CallbackContext *context = user_data;
-    callback_context_free(context);
 }
 
 static VALUE
@@ -129,7 +172,7 @@ rb_loop_add_timeout (int argc, VALUE *argv, VALUE self)
 					     interval,
 					     cb_timeout,
 					     context,
-					     cb_timeout_notify);
+					     cb_callback_context_notify);
 
     return UINT2NUM(tag);
 }
@@ -140,13 +183,6 @@ cb_idle (gpointer user_data)
     CallbackContext *context = user_data;
 
     return RVAL2CBOOL(rb_funcall(context->callback, rb_intern("call"), 0));
-}
-
-static void
-cb_idle_notify (gpointer user_data)
-{
-    CallbackContext *context = user_data;
-    callback_context_free(context);
 }
 
 static VALUE
@@ -174,7 +210,7 @@ rb_loop_add_idle (int argc, VALUE *argv, VALUE self)
 					  priority,
 					  cb_idle,
 					  context,
-					  cb_idle_notify);
+					  cb_callback_context_notify);
 
     return UINT2NUM(tag);
 }
@@ -281,6 +317,8 @@ Init_milter_event_loop (void)
     rb_cMilterEventLoop = G_DEF_CLASS(MILTER_TYPE_EVENT_LOOP,
                                       "EventLoop", rb_mMilter);
 
+    rb_define_method(rb_cMilterEventLoop, "watch_child",
+		     rb_loop_watch_child, -1);
     rb_define_method(rb_cMilterEventLoop, "add_timeout",
 		     rb_loop_add_timeout, -1);
     rb_define_method(rb_cMilterEventLoop, "add_idle",

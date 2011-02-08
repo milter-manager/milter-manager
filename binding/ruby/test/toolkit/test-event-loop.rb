@@ -85,4 +85,18 @@ class TestEventLoop < Test::Unit::TestCase
       @tags << @loop.add_idle
     end
   end
+
+  def test_watch_child
+    callback_arguments = nil
+    pid = fork do
+      exit!(true)
+    end
+    @tags << @loop.watch_child(pid) do |*args|
+      callback_arguments = args
+      false
+    end
+    sleep(0.01)
+    assert_true(@loop.iterate(:may_block => false))
+    assert_equal([pid, 0], callback_arguments)
+  end
 end
