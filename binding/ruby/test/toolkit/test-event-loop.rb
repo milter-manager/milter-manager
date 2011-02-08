@@ -100,6 +100,20 @@ class TestEventLoop < Test::Unit::TestCase
     assert_equal([pid, 0], callback_arguments)
   end
 
+  def test_watch_child_not_reped
+    callback_arguments = nil
+    pid = fork do
+      sleep(0.1)
+      exit!(true)
+    end
+    @tags << @loop.watch_child(pid) do |*args|
+      callback_arguments = args
+      false
+    end
+    assert_false(@loop.iterate(:may_block => false))
+    assert_nil(callback_arguments)
+  end
+
   def test_watch_child_without_block
     pid = fork do
       exit!(true)
