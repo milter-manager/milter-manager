@@ -298,6 +298,20 @@ libev_setup (VALUE self)
 }
 
 static VALUE
+libev_s_default (VALUE klass)
+{
+    VALUE rb_event_loop;
+    MilterEventLoop *event_loop;
+
+    event_loop = milter_libev_event_loop_default();
+    rb_event_loop = GOBJ2RVAL(event_loop);
+    g_object_unref(event_loop);
+    libev_setup(rb_event_loop);
+
+    return rb_event_loop;
+}
+
+static VALUE
 libev_initialize (VALUE self)
 {
     MilterEventLoop *event_loop;
@@ -339,7 +353,11 @@ Init_milter_event_loop (void)
     rb_cMilterLibevEventLoop = G_DEF_CLASS(MILTER_TYPE_LIBEV_EVENT_LOOP,
                                           "LibevEventLoop", rb_mMilter);
 
-    rb_define_method(rb_cMilterLibevEventLoop, "initialize", libev_initialize, 0);
+    rb_define_singleton_method(rb_cMilterLibevEventLoop, "default",
+			       libev_s_default, 0);
+
+    rb_define_method(rb_cMilterLibevEventLoop, "initialize",
+		     libev_initialize, 0);
     rb_define_method(rb_cMilterLibevEventLoop, "setup", libev_setup, 0);
 
     G_DEF_SETTERS(rb_cMilterGLibEventLoop);

@@ -23,7 +23,7 @@ module MilterEventLoopTestUtils
     when "glib"
       Milter::GLibEventLoop.new
     when "libev"
-      Milter::LibevEventLoop.new
+      Milter::LibevEventLoop.default
     else
       raise "unknown backend: #{backend.inspect}"
     end
