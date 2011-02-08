@@ -175,13 +175,12 @@ AM_PATH_GLIB_2_0($GLIB_REQUIRED,
 dnl **************************************************************
 dnl Check for Cutter
 dnl **************************************************************
-m4_ifdef([AC_CHECK_GCUTTER], [
-AC_CHECK_GCUTTER(>= 1.1.6)
-],
-[ac_cv_use_cutter="no"])
+m4_ifdef([AC_CHECK_GCUTTER],
+         [AC_CHECK_GCUTTER(>= 1.1.6)],
+         [cutter_use_cutter="no"])
 
-AM_CONDITIONAL([WITH_CUTTER], [test "$ac_cv_use_cutter" != "no"])
-if test "$ac_cv_use_cutter" != "no"; then
+AM_CONDITIONAL([WITH_CUTTER], [test "$cutter_use_cutter" = "yes"])
+if test "$cutter_use_cutter" = "yes"; then
   AC_DEFINE(WITH_CUTTER, 1, [Define to 1 if you use Cutter])
 fi
 
