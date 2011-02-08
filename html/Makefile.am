@@ -23,6 +23,7 @@ svg_images =					\
 images =					\
 	famfamfam-logo.png			\
 	tango-logo.png				\
+	github-logo.png				\
 	jp.png					\
 	us.png					\
 	reference.png				\
