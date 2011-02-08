@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2011  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -209,6 +209,26 @@ module Milter
 
     def authenticated?
       @context.authenticated?
+    end
+
+    def watch_io(channel, condition, options=nil, &block)
+      @context.event_loop.watch_io(interval, options, &block)
+    end
+
+    def watch_child(pid, options=nil, &block)
+      @context.event_loop.watch_child(pid, options, &block)
+    end
+
+    def add_idle(interval, options=nil, &block)
+      @context.event_loop.add_idle(interval, options, &block)
+    end
+
+    def add_timeout(interval, options=nil, &block)
+      @context.event_loop.add_timeout(interval, options, &block)
+    end
+
+    def remove_event(tag)
+      @context.event_loop.remove(tag)
     end
   end
 
