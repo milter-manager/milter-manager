@@ -92,6 +92,54 @@ cb_callback_context_notify (gpointer user_data)
     callback_context_free(context);
 }
 
+static gboolean
+cb_watch_io (GIOChannel *channel, GIOCondition condition, gpointer user_data)
+{
+    CallbackContext *context = user_data;
+
+    return RVAL2CBOOL(rb_funcall(context->callback, rb_intern("call"), 2,
+				 BOXED2RVAL(channel, G_TYPE_IO_CHANNEL),
+				 UINT2NUM(condition)));
+}
+
+static VALUE
+rb_loop_watch_io (int argc, VALUE *argv, VALUE self)
+{
+    VALUE rb_channel, rb_condition, rb_priority, rb_options, rb_block;
+    CallbackContext *context;
+    GIOChannel *channel;
+    GIOCondition condition;
+    gint priority = G_PRIORITY_DEFAULT;
+    guint tag;
+
+    rb_scan_args(argc, argv, "21&",
+		 &rb_channel, &rb_condition, &rb_options, &rb_block);
+
+    channel = RVAL2BOXED(rb_channel, G_TYPE_IO_CHANNEL);
+    condition = RVAL2GFLAGS(rb_condition, G_TYPE_IO_CONDITION);
+
+    rb_milter__scan_options(rb_options,
+			    "priority", &rb_priority,
+			    NULL);
+
+    if (!NIL_P(rb_priority))
+	priority = NUM2INT(rb_priority);
+
+    if (NIL_P(rb_block))
+	rb_raise(rb_eArgError, "watch IO block is missing");
+
+    context = callback_context_new(self, rb_block);
+    tag = milter_event_loop_watch_io_full(SELF(self),
+					  priority,
+					  channel,
+					  condition,
+					  cb_watch_io,
+					  context,
+					  cb_callback_context_notify);
+
+    return UINT2NUM(tag);
+}
+
 static void
 cb_watch_child (GPid pid, gint status, gpointer user_data)
 {
@@ -331,6 +379,8 @@ Init_milter_event_loop (void)
     rb_cMilterEventLoop = G_DEF_CLASS(MILTER_TYPE_EVENT_LOOP,
                                       "EventLoop", rb_mMilter);
 
+    rb_define_method(rb_cMilterEventLoop, "watch_io",
+		     rb_loop_watch_io, -1);
     rb_define_method(rb_cMilterEventLoop, "watch_child",
 		     rb_loop_watch_child, -1);
     rb_define_method(rb_cMilterEventLoop, "add_timeout",

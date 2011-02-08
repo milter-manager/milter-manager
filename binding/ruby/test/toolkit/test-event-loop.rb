@@ -122,4 +122,24 @@ class TestEventLoop < Test::Unit::TestCase
       @tags << @loop.watch_child(pid)
     end
   end
+
+  def test_watch_io
+    callback_arguments = nil
+    read_data = nil
+    parent_read, child_write = IO.pipe
+    pid = fork do
+      child_write.puts("child")
+      sleep(0.1)
+      exit!(true)
+    end
+    input = GLib::IOChannel.new(parent_read)
+    @tags << @loop.watch_io(input, GLib::IOChannel::IN) do |channel, condition|
+      callback_arguments = [channel.class, condition]
+      read_data = channel.readline
+      false
+    end
+    assert_true(@loop.iterate(:may_block => false))
+    assert_equal([[input.class, GLib::IOChannel::IN], "child\n"],
+                 [callback_arguments, read_data])
+  end
 end
