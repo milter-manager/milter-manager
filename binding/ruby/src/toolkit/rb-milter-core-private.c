@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -185,4 +185,52 @@ rb_milter__end_of_message_signal_convert (guint num, const GValue *values)
 	rb_chunk = rb_str_new(chunk, size);
 
     return rb_ary_new3(2, GVAL2RVAL(&values[0]), rb_chunk);
+}
+
+const gchar *
+rb_milter__inspect (VALUE object)
+{
+    VALUE inspected;
+
+    inspected = rb_funcall(object, rb_intern("inspect"), 0);
+    return StringValueCStr(inspected);
+}
+
+void
+rb_milter__scan_options (VALUE options, ...)
+{
+    VALUE available_keys;
+    const gchar *key;
+    VALUE *value;
+    va_list args;
+
+    if (NIL_P(options))
+        options = rb_hash_new();
+    else
+        options = rb_funcall(options, rb_intern("dup"), 0);
+
+    Check_Type(options, T_HASH);
+
+    available_keys = rb_ary_new();
+    va_start(args, options);
+    key = va_arg(args, const gchar *);
+    while (key) {
+        VALUE rb_key;
+        value = va_arg(args, VALUE *);
+
+        rb_key = ID2SYM(rb_intern(key));
+        rb_ary_push(available_keys, rb_key);
+        *value = rb_funcall(options, rb_intern("delete"), 1, rb_key);
+
+        key = va_arg(args, const gchar *);
+    }
+    va_end(args);
+
+    if (RVAL2CBOOL(rb_funcall(options, rb_intern("empty?"), 0)))
+        return;
+
+    rb_raise(rb_eArgError,
+             "unexpected key(s) exist: %s: available keys: %s",
+             rb_milter__inspect(rb_funcall(options, rb_intern("keys"), 0)),
+             rb_milter__inspect(available_keys));
 }

@@ -79,5 +79,8 @@ VALUE rb_milter__body_signal_convert           (guint num,
 						const GValue *values);
 VALUE rb_milter__end_of_message_signal_convert (guint num,
 						const GValue *values);
+void  rb_milter__scan_options                  (VALUE options,
+						...);
+const gchar *rb_milter__inspect                (VALUE object);
 
 #endif
