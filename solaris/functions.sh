@@ -38,6 +38,6 @@ install_package()
     echo done.
 
     echo -n "Installing ${base}..."
-    run ${MAKE} -C "${build_dir}/${base}" prefix="${PREFIX}" install
+    run ${MAKE} -C "${build_dir}/${base}" install
     echo done.
 }
