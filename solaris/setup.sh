@@ -2,13 +2,14 @@
 
 set -e
 
-PATH=/opt/csw/bin:/usr/sfw/bin:$PATH
+export PATH=/opt/csw/bin:/usr/sfw/bin:$PATH
 PREFIX=$HOME/opt
 
-AR=/usr/ccs/bin/ar
-MAKE="/usr/sfw/bin/gmake -j4"
-CC=/usr/sfw/bin/gcc
-CFLAGS=-m64
+export AR=/usr/ccs/bin/ar
+export MAKE="/usr/sfw/bin/gmake -m64 -j4"
+export CC=/usr/sfw/bin/gcc
+export CFLAGS=-m64
+export CXXFLAGS=-m64
 
 source ./functions.sh
 
