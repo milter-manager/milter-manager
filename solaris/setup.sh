@@ -2,14 +2,15 @@
 
 set -e
 
-export PATH=/opt/csw/bin:/usr/sfw/bin:$PATH
+PATH=/opt/csw/bin:/usr/sfw/bin:$PATH
 PREFIX=$HOME/opt
 
 export AR=/usr/ccs/bin/ar
-export MAKE="/usr/sfw/bin/gmake -m64 -j4"
-export CC=/usr/sfw/bin/gcc
+export MAKE="/usr/sfw/bin/gmake -j4"
+export CC="/usr/sfw/bin/gcc -m64"
 export CFLAGS=-m64
 export CXXFLAGS=-m64
+export LD_LIBRARY_PATH=$PREFIX/lib:$LD_LIBRARY_PATH
 
 source ./functions.sh
 
