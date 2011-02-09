@@ -1,6 +1,8 @@
-#!/usr/bin/bash
+#!/usr/bin/bash --noprofile
 
-PATH=/usr/local/bin:/opt/csw/bin:/usr/sfw/bin:$PATH
+set -e
+
+PATH=/opt/csw/bin:/usr/sfw/bin:$PATH
 PREFIX=$HOME/opt
 
 AR=/usr/ccs/bin/ar
@@ -14,16 +16,8 @@ base_dir=$(dirname $0)
 base_packages=$(cat "$base_dir/base-packages.list")
 SOURCES="${base_dir}/sources"
 
-if test ! -x /opt/csw/bin/pkg-get; then
-    run pkgadd -d http://mirror.opencsw.org/opencsw/pkg_get.pkg
-fi
-run pkg-get install gnupg
-run wget -O /tmp/gpg.key http://www.opencsw.org/get-it/mirrors/
-run gpg --import /tmp/gpg.key
+run /usr/bin/su root -c ./setup-system.sh
 
-run pkg-get -U
-
-run pkg-get install "$base_packages"
-
+test -f ./development-sourcelist && source ./development-sourcelist
 
 echo done.
