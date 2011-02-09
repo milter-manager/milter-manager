@@ -137,7 +137,7 @@ module Milter
       def to_ip_address
         nil
       end
-   end
+    end
 
     class Unknown
       def local?
