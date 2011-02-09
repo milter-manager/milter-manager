@@ -1,7 +1,7 @@
-inst http://pkgconfig.freedesktop.org/releases/pkg-config-0.25.tar.gz
-inst http://ftp.gnu.org/gnu/m4/m4-1.4.14.tar.bz2
-inst http://ftp.gnu.org/gnu/autoconf/autoconf-2.68.tar.bz2
-inst http://ftp.gnu.org/gnu/automake/automake-1.11.tar.bz2
-inst http://ftp.gnu.org/gnu/libtool/libtool-2.2.6b.tar.gz
-inst http://launchpad.net/intltool/trunk/0.41.1/+download/intltool-0.41.1.tar.gz PERL=/usr/bin/perl
+setup http://pkgconfig.freedesktop.org/releases/pkg-config-0.25.tar.gz
+setup http://ftp.gnu.org/gnu/m4/m4-1.4.14.tar.bz2
+setup http://ftp.gnu.org/gnu/autoconf/autoconf-2.68.tar.bz2
+setup http://ftp.gnu.org/gnu/automake/automake-1.11.tar.bz2
+setup http://ftp.gnu.org/gnu/libtool/libtool-2.2.6b.tar.gz
+setup http://launchpad.net/intltool/trunk/0.41.1/+download/intltool-0.41.1.tar.gz PERL=/usr/bin/perl
 
