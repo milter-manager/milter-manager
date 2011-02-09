@@ -2,8 +2,9 @@
 
 set -e
 
-PATH=/opt/csw/bin:/usr/sfw/bin:$PATH
 PREFIX=$HOME/opt
+#PATH=/opt/csw/bin:/usr/sfw/bin:$PATH
+PATH=$PREFIX/bin:$PATH
 
 export AR=/usr/ccs/bin/ar
 export MAKE="/usr/sfw/bin/gmake -j4"
