@@ -2,7 +2,7 @@
 
 export PATH=/opt/csw/bin:/usr/sfw/bin:$PATH
 
-test -f ./functions && source ./functions
+source ./functions
 
 if test ! -x /opt/csw/bin/pkg-get; then
     run pkgadd -d http://mirror.opencsw.org/opencsw/pkg_get.pkg
