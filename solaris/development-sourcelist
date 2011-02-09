@@ -1,7 +1,13 @@
-setup http://pkgconfig.freedesktop.org/releases/pkg-config-0.25.tar.gz
-setup http://ftp.gnu.org/gnu/m4/m4-1.4.14.tar.bz2
-setup http://ftp.gnu.org/gnu/autoconf/autoconf-2.68.tar.bz2
-setup http://ftp.gnu.org/gnu/automake/automake-1.11.tar.bz2
-setup http://ftp.gnu.org/gnu/libtool/libtool-2.2.6b.tar.gz
-setup http://launchpad.net/intltool/trunk/0.41.1/+download/intltool-0.41.1.tar.gz PERL=/usr/bin/perl
+install_package http://pkgconfig.freedesktop.org/releases/pkg-config-0.25.tar.gz
+install_package http://ftp.gnu.org/gnu/m4/m4-1.4.14.tar.bz2
+install_package http://ftp.gnu.org/gnu/autoconf/autoconf-2.68.tar.bz2
+install_package http://ftp.gnu.org/gnu/automake/automake-1.11.tar.bz2
+install_package http://ftp.gnu.org/gnu/libtool/libtool-2.2.6b.tar.gz
+install_package http://launchpad.net/intltool/trunk/0.41.1/+download/intltool-0.41.1.tar.gz PERL=/usr/bin/perl
+
+install_package ftp://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p136.tar.bz2 \
+      --disable-install-doc --enable-shared
+install_package http://ftp.gnome.org/pub/gnome/sources/glib/2.22/glib-2.22.5.tar.bz \
+      --with-libiconv=gnu
+install_package http://downloads.sourceforge.net/cutter/cutter-1.1.6.tar.gz
 

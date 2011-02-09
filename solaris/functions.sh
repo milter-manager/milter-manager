@@ -8,7 +8,7 @@ run()
     fi
 }
 
-setup()
+install_package()
 {
     url="$1"
     tarball="${1##*/}"
