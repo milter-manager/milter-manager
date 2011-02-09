@@ -37,9 +37,7 @@ if ! grep search.keyserver.net /.gnupg/gpg.conf; then
 fi
 run pkg-get -U
 
-for package in "$base_packages"; do
-    run pkg-get install $package
-done
+run pkg-get install "$base_packages"
 
 
 echo done.
