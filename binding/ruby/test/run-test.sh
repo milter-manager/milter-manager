@@ -40,6 +40,16 @@ if test -z "$RUBY"; then
     RUBY="$(${MAKE} -s -C "$abs_top_builddir" echo-ruby)"
 fi
 
+if test -z "$MILTER_TEST_CLIENT"; then
+    MILTER_TEST_CLIENT="${abs_top_builddir}/tool/milter-test-client"
+fi
+export MILTER_TEST_CLIENT
+
+if test -z "$MILTER_TEST_SERVER"; then
+    MILTER_TEST_SERVER="${abs_top_builddir}/tool/milter-test-server"
+fi
+export MILTER_TEST_SERVER
+
 if test -z "$TEST_UNIT_MAX_DIFF_TARGET_STRING_SIZE"; then
     TEST_UNIT_MAX_DIFF_TARGET_STRING_SIZE=5000
     export TEST_UNIT_MAX_DIFF_TARGET_STRING_SIZE

@@ -9,7 +9,8 @@ test_files =					\
 	test-reply-decoder.rb			\
 	test-reply-encoder.rb			\
 	test-server-context.rb			\
-	test-socket-address.rb
+	test-socket-address.rb			\
+	test-test-server.rb
 
 EXTRA_DIST =		\
 	$(test_files)
