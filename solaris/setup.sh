@@ -16,8 +16,6 @@ base_dir=$(dirname $0)
 base_packages=$(cat "$base_dir/base-packages.list")
 SOURCES="${base_dir}/sources"
 
-run /usr/bin/su root -c ./setup-system.sh
-
 test -f ./development-sourcelist && source ./development-sourcelist
 
 echo done.
