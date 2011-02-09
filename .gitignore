@@ -60,3 +60,4 @@ Makefile.in
 /binding/ruby/glib-0.16.0/src/glib-enum-types.c
 /binding/ruby/glib-0.16.0/src/glib-enum-types.h
 /binding/ruby/glib-0.16.0/src/glib2.so
+/solaris/sources/
