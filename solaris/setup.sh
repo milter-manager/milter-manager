@@ -10,7 +10,7 @@ MAKE="/usr/sfw/bin/gmake -j4"
 CC=/usr/sfw/bin/gcc
 CFLAGS=-m64
 
-source ./functions
+source ./functions.sh
 
 base_dir=$(dirname $0)
 base_packages=$(cat "$base_dir/base-packages.list")
