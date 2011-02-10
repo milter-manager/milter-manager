@@ -13,34 +13,37 @@ install_package()
     url="$1"
     tarball="${1##*/}"
     base="${tarball%.tar.*}"
-    build_dir="${PREFIX}/build"
+    time_stamp="${BUILDS}/${base}.time_stamp"
     shift
 
-    mkdir -p "$build_dir"
+    mkdir -p "${BUILDS}"
 
     echo -n "Downloading ${base}..."
     run wget -N -P "${SOURCES}" "$url"
     echo done.
 
     echo -n "Extracting ${base}..."
-    run gtar xf "${SOURCES}/${tarball}" -C "${build_dir}"
+    run gtar xf "${SOURCES}/${tarball}" -C "${BUILDS}"
     echo done.
 
     echo -n "Configuring ${base}..."
     (
-        cd "${build_dir}/${base}"
+        cd "${BUILDS}/${base}"
         run ./configure --enable-shared --prefix="${PREFIX}" "$@"
     )
     echo done.
 
     echo -n "Building ${base}..."
-    run touch /tmp/timestamp
-    run ${MAKE} -C "${build_dir}/${base}"
+    run touch "${time_stamp}"
+    run ${MAKE} -C "${BUILDS}/${base}"
     echo done.
 
     echo -n "Installing ${base}..."
-    run ${MAKE} -C "${build_dir}/${base}" install
-    find $PREFIX -newer /tmp/timestamp -print | pkgproto | sed -e "s%$PREFIX/%%" -e "s/$USER other/root root/"> "/tmp/prototype-${base}"
+    run ${MAKE} -C "${BUILDS}/${base}" install
+    find $PREFIX -newer "${time_stamp}" -print | \
+	pkgproto | \
+	sed -e "s%$PREFIX/%%" -e "s/$USER other/root root/" > \
+	"${BUILDS}/${base}.prototype"
     echo done.
 }
 
