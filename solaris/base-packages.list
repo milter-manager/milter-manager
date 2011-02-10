@@ -4,6 +4,7 @@ git
 subversion
 pkgconfig
 pm_xmlparser
+gsed
 gm4
 autoconf
 automake
