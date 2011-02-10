@@ -3,7 +3,7 @@
 set -e
 
 PREFIX=$HOME/opt
-PATH=$PREFIX/bin:/opt/csw/bin:$PATH
+PATH=$PREFIX/bin:/opt/csw/bin:/usr/sfw/bin:$PATH
 
 export AR=/usr/ccs/bin/ar
 export MAKE="/usr/sfw/bin/gmake -j4"
