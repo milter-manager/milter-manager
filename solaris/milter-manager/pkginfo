@@ -1,0 +1,10 @@
+PKG=MMGRmiltermanager
+NAME=milter-manager
+ARCH=x64
+VERSION=1.6.6
+CATEGORY=application
+VENDOR=http://milter-manager.sourceforge.net/ packaged for milter-manager
+EMAIL=milter-manager-users-en@lists.sourceforge.net
+CLASSES=none
+HOTLINE=http://milter-manager.sourceforge.net/
+BASEDIR=/opt/milter-manager
