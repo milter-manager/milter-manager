@@ -4,3 +4,8 @@ git
 subversion
 pkgconfig
 pm_xmlparser
+gm4
+autoconf
+automake
+libtool
+intltool
