@@ -2,4 +2,5 @@ sudo
 ggrep
 git
 subversion
+pkgconfig
 pm_xmlparser
