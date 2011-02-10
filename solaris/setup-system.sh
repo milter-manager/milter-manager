@@ -13,5 +13,8 @@ run gpg --import /tmp/gpg.key
 
 run pkg-get -U
 
+base_dir=$(dirname $0)
+base_packages=$(cat "$base_dir/base-packages.list")
+
 run pkg-get install "$base_packages"
 
