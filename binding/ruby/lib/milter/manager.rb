@@ -113,16 +113,34 @@ module Milter::Manager
     def dump
       @result = ''
 
+      dump_package_items
+      dump_security_items
+      dump_manager_items
+      dump_controller_items
+      dump_applicable_condition_items
+      dump_egg_items
+
+      @result.strip
+    end
+
+    private
+    def dump_package_items
       c = @configuration
       dump_item("package.platform", c.package_platform.inspect)
       dump_item("package.options", c.package_options.inspect)
       @result << "\n"
+    end
 
+    def dump_security_items
+      c = @configuration
       dump_item("security.privilege_mode", c.privilege_mode?)
       dump_item("security.effective_user", c.effective_user.inspect)
       dump_item("security.effective_group", c.effective_group.inspect)
       @result << "\n"
+    end
 
+    def dump_manager_items
+      c = @configuration
       dump_item("manager.connection_spec", c.manager_connection_spec.inspect)
       dump_item("manager.unix_socket_mode", "%#o" % c.manager_unix_socket_mode)
       dump_item("manager.unix_socket_group", c.manager_unix_socket_group.inspect)
@@ -151,7 +169,10 @@ module Milter::Manager
       dump_item("manager.connection_check_interval",
                 c.connection_check_interval.inspect)
       @result << "\n"
+    end
 
+    def dump_controller_items
+      c = @configuration
       dump_item("controller.connection_spec",
                 c.controller_connection_spec.inspect)
       dump_item("controller.unix_socket_mode",
@@ -163,21 +184,22 @@ module Milter::Manager
       dump_item("controller.remove_unix_socket_on_close",
                 c.remove_controller_unix_socket_on_close?)
       @result << "\n"
+    end
 
-      c.applicable_conditions.each do |condition|
+    def dump_applicable_condition_items
+      @configuration.applicable_conditions.each do |condition|
         dump_applicable_condition(condition)
         @result << "\n"
       end
+    end
 
-      c.eggs.each do |egg|
+    def dump_egg_items
+      @configuration.eggs.each do |egg|
         dump_egg(egg)
         @result << "\n"
       end
-
-      @result.strip
     end
 
-    private
     def dump_location(key, indent="")
       if key.nil?
         location = nil
