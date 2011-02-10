@@ -35,7 +35,7 @@ install_milter_manager()
     echo -n "Installing milter-manager..."
     run touch /tmp/timestamp
     run ${MAKE} -C "${base_dir}/../" install
-    find $PREFIX -newer /tmp/timestamp -print | pkgproto | sed -e "s%$PREFIX/%%" -e "s/okimoto other/root root/"> "/tmp/prototype-milter-manager"
+    find $PREFIX -newer /tmp/timestamp -print | pkgproto | sed -e "s%$PREFIX/%%" -e "s/$USER other/root root/"> "/tmp/prototype-milter-manager"
     echo done.
 }
 
