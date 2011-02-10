@@ -49,6 +49,8 @@ Milter::Logger.domain = "milter-manager"
 
 module Milter::Manager
   class Configuration
+    attr_reader :database
+
     def dump
       ConfigurationDumper.new(self).dump
     rescue Exception
@@ -80,10 +82,25 @@ module Milter::Manager
     def clear
       @maintained_hooks = nil
       @netstat_connection_checker = nil
+      @database = Database.new
     end
 
     def netstat_connection_checker
       @netstat_connection_checker ||= NetstatConnectionChecker.new
+    end
+
+    class Database
+      attr_accessor :type, :host, :port, :path
+      attr_accessor :user, :password, :name
+      def initialize
+        @type = nil
+        @host = "localhost"
+        @port = 3306
+        @path = "/var/run/mysqld/mysqld.sock"
+        @user = "root"
+        @password = nil
+        @name = nil
+      end
     end
   end
 
@@ -297,7 +314,8 @@ module Milter::Manager
       end
     end
 
-    attr_reader :package, :security, :controller, :manager, :configuration
+    attr_reader :package, :security, :controller, :manager, :database
+    attr_reader :configuration
     def initialize(configuration)
       @load_level = 0
       @configuration = configuration
@@ -305,6 +323,7 @@ module Milter::Manager
       @security = SecurityConfiguration.new(configuration)
       @controller = ControllerConfiguration.new(configuration)
       @manager = ManagerConfiguration.new(configuration)
+      @database = DatabaseConfiguration.new(configuration)
       @policy_manager = Milter::Manager::PolicyManager.new(self)
     end
 
@@ -1022,6 +1041,82 @@ module Milter::Manager
         def memory_usage_in_kb
           `ps -o rss -p #{Process.pid}`.split(/\n/).last.to_i
         end
+      end
+    end
+
+    class DatabaseConfiguration
+      def initialize(configuration)
+        @configuration = configuration
+      end
+
+      def type
+        @configuration.database.type
+      end
+
+      def type=(type)
+        update_location("type", nil)
+        @configuration.database.type = type
+      end
+
+      def host
+        @configuration.database.host
+      end
+
+      def host=(host)
+        update_location("host", nil)
+        @configuration.database.host = host
+      end
+
+      def port
+        @configuration.database.port
+      end
+
+      def port=(port)
+        update_location("port", nil)
+        @configuration.database.port = port
+      end
+
+      def path
+        @configuration.database.path
+      end
+
+      def path=(path)
+        update_location("path", nil)
+        @configuration.database.path = path
+      end
+
+      def user
+        @configuration.database.user
+      end
+
+      def user=(user)
+        update_location("user", nil)
+        @configuration.database.user = user
+      end
+
+      def password
+        @configuration.database.password
+      end
+
+      def password=(password)
+        update_location("password", nil)
+        @configuration.database.password = password
+      end
+
+      def name
+        @configuration.database.name
+      end
+
+      def name=(name)
+        update_location("name", nil)
+        @configuration.database.name = name
+      end
+
+      private
+      def update_location(key, reset, deep_level=2)
+        full_key = "database.#{key}"
+        ConfigurationLoader.update_location(@configuration, full_key, reset,
+                                            deep_level)
       end
     end
 

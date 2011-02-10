@@ -224,6 +224,12 @@ class TestConfigurationLoader < Test::Unit::TestCase
     assert_equal(0, @configuration.default_packet_buffer_size)
   end
 
+  def test_database_type
+    assert_equal(nil, @configuration.database.type)
+    @loader.database.type = "mysql"
+    assert_equal("mysql", @configuration.database.type)
+  end
+
   def test_to_xml
     assert_equal(<<-EOX, @configuration.to_xml)
 <configuration>
