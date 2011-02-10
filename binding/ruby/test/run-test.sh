@@ -85,5 +85,7 @@ if [ "$ruby_glib2_ext_dir" != "" ]; then
     MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_glib2_ext_dir
 fi
 
+export MILTER_MANAGER_CONFIGURATION_MODULE_DIR=$abs_top_builddir/module/configuration/ruby/.libs
+
 $RUBY_WRAPPER $RUBY -I "$MILTER_MANAGER_RUBYLIB" \
     "$ruby_source_dir/test/run-test.rb" "$@"
