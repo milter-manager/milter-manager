@@ -15,7 +15,6 @@ export LD_LIBRARY_PATH=$PREFIX/lib:$LD_LIBRARY_PATH
 source ./functions.sh
 
 base_dir=$(dirname $0)
-base_packages=$(cat "$base_dir/base-packages.list")
 SOURCES="${base_dir}/sources"
 
 source ./development-sourcelist
