@@ -101,4 +101,4 @@ f none lib/libiconv.so.2.5.0 0755 root root
 f none lib/libiconv.la 0644 root root
 s none lib/libiconv.so.2=libiconv.so.2.5.0
 s none lib/libiconv.so=libiconv.so.2.5.0
-f none build/libiconv-1.13.1/src/iconv 0755 root root
+

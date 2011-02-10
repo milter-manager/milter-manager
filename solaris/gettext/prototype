@@ -1908,9 +1908,3 @@ f none lib/libgettextsrc.la 0755 root root
 f none lib/libasprintf.so.0.0.0 0755 root root
 f none lib/libgettextlib.a 0644 root root
 f none lib/libintl.so.8.1.1 0755 root root
-d none build/gettext-0.18.1.1/gettext-tools/libgettextpo/.libs 0755 root root
-f none build/gettext-0.18.1.1/gettext-tools/libgettextpo/.libs/libgettextpo.so.0.5.1T 0755 root root
-d none build/gettext-0.18.1.1/gettext-tools/gnulib-lib/.libs 0755 root root
-f none build/gettext-0.18.1.1/gettext-tools/gnulib-lib/.libs/libgettextlib-0.18.1.soT 0755 root root
-d none build/gettext-0.18.1.1/gettext-tools/src/.libs 0755 root root
-f none build/gettext-0.18.1.1/gettext-tools/src/.libs/libgettextsrc-0.18.1.soT 0755 root root

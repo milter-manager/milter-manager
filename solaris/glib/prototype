@@ -738,17 +738,3 @@ f none lib/libgthread-2.0.la 0755 root root
 f none lib/libgthread-2.0.so.0.2200.5 0755 root root
 s none lib/libgobject-2.0.so.0=libgobject-2.0.so.0.2200.5
 f none lib/libgobject-2.0.so.0.2200.5 0755 root root
-d none build/glib-2.22.5/glib 0755 root root
-f none build/glib-2.22.5/glib/libglib-gdb.py 0644 root root
-d none build/glib-2.22.5/gmodule/.libs 0755 root root
-f none build/glib-2.22.5/gmodule/.libs/libgmodule-2.0.so.0.2200.5T 0755 root root
-d none build/glib-2.22.5/gthread/.libs 0755 root root
-f none build/glib-2.22.5/gthread/.libs/libgthread-2.0.so.0.2200.5T 0755 root root
-d none build/glib-2.22.5/gio/.libs 0755 root root
-f none build/glib-2.22.5/gio/.libs/libgio-2.0.so.0.2200.5T 0755 root root
-f none build/glib-2.22.5/gio/.libs/libgio-2.0.exp 0644 root root
-d none build/glib-2.22.5/gobject 0755 root root
-d none build/glib-2.22.5/gobject/.libs 0755 root root
-f none build/glib-2.22.5/gobject/.libs/libgobject-2.0.so.0.2200.5T 0755 root root
-f none build/glib-2.22.5/gobject/.libs/libgobject-2.0.exp 0644 root root
-f none build/glib-2.22.5/gobject/libgobject-gdb.py 0644 root root
