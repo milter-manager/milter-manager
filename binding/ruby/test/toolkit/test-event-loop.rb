@@ -97,10 +97,13 @@ class TestEventLoop < Test::Unit::TestCase
     end
     sleep(0.01)
     assert_true(@loop.iterate(:may_block => false))
-    assert_equal([pid, 0], callback_arguments)
+    assert_equal(1, callback_arguments.size)
+    status = callback_arguments[0]
+    assert_equal([pid, true, true],
+                 [status.pid, status.exited?, status.success?])
   end
 
-  def test_watch_child_not_reped
+  def test_watch_child_not_reaped
     callback_arguments = nil
     pid = fork do
       sleep(0.1)
@@ -121,6 +124,8 @@ class TestEventLoop < Test::Unit::TestCase
     assert_raise(ArgumentError.new("watch child block is missing")) do
       @tags << @loop.watch_child(pid)
     end
+  ensure
+    Process.wait(pid)
   end
 
   def test_watch_io

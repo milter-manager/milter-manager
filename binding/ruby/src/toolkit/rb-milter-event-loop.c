@@ -140,13 +140,29 @@ rb_loop_watch_io (int argc, VALUE *argv, VALUE self)
     return UINT2NUM(tag);
 }
 
+static VALUE
+last_status_set(gint status, GPid pid)
+{
+#ifdef HAVE_RB_LAST_STATUS_SET
+    rb_last_status_set(status, (rb_pid_t)pid);
+    return rb_last_status_get();
+#else
+    extern VALUE rb_last_status;
+    VALUE last_status = rb_obj_alloc(rb_path2class("Process::Status"));
+    rb_iv_set(last_status, "status", INT2FIX(status));
+    rb_iv_set(last_status, "pid", INT2FIX(pid));
+    rb_last_status = last_status;
+    return last_status;
+#endif
+}
+
 static void
 cb_watch_child (GPid pid, gint status, gpointer user_data)
 {
     CallbackContext *context = user_data;
 
-    rb_funcall(context->callback, rb_intern("call"), 2,
-	       INT2NUM(pid), INT2NUM(status));
+    rb_funcall(context->callback, rb_intern("call"), 1,
+	       last_status_set(status, pid));
 }
 
 static VALUE

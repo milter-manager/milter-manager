@@ -419,7 +419,7 @@ EOM
 
   AC_SUBST(RUBY_GLIB2_CFLAGS)
 
-  AC_CHECK_FUNCS(rb_errinfo rb_fork)
+  AC_CHECK_FUNCS(rb_errinfo rb_fork rb_last_status_set)
   CFLAGS=$_SAVE_CFLAGS
   LIBS=$_SAVE_LIBS
   LDFLAGS=$_SAVE_LDFLAGS
