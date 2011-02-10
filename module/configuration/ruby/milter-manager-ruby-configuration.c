@@ -61,6 +61,7 @@ struct _MilterManagerRubyConfigurationClass
 };
 
 static VALUE rb_mMilterManagerConfigurationLoader = Qnil;
+static gboolean rb_milter_ruby_interpreter_initialized = FALSE;
 
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,
@@ -147,7 +148,7 @@ milter_manager_ruby_configuration_register_type (GTypeModule *type_module)
         (GInstanceInitFunc) milter_manager_ruby_configuration_init,
         NULL    /* value_table */
     };
-    
+
     milter_manager_ruby_configuration_type_id =
         g_type_module_register_type(type_module,
                                     MILTER_TYPE_MANAGER_CONFIGURATION,
@@ -273,6 +274,19 @@ rb_funcall_protect (GError **g_error, VALUE receiver, ID name, guint argc, ...)
     return result;
 }
 
+static void
+add_load_path (void)
+{
+    const gchar *milter_manager_rubylib;
+
+    milter_manager_rubylib = g_getenv("MILTER_MANAGER_RUBYLIB");
+    if (milter_manager_rubylib) {
+        ruby_incpush(milter_manager_rubylib);
+    }
+    ruby_incpush(BINDING_LIB_DIR);
+    ruby_incpush(BINDING_EXT_DIR);
+}
+
 #if RBGLIB_MINOR_VERSION == 17
 static gboolean
 cb_dummy (gpointer data)
@@ -316,10 +330,16 @@ load_libraries (void)
 static void
 init_ruby (void)
 {
+    const VALUE *builtin_class = &rb_cObject;
     int argc;
     static char args[sizeof "milter-manager\0-e;\0"];
     char *argv[3], *arg;
-    const gchar *milter_manager_rubylib;
+
+    if (builtin_class && *builtin_class) {
+        add_load_path();
+        load_libraries();
+        return;
+    }
 
     argc = 0;
     arg = args;
@@ -330,17 +350,13 @@ init_ruby (void)
     *arg = '\0';
     argv[argc] = NULL;
     ruby_init_without_signal_change();
-    milter_manager_rubylib = g_getenv("MILTER_MANAGER_RUBYLIB");
-    if (milter_manager_rubylib) {
-        ruby_incpush(milter_manager_rubylib);
-    }
-    ruby_incpush(BINDING_LIB_DIR);
-    ruby_incpush(BINDING_EXT_DIR);
+    add_load_path();
     ruby_process_options(argc, argv);
     load_libraries();
 #if RBGLIB_MINOR_VERSION <= 16
     g_main_context_set_poll_func(NULL, NULL);
 #endif
+    rb_milter_ruby_interpreter_initialized = TRUE;
 }
 
 G_MODULE_EXPORT GList *
@@ -373,7 +389,9 @@ ruby_cleanup_without_signal_change (int exit_code)
 G_MODULE_EXPORT void
 MILTER_MANAGER_MODULE_IMPL_EXIT (void)
 {
-    ruby_cleanup_without_signal_change(0);
+    if (rb_milter_ruby_interpreter_initialized) {
+        ruby_cleanup_without_signal_change(0);
+    }
 }
 
 G_MODULE_EXPORT GObject *
