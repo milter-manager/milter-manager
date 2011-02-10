@@ -14,8 +14,6 @@ f none share/man/man1/erb.1 0644 root root
 f none share/man/man1/rake.1 0644 root root
 f none share/man/man1/irb.1 0644 root root
 d none share/doc/ruby 0755 root root
-f none share/doc/ruby/COPYING 0644 root root
-f none share/doc/ruby/LEGAL 0644 root root
 d none bin 0755 root root
 f none bin/rake 0755 root root
 f none bin/erb 0755 root root
