@@ -475,9 +475,6 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
         priv->load_paths = g_list_append(priv->load_paths,
                                          g_strdup(config_dir_env));
     priv->load_paths = g_list_append(priv->load_paths, g_strdup(CONFIG_DIR));
-
-
-    milter_manager_configuration_clear(configuration);
 }
 
 static void
@@ -809,23 +806,53 @@ milter_manager_configuration_error_quark (void)
     return g_quark_from_static_string("milter-manager-configuration-error-quark");
 }
 
-MilterManagerConfiguration *
-milter_manager_configuration_new (const gchar *first_property,
-                                  ...)
+static MilterManagerConfiguration *
+milter_manager_configuration_instantiate_va_list (const gchar *first_property,
+                                                  va_list var_args)
 {
     MilterManagerModule *module;
     GObject *configuration;
-    va_list var_args;
 
     module = milter_manager_configuration_load_module("ruby");
     g_return_val_if_fail(module != NULL, NULL);
 
-    va_start(var_args, first_property);
     configuration = milter_manager_module_instantiate(module,
                                                       first_property, var_args);
+    return MILTER_MANAGER_CONFIGURATION(configuration);
+}
+
+MilterManagerConfiguration *
+milter_manager_configuration_instantiate (const gchar *first_property,
+                                          ...)
+{
+    MilterManagerConfiguration *configuration;
+    va_list var_args;
+
+    va_start(var_args, first_property);
+    configuration =
+        milter_manager_configuration_instantiate_va_list(first_property,
+                                                         var_args);
     va_end(var_args);
 
-    return MILTER_MANAGER_CONFIGURATION(configuration);
+    return configuration;
+}
+
+MilterManagerConfiguration *
+milter_manager_configuration_new (const gchar *first_property,
+                                  ...)
+{
+    MilterManagerConfiguration *configuration;
+    va_list var_args;
+
+    va_start(var_args, first_property);
+    configuration =
+        milter_manager_configuration_instantiate_va_list(first_property,
+                                                         var_args);
+    va_end(var_args);
+
+    milter_manager_configuration_clear(configuration);
+
+    return configuration;
 }
 
 void

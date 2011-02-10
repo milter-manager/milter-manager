@@ -82,6 +82,9 @@ void         _milter_manager_configuration_quit        (void);
 
 
 MilterManagerConfiguration *
+              milter_manager_configuration_instantiate (const gchar *first_property,
+                                                        ...);
+MilterManagerConfiguration *
               milter_manager_configuration_new         (const gchar *first_property,
                                                         ...);
 
