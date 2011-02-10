@@ -94,10 +94,10 @@ module Milter::Manager
       attr_accessor :user, :password, :name
       def initialize
         @type = nil
-        @host = "localhost"
-        @port = 3306
-        @path = "/var/run/mysqld/mysqld.sock"
-        @user = "root"
+        @host = nil
+        @port = nil
+        @path = nil
+        @user = nil
         @password = nil
         @name = nil
       end

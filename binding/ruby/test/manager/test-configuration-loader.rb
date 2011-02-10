@@ -230,6 +230,42 @@ class TestConfigurationLoader < Test::Unit::TestCase
     assert_equal("mysql", @configuration.database.type)
   end
 
+  def test_database_host
+    assert_equal(nil, @configuration.database.host)
+    @loader.database.host = "localhost"
+    assert_equal("localhost", @configuration.database.host)
+  end
+
+  def test_database_port
+    assert_equal(nil, @configuration.database.port)
+    @loader.database.port = 3306
+    assert_equal(3306, @configuration.database.port)
+  end
+
+  def test_database_path
+    assert_equal(nil, @configuration.database.path)
+    @loader.database.path = "/var/run/mysqld/mysqld.sock"
+    assert_equal("/var/run/mysqld/mysqld.sock", @configuration.database.path)
+  end
+
+  def test_database_user
+    assert_equal(nil, @configuration.database.user)
+    @loader.database.user = "root"
+    assert_equal("root", @configuration.database.user)
+  end
+
+  def test_database_password
+    assert_equal(nil, @configuration.database.password)
+    @loader.database.password = "secret"
+    assert_equal("secret", @configuration.database.password)
+  end
+
+  def test_database_name
+    assert_equal(nil, @configuration.database.name)
+    @loader.database.name = "milter_manager_production"
+    assert_equal("milter_manager_production", @configuration.database.name)
+  end
+
   def test_to_xml
     assert_equal(<<-EOX, @configuration.to_xml)
 <configuration>
