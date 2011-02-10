@@ -49,7 +49,7 @@ install_milter_manager()
     echo -n "Configuring milter-manager..."
     (
         cd "${base_dir}/../"
-        run bash ./autogen.sh ACLOCAL_OPTIONS="-I $PREFIX/share/aclocal/"
+        run bash ./autogen.sh
         run ./configure --prefix $PREFIX --enable-ruby-milter
     )
     echo done.

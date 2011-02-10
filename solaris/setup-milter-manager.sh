@@ -12,6 +12,7 @@ export CFLAGS=-m64
 export CXXFLAGS=-m64
 export LD_LIBRARY_PATH=$PREFIX/lib:$LD_LIBRARY_PATH
 export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig
+export ACLOCAL_OPTIONS="-I $PREFIX/share/aclocal/"
 
 source ./functions.sh
 
