@@ -10,32 +10,32 @@ run()
 
 install_package()
 {
-    url="$1"
-    tarball="${1##*/}"
-    base="${tarball%.tar.*}"
-    time_stamp="${BUILDS}/${base}.time_stamp"
-    shift
+    local url="$1"
+    local tarball="${1##*/}"
+    local base="${tarball%.tar.*}"
+    local log="${BUILDS}/${base}.log"
+    local time_stamp="${BUILDS}/${base}.time_stamp"
 
     mkdir -p "${BUILDS}"
 
     echo -n "Downloading ${base}..."
-    run wget -N -P "${SOURCES}" "$url"
+    run wget -N -P "${SOURCES}" "$url" > "${log}"
     echo done.
 
     echo -n "Extracting ${base}..."
-    run gtar xf "${SOURCES}/${tarball}" -C "${BUILDS}"
+    run gtar xf "${SOURCES}/${tarball}" -C "${BUILDS}" > "${log}"
     echo done.
 
     echo -n "Configuring ${base}..."
     (
         cd "${BUILDS}/${base}"
         run ./configure --enable-shared --prefix="${PREFIX}" "$@"
-    )
+    ) > "${log}"
     echo done.
 
     echo -n "Building ${base}..."
     run touch "${time_stamp}"
-    run ${MAKE} -C "${BUILDS}/${base}"
+    run ${MAKE} -C "${BUILDS}/${base}" > "${log}"
     echo done.
 
     echo -n "Installing ${base}..."
