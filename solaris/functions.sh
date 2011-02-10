@@ -65,4 +65,15 @@ install_milter_manager()
     echo done.
 }
 
+build_pkg()
+{
+    local pkg_dir="${base_dir}/${1}"
+    local pkg_name="${PKG_PREFIX}${1}"
+    local archive_name="${pkg_name}.pkg"
+
+    (
+        cd $pkg_dir
+        pkgmk -o -r $PREFIX -a `uname -p` -d $PKG_BASE_DIR
+    )
+}
 
