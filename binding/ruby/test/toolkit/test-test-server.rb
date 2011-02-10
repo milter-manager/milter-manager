@@ -18,7 +18,9 @@ class TestTestServer < Test::Unit::TestCase
 
   def setup
     @test_server = Milter::TestServer.new
-    @connection_spec = "inet:50025"
+    @host = "localhost"
+    @port = 50025
+    @connection_spec = "inet:#{@port}@#{@host}"
     @pid = nil
   end
 
@@ -35,7 +37,7 @@ class TestTestServer < Test::Unit::TestCase
     end
     10.times do
       begin
-        TCPSocket.new("localhost", 50025)
+        TCPSocket.new(@host, @port)
         break
       rescue SystemCallError
         sleep(0.1)
