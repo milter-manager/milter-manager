@@ -44,3 +44,25 @@ install_package()
     echo done.
 }
 
+install_milter_manager()
+{
+    echo -n "Configuring milter-manager..."
+    (
+        cd "${base_dir}/../"
+        run bash ./autogen.sh ACLOCAL_OPTIONS="-I $PREFIX/share/aclocal/"
+        run ./configure --prefix $PREFIX --enable-ruby-milter
+    )
+    echo done.
+
+    echo -n "Building milter-manager..."
+    run ${MAKE} -C "${base_dir}/../"
+    echo done.
+
+    echo -n "Installing milter-manager..."
+    run touch /tmp/timestamp
+    run ${MAKE} -C "${base_dir}/../" install
+    find $PREFIX -newer /tmp/timestamp -print | pkgproto | sed -e "s%$PREFIX/%%" -e "s/okimoto other/root root/"> "/tmp/prototype-milter-manager"
+    echo done.
+}
+
+
