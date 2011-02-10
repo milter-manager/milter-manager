@@ -24,7 +24,7 @@ install_milter_manager()
     (
         cd "${base_dir}/../"
         run bash ./autogen.sh
-        run ./configure --prefix $PREFIX --enable-ruby-milter
+        run ./configure --prefix $PREFIX --enable-ruby-milter --with-package-platform=solaris
     )
     echo done.
 
