@@ -27,4 +27,9 @@ build_pkg gettext
 build_pkg glib
 build_pkg milter-manager
 
-pkgtrans -s $PKG_BASE_DIR MMGRmilter-manager.pkg MMGRruby MMGRiconv MMGRgettext MMGRglib MMGRmilter-manager
+pkgtrans -s $PKG_BASE_DIR "${PKG_PREFIX}milter-manager.pkg" \
+    "${PKG_PREFIX}ruby" \
+    "${PKG_PREFIX}iconv" \
+    "${PKG_PREFIX}gettext" \
+    "${PKG_PREFIX}glib" \
+    "${PKG_PREFIX}milter-manager"
