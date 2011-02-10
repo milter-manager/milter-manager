@@ -22,6 +22,18 @@
 #define SELF(self) (MILTER_MANAGER_CONFIGURATION(RVAL2GOBJ(self)))
 
 static VALUE
+initialize (VALUE self)
+{
+    MilterManagerConfiguration *configuration;
+
+    configuration = milter_manager_configuration_instantiate(NULL);
+    G_INITIALIZE(self, configuration);
+    milter_manager_configuration_clear(configuration);
+
+    return Qnil;
+}
+
+static VALUE
 add_egg (VALUE self, VALUE egg)
 {
     milter_manager_configuration_add_egg(SELF(self), RVAL2GOBJ(egg));
@@ -307,6 +319,9 @@ Init_milter_manager_configuration (void)
 
     G_DEF_SIGNAL_FUNC(rb_cMilterManagerConfiguration,
                       "to-xml", rb_milter_manager_gstring_handle_to_xml_signal);
+
+    rb_define_method(rb_cMilterManagerConfiguration,
+		     "initialize", initialize, 0);
 
     rb_define_method(rb_cMilterManagerConfiguration, "add_egg", add_egg, 1);
     rb_define_method(rb_cMilterManagerConfiguration, "find_egg", find_egg, 1);
