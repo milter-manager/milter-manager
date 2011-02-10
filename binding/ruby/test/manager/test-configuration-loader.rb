@@ -230,6 +230,12 @@ class TestConfigurationLoader < Test::Unit::TestCase
     assert_equal("mysql", @configuration.database.type)
   end
 
+  def test_database_name
+    assert_equal(nil, @configuration.database.name)
+    @loader.database.name = "milter_manager_production"
+    assert_equal("milter_manager_production", @configuration.database.name)
+  end
+
   def test_database_host
     assert_equal(nil, @configuration.database.host)
     @loader.database.host = "localhost"
@@ -258,12 +264,6 @@ class TestConfigurationLoader < Test::Unit::TestCase
     assert_equal(nil, @configuration.database.password)
     @loader.database.password = "secret"
     assert_equal("secret", @configuration.database.password)
-  end
-
-  def test_database_name
-    assert_equal(nil, @configuration.database.name)
-    @loader.database.name = "milter_manager_production"
-    assert_equal("milter_manager_production", @configuration.database.name)
   end
 
   def test_to_xml
