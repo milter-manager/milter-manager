@@ -21,24 +21,27 @@ end
 
 module Milter
   class TestServer
-    attr_accessor :connection_spec, :recipients
+    attr_reader :options
     def initialize
       @milter_test_server = guess_milter_test_server_path
-      @connection_spec = nil
-      @recipients = []
+      @options = []
     end
 
-    def run(options={})
+    def run(*options)
+      if options.size == 1 and options.first.is_a?(Hash)
+        options = options.first.collect do |key, values|
+          [key, values]
+        end
+      end
       command_line = [@milter_test_server,
                       "--output-message",
                       "--color", "no"]
-      connection_spec = options[:connection_spec] || @connection_spec
-      if connection_spec
-        command_line.concat(["--connection-spec", connection_spec])
-      end
-      recipients = (options[:recipients] || []) + @recipients
-      recipients.each do |recipient|
-        command_line.concat(["--recipient", recipient])
+      (@options + options).each do |key, values|
+        key = key.to_s.gsub(/_/, "-").gsub(/\A--/, '')
+        values = [values] unless values.is_a?(Array)
+        values.each do |value|
+          command_line.concat(["--#{key}", value])
+        end
       end
       escaped_command_line = command_line.collect do |argument|
         Shellwords.escape(argument)
