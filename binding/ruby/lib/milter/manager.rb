@@ -101,6 +101,18 @@ module Milter::Manager
         @user = nil
         @password = nil
       end
+
+      def to_hash
+        {
+          :type => @type,
+          :name => @name,
+          :host => @host,
+          :port => @port,
+          :path => @path,
+          :user => @user,
+          :password => @password,
+        }
+      end
     end
   end
 
@@ -311,6 +323,13 @@ module Milter::Manager
       def initialize(path)
         @path = path
         super("#{@path} doesn't exist.")
+      end
+    end
+
+    class MissingValue < Error
+      def initialize(target)
+        @target = target
+        super("#{@target} should be set")
       end
     end
 
@@ -1082,69 +1101,86 @@ module Milter::Manager
     class DatabaseConfiguration
       def initialize(configuration)
         @configuration = configuration
+        @database = @configuration.database
       end
 
       def type
-        @configuration.database.type
+        @database.type
       end
 
       def type=(type)
         update_location("type", nil)
-        @configuration.database.type = type
+        @database.type = type
       end
 
       def name
-        @configuration.database.name
+        @database.name
       end
 
       def name=(name)
         update_location("name", nil)
-        @configuration.database.name = name
+        @database.name = name
       end
 
       def host
-        @configuration.database.host
+        @database.host
       end
 
       def host=(host)
         update_location("host", nil)
-        @configuration.database.host = host
+        @database.host = host
       end
 
       def port
-        @configuration.database.port
+        @database.port
       end
 
       def port=(port)
         update_location("port", nil)
-        @configuration.database.port = port
+        @database.port = port
       end
 
       def path
-        @configuration.database.path
+        @database.path
       end
 
       def path=(path)
         update_location("path", nil)
-        @configuration.database.path = path
+        @database.path = path
       end
 
       def user
-        @configuration.database.user
+        @database.user
       end
 
       def user=(user)
         update_location("user", nil)
-        @configuration.database.user = user
+        @database.user = user
       end
 
       def password
-        @configuration.database.password
+        @database.password
       end
 
       def password=(password)
         update_location("password", nil)
-        @configuration.database.password = password
+        @database.password = password
+      end
+
+      def setup
+        case @database.type
+        when nil
+          raise MissingValue.new("database.type")
+        when "mysql"
+          options = mysql_options
+        else
+          options = default_options
+        end
+        Milter::Logger.info("[configuration][database][setup] " +
+                            "<#{options.inspect}>")
+        require 'active_record'
+        ActiveRecord::Base.logger = Milter::Logger
+        ActiveRecord::Base.establish_connection(options)
       end
 
       private
@@ -1152,6 +1188,29 @@ module Milter::Manager
         full_key = "database.#{key}"
         ConfigurationLoader.update_location(@configuration, full_key, reset,
                                             deep_level)
+      end
+
+      def mysql_options
+        options = {}
+        options[:adapter] = @database.type
+        raise MissingValue.new("database.name") if @database.name.nil?
+        options[:database] = @database.name
+        options[:host] = @database.host || "localhost"
+        options[:port] = @database.port || 3306
+        default_path = "/var/run/mysqld/mysqld.sock"
+        default_path = nil unless File.exist?(default_path)
+        options[:path] = @database.path || default_path
+        options[:user] = @database.user || "root"
+        options[:password] = @database.password
+        options
+      end
+
+      def default_options
+        options = @database.to_hash
+        options[:adatper] = options.delete(:type)
+        options[:database] = options.delete(:name)
+        options[:username] = options.delete(:user)
+        options
       end
     end
 
