@@ -798,6 +798,7 @@ AC_CONFIG_FILES([Makefile
 		 data/Makefile
 		 data/applicable-conditions/Makefile
 		 data/defaults/Makefile
+		 data/models/Makefile
 		 data/packet/Makefile
 		 data/rc.d/Makefile
 		 data/init.d/Makefile

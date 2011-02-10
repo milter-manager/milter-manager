@@ -2,6 +2,7 @@ SUBDIRS =			\
 	packet			\
 	applicable-conditions	\
 	defaults		\
+	models			\
 	rc.d			\
 	init.d			\
 	cron.d			\

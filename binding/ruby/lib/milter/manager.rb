@@ -75,18 +75,43 @@ module Milter::Manager
       end
     end
 
-    def maintained_hooks
-      @maintained_hooks ||= []
-    end
-
     def clear
       @maintained_hooks = nil
       @netstat_connection_checker = nil
       @database = Database.new
+      @loaded_model_files ||= []
+      unless @loaded_model_files.empty?
+        $".reject! do |required_path|
+          @loaded_model_files.include?(required_path)
+        end
+      end
+      @loaded_model_files.clear
+    end
+
+    def maintained_hooks
+      @maintained_hooks ||= []
     end
 
     def netstat_connection_checker
       @netstat_connection_checker ||= NetstatConnectionChecker.new
+    end
+
+    def resolve_path(path)
+      return [path] if Pathname(path).absolute?
+      load_paths.collect do |load_path|
+        full_path = File.join(load_path, path)
+        if File.directory?(full_path)
+          return [full_path]
+        elsif File.exist?(full_path)
+          return [full_path]
+        else
+          Dir.glob(full_path)
+        end
+      end.flatten.compact
+    end
+
+    def add_loaded_model_file(model_file)
+      @loaded_model_files << model_file
     end
 
     class Database
@@ -485,17 +510,7 @@ module Milter::Manager
 
     private
     def resolve_path(path)
-      return [path] if Pathname(path).absolute?
-      resolved_paths = @configuration.load_paths.collect do |load_path|
-        full_path = File.join(load_path, path)
-        if File.directory?(full_path)
-          return [full_path]
-        elsif File.exist?(full_path)
-          return [full_path]
-        else
-          Dir.glob(full_path)
-        end
-      end.flatten.compact
+      resolved_paths = @configuration.resolve_path(path)
       raise NonexistentPath.new(path) if resolved_paths.empty?
       resolved_paths
     end
@@ -1181,6 +1196,17 @@ module Milter::Manager
         require 'active_record'
         ActiveRecord::Base.logger = Milter::Logger
         ActiveRecord::Base.establish_connection(options)
+      end
+
+      def load_models(path)
+        @configuration.resolve_path(path).each do |resolved_path|
+          begin
+            require(resolved_path)
+            @configuration.add_loaded_model_file(resolved_path)
+          rescue Exception => error
+            Milter::Logger.error(error)
+          end
+        end
       end
 
       private
