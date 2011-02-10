@@ -34,11 +34,11 @@ install_package()
     echo done.
 
     echo -n "Building ${base}..."
+    run touch /tmp/timestamp
     run ${MAKE} -C "${build_dir}/${base}"
     echo done.
 
     echo -n "Installing ${base}..."
-    run touch /tmp/timestamp
     run ${MAKE} -C "${build_dir}/${base}" install
     find $PREFIX -newer /tmp/timestamp -print | pkgproto | sed -e "s%$PREFIX/%%" -e "s/$USER other/root root/"> "/tmp/prototype-${base}"
     echo done.
