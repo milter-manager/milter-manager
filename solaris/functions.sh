@@ -1,4 +1,5 @@
 # -*- sh -*-
+
 run()
 {
     $@
@@ -8,43 +9,48 @@ run()
     fi
 }
 
+time_stamp()
+{
+    date +%Y-%m-%dT%H:%m:%S
+}
+
 install_package()
 {
     local url="$1"
     local tarball="${1##*/}"
     local base="${tarball%.tar.*}"
     local log="${BUILDS}/${base}.log"
-    local time_stamp="${BUILDS}/${base}.time_stamp"
+    local time_stamp_file="${BUILDS}/${base}.time_stamp"
 
     mkdir -p "${BUILDS}"
 
-    echo -n "Downloading ${base}..."
+    echo "$(time_stamp): Downloading ${base}..."
     run wget -N -P "${SOURCES}" "$url" > "${log}"
-    echo done.
+    echo "$(time_stamp): done."
 
-    echo -n "Extracting ${base}..."
+    echo "$(time_stamp): Extracting ${base}..."
     run gtar xf "${SOURCES}/${tarball}" -C "${BUILDS}" > "${log}"
-    echo done.
+    echo "$(time_stamp): done."
 
-    echo -n "Configuring ${base}..."
+    echo "$(time_stamp): Configuring ${base}..."
     (
         cd "${BUILDS}/${base}"
         run ./configure --enable-shared --prefix="${PREFIX}" "$@"
     ) > "${log}"
-    echo done.
+    echo "$(time_stamp): done."
 
-    echo -n "Building ${base}..."
-    run touch "${time_stamp}"
+    echo "$(time_stamp): Building ${base}..."
+    run touch "${time_stamp_file}"
     run ${MAKE} -C "${BUILDS}/${base}" > "${log}"
-    echo done.
+    echo "$(time_stamp): done."
 
-    echo -n "Installing ${base}..."
+    echo "$(time_stamp): Installing ${base}..."
     run ${MAKE} -C "${BUILDS}/${base}" install
-    find $PREFIX -newer "${time_stamp}" -print | \
+    find $PREFIX -newer "${time_stamp_file}" -print | \
 	pkgproto | \
 	sed -e "s%$PREFIX/%%" -e "s/$USER other/root root/" > \
 	"${BUILDS}/${base}.prototype"
-    echo done.
+    echo "$(time_stamp): done."
 }
 
 build_pkg()
