@@ -295,6 +295,21 @@ controller.unix_socket_group = nil
 controller.remove_unix_socket_on_create = true
 # default
 controller.remove_unix_socket_on_close = true
+
+# default
+database.type = nil
+# default
+database.name = nil
+# default
+database.host = nil
+# default
+database.port = nil
+# default
+database.path = nil
+# default
+database.user = nil
+# default
+database.password = nil
 EOD
                  @configuration.dump)
   end
@@ -315,6 +330,11 @@ EOD
     loader.controller.connection_spec = "inet:10025"
     controller_unix_socket_group = __LINE__ + 1
     loader.controller.unix_socket_group = "nogroup"
+
+    database_type = __LINE__ + 1
+    loader.database.type = "sqlite3"
+    database_name = __LINE__ + 1
+    loader.database.name = ":memory:"
 
     s25r_lines = {}
     s25r_lines[:define] = __LINE__ + 1
@@ -407,6 +427,21 @@ controller.unix_socket_group = "nogroup"
 controller.remove_unix_socket_on_create = true
 # default
 controller.remove_unix_socket_on_close = true
+
+# #{__FILE__}:#{database_type}
+database.type = "sqlite3"
+# #{__FILE__}:#{database_name}
+database.name = ":memory:"
+# default
+database.host = nil
+# default
+database.port = nil
+# default
+database.path = nil
+# default
+database.user = nil
+# default
+database.password = nil
 
 # #{__FILE__}:#{s25r_lines[:define]}
 define_applicable_condition("S25R") do |condition|

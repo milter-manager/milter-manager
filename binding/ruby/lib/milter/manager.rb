@@ -90,16 +90,16 @@ module Milter::Manager
     end
 
     class Database
-      attr_accessor :type, :host, :port, :path
-      attr_accessor :user, :password, :name
+      attr_accessor :type, :name, :host, :port, :path
+      attr_accessor :user, :password
       def initialize
         @type = nil
+        @name = nil
         @host = nil
         @port = nil
         @path = nil
         @user = nil
         @password = nil
-        @name = nil
       end
     end
   end
@@ -117,6 +117,7 @@ module Milter::Manager
       dump_security_items
       dump_manager_items
       dump_controller_items
+      dump_database_items
       dump_applicable_condition_items
       dump_egg_items
 
@@ -183,6 +184,18 @@ module Milter::Manager
                 c.remove_controller_unix_socket_on_create?)
       dump_item("controller.remove_unix_socket_on_close",
                 c.remove_controller_unix_socket_on_close?)
+      @result << "\n"
+    end
+
+    def dump_database_items
+      c = @configuration
+      dump_item("database.type", c.database.type.inspect)
+      dump_item("database.name", c.database.name.inspect)
+      dump_item("database.host", c.database.host.inspect)
+      dump_item("database.port", c.database.port.inspect)
+      dump_item("database.path", c.database.path.inspect)
+      dump_item("database.user", c.database.user.inspect)
+      dump_item("database.password", c.database.password.inspect)
       @result << "\n"
     end
 
@@ -1080,6 +1093,15 @@ module Milter::Manager
         @configuration.database.type = type
       end
 
+      def name
+        @configuration.database.name
+      end
+
+      def name=(name)
+        update_location("name", nil)
+        @configuration.database.name = name
+      end
+
       def host
         @configuration.database.host
       end
@@ -1123,15 +1145,6 @@ module Milter::Manager
       def password=(password)
         update_location("password", nil)
         @configuration.database.password = password
-      end
-
-      def name
-        @configuration.database.name
-      end
-
-      def name=(name)
-        update_location("name", nil)
-        @configuration.database.name = name
       end
 
       private
