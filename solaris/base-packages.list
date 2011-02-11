@@ -11,6 +11,7 @@ autoconf
 automake
 libtool
 intltool
+gtk_doc
 # optional
 coreutils
 vim
