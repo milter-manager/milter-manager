@@ -18,9 +18,9 @@ export ACLOCAL_OPTIONS="-I $PREFIX/share/aclocal/"
 
 source ./functions.sh
 
-base_dir=$(cd $(dirname $0); pwd)
-log="#{base_dir}/milter-manager.build.log"
-time_stamp_file="#{base_dir}/milter-manager.time_stamp"
+base_dir="$(cd $(dirname $0); pwd)"
+log="${base_dir}/milter-manager.build.log"
+time_stamp_file="${base_dir}/milter-manager.time_stamp"
 
 install_milter_manager()
 {
