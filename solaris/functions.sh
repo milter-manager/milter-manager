@@ -45,7 +45,7 @@ install_package()
     echo "$(time_stamp): done."
 
     echo "$(time_stamp): Installing ${base}..."
-    run ${MAKE} -C "${BUILDS}/${base}" install
+    run ${MAKE} -C "${BUILDS}/${base}" install > "${log}"
     find $PREFIX -newer "${time_stamp_file}" -print | \
 	pkgproto | \
 	sed -e "s%$PREFIX/%%" -e "s/$USER other/root root/" > \
