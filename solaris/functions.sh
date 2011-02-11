@@ -14,7 +14,7 @@ time_stamp()
     date +%Y-%m-%dT%H:%m:%S
 }
 
-install_package_build_and_install()
+update_prototype()
 {
     local base="$1"
     local build_dir="$2"
@@ -23,25 +23,23 @@ install_package_build_and_install()
     local prototype="${PROTOTYPES}/${package_name}/prototype"
     local user="$(/usr/xpg4/bin/id -un)"
     local group="$(/usr/xpg4/bin/id -gn)"
+    local dest_dir="${BUILDS}/tmp/"
 
-    echo "$(time_stamp): Building ${base}..."
-    run touch "${time_stamp_file}"
-    run ${MAKE} -C "${build_dir}" > "${log}"
-    echo "$(time_stamp): done."
-
-    echo "$(time_stamp): Installing ${base}..."
-    run ${MAKE} -C "${build_dir}" install > "${log}"
+    echo "$(time_stamp): Updating prototype of ${base}..."
+    run rm -rf "${dest_dir}"
+    run ${MAKE} DESTDIR="${destdir}" -C "${build_dir}" install > "${log}"
     cat <<EOP > "${prototype}"
 i pkginfo
 i depend
 i copyright
 EOP
-    find $PREFIX -newer "${time_stamp_file}" -print | \
+    find "${dest_dir}" -print | \
 	pkgproto | \
-	grep -v " $PREFIX " | \
-	gsed -e "s%$PREFIX/%%" | \
+	grep -v " ${dest_dir}/$PREFIX " | \
+	gsed -e "s%${dest_dir}/$PREFIX/%%" | \
 	gsed -e "s/$user $group\$/root root/" | \
 	sort >> "${prototype}"
+    run rm -rf "${dest_dir}"
     echo "$(time_stamp): done."
 }
 
@@ -50,6 +48,7 @@ install_package()
     local url="$1"
     local tarball="${1##*/}"
     local base="${tarball%.tar.*}"
+    local build_dir="${BUILDS}/${base}"
     local log="${BUILDS}/${base}.log"
     local time_stamp_file="${BUILDS}/${base}.time_stamp"
     shift
@@ -71,7 +70,15 @@ install_package()
     ) > "${log}"
     echo "$(time_stamp): done."
 
-    install_package_build_and_install "$base" "${BUILDS}/${base}"
+    echo "$(time_stamp): Building ${base}..."
+    run ${MAKE} -C "${build_dir}" > "${log}"
+    echo "$(time_stamp): done."
+
+    echo "$(time_stamp): Installing ${base}..."
+    run ${MAKE} -C "${build_dir}" install > "${log}"
+    echo "$(time_stamp): done."
+
+    update_prototype "${base}" "${build_dir}"
 }
 
 build_pkg()

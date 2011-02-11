@@ -7,11 +7,13 @@ source ./functions.sh
 
 install_milter_manager()
 {
-    local log="${BUILDS}/milter-manager.build.log"
+    local base="milter-manager"
+    local log="${BUILDS}/${base}.build.log"
+    local build_dir="${base_dir}/../"
 
-    echo "$(time_stamp): Configuring milter-manager..."
+    echo "$(time_stamp): Configuring ${base}..."
     (
-        cd "${base_dir}/../"
+        cd "${build_dir"
         run bash ./autogen.sh
         run ./configure --prefix $PREFIX \
 	    --enable-ruby-milter \
@@ -19,7 +21,15 @@ install_milter_manager()
     ) > "${log}"
     echo "$(time_stamp): done."
 
-    install_package_build_and_install "milter-manager" "${base_dir}/../"
+    echo "$(time_stamp): Building ${base}..."
+    run ${MAKE} -C "${build_dir}" > "${log}"
+    echo "$(time_stamp): done."
+
+    echo "$(time_stamp): Installing ${base}..."
+    run ${MAKE} -C "${build_dir}" install > "${log}"
+    echo "$(time_stamp): done."
+
+    update_prototype "milter-manager" "${build_dir}"
 }
 
 echo "$(time_stamp): Installing milter manager..."
