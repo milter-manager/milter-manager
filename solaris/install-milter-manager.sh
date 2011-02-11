@@ -5,11 +5,10 @@ set -e
 source ./environment.sh
 source ./functions.sh
 
-log="${BUILDS}/milter-manager.build.log"
-time_stamp_file="${BUILDS}/milter-manager.time_stamp"
-
 install_milter_manager()
 {
+    local log="${BUILDS}/milter-manager.build.log"
+
     echo "$(time_stamp): Configuring milter-manager..."
     (
         cd "${base_dir}/../"
