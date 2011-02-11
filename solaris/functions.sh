@@ -63,7 +63,7 @@ build_pkg()
 
     (
         cd $pkg_dir
-        pkgmk -o -r $PREFIX -a $(uname -p) -d $PKG_BASE_DIR
+        run pkgmk -o -r $PREFIX -a $(uname -p) -d $PKG_BASE_DIR
     ) > "${log}"
 }
 
