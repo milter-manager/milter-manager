@@ -2,6 +2,6 @@
 
 source ./functions.sh
 
-run ./build-libraries.sh
-run ./build-milter-manager.sh
+run ./install-libraries.sh
+run ./install-milter-manager.sh
 run ./build-pkgs.sh
