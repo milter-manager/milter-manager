@@ -13,12 +13,15 @@ source ./functions.sh
 
 mkdir -p $PKG_BASE_DIR
 
+echo "$(time_stamp): Building packages..."
 build_pkg ruby
 build_pkg iconv
 build_pkg gettext
 build_pkg glib
 build_pkg milter-manager
+echo "$(time_stamp): done."
 
+echo "$(time_stamp): Building milter manager device..."
 pkgtrans -s $PKG_BASE_DIR \
     "${PKG_PREFIX}milter-manager.pkg" \
     "${PKG_PREFIX}ruby" \
@@ -26,3 +29,4 @@ pkgtrans -s $PKG_BASE_DIR \
     "${PKG_PREFIX}gettext" \
     "${PKG_PREFIX}glib" \
     "${PKG_PREFIX}milter-manager"
+echo "$(time_stamp): done."

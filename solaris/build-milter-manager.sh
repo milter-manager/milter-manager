@@ -35,6 +35,6 @@ install_milter_manager()
     echo "$(time_stamp): done."
 }
 
+echo "$(time_stamp): Installing libraries..."
 install_milter_manager
-
-echo done.
+echo "$(time_stamp): done."
