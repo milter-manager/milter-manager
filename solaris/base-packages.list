@@ -10,4 +10,6 @@ autoconf
 automake
 libtool
 intltool
+
 coreutils
+vim
