@@ -20,18 +20,7 @@ install_milter_manager()
     ) > "${log}"
     echo "$(time_stamp): done."
 
-    echo "$(time_stamp): Building milter-manager..."
-    run ${MAKE} -C "${base_dir}/../" > "${log}"
-    echo "$(time_stamp): done."
-
-    echo "$(time_stamp): Installing milter-manager..."
-    run touch "${time_stamp_file}"
-    run ${MAKE} -C "${base_dir}/../" install > "${log}"
-    find $PREFIX -newer "${time_stamp_file}" -print | \
-	pkgproto | \
-	sed -e "s%$PREFIX/%%" -e "s/$USER other/root root/" \
-	> "${BUILDS}/milter-manager.prototype"
-    echo "$(time_stamp): done."
+    install_package_build_and_install "milter-manager" "${base_dir}/../"
 }
 
 echo "$(time_stamp): Installing milter manager..."
