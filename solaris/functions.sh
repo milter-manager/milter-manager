@@ -61,9 +61,11 @@ build_pkg()
     local archive_name="${pkg_name}.pkg"
     local log="${PKG_BASE_DIR}/${pkg_name}.log"
 
+    echo "$(time_stamp): Building package ${pkg_name}..."
     (
         cd $pkg_dir
         run pkgmk -o -r $PREFIX -d $PKG_BASE_DIR
     ) > "${log}" 2>&1
+    echo "$(time_stamp): done."
 }
 
