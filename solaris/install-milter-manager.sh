@@ -6,8 +6,9 @@ source ./environment.sh
 source ./functions.sh
 
 base_dir="$(cd $(dirname $0); pwd)"
-log="${base_dir}/builds/milter-manager.build.log"
-time_stamp_file="${base_dir}/builds/milter-manager.time_stamp"
+BUILDS="${base_dir}/builds"
+log="${BUILDS}/milter-manager.build.log"
+time_stamp_file="${BUILDS}/milter-manager.time_stamp"
 
 install_milter_manager()
 {
@@ -31,7 +32,7 @@ install_milter_manager()
     find $PREFIX -newer "${time_stamp_file}" -print | \
 	pkgproto | \
 	sed -e "s%$PREFIX/%%" -e "s/$USER other/root root/" \
-	> "${base_dir}/milter-manager.prototype"
+	> "${BUILDS}/milter-manager.prototype"
     echo "$(time_stamp): done."
 }
 
