@@ -1,5 +1,5 @@
 PREFIX=$HOME/opt
-PATH=$PREFIX/bin:/opt/csw/gnu:/opt/csw/bin:$PATH
+PATH=$PREFIX/bin:/opt/csw/bin:$PATH
 
 export AR=/usr/ccs/bin/ar
 export MAKE="/usr/sfw/bin/gmake -j4"
