@@ -59,10 +59,11 @@ build_pkg()
     local pkg_dir="${base_dir}/${1}"
     local pkg_name="${PKG_PREFIX}${1}"
     local archive_name="${pkg_name}.pkg"
+    local log="${PKG_BASE_DIR}/${pkg_name}.log"
 
     (
         cd $pkg_dir
-        pkgmk -o -r $PREFIX -a `uname -p` -d $PKG_BASE_DIR
-    )
+        pkgmk -o -r $PREFIX -a $(uname -p) -d $PKG_BASE_DIR
+    ) > "${log}"
 }
 
