@@ -24,17 +24,20 @@ update_prototype()
     local prototype="${prototype_dir}/prototype"
     local user="$(/usr/xpg4/bin/id -un)"
     local group="$(/usr/xpg4/bin/id -gn)"
-    local dest_dir="${BUILDS}/tmp/"
+    local dest_dir="${BUILDS}/tmp"
+    local log="${BUILDS}/${base}.log"
 
     echo "$(time_stamp): Updating prototype of ${base}..."
     run mkdir -p "$prototype_dir"
     run rm -rf "${dest_dir}"
-    run ${MAKE} DESTDIR="${destdir}" -C "${build_dir}" install > "${log}"
+    run ${MAKE} DESTDIR="${dest_dir}" -C "${build_dir}" install > "${log}"
     cat <<EOP > "${prototype}"
 i pkginfo
 i depend
 i copyright
 EOP
+    find "${dest_dir}" -print | \
+	pkgproto
     find "${dest_dir}" -print | \
 	pkgproto | \
 	grep -v " ${dest_dir}/$PREFIX " | \

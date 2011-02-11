@@ -8,11 +8,11 @@ source ./functions.sh
 echo "$(time_stamp): Updating prototypes..."
 
 for path in $(ls "${BUILDS}"); do
-    if [ -d "${path}" ]; then
-	update_prototype "${path##*/}" "${path}"
+    if [ -d "${BUILDS}/${path}" ]; then
+	update_prototype "${path##*/}" "${BUILDS}/${path}"
     fi
 done
 
-install_package "milter-manager" "${base_dir}/.."
+update_prototype "milter-manager" "${base_dir}/.."
 
 echo "$(time_stamp): done."

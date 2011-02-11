@@ -1,4 +1,4 @@
-base_dir=$(dirname $0)
+base_dir="$(cd $(dirname $0); pwd)"
 SOURCES="${base_dir}/sources"
 BUILDS="${base_dir}/builds"
 PROTOTYPES="${base_dir}/prototypes"
