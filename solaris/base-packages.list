@@ -10,3 +10,4 @@ autoconf
 automake
 libtool
 intltool
+coreutils
