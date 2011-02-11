@@ -1,3 +1,9 @@
+base_dir=$(dirname $0)
+SOURCES="${base_dir}/sources"
+BUILDS="${base_dir}/builds"
+PROTOTYPES="${base_dir}/prototypes"
+PKGS="${base_dir}/pkgs"
+
 PREFIX=$HOME/opt
 PATH=$PREFIX/bin:/opt/csw/bin:$PATH
 

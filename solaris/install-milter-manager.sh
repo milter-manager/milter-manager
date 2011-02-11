@@ -5,8 +5,6 @@ set -e
 source ./environment.sh
 source ./functions.sh
 
-base_dir="$(cd $(dirname $0); pwd)"
-BUILDS="${base_dir}/builds"
 log="${BUILDS}/milter-manager.build.log"
 time_stamp_file="${BUILDS}/milter-manager.time_stamp"
 

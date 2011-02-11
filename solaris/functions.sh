@@ -19,8 +19,12 @@ install_package()
     local url="$1"
     local tarball="${1##*/}"
     local base="${tarball%.tar.*}"
+    local package_name="${base%%-*}"
     local log="${BUILDS}/${base}.log"
     local time_stamp_file="${BUILDS}/${base}.time_stamp"
+    local prototype="${PROTOTYPES}/${package_name}/prototype"
+    local user="$(/usr/xpg4/bin/id -un)"
+    local group="$(/usr/xpg4/bin/id -gn)"
     shift
 
     mkdir -p "${BUILDS}"
@@ -47,10 +51,17 @@ install_package()
 
     echo "$(time_stamp): Installing ${base}..."
     run ${MAKE} -C "${BUILDS}/${base}" install > "${log}"
+    cat <<EOP > "${prototype}"
+i pkginfo
+i depend
+i copyright
+EOP
     find $PREFIX -newer "${time_stamp_file}" -print | \
 	pkgproto | \
-	sed -e "s%$PREFIX/%%" -e "s/$USER other/root root/" > \
-	"${BUILDS}/${base}.prototype"
+	grep -v " $PREFIX " | \
+	gsed -e "s%$PREFIX/%%" | \
+	gsed -e "s/$user $group$/root root/" | \
+	sort >> "${prototype}"
     echo "$(time_stamp): done."
 }
 

@@ -5,10 +5,6 @@ set -e
 source ./environment.sh
 source ./functions.sh
 
-base_dir=$(dirname $0)
-SOURCES="${base_dir}/sources"
-BUILDS="${base_dir}/builds"
-
 echo "$(time_stamp): Installing libraries..."
 
 install_package ftp://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p136.tar.bz2 \
