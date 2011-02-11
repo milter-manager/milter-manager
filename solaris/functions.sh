@@ -21,6 +21,7 @@ install_package()
     local base="${tarball%.tar.*}"
     local log="${BUILDS}/${base}.log"
     local time_stamp_file="${BUILDS}/${base}.time_stamp"
+    shift
 
     mkdir -p "${BUILDS}"
 
