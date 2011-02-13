@@ -63,3 +63,5 @@ Makefile.in
 /solaris/sources/
 /solaris/builds/
 /solaris/pkgs/
+/admin/log/*
+/admin/config/secret
