@@ -3,7 +3,11 @@ SUBDIRS =	\
 	manager
 
 TESTS = run-test.sh
-TESTS_ENVIRONMENT = NO_MAKE=yes
+TESTS_ENVIRONMENT =				\
+	NO_MAKE=yes				\
+	RUBY="$(RUBY)"				\
+	abs_top_builddir="$(abs_top_builddir)"	\
+	abs_top_srcdir="$(abs_top_srcdir)"
 
 utils_files =					\
 	milter-test-utils.rb			\
