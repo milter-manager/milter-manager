@@ -1,6 +1,6 @@
 PKG=MMGRmilter-manager
 NAME=milter-manager
-ARCH=x64
+ARCH=amd64
 VERSION=1.6.6
 CATEGORY=application
 VENDOR=http://milter-manager.sourceforge.net/ packaged for milter-manager

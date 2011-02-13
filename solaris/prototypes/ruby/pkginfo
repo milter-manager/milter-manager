@@ -1,6 +1,6 @@
 PKG=MMGRruby
 NAME=ruby - An object-oriented language for quick and easy programming.
-ARCH=x64
+ARCH=amd64
 VERSION=1.9.2p136
 CATEGORY=application
 VENDOR=http://www.ruby-lang.org/ packaged for milter-manager

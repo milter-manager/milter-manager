@@ -1,6 +1,6 @@
 PKG=MMGRcutter
 NAME=cutter
-ARCH=x64
+ARCH=amd64
 VERSION=1.1.6
 CATEGORY=application
 VENDOR=http://milter-manager.sourceforge.net/ packaged for milter-manager

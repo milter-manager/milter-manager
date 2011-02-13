@@ -1,6 +1,6 @@
 PKG=MMGRglib
 NAME=glib2 - Low level core compatibility library for GTK+ and GNOME
-ARCH=x64
+ARCH=amd64
 VERSION=2.22.5
 CATEGORY=application
 VENDOR=http://www.gtk.org/ packaged for milter-manager
