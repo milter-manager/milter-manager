@@ -191,6 +191,7 @@ d none share/locale/zh_HK 0755 root root
 d none share/locale/zh_HK/LC_MESSAGES 0755 root root
 d none share/locale/zh_TW 0755 root root
 d none share/locale/zh_TW/LC_MESSAGES 0755 root root
+d none share/man 0755 root root
 d none share/man/man1 0755 root root
 d none share/man/man3 0755 root root
 f none bin/autopoint 0755 root root
