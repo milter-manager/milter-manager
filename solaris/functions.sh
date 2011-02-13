@@ -18,7 +18,7 @@ update_prototype()
 {
     local base="$1"
     local build_dir="$2"
-    local package_name="${base%%-*}"
+    local package_name="${base%%-[0-9]*}"
     package_name="${package_name##lib}"
     local prototype_dir="${PROTOTYPES}/${package_name}"
     local prototype="${prototype_dir}/prototype"
