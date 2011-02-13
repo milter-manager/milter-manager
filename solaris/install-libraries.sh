@@ -18,6 +18,6 @@ install_package http://ftp.gnome.org/pub/gnome/sources/glib/2.22/glib-2.22.5.tar
 install_package ftp://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p136.tar.bz2 \
     --disable-install-doc --enable-shared
 
-install_package http://downloads.sourceforge.net/cutter/cutter-1.1.6.tar.gz
+install_package http://downloads.sourceforge.net/cutter/cutter-1.1.7.tar.gz
 
 echo "$(time_stamp): done."

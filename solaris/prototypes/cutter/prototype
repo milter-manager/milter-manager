@@ -7,8 +7,6 @@ d none include/cutter 0755 root root
 d none include/cutter/cppcutter 0755 root root
 d none include/cutter/cutter 0755 root root
 d none include/cutter/gcutter 0755 root root
-d none include/cutter/gdkcutter-pixbuf 0755 root root
-d none include/cutter/soupcutter 0755 root root
 d none lib 0755 root root
 d none lib/cutter 0755 root root
 d none lib/cutter/module 0755 root root
@@ -132,15 +130,6 @@ f none include/cutter/gcutter/gcut-string.h 0644 root root
 f none include/cutter/gcutter/gcut-test-utils.h 0644 root root
 f none include/cutter/gcutter/gcut-types.h 0644 root root
 f none include/cutter/gcutter/gcut-value-equal.h 0644 root root
-f none include/cutter/gdkcutter-pixbuf.h 0644 root root
-f none include/cutter/gdkcutter-pixbuf/gdkcut-pixbuf-assertions-helper.h 0644 root root
-f none include/cutter/gdkcutter-pixbuf/gdkcut-pixbuf-assertions.h 0644 root root
-f none include/cutter/gdkcutter-pixbuf/gdkcut-pixbuf.h 0644 root root
-f none include/cutter/soupcutter.h 0644 root root
-f none include/cutter/soupcutter/soupcut-assertions-helper.h 0644 root root
-f none include/cutter/soupcutter/soupcut-assertions.h 0644 root root
-f none include/cutter/soupcutter/soupcut-client.h 0644 root root
-f none include/cutter/soupcutter/soupcut-server.h 0644 root root
 f none lib/cutter/module/factory/report/xml_factory.la 0755 root root
 f none lib/cutter/module/factory/report/xml_factory.so 0755 root root
 f none lib/cutter/module/factory/stream/xml_factory.la 0755 root root
@@ -246,6 +235,7 @@ f none share/gtk-doc/html/cutter/index-1-1-3.html 0644 root root
 f none share/gtk-doc/html/cutter/index-1-1-4.html 0644 root root
 f none share/gtk-doc/html/cutter/index-1-1-5.html 0644 root root
 f none share/gtk-doc/html/cutter/index-1-1-6.html 0644 root root
+f none share/gtk-doc/html/cutter/index-1-1-7.html 0644 root root
 f none share/gtk-doc/html/cutter/index-all.html 0644 root root
 f none share/gtk-doc/html/cutter/index-deprecated.html 0644 root root
 f none share/gtk-doc/html/cutter/index.html 0644 root root
@@ -400,6 +390,7 @@ f none share/gtk-doc/html/cutter/ja/index-1-1-3.html 0644 root root
 f none share/gtk-doc/html/cutter/ja/index-1-1-4.html 0644 root root
 f none share/gtk-doc/html/cutter/ja/index-1-1-5.html 0644 root root
 f none share/gtk-doc/html/cutter/ja/index-1-1-6.html 0644 root root
+f none share/gtk-doc/html/cutter/ja/index-1-1-7.html 0644 root root
 f none share/gtk-doc/html/cutter/ja/index-all.html 0644 root root
 f none share/gtk-doc/html/cutter/ja/index-deprecated.html 0644 root root
 f none share/gtk-doc/html/cutter/ja/index.html 0644 root root
