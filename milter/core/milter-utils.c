@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -820,6 +820,32 @@ milter_utils_parse_file_mode (const gchar *string,
 
     return success;
 }
+
+#if GLIB_CHECK_VERSION(2, 14, 0)
+GList *
+milter_utils_hash_table_get_keys (GHashTable *table)
+{
+    return g_hash_table_get_keys(table);
+}
+#else
+static void
+collect_key (gpointer key, gpointer value, gpointer user_data)
+{
+    GList **keys = (GList **)user_data;
+
+    *keys = g_list_prepend(*keys, key);
+}
+
+GList *
+milter_utils_hash_table_get_keys (GHashTable *table)
+{
+    GList *keys = NULL;
+
+    g_hash_table_foreach(hash_table, collect_key, &keys);
+
+    return keys;
+}
+#endif
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

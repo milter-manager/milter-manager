@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -146,6 +146,8 @@ gboolean         milter_utils_guess_console_color_usability
 gboolean         milter_utils_parse_file_mode(const gchar  *string,
                                               guint        *mode,
                                               gchar       **error_message);
+GList           *milter_utils_hash_table_get_keys
+                                             (GHashTable *table);
 
 typedef enum {
     MILTER_UTILS_READ_PIPE,

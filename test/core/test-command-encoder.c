@@ -214,8 +214,8 @@ static void
 setup_define_macro_connect_packet (void)
 {
     g_string_append(expected, "C");
-    append_name_and_value(expected, "j", "debian.example.com");
     append_name_and_value(expected, "{daemon_name}", "debian.example.com");
+    append_name_and_value(expected, "j", "debian.example.com");
     append_name_and_value(expected, "v", "Postfix 2.5.5");
 }
 

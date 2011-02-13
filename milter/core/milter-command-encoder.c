@@ -82,23 +82,45 @@ milter_command_encoder_encode_negotiate (MilterCommandEncoder *encoder,
     milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
-static void
-encode_each_macro (gpointer _key, gpointer _value, gpointer user_data)
+static gint
+compare_macro_key (gconstpointer a, gconstpointer b)
 {
-    gchar *key = _key;
-    gchar *value = _value;
-    GString *buffer = user_data;
+    const gchar *key1 = a;
+    const gchar *key2 = b;
 
-    if (key[0] == '\0')
-        return;
-    if (key[0] == '{' || key[1] == '\0')
-        g_string_append(buffer, key);
-    else
-        g_string_append_printf(buffer, "{%s}", key);
-    g_string_append_c(buffer, '\0');
-    if (value)
-        g_string_append(buffer, value);
-    g_string_append_c(buffer, '\0');
+    if (key1[0] == '{')
+        key1++;
+    if (key2[0] == '{')
+        key2++;
+    return g_utf8_collate(key1, key2);
+}
+
+static void
+encode_macros (GHashTable *macros, GString *buffer)
+{
+    GList *keys, *node;
+
+    keys = milter_utils_hash_table_get_keys(macros);
+    keys = g_list_sort(keys, compare_macro_key);
+    for (node = keys; node; node = g_list_next(node)) {
+        gchar *key = node->data;
+        gchar *value;
+
+        if (key[0] == '\0')
+            continue;
+        if (key[0] == '{' || key[1] == '\0') {
+            g_string_append(buffer, key);
+        } else {
+            g_string_append_printf(buffer, "{%s}", key);
+        }
+        g_string_append_c(buffer, '\0');
+
+        value = g_hash_table_lookup(macros, key);
+        if (value)
+            g_string_append(buffer, value);
+        g_string_append_c(buffer, '\0');
+    }
+    g_list_free(keys);
 }
 
 void
@@ -117,8 +139,9 @@ milter_command_encoder_encode_define_macro (MilterCommandEncoder *encoder,
 
     g_string_append_c(buffer, MILTER_COMMAND_DEFINE_MACRO);
     g_string_append_c(buffer, context);
-    if (macros)
-        g_hash_table_foreach(macros, encode_each_macro, buffer);
+    if (macros) {
+        encode_macros(macros, buffer);
+    }
     milter_encoder_pack(base_encoder, packet, packet_size);
 }
 

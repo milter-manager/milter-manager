@@ -20,22 +20,10 @@
 #include "milter-test-glib-compatible.h"
 
 #if !GLIB_CHECK_VERSION(2, 14, 0)
-static void
-collect_key (gpointer key, gpointer value, gpointer user_data)
-{
-    GList **keys = (GList **)user_data;
-
-    *keys = g_list_append(*keys, key);
-}
-
 GList *
 g_hash_table_get_keys (GHashTable *hash_table)
 {
-    GList *keys = NULL;
-
-    g_hash_table_foreach(hash_table, collect_key, &keys);
-
-    return keys;
+    return milter_utils_hash_table_get_keys(hash_table);
 }
 #endif
 
