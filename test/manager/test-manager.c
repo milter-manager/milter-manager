@@ -593,8 +593,9 @@ test_remove_manager_unix_socket_on_close (void)
 
     spec = cut_take_printf("unix:%s", path);
     setup_process(manager_data,
-              "-s", spec,
-              "--config-dir", scenario_dir, NULL);
+                  "-s", spec,
+                  "--config-dir", scenario_dir,
+                  NULL);
     gcut_process_run(manager_process, &error);
     gcut_assert_error(error);
 
