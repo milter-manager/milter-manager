@@ -36,12 +36,10 @@ i pkginfo
 i depend
 i copyright
 EOP
-    find "${dest_dir}" -print | \
-	pkgproto
-    find "${dest_dir}" -print | \
+    find "${dest_dir}${PREFIX}" -print | \
 	pkgproto | \
-	grep -v " ${dest_dir}/$PREFIX " | \
-	gsed -e "s%${dest_dir}/$PREFIX/%%" | \
+	grep -v " ${dest_dir}${PREFIX} " | \
+	gsed -e "s%${dest_dir}${PREFIX}/%%" | \
 	gsed -e "s/$user $group\$/root root/" | \
 	sort >> "${prototype}"
     run rm -rf "${dest_dir}"
