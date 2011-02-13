@@ -33,8 +33,10 @@
 #include "milter-enum-types.h"
 
 #define DEFAULT_KEY "default"
-#define DEFAULT_LEVEL                                           \
-    (MILTER_LOG_LEVEL_CRITICAL | MILTER_LOG_LEVEL_ERROR)
+#define DEFAULT_LEVEL                           \
+    (MILTER_LOG_LEVEL_CRITICAL |                \
+     MILTER_LOG_LEVEL_ERROR |                   \
+     MILTER_LOG_LEVEL_WARNING)
 
 #define MILTER_LOGGER_GET_PRIVATE(obj)                  \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                 \
