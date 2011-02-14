@@ -13,7 +13,7 @@ install_milter_manager()
 
     echo "$(time_stamp): Configuring ${base}..."
     (
-        cd "${build_dir"
+        cd "${build_dir}"
         run bash ./autogen.sh
         run ./configure --prefix $PREFIX \
 	    --enable-ruby-milter \
