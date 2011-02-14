@@ -420,7 +420,7 @@ module Milter::Manager
       begin
         @load_level += 1
         content = File.read(file)
-        Milter::Logger.debug("loading configuration file: '#{file}'")
+        Milter::Logger.debug("[configuration][load][start] <#{file}>")
         instance_eval(content, file)
         apply_policies if @load_level == 1
       rescue InvalidValue
@@ -435,6 +435,7 @@ module Milter::Manager
         Milter::Logger.error(backtrace[1..-1].join("\n"))
       ensure
         @load_level -= 1
+        Milter::Logger.debug("[configuration][load][end] <#{file}>")
       end
     end
 
@@ -521,7 +522,7 @@ module Milter::Manager
       def load(file)
         listener = Listener.new(@loader)
         File.open(file) do |input|
-          Milter::Logger.debug("loading XML configuration file: '#{file}'")
+          Milter::Logger.debug("[configuration][xml][load][start] <#{file}>")
           parser = REXML::Parsers::StreamParser.new(input, listener)
           begin
             parser.parse
@@ -530,6 +531,8 @@ module Milter::Manager
             info = "#{file}:#{source.line}:#{source.position}"
             info << ":#{source.current_line}: #{$!.message}"
             Milter::Logger.error(info)
+          ensure
+            Milter::Logger.debug("[configuration][xml][load][end] <#{file}>")
           end
         end
       end
