@@ -1234,7 +1234,7 @@ module Milter::Manager
         default_path = "/var/run/mysqld/mysqld.sock"
         default_path = nil unless File.exist?(default_path)
         options[:path] = @database.path || default_path
-        options[:user] = @database.user || "root"
+        options[:username] = @database.user || "root"
         options[:password] = @database.password
         options
       end
