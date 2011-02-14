@@ -96,20 +96,6 @@ module Milter::Manager
       @netstat_connection_checker ||= NetstatConnectionChecker.new
     end
 
-    def resolve_path(path)
-      return [path] if Pathname(path).absolute?
-      load_paths.collect do |load_path|
-        full_path = File.join(load_path, path)
-        if File.directory?(full_path)
-          return [full_path]
-        elsif File.exist?(full_path)
-          return [full_path]
-        else
-          Dir.glob(full_path)
-        end
-      end.flatten.compact
-    end
-
     def add_loaded_model_file(model_file)
       @loaded_model_files << model_file
     end
@@ -391,6 +377,30 @@ module Milter::Manager
           configuration.set_location(key, file, line.to_i)
         end
       end
+
+      def resolve_path(configuration, path)
+        return [path] if Pathname(path).absolute?
+        configuration.load_paths.collect do |load_path|
+          full_path = File.join(load_path, path)
+          if File.directory?(full_path)
+            Dir.open(full_path) do |dir|
+              dir.each do |sub_path|
+                next if sub_path == "." or sub_path == ".."
+                full_sub_path = File.join(full_path, sub_path)
+                next if File.directory?(full_sub_path)
+                paths << full_sub_path
+              end
+            end
+            return paths
+          elsif File.exist?(full_path)
+            return [full_path]
+          else
+            Dir.glob(full_path).reject do |expanded_full_path|
+              File.directory?(expanded_full_path)
+            end
+          end
+        end.flatten
+      end
     end
 
     attr_reader :package, :security, :controller, :manager, :database
@@ -441,24 +451,8 @@ module Milter::Manager
     end
 
     def load(path)
-      resolve_path(path).each do |full_path|
-        if File.directory?(full_path)
-          Dir.open(full_path) do |dir|
-            dir.each do |sub_path|
-              next if sub_path == "." or sub_path == ".."
-              full_sub_path = File.join(full_path, sub_path)
-              next if File.directory?(full_sub_path)
-              load_configuration(full_sub_path)
-            end
-          end
-        elsif File.exist?(full_path)
-          load_configuration(full_path)
-        else
-          Dir.glob(full_path).each do |_path|
-            next if File.directory?(_path)
-            load_configuration(_path)
-          end
-        end
+      resolve_path(@configuration, path).each do |full_path|
+        load_configuration(full_path)
       end
     end
 
@@ -510,7 +504,7 @@ module Milter::Manager
 
     private
     def resolve_path(path)
-      resolved_paths = @configuration.resolve_path(path)
+      resolved_paths = self.class.resolve_path(@configuration, path)
       raise NonexistentPath.new(path) if resolved_paths.empty?
       resolved_paths
     end
@@ -1199,7 +1193,8 @@ module Milter::Manager
       end
 
       def load_models(path)
-        @configuration.resolve_path(path).each do |resolved_path|
+        resolved_paths = ConfigurationLoader.resolve_path(@configuration, path)
+        resolved_paths.each do |resolved_path|
           begin
             require(resolved_path)
             @configuration.add_loaded_model_file(resolved_path)
