@@ -451,7 +451,7 @@ module Milter::Manager
     end
 
     def load(path)
-      resolve_path(@configuration, path).each do |full_path|
+      resolve_path(path).each do |full_path|
         load_configuration(full_path)
       end
     end
