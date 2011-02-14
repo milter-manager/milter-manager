@@ -81,7 +81,7 @@ module Milter::Manager
       @database = Database.new
       @loaded_model_files ||= []
       unless @loaded_model_files.empty?
-        $".reject! do |required_path|
+        $LOADED_FEATURES.reject! do |required_path|
           @loaded_model_files.include?(required_path)
         end
       end
