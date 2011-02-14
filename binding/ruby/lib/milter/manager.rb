@@ -1199,7 +1199,9 @@ module Milter::Manager
         Milter::Logger.info("[configuration][database][setup] " +
                             "<#{options.inspect}>")
         require 'active_record'
-        ActiveRecord::Base.logger = Milter::Logger
+        require 'milter/manager/active-record-logger'
+        logger = ActiveRecordLogger.new(Milter::Logger.default)
+        ActiveRecord::Base.logger = logger
         ActiveRecord::Base.establish_connection(options)
       end
 

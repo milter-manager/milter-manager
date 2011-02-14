@@ -23,4 +23,5 @@ dist_binding_lib_milter_DATA =			\
 	condition-table.rb			\
 	postfix-condition-table-parser.rb	\
 	postfix-cidr-table.rb			\
-	postfix-regexp-table.rb
+	postfix-regexp-table.rb			\
+	active-record-logger.rb
