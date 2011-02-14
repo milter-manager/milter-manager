@@ -86,15 +86,15 @@ install_package()
 
 build_pkg()
 {
-    local pkg_dir="${base_dir}/${1}"
+    local pkg_dir="${PROTOTYPES}/${1}"
     local pkg_name="${PKG_PREFIX}${1}"
     local archive_name="${pkg_name}.pkg"
-    local log="${PKG_BASE_DIR}/${pkg_name}.log"
+    local log="${PKGS}/${pkg_name}.log"
 
     echo "$(time_stamp): Building package ${pkg_name}..."
     (
         cd $pkg_dir
-        run pkgmk -o -r $PREFIX -d $PKG_BASE_DIR
+        run pkgmk -o -r $PREFIX -d $PKGS
     ) > "${log}" 2>&1
     echo "$(time_stamp): done."
 }
