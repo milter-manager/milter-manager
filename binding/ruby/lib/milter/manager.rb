@@ -100,6 +100,12 @@ module Milter::Manager
       @loaded_model_files << model_file
     end
 
+    def expand_path(path)
+      return path if Pathname(path).absolute?
+      _prefix = (parsed_package_options || {})["prefix"] || prefix
+      File.join(_prefix, path)
+    end
+
     class Database
       attr_accessor :type, :name, :host, :port, :path
       attr_accessor :user, :password
@@ -1185,6 +1191,8 @@ module Milter::Manager
           raise MissingValue.new("database.type")
         when "mysql"
           options = mysql_options
+        when "sqlite3"
+          options = sqlite3_options
         else
           options = default_options
         end
@@ -1229,12 +1237,26 @@ module Milter::Manager
         options
       end
 
+      def sqlite3_options
+        options = @database.to_hash
+        options[:adapter] = options.delete(:type)
+        options[:database] = options.delete(:name) || options.delete(:path)
+        unless options[:database] == ":memory:"
+          options[:database] == expand_path(options[:database])
+        end
+        options
+      end
+
       def default_options
         options = @database.to_hash
         options[:adapter] = options.delete(:type)
         options[:database] = options.delete(:name)
         options[:username] = options.delete(:user)
         options
+      end
+
+      def expand_path(path)
+        @configuration.expand_path(path)
       end
     end
 
