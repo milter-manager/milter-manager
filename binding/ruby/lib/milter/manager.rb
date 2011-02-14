@@ -1231,7 +1231,7 @@ module Milter::Manager
 
       def default_options
         options = @database.to_hash
-        options[:adatper] = options.delete(:type)
+        options[:adapter] = options.delete(:type)
         options[:database] = options.delete(:name)
         options[:username] = options.delete(:user)
         options
