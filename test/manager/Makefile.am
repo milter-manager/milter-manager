@@ -28,6 +28,7 @@ INCLUDES =				\
 
 AM_CFLAGS =								\
 	-DCUSTOM_CONFIG_FILE_NAME="\"$(CUSTOM_CONFIG_FILE_NAME)\""	\
+	-DPREFIX="\"$(prefix)\""					\
 	$(MILTER_MANAGER_CFLAGS)					\
 	$(GCUTTER_CFLAGS)
 

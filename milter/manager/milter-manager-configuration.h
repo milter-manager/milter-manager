@@ -355,6 +355,9 @@ void          milter_manager_configuration_set_default_packet_buffer_size
                                      (MilterManagerConfiguration *configuration,
                                       guint                       size);
 
+const gchar  *milter_manager_configuration_get_prefix
+                                     (MilterManagerConfiguration *configuration);
+
 G_END_DECLS
 
 #endif /* __MILTER_MANAGER_CONFIGURATION_H__ */

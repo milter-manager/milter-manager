@@ -56,6 +56,7 @@ void test_connection_check_interval (void);
 void test_location (void);
 void test_n_workers (void);
 void test_default_packet_buffer_size (void);
+void test_prefix (void);
 void test_egg (void);
 void test_find_egg (void);
 void test_remove_egg (void);
@@ -572,6 +573,13 @@ test_default_packet_buffer_size (void)
     cut_assert_equal_uint(
         4096,
         milter_manager_configuration_get_default_packet_buffer_size(config));
+}
+
+void
+test_prefix (void)
+{
+    cut_assert_equal_string(PREFIX,
+                            milter_manager_configuration_get_prefix(config));
 }
 
 static void

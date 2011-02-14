@@ -4,6 +4,7 @@ INCLUDES =						\
 
 AM_CFLAGS = 						\
 	-DLOCALEDIR=\""$(localedir)"\"			\
+	-DPREFIX=\""$(prefix)"\"			\
 	-DMILTER_LOG_DOMAIN=\""milter-manager"\"	\
 	$(MILTER_MANAGER_CFLAGS)			\
 	$(COVERAGE_CFLAGS)

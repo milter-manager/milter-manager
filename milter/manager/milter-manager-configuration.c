@@ -110,7 +110,8 @@ enum
     PROP_CONNECTION_CHECK_INTERVAL,
     PROP_EVENT_LOOP_BACKEND,
     PROP_N_WORKERS,
-    PROP_DEFAULT_PACKET_BUFFER_SIZE
+    PROP_DEFAULT_PACKET_BUFFER_SIZE,
+    PROP_PREFIX
 };
 
 enum
@@ -416,6 +417,13 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class,
                                     PROP_DEFAULT_PACKET_BUFFER_SIZE, spec);
+
+    spec = g_param_spec_string("prefix",
+                               "Prefix",
+                               "The prefix of install directory",
+                               NULL,
+                               G_PARAM_READABLE);
+    g_object_class_install_property(gobject_class, PROP_PREFIX, spec);
 
 
     signals[CONNECTED] =
@@ -723,6 +731,9 @@ get_property (GObject    *object,
         break;
     case PROP_DEFAULT_PACKET_BUFFER_SIZE:
         g_value_set_uint(value, priv->default_packet_buffer_size);
+        break;
+    case PROP_PREFIX:
+        g_value_set_string(value, PREFIX);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -2189,6 +2200,12 @@ milter_manager_configuration_set_default_packet_buffer_size (MilterManagerConfig
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
     priv->default_packet_buffer_size = size;
+}
+
+const gchar *
+milter_manager_configuration_get_prefix (MilterManagerConfiguration *configuration)
+{
+    return PREFIX;
 }
 
 /*
