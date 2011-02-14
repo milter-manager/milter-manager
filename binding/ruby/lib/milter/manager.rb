@@ -1242,7 +1242,7 @@ module Milter::Manager
         options[:adapter] = options.delete(:type)
         options[:database] = options.delete(:name) || options.delete(:path)
         unless options[:database] == ":memory:"
-          options[:database] == expand_path(options[:database])
+          options[:database] = expand_path(options[:database])
         end
         options
       end
