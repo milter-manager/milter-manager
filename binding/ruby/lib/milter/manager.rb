@@ -1190,7 +1190,7 @@ module Milter::Manager
         when nil
           raise MissingValue.new("database.type")
         when "mysql", "mysql2"
-          options = mysql2_options
+          options = mysql_options
         when "sqlite3"
           options = sqlite3_options
         else
@@ -1224,9 +1224,9 @@ module Milter::Manager
                                             deep_level)
       end
 
-      def mysql2_options
+      def mysql_options
         options = {}
-        options[:adapter] = "mysql2"
+        options[:adapter] = @database.type
         raise MissingValue.new("database.name") if @database.name.nil?
         options[:database] = @database.name
         options[:host] = @database.host || "localhost"
