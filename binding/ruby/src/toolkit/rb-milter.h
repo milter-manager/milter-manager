@@ -54,4 +54,6 @@ VALUE rb_milter_cstr2rval_size_free(gchar *string, gsize size);
     G_DEF_CLASS2(gtype, name, module, mark, free)
 #endif
 
+void  rb_milter_event_loop_setup   (MilterEventLoop *loop);
+
 #endif

@@ -55,7 +55,7 @@ cb_event_loop_created (MilterClient *client,
 		       MilterEventLoop *loop,
 		       gpointer user_data)
 {
-    rb_funcall2(GOBJ2RVAL(loop), rb_intern("setup"), 0, 0);
+    rb_milter_event_loop_setup(loop);
 }
 
 static VALUE

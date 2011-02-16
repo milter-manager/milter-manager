@@ -348,12 +348,6 @@ rb_custom_loop_run (MilterEventLoop *loop)
 }
 
 static VALUE
-glib_setup (VALUE self)
-{
-    return Qnil;
-}
-
-static VALUE
 glib_initialize (int argc, VALUE *argv, VALUE self)
 {
     VALUE main_context;
@@ -363,16 +357,9 @@ glib_initialize (int argc, VALUE *argv, VALUE self)
 
     event_loop = milter_glib_event_loop_new(RVAL2GOBJ(main_context));
     G_INITIALIZE(self, event_loop);
-    glib_setup(self);
+    rb_milter_event_loop_setup(event_loop);
 
     return Qnil;
-}
-
-static VALUE
-libev_setup (VALUE self)
-{
-    milter_event_loop_set_custom_run_func(SELF(self), rb_custom_loop_run);
-    return self;
 }
 
 static VALUE
@@ -384,7 +371,7 @@ libev_s_default (VALUE klass)
     event_loop = milter_libev_event_loop_default();
     rb_event_loop = GOBJ2RVAL(event_loop);
     g_object_unref(event_loop);
-    libev_setup(rb_event_loop);
+    rb_milter_event_loop_setup(event_loop);
 
     return rb_event_loop;
 }
@@ -396,9 +383,17 @@ libev_initialize (VALUE self)
 
     event_loop = milter_libev_event_loop_new();
     G_INITIALIZE(self, event_loop);
-    libev_setup(self);
+    rb_milter_event_loop_setup(event_loop);
 
     return Qnil;
+}
+
+void
+rb_milter_event_loop_setup (MilterEventLoop *loop)
+{
+    if (MILTER_IS_LIBEV_EVENT_LOOP(loop)) {
+	milter_event_loop_set_custom_run_func(loop, rb_custom_loop_run);
+    }
 }
 
 void
@@ -428,7 +423,6 @@ Init_milter_event_loop (void)
                                           "GLibEventLoop", rb_mMilter);
 
     rb_define_method(rb_cMilterGLibEventLoop, "initialize", glib_initialize, -1);
-    rb_define_method(rb_cMilterGLibEventLoop, "setup", glib_setup, 0);
 
     G_DEF_SETTERS(rb_cMilterGLibEventLoop);
 
@@ -440,7 +434,6 @@ Init_milter_event_loop (void)
 
     rb_define_method(rb_cMilterLibevEventLoop, "initialize",
 		     libev_initialize, 0);
-    rb_define_method(rb_cMilterLibevEventLoop, "setup", libev_setup, 0);
 
     G_DEF_SETTERS(rb_cMilterGLibEventLoop);
 }
