@@ -23,6 +23,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "milter-event-loop.h"
+#include "milter-logger.h"
 
 #define MILTER_EVENT_LOOP_GET_PRIVATE(obj)              \
   (G_TYPE_INSTANCE_GET_PRIVATE((obj),                   \
@@ -99,6 +100,8 @@ dispose (GObject *object)
     MilterEventLoopPrivate *priv;
 
     priv = MILTER_EVENT_LOOP_GET_PRIVATE(object);
+
+    milter_debug("[event-loop][dispose]");
 
     G_OBJECT_CLASS(milter_event_loop_parent_class)->dispose(object);
 }
