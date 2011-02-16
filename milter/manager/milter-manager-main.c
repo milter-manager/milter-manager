@@ -274,7 +274,7 @@ reload_configuration_request (int signum)
     if (the_manager) {
         MilterEventLoop *loop;
 
-        loop = milter_client_get_process_loop(MILTER_CLIENT(the_manager));
+        loop = milter_client_get_event_loop(MILTER_CLIENT(the_manager));
         milter_event_loop_add_idle_full(loop,
                                         G_PRIORITY_DEFAULT,
                                         cb_idle_reload_configuration,
@@ -748,7 +748,7 @@ milter_manager_main (void)
         return FALSE;
     }
 
-    loop = milter_client_get_process_loop(client);
+    loop = milter_client_get_event_loop(client);
     controller = milter_manager_controller_new(manager, loop);
     if (controller && !milter_manager_controller_listen(controller, &error)) {
         milter_manager_error("failed to listen controller socket: %s",

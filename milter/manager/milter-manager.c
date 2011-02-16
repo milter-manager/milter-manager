@@ -211,7 +211,7 @@ dispose_periodical_connection_checker (MilterManager *manager)
     if (priv->periodical_connection_checker_id == 0)
         return;
 
-    loop = milter_client_get_process_loop(MILTER_CLIENT(manager));
+    loop = milter_client_get_event_loop(MILTER_CLIENT(manager));
     milter_event_loop_remove(loop, priv->periodical_connection_checker_id);
     priv->periodical_connection_checker_id = 0;
 }
@@ -380,7 +380,7 @@ start_periodical_connection_checker (MilterManager *manager)
                          "initial" : "update");
             dispose_periodical_connection_checker(manager);
             priv->current_periodical_connection_check_interval = interval;
-            loop = milter_client_get_process_loop(MILTER_CLIENT(manager));
+            loop = milter_client_get_event_loop(MILTER_CLIENT(manager));
             priv->periodical_connection_checker_id =
                 milter_event_loop_add_timeout(loop, interval,
                                               connection_check, manager);

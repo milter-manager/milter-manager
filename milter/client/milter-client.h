@@ -778,14 +778,14 @@ void                 milter_client_start_syslog      (MilterClient  *client,
                                                       const gchar   *facility);
 
 /**
- * milter_client_get_process_loop:
+ * milter_client_get_event_loop:
  * @client: a %MilterClient.
  *
  * Gets the %MilterEventLoop for processing requests.
  *
  * Returns: the %MilterEventLoop for processing requests.
  */
-MilterEventLoop     *milter_client_get_process_loop  (MilterClient  *client);
+MilterEventLoop     *milter_client_get_event_loop   (MilterClient  *client);
 
 /**
  * milter_client_get_event_loop_backend:
