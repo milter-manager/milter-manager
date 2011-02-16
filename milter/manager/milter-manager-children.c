@@ -106,6 +106,8 @@ struct _MilterManagerChildrenPrivate
     guint tag;
 
     MilterEventLoop *event_loop;
+
+    guint lazy_reply_negotiate_id;
 };
 
 typedef struct _NegotiateData NegotiateData;
@@ -306,6 +308,19 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->tag = 0;
 
     priv->event_loop = NULL;
+
+    priv->lazy_reply_negotiate_id = 0;
+}
+
+static void
+dispose_lazy_reply_negotiate_id (MilterManagerChildrenPrivate *priv)
+{
+    if (priv->lazy_reply_negotiate_id == 0)
+        return;
+
+    milter_event_loop_remove(priv->event_loop,
+                             priv->lazy_reply_negotiate_id);
+    priv->lazy_reply_negotiate_id = 0;
 }
 
 static PendingMessageRequest *
@@ -498,6 +513,8 @@ dispose (GObject *object)
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(object);
 
     milter_debug("[%u] [children][dispose]", priv->tag);
+
+    dispose_lazy_reply_negotiate_id(priv);
 
     if (priv->reply_queue) {
         g_queue_free(priv->reply_queue);
@@ -3004,11 +3021,13 @@ milter_manager_children_negotiate (MilterManagerChildren *children,
 
     if (!priv->milters) {
         priv->negotiated = TRUE;
-        milter_event_loop_add_idle_full(priv->event_loop,
-                                        G_PRIORITY_DEFAULT,
-                                        cb_idle_reply_negotiate_on_no_child,
-                                        children,
-                                        NULL);
+        dispose_lazy_reply_negotiate_id(priv);
+        priv->lazy_reply_negotiate_id =
+            milter_event_loop_add_idle_full(priv->event_loop,
+                                            G_PRIORITY_DEFAULT,
+                                            cb_idle_reply_negotiate_on_no_child,
+                                            children,
+                                            NULL);
         return success;
     }
 
