@@ -334,7 +334,7 @@ cut_setup (void)
         milter_client_set_n_workers(client, n_workers);
     }
     loop_run_count = 0;
-    loop = milter_client_get_process_loop(client);
+    loop = milter_client_get_event_loop(client);
     g_object_ref(loop);
     milter_event_loop_set_custom_run_func(loop, loop_run);
     setup_client_signals();
