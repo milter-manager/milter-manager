@@ -261,8 +261,16 @@ cb_idle_reload_configuration (gpointer user_data)
         MilterManagerConfiguration *config;
 
         config = milter_manager_get_configuration(the_manager);
-        if (config)
-            milter_manager_configuration_reload(config);
+        if (config) {
+            GError *error = NULL;
+
+            if (!milter_manager_configuration_reload(config, &error)) {
+                milter_error("[manager][configuration][reload][signal][error] "
+                             "%s",
+                             error->message);
+                g_error_free(error);
+            }
+        }
     }
 
     return FALSE;
@@ -576,6 +584,7 @@ append_custom_configuration_directory (MilterManagerConfiguration *config)
     struct passwd *password;
     const gchar *effective_user;
     gchar *custom_config_directory;
+    GError *error = NULL;
 
     effective_user = milter_manager_configuration_get_effective_user(config);
     if (!effective_user)
@@ -614,7 +623,12 @@ append_custom_configuration_directory (MilterManagerConfiguration *config)
                                                   custom_config_directory);
     g_free(custom_config_directory);
 
-    milter_manager_configuration_reload(config);
+    if (!milter_manager_configuration_reload(config, &error)) {
+        milter_manager_error("[manager][configuration][reload]"
+                             "[custom-load-path][error] %s",
+                             error->message);
+        g_error_free(error);
+    }
     apply_command_line_options(config);
 }
 
@@ -693,10 +707,17 @@ milter_manager_main (void)
     struct sigaction reload_configuration_request_action;
 
     config = milter_manager_configuration_new(NULL);
-    if (option_config_dir)
+    if (option_config_dir) {
         milter_manager_configuration_prepend_load_path(config,
                                                        option_config_dir);
-    milter_manager_configuration_reload(config);
+        if (!milter_manager_configuration_reload(config, &error)) {
+            milter_manager_error("[manager][configuration][reload]"
+                                 "[command-line-load-path][error] %s",
+                                 error->message);
+            g_error_free(error);
+            error = NULL;
+        }
+    }
     apply_command_line_options(config);
     if (getuid() != 0)
         milter_manager_configuration_set_privilege_mode(config, FALSE);

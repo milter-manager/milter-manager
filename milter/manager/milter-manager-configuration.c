@@ -490,12 +490,18 @@ dispose (GObject *object)
 {
     MilterManagerConfiguration *configuration;
     MilterManagerConfigurationPrivate *priv;
+    GError *error = NULL;
 
     configuration = MILTER_MANAGER_CONFIGURATION(object);
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
 
     milter_manager_configuration_clear_load_paths(configuration);
-    milter_manager_configuration_clear(configuration);
+    milter_manager_configuration_clear(configuration, &error);
+    if (error) {
+        milter_error("[configuration][dispose][clear][error] %s",
+                     error->message);
+        g_error_free(error);
+    }
 
     if (priv->manager_connection_spec) {
         g_free(priv->manager_connection_spec);
@@ -854,6 +860,7 @@ milter_manager_configuration_new (const gchar *first_property,
 {
     MilterManagerConfiguration *configuration;
     va_list var_args;
+    GError *error = NULL;
 
     va_start(var_args, first_property);
     configuration =
@@ -861,7 +868,12 @@ milter_manager_configuration_new (const gchar *first_property,
                                                          var_args);
     va_end(var_args);
 
-    milter_manager_configuration_clear(configuration);
+    milter_manager_configuration_clear(configuration, &error);
+    if (error) {
+        milter_error("[configuration][new][clear][error] %s",
+                     error->message);
+        g_error_free(error);
+    }
 
     return configuration;
 }
@@ -1049,26 +1061,36 @@ milter_manager_configuration_load_custom_if_exist (MilterManagerConfiguration *c
     return FALSE;
 }
 
-void
-milter_manager_configuration_reload (MilterManagerConfiguration *configuration)
+gboolean
+milter_manager_configuration_reload (MilterManagerConfiguration *configuration,
+                                     GError **error)
 {
-    GError *error = NULL;
+    GError *local_error = NULL;
 
-    milter_manager_configuration_clear(configuration);
+    if (!milter_manager_configuration_clear(configuration, &local_error)) {
+        milter_error("[configuration][load][clear][error] <%s>: %s",
+                     CONFIG_FILE_NAME, local_error->message);
+        g_propagate_error(error, local_error);
+        return FALSE;
+    }
+
     if (!milter_manager_configuration_load(configuration, CONFIG_FILE_NAME,
-                                           &error)) {
-        milter_error("[configuration][error][load] <%s>: %s",
-                     CONFIG_FILE_NAME, error->message);
-        g_error_free(error);
-        return;
+                                           &local_error)) {
+        milter_error("[configuration][load][error] <%s>: %s",
+                     CONFIG_FILE_NAME, local_error->message);
+        g_propagate_error(error, local_error);
+        return FALSE;
     }
 
     if (!milter_manager_configuration_load_custom_if_exist(
-            configuration, CUSTOM_CONFIG_FILE_NAME, &error)) {
-        milter_error("[configuration][error][load][custom] <%s>: %s",
-                     CUSTOM_CONFIG_FILE_NAME, error->message);
-        g_error_free(error);
+            configuration, CUSTOM_CONFIG_FILE_NAME, &local_error)) {
+        milter_error("[configuration][load][custom][error] <%s>: %s",
+                     CUSTOM_CONFIG_FILE_NAME, local_error->message);
+        g_propagate_error(error, local_error);
+        return FALSE;
     }
+
+    return TRUE;
 }
 
 gboolean
@@ -1924,8 +1946,9 @@ clear_socket (MilterManagerConfigurationPrivate *priv)
     priv->remove_controller_unix_socket_on_create = TRUE;
 }
 
-void
-milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
+gboolean
+milter_manager_configuration_clear (MilterManagerConfiguration *configuration,
+                                    GError **error)
 {
     MilterManagerConfigurationPrivate *priv;
     MilterManagerConfigurationClass *configuration_class;
@@ -1945,14 +1968,18 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration)
 
     configuration_class = MILTER_MANAGER_CONFIGURATION_GET_CLASS(configuration);
     if (configuration_class->clear) {
-        GError *error = NULL;
+        GError *local_error = NULL;
 
-        milter_debug("[configuration][clear]");
-        if (!configuration_class->clear(configuration, &error)) {
-            milter_error("[configuration][error][clear] %s", error->message);
-            g_error_free(error);
+        milter_debug("[configuration][clear][custom]");
+        if (!configuration_class->clear(configuration, &local_error)) {
+            milter_error("[configuration][clear][custom][error] %s",
+                         local_error->message);
+            g_propagate_error(error, local_error);
+            return FALSE;
         }
     }
+
+    return TRUE;
 }
 
 void
@@ -1966,7 +1993,7 @@ milter_manager_configuration_maintain (MilterManagerConfiguration *configuration
 
         milter_debug("[configuration][maintain]");
         if (!configuration_class->maintain(configuration, &error)) {
-            milter_error("[configuration][error][maintain] %s", error->message);
+            milter_error("[configuration][maintain][error] %s", error->message);
             g_error_free(error);
         }
     }

@@ -864,6 +864,7 @@ void
 test_clear (void)
 {
     gulong handler_id;
+    GError *error = NULL;
 
     milter_assert_default_configuration(config);
 
@@ -890,7 +891,8 @@ test_clear (void)
                                   G_CALLBACK(cb_connected), NULL);
     cut_assert_true(g_signal_handler_is_connected(config, handler_id));
 
-    milter_manager_configuration_clear(config);
+    milter_manager_configuration_clear(config, &error);
+    gcut_assert_error(error);
     milter_assert_default_configuration(config);
 
     cut_assert_false(g_signal_handler_is_connected(config, handler_id));

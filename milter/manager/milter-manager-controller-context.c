@@ -191,7 +191,12 @@ cb_decoder_reload (MilterManagerControlCommandDecoder *decoder,
 
     priv = MILTER_MANAGER_CONTROLLER_CONTEXT_GET_PRIVATE(context);
     config = milter_manager_get_configuration(priv->manager);
-    milter_manager_configuration_reload(config);
+    if (!milter_manager_configuration_reload(config, &error)) {
+        milter_error("[controller][reload][error] %s",
+                     error->message);
+        g_error_free(error);
+        error = NULL;
+    }
 
     agent = MILTER_AGENT(context);
     base_encoder = milter_agent_get_encoder(agent);

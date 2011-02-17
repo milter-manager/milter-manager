@@ -25,10 +25,12 @@ static VALUE
 initialize (VALUE self)
 {
     MilterManagerConfiguration *configuration;
+    GError *error = NULL;
 
     configuration = milter_manager_configuration_instantiate(NULL);
     G_INITIALIZE(self, configuration);
-    milter_manager_configuration_clear(configuration);
+    if (!milter_manager_configuration_clear(configuration, &error))
+	RAISE_GERROR(error);
 
     return Qnil;
 }

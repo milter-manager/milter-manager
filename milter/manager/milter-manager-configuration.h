@@ -114,8 +114,9 @@ gboolean      milter_manager_configuration_load_custom_if_exist
                                      (MilterManagerConfiguration *configuration,
                                       const gchar                *file_name,
                                       GError                    **error);
-void          milter_manager_configuration_reload
-                                     (MilterManagerConfiguration *configuration);
+gboolean      milter_manager_configuration_reload
+                                     (MilterManagerConfiguration *configuration,
+                                      GError                    **error);
 
 gboolean      milter_manager_configuration_save_custom
                                      (MilterManagerConfiguration *configuration,
@@ -298,8 +299,9 @@ void          milter_manager_configuration_remove_applicable_condition_by_name
 void          milter_manager_configuration_clear_applicable_conditions
                                      (MilterManagerConfiguration *configuration);
 
-void          milter_manager_configuration_clear
-                                     (MilterManagerConfiguration *configuration);
+gboolean      milter_manager_configuration_clear
+                                     (MilterManagerConfiguration *configuration,
+                                      GError                    **error);
 
 void          milter_manager_configuration_session_finished
                                      (MilterManagerConfiguration *configuration);
