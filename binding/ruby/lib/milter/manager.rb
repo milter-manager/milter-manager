@@ -78,7 +78,7 @@ module Milter::Manager
     def clear
       @maintained_hooks = nil
       @netstat_connection_checker = nil
-      @database = Database.new
+      @database = DatabaseConfiguration.new
       @loaded_model_files ||= []
       unless @loaded_model_files.empty?
         $LOADED_FEATURES.reject! do |required_path|
@@ -106,7 +106,7 @@ module Milter::Manager
       File.join(_prefix, path)
     end
 
-    class Database
+    class DatabaseConfiguration
       attr_accessor :type, :name, :host, :port, :path
       attr_accessor :user, :password
       def initialize
@@ -414,11 +414,11 @@ module Milter::Manager
     def initialize(configuration)
       @load_level = 0
       @configuration = configuration
-      @package = PackageConfiguration.new(configuration)
-      @security = SecurityConfiguration.new(configuration)
-      @controller = ControllerConfiguration.new(configuration)
-      @manager = ManagerConfiguration.new(configuration)
-      @database = DatabaseConfiguration.new(configuration)
+      @package = PackageConfigurationLoader.new(configuration)
+      @security = SecurityConfigurationLoader.new(configuration)
+      @controller = ControllerConfigurationLoader.new(configuration)
+      @manager = ManagerConfigurationLoader.new(configuration)
+      @database = DatabaseConfigurationLoader.new(configuration)
       @policy_manager = Milter::Manager::PolicyManager.new(self)
     end
 
@@ -478,9 +478,9 @@ module Milter::Manager
       ConfigurationLoader.update_location(@configuration,
                                           "milter[#{name}]",
                                           false, 1)
-      egg_configuration = EggConfiguration.new(name, self)
-      yield(egg_configuration)
-      egg_configuration.apply
+      loader = EggConfigurationLoader.new(name, self)
+      yield(loader)
+      loader.apply
     end
 
     # more better name is needed?
@@ -492,9 +492,9 @@ module Milter::Manager
       ConfigurationLoader.update_location(@configuration,
                                           "applicable_condition[#{name}]",
                                           false, 1)
-      condition_configuration = ApplicableConditionConfiguration.new(name, self)
-      yield(condition_configuration)
-      condition_configuration.apply
+      loader = ApplicableConditionConfigurationLoader.new(name, self)
+      yield(loader)
+      loader.apply
     end
 
     def defined_milters
@@ -713,7 +713,7 @@ module Milter::Manager
       end
     end
 
-    class PackageConfiguration
+    class PackageConfigurationLoader
       def initialize(configuration)
         @configuration = configuration
       end
@@ -745,7 +745,7 @@ module Milter::Manager
       end
     end
 
-    class SecurityConfiguration
+    class SecurityConfigurationLoader
       def initialize(configuration)
         @configuration = configuration
       end
@@ -793,7 +793,7 @@ module Milter::Manager
       end
     end
 
-    class ControllerConfiguration
+    class ControllerConfigurationLoader
       def initialize(configuration)
         @configuration = configuration
       end
@@ -848,7 +848,7 @@ module Milter::Manager
       end
     end
 
-    class ManagerConfiguration
+    class ManagerConfigurationLoader
       def initialize(configuration)
         @configuration = configuration
         @connection_checker_ids = {}
@@ -1116,7 +1116,7 @@ module Milter::Manager
       end
     end
 
-    class DatabaseConfiguration
+    class DatabaseConfigurationLoader
       def initialize(configuration)
         @configuration = configuration
         @database = @configuration.database
@@ -1262,7 +1262,7 @@ module Milter::Manager
       end
     end
 
-    class EggConfiguration
+    class EggConfigurationLoader
       def initialize(name, loader)
         @egg = Egg.new(name)
         @loader = loader
@@ -1369,7 +1369,7 @@ module Milter::Manager
       end
     end
 
-    class ApplicableConditionConfiguration
+    class ApplicableConditionConfigurationLoader
       def initialize(name, loader)
         @condition = Milter::Manager::ApplicableCondition.new(name)
         @loader = loader
