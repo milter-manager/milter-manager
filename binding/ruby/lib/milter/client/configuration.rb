@@ -262,7 +262,7 @@ module Milter
           options
         end
 
-        def sqlite3_options
+        def sqlite3_options(key_prefix)
           options = {}
           options[:adapter] = @type
           options[:database] = @name || @path
@@ -272,7 +272,7 @@ module Milter
           options
         end
 
-        def default_options
+        def default_options(key_prefix)
           options = to_hash
           options[:adapter] = options.delete(:type)
           options[:database] = options.delete(:name)
