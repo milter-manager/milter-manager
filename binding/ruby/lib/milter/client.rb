@@ -73,7 +73,7 @@ module Milter
               session_context.status = status_on_error
             end
             status = session_context.status
-            session_context.status = :continue
+            session_context.clear
             status
           end
         end
@@ -237,7 +237,7 @@ module Milter
 
     def initialize(context)
       @context = context
-      @status = nil
+      clear
     end
 
     def status=(value)
@@ -274,7 +274,12 @@ module Milter
     end
 
     def [](name)
-      @context.macros[name]
+      (@macros ||= @context.available_macros || {})[name]
+    end
+
+    def clear
+      @macros = nil
+      @status = nil
     end
 
     def method_missing(name, *args, &block)
