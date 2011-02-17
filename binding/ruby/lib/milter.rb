@@ -1,4 +1,4 @@
-# Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+# Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -18,6 +18,7 @@ GLib::Log.cancel_handler
 require 'milter_toolkit.so'
 
 require 'milter/toolkit'
+require 'milter/active-record-logger'
 require 'milter/client'
 require 'milter/client/configuration'
 require 'milter/client/command-line'
