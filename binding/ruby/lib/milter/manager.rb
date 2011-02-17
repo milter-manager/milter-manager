@@ -950,8 +950,8 @@ module Milter::Manager
         @configuration.max_file_descriptors = n_descriptors
       end
 
-      def max_descriptors
-        @configuration.max_descriptors
+      def max_file_descriptors
+        @configuration.max_file_descriptors
       end
 
       def custom_configuration_directory=(directory)
