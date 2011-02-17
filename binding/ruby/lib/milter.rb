@@ -19,5 +19,6 @@ require 'milter_toolkit.so'
 
 require 'milter/toolkit'
 require 'milter/client'
+require 'milter/client/configuration'
 require 'milter/client/command-line'
 require 'milter/server'

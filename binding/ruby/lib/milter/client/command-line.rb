@@ -21,11 +21,10 @@ require "webrick/server"
 module Milter
   class Client
     class CommandLine
-      attr_reader :options, :option_parser
-      attr_accessor :name
+      attr_reader :options, :configuration, :option_parser
       def initialize(options={})
-        @name = options[:name] || File.basename($0, '.*')
         setup_options
+        setup_configuration(options)
         @option_parser = OptionParser.new(banner)
         yield(self) if block_given?
         setup_option_parser
@@ -36,6 +35,8 @@ module Milter
           @option_parser.parse!(argv || ARGV)
         rescue
           puts $!.message
+          puts $@
+          puts
           puts @option_parser
           exit(false)
         end
@@ -43,50 +44,23 @@ module Milter
         client.on_error do |_client, error|
           Milter::Logger.error("[client][error] #{error.message}")
         end
-        client.start_syslog(@name, @options.syslog_facility) if @options.syslog
-        client.status_on_error = @options.status_on_error
-        client.connection_spec = @options.connection_spec
-        client.effective_user = @options.user
-        client.effective_group = @options.group
-        client.unix_socket_group = @options.unix_socket_group
-        if @options.unix_socket_mode
-          client.unix_socket_mode = @options.unix_socket_mode
-        end
-        client.event_loop_backend = @options.event_loop_backend
-        client.default_packet_buffer_size = @options.packet_buffer_size
-        client.maintenance_interval = @options.maintenance_interval
-        if @options.run_gc_on_maintain
-          client.on_maintain do
-            GC.start
-          end
-        end
-        client.n_workers = @options.n_workers
         yield(client, options) if block_given?
+        @configuration.setup(client)
         client.listen
         client.drop_privilege
-        daemonize if @options.run_as_daemon
-        setup_signal_handler(client) if @options.handle_signal
+        daemonize if @configuration.milter.daemon?
+        setup_signal_handler(client) if @configuration.milter.handle_signal?
         client.run
       end
 
       private
       def setup_options
         @options = OpenStruct.new
-        @options.connection_spec = "inet:20025"
-        @options.status_on_error = "accept"
-        @options.run_as_daemon = false
-        @options.user = nil
-        @options.group = nil
-        @options.unix_socket_group = nil
-        @options.unix_socket_mode = nil
-        @options.syslog = false
-        @options.syslog_facility = "mail"
-        @options.event_loop_backend = Milter::Client::EVENT_LOOP_BACKEND_GLIB
-        @options.n_workers = 0
-        @options.packet_buffer_size = 0
-        @options.handle_signal = true
-        @options.maintenance_interval = 100
-        @options.run_gc_on_maintain = true
+      end
+
+      def setup_configuration(options)
+        @configuration = Configuration.new
+        @coniguration.milter.name = options[:name] if options[:name]
       end
 
       def setup_option_parser
@@ -117,56 +91,62 @@ module Milter
           puts Milter::TOOLKIT_VERSION.join(".")
           exit(true)
         end
+
+        @option_parser.on("-cFILE", "--configuration=FILE",
+                          "Load configuration from FILE") do |path|
+          loader = ConfigurationLoader.new(@configuration)
+          loader.load(path)
+        end
       end
 
       def setup_milter_options
         @option_parser.separator ""
         @option_parser.separator "milter options"
 
+        milter_conf = @configuration.milter
         @option_parser.on("-s", "--connection-spec=SPEC",
                           "Specify connection spec as [SPEC].",
-                          "(#{@options.connection_spec})") do |spec|
-          @options.connection_spec = spec
+                          "(#{milter_conf})") do |spec|
+          milter_conf.connection_spec = spec
         end
 
         @option_parser.on("--[no-]daemon",
                           "Run as a daemon process.",
-                          "(#{@options.run_as_daemon})") do |run_as_daemon|
-          @options.run_as_daemon = run_as_daemon
+                          "(#{milter_conf.daemon?})") do |run_as_daemon|
+          milter_conf.daemon = run_as_daemon
         end
 
         statuses = ["accept", "reject", "temporary_failure"]
         @option_parser.on("--status-on-error=STATUS",
                           statuses,
                           "Specify status on error.",
-                          "(#{@options.status_on_error})") do |status|
-          @options.status_on_error = status
+                          "(#{milter_conf.status_on_error})") do |status|
+          milter_conf.status_on_error = status
         end
 
         @option_parser.on("--user=USER",
                           "Run as USER's process (need root privilege)",
-                          "(#{@options.user})") do |user|
-          @options.user = user
+                          "(#{milter_conf.user})") do |user|
+          milter_conf.user = user
         end
 
         @option_parser.on("--group=GROUP",
                           "Run as GROUP's process (need root privilege)",
-                          "(#{@options.group})") do |group|
-          @options.group = group
+                          "(#{milter_conf.group})") do |group|
+          milter_conf.group = group
         end
 
         @option_parser.on("--unix-socket-group=GROUP",
                           "Change UNIX domain socket group to GROUP",
-                          "(#{@options.unix_socket_group})") do |group|
-          @options.unix_socket_group = group
+                          "(#{milter_conf.unix_socket_group})") do |group|
+          milter_conf.unix_socket_group = group
         end
 
         client = Milter::Client.new
         @option_parser.on("--unix-socket-mode=MODE",
                           "Change UNIX domain socket mode to MODE",
-                          "(%o)" % client.default_unix_socket_mode) do |mode|
-          client.unix_socket_mode = mode
-          @options.unix_socket_mode = mode
+                          "(%o)" % milter_conf.unix_socket_mode) do |mode|
+          milter_conf.unix_socket_mode = mode
         end
 
         backends = Milter::ClientEventLoopBackend.values.collect do |value|
@@ -175,46 +155,42 @@ module Milter
         @option_parser.on("--event-loop-backend=BACKEND", backends,
                           "Use BACKEND as event loop backend.",
                           "available values: [#{backends.join(', ')}]",
-                          "(#{@options.event_loop_backend.nick})") do |backend|
-          @options.event_loop_backend = backend
+                          "(#{milter_conf.event_loop_backend})") do |backend|
+          milter_conf.event_loop_backend = backend
         end
 
         @option_parser.on("--n-workers=N",
                           Integer,
                           "Run with N workrs.",
-                          "(#{@options.n_workers})") do |num|
-          if num <= 0
-            raise OptionParser::InvalidArgument
-          end
-          @options.n_workers = num
+                          "(#{milter_conf.n_workers})") do |n|
+          raise OptionParser::InvalidArgument if n <= 0
+          milter_conf.n_workers = n
         end
 
         @option_parser.on("--packet-buffer-size=SIZE",
                           Integer,
                           "Use SIZE as packet buffer size.",
-                          "(#{@options.packet_buffer_size})") do |size|
-          if size < 0
-            raise OptionParser::InvalidArgument
-          end
-          @options.packet_buffer_size = size
+                          "(#{milter_conf.packet_buffer_size})") do |size|
+          raise OptionParser::InvalidArgument if size < 0
+          milter_conf.packet_buffer_size = size
         end
 
         @option_parser.on("--[no-]handle-signal",
                           "Handle SIGHUP, SIGINT and SIGTERM signals",
-                          "(#{@options.handle_signal})") do |boolean|
-          @options.handle_signal = boolean
+                          "(#{milter_conf.handle_signal?})") do |boolean|
+          milter_conf.handle_signal = boolean
         end
 
         @option_parser.on("--maintenance-interval=N",
                           "Run maintenance callback after each N sessions",
-                          "(#{@options.maintenance_interval})") do |interval|
-          @options.maintenance_interval = interval
+                          "(#{milter_conf.maintenance_interval})") do |interval|
+          milter_conf.maintenance_interval = interval
         end
 
         @option_parser.on("--[no-]run-gc-on-maintain",
                           "Run GC in each maintenance callback",
-                          "(#{@options.run_gc_on_maintain})") do |boolean|
-          @options.run_gc_on_maintain = boolean
+                          "(#{milter_conf.run_gc_on_maintain?})") do |boolean|
+          milter_conf.run_gc_on_maintain = boolean
         end
       end
 
@@ -222,6 +198,7 @@ module Milter
         @option_parser.separator ""
         @option_parser.separator "Logging options"
 
+        milter_conf = @configuration.milter
         level_names = Milter::LogLevelFlags.values.collect {|value| value.nick}
         level_names << "all"
         @option_parser.on("--log-level=LEVEL",
@@ -237,8 +214,8 @@ module Milter
 
         @option_parser.on("--[no-]syslog",
                           "Use syslog",
-                          "(#{@options.syslog})") do |bool|
-          @options.syslog = bool
+                          "(#{milter_conf.use_syslog?})") do |bool|
+          milter_conf.use_syslog = bool
         end
 
         facilities = Syslog.constants.find_all do |name|
@@ -249,9 +226,9 @@ module Milter
         available_values = "available values: [#{facilities.join(', ')}]"
         @option_parser.on("--syslog-facility=FACILITY", facilities,
                           "Use FACILITY as syslog facility.",
-                          "(#{@options.syslog_facility})",
+                          "(#{milter_conf.syslog_facility})",
                           available_values) do |facility|
-          @options.syslog_facility = facility
+          milter_conf.syslog_facility = facility
         end
 
         @option_parser.on("--verbose",
