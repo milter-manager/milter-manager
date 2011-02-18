@@ -53,6 +53,10 @@ module Milter
         client.run
       end
 
+      def name
+        @configuration.milter.name
+      end
+
       private
       def setup_options
         @options = OpenStruct.new
@@ -60,7 +64,7 @@ module Milter
 
       def setup_configuration(options)
         @configuration = Configuration.new
-        @coniguration.milter.name = options[:name] if options[:name]
+        @configuration.milter.name = options[:name] || File.basename($0, '.*')
       end
 
       def setup_option_parser
@@ -68,7 +72,7 @@ module Milter
       end
 
       def banner
-        "Usage: %s [options]" % File.basename($0, '.*')
+        "Usage: %s [options]" % @configuration.milter.name
       end
 
       def setup_common_options
