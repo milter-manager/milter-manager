@@ -25,7 +25,7 @@ module Milter
       end
 
       def clear
-        @environment = ENV["MITLER_ENV"] || "development"
+        @environment = ENV["MILTER_ENV"] || "development"
         @milter = MilterConfiguration.new(self)
         @database = DatabaseConfiguration.new(self)
         @load_paths = []

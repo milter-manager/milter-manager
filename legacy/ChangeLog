@@ -2997,7 +2997,7 @@
 	and Munin integration.
 
 	* doc/install-options-to-*.rd.ja: add backward compatibility note
-	for mitler-manager-munin-plugins.
+	for milter-manager-munin-plugins.
 
 	* doc/install-to-freebsd.rd.ja: move RRDtool installation to ...
 	* doc/install-options-to-freebsd.rd.ja: ... here.
