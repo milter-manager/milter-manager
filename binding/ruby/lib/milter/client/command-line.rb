@@ -33,11 +33,12 @@ module Milter
       def run(argv=nil)
         begin
           @option_parser.parse!(argv || ARGV)
+        rescue OptionParser::ParseError
+          puts($!.message)
+          exit(false)
         rescue
-          puts $!.message
-          puts $@
-          puts
-          puts @option_parser
+          puts("#{$!.class}: #{$!.message}")
+          puts($@)
           exit(false)
         end
         client = Milter::Client.new
