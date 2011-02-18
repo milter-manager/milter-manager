@@ -27,10 +27,11 @@ else
 fi
 
 if test -z "$ARCHITECTURE"; then
-    ARCHITECTURE=32
+    ARCHITECTURE=i386
 fi
+export ARCHITECTURE
 
-if test "$ARCHITECTURE" = 64; then
+if test "$ARCHITECTURE" = "amd64"; then
     CC="$CC -m64"
     export CFLAGS=-m64
     export CXXFLAGS=-m64
