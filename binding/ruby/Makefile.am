@@ -1,5 +1,5 @@
 SUBDIRS =					\
-	src					\
+	ext					\
 	lib					\
 	ruby-milter				\
 	test					\

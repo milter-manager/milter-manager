@@ -76,8 +76,8 @@ export RUBY
 ruby_dir=$abs_top_builddir/binding/ruby
 ruby_srcdir=$abs_top_srcdir/binding/ruby
 MILTER_MANAGER_RUBYLIB=$ruby_srcdir/lib
-MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_dir/src/toolkit/.libs
-MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_dir/src/manager/.libs
+MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_dir/ext/toolkit/.libs
+MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_dir/ext/manager/.libs
 ruby_glib2_lib_dir=
 ruby_glib2_ext_dir=
 for dir in $(for dir in $ruby_dir/glib-*; do echo $dir; done | sort -r); do

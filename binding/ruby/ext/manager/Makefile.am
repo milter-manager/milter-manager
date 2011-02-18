@@ -1,6 +1,6 @@
 INCLUDES =						\
 	 -I$(top_srcdir)				\
-	 -I$(top_srcdir)/binding/ruby/src/toolkit
+	 -I$(top_srcdir)/binding/ruby/ext/toolkit
 
 AM_CFLAGS = 				\
 	$(MILTER_MANAGER_CFLAGS)	\
