@@ -20,7 +20,9 @@
 #ifndef __RB_MILTER_MANAGER_H__
 #define __RB_MILTER_MANAGER_H__
 
-#include <rb-milter.h>
+#include <rb-milter-core.h>
+#include <rb-milter-client.h>
+#include <rb-milter-server.h>
 #include <milter/manager.h>
 
 extern VALUE rb_mMilterManager;

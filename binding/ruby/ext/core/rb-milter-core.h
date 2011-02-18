@@ -17,20 +17,15 @@
  *
  */
 
-#ifndef __RB_MILTER_H__
-#define __RB_MILTER_H__
+#ifndef __RB_MILTER_CORE_H__
+#define __RB_MILTER_CORE_H__
 
 #include <rbgobject.h>
 #include <milter/core.h>
-#include <milter/client.h>
-#include <milter/server.h>
 
 #include <rb-milter-compat.h>
 
 extern VALUE rb_mMilter;
-extern VALUE rb_mMilterCore;
-extern VALUE rb_cMilterClient;
-extern VALUE rb_mMilterServer;
 extern VALUE rb_eMilterError;
 extern VALUE rb_cMilterSocketAddressIPv4;
 extern VALUE rb_cMilterSocketAddressIPv6;

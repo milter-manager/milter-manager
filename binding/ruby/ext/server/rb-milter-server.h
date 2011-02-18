@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -17,14 +17,13 @@
  *
  */
 
-#ifndef __RB_MILTER_PRIVATE_H__
-#define __RB_MILTER_PRIVATE_H__
+#ifndef __RB_MILTER_SERVER_H__
+#define __RB_MILTER_SERVER_H__
 
-#include "rb-milter.h"
+#include <rb-milter-core.h>
 
-void Init_milter_core (void);
-void Init_milter_client (void);
-void Init_milter_server (void);
-void Init_milter_toolkit (void);
+#include <milter/server.h>
+
+extern VALUE rb_cMilterServer;
 
 #endif

@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -17,31 +17,13 @@
  *
  */
 
-#include "rb-milter-core-private.h"
+#ifndef __RB_MILTER_CLIENT_PRIVATE_H__
+#define __RB_MILTER_CLIENT_PRIVATE_H__
 
-VALUE rb_mMilterCore;
+#include <rb-milter-core-private.h>
+#include <rb-milter-client.h>
 
-void
-Init_milter_core (void)
-{
-    milter_init();
+extern void Init_milter_client (void);
+extern void Init_milter_client_context (void);
 
-    rb_mMilterCore = rb_define_module_under(rb_mMilter, "Core");
-
-    Init_milter_logger();
-    Init_milter_memory_profile();
-    Init_milter_socket_address();
-    Init_milter_utils();
-    Init_milter_connection();
-    Init_milter_protocol();
-    Init_milter_option();
-    Init_milter_macros_requests();
-    Init_milter_encoder();
-    Init_milter_command_encoder();
-    Init_milter_reply_encoder();
-    Init_milter_decoder();
-    Init_milter_error_emittable();
-    Init_milter_agent();
-    Init_milter_protocol_agent();
-    Init_milter_event_loop();
-}
+#endif

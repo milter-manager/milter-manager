@@ -20,8 +20,9 @@
 #ifndef __RB_MILTER_CORE_PRIVATE_H__
 #define __RB_MILTER_CORE_PRIVATE_H__
 
-#include "rb-milter-private.h"
+#include "rb-milter-core.h"
 
+void Init_milter_core (void);
 void Init_milter_logger (void);
 void Init_milter_memory_profile (void);
 void Init_milter_socket_address (void);

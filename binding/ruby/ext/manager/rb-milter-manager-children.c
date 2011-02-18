@@ -17,7 +17,7 @@
  *
  */
 
-#include "../toolkit/rb-milter-core-private.h"
+#include <rb-milter-core-private.h>
 #include "rb-milter-manager-private.h"
 
 #define SELF(self) (MILTER_MANAGER_CHILDREN(RVAL2GOBJ(self)))

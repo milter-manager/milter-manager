@@ -17,7 +17,7 @@
  *
  */
 
-#include "rb-milter-private.h"
+#include "rb-milter-core-private.h"
 
 VALUE
 rb_milter_compat_glist2array_string (GList *list)

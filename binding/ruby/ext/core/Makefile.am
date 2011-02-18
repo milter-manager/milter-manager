@@ -1,15 +1,13 @@
 INCLUDES = 				\
 	-I$(top_srcdir)
 
-AM_CFLAGS =					\
-	-DMILTER_LOG_DOMAIN=\""ruby-milter"\"	\
-	$(MILTER_TOOLKIT_CFLAGS)		\
+AM_CFLAGS =						\
+	-DMILTER_LOG_DOMAIN=\""ruby-milter-core"\"	\
+	$(MILTER_TOOLKIT_CFLAGS)			\
 	$(MILTER_RUBY_CFLAGS)
 
 LIBS =								\
 	$(top_builddir)/milter/core/libmilter-core.la		\
-	$(top_builddir)/milter/client/libmilter-client.la	\
-	$(top_builddir)/milter/server/libmilter-server.la	\
 	$(MILTER_RUBY_LIBS)
 
 AM_LDFLAGS =			\
@@ -19,17 +17,16 @@ AM_LDFLAGS =			\
 CLEANFILES = *.gcno *.gcda
 
 binding_ext_LTLIBRARIES =	\
-	milter_toolkit.la
+	milter_core.la
+
+binding_ext_HEADERS =				\
+	rb-milter-core.h
 
 noinst_HEADERS =				\
 	rb-milter-core-private.h		\
-	rb-milter-client-private.h		\
-	rb-milter-server-private.h		\
-	rb-milter-private.h			\
-	rb-milter-compat.h			\
-	rb-milter.h
+	rb-milter-compat.h
 
-milter_toolkit_la_SOURCES =			\
+milter_core_la_SOURCES =			\
 	rb-milter-core.c			\
 	rb-milter-core-private.c		\
 	rb-milter-logger.c			\
@@ -46,11 +43,6 @@ milter_toolkit_la_SOURCES =			\
 	rb-milter-agent.c			\
 	rb-milter-protocol-agent.c		\
 	rb-milter-utils.c			\
-	rb-milter-client.c			\
-	rb-milter-client-context.c		\
-	rb-milter-server-context.c		\
-	rb-milter-server.c			\
 	rb-milter-compat.c			\
 	rb-milter-memory-profile.c		\
-	rb-milter-event-loop.c			\
-	rb-milter.c
+	rb-milter-event-loop.c

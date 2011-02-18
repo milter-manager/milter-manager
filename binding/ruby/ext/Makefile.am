@@ -1,3 +1,5 @@
 SUBDIRS =	\
-	toolkit	\
+	core	\
+	client	\
+	server	\
 	manager

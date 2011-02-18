@@ -1,2 +1,0 @@
-install:
-	@$(RUBY) -run -e install -- -m 0644 -v $(srcdir)/rb-milter.h $(sitearchdir)$(target_prefix)

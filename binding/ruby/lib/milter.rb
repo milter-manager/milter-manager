@@ -15,7 +15,9 @@
 
 require 'glib2'
 GLib::Log.cancel_handler
-require 'milter_toolkit.so'
+require 'milter_core.so'
+require 'milter_client.so'
+require 'milter_server.so'
 
 require 'milter/toolkit'
 require 'milter/active-record-logger'

@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -17,11 +17,13 @@
  *
  */
 
-#ifndef __RB_MILTER_CLIENT_PRIVATE_H__
-#define __RB_MILTER_CLIENT_PRIVATE_H__
+#ifndef __RB_MILTER_CLIENT_H__
+#define __RB_MILTER_CLIENT_H__
 
-#include "rb-milter-core-private.h"
+#include <rb-milter-core.h>
 
-extern void Init_milter_client_context (void);
+#include <milter/client.h>
+
+extern VALUE rb_cMilterClient;
 
 #endif
