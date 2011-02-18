@@ -102,6 +102,12 @@ module Milter
           loader = ConfigurationLoader.new(@configuration)
           loader.load(path)
         end
+
+        @option_parser.on("-eENV", "--environment=ENV",
+                          "Set milter environment as ENV",
+                          "(#{@configuration.environment})") do |env|
+          @configuration.environment = env
+        end
       end
 
       def setup_milter_options

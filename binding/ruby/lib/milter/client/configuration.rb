@@ -18,12 +18,14 @@ require 'pathname'
 module Milter
   class Client
     class Configuration
+      attr_accessor :environment
       attr_reader :milter, :database, :load_paths, :prefix
       def initialize
         clear
       end
 
       def clear
+        @environment = ENV["MITLER_ENV"] || "development"
         @milter = MilterConfiguration.new(self)
         @database = DatabaseConfiguration.new(self)
         @load_paths = []
@@ -336,6 +338,10 @@ module Milter
       rescue Exception => error
         Milter::Logger.error(error)
         fallback_value
+      end
+
+      def environment
+        @configuration.environment
       end
 
       private
