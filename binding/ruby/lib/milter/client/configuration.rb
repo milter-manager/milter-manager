@@ -43,6 +43,7 @@ module Milter
         @load_paths.collect do |load_path|
           full_path = File.join(load_path, path)
           if File.directory?(full_path)
+            paths = []
             Dir.open(full_path) do |dir|
               dir.each do |sub_path|
                 next if sub_path == "." or sub_path == ".."
@@ -174,6 +175,7 @@ module Milter
         attr_accessor :user, :password
         def initialize(base_configuration)
           @base_configuration = base_configuration
+          @loaded_model_files = []
           clear
         end
 
@@ -186,6 +188,12 @@ module Milter
           @path = nil
           @user = nil
           @password = nil
+          unless @loaded_model_files.empty?
+            $LOADED_FEATURES.reject! do |required_path|
+              @loaded_model_files.include?(required_path)
+            end
+          end
+          @loaded_model_files.clear
         end
 
         def missing_values
@@ -229,6 +237,14 @@ module Milter
 
         def update_location(key, reset, deep_level)
           @base_configuration.update_location(key, reset, deep_level + 1)
+        end
+
+        def resolve_path(path)
+          @base_configuration.resolve_path(path)
+        end
+
+        def add_loaded_model_file(model_file)
+          @loaded_model_files << model_file
         end
 
         private
