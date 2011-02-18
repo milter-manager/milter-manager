@@ -18,30 +18,6 @@ require 'pathname'
 module Milter
   class Client
     class Configuration
-      class InvalidValue < Error
-        def initialize(target, available_values, actual_value)
-          @target = target
-          @available_values = available_values
-          @actual_value = actual_value
-          super("#{@target} should be one of #{@available_values.inspect} " +
-                "but was #{@actual_value.inspect}")
-        end
-      end
-
-      class NonexistentPath < Error
-        def initialize(path)
-          @path = path
-          super("#{@path} doesn't exist.")
-        end
-      end
-
-      class MissingValue < Error
-        def initialize(target)
-          @target = target
-          super("#{@target} should be set")
-        end
-      end
-
       attr_reader :milter, :database, :load_paths, :prefix
       def initialize
         clear
@@ -57,7 +33,7 @@ module Milter
 
       def setup(client)
         @milter.setup(client)
-        @database.setup(client)
+        @database.setup
       end
 
       def resolve_path(path)
@@ -210,16 +186,23 @@ module Milter
           @password = nil
         end
 
-        def setup(key_prefix="database.")
+        def missing_values
+          return [:type] if @type.nil?
+          options = active_record_options
+          options[:missing_values] || []
+        end
+
+        def setup
           return if @setup_done
           return if @type.nil?
-          case @type
-          when "mysql", "mysql2"
-            options = mysql_options(key_prefix)
-          when "sqlite3"
-            options = sqlite3_options(key_prefix)
-          else
-            options = default_options(key_prefix)
+          _missing_values = missing_values
+          options = active_record_options
+          unless _missing_values.empty?
+            Milter::Logger.warning("[configuration][database][setup][ignore]" +
+                                   "[missing] " +
+                                   "<#{_missing_values.inspect}>:" +
+                                   "<#{options.inspect}>")
+            return
           end
           Milter::Logger.info("[configuration][database][setup] " +
                               "<#{options.inspect}>")
@@ -247,10 +230,24 @@ module Milter
         end
 
         private
-        def mysql_options(key_prefix)
+        def active_record_options
+          case @type
+          when "mysql", "mysql2"
+            mysql_options
+          when "sqlite3"
+            sqlite3_options
+          else
+            default_options
+          end
+        end
+
+        def mysql_options
           options = {}
           options[:adapter] = @type
-          raise MissingValue.new("#{key_prefix}name") if @name.nil?
+          if @name.nil?
+            options[:missing_values] = [:name]
+            return options
+          end
           options[:database] = @name
           options[:host] = @host || "localhost"
           options[:port] = @port || 3306
@@ -262,7 +259,7 @@ module Milter
           options
         end
 
-        def sqlite3_options(key_prefix)
+        def sqlite3_options
           options = {}
           options[:adapter] = @type
           options[:database] = @name || @path
@@ -272,7 +269,7 @@ module Milter
           options
         end
 
-        def default_options(key_prefix)
+        def default_options
           options = to_hash
           options[:adapter] = options.delete(:type)
           options[:database] = options.delete(:name)
@@ -287,6 +284,30 @@ module Milter
     end
 
     class ConfigurationLoader
+      class InvalidValue < Error
+        def initialize(target, available_values, actual_value)
+          @target = target
+          @available_values = available_values
+          @actual_value = actual_value
+          super("#{@target} should be one of #{@available_values.inspect} " +
+                "but was #{@actual_value.inspect}")
+        end
+      end
+
+      class NonexistentPath < Error
+        def initialize(path)
+          @path = path
+          super("#{@path} doesn't exist.")
+        end
+      end
+
+      class MissingValue < Error
+        def initialize(target)
+          @target = target
+          super("#{@target} should be set")
+        end
+      end
+
       attr_reader :milter, :database
       def initialize(configuration)
         @configuration = configuration
@@ -297,7 +318,7 @@ module Milter
 
       def load(path)
         resolved_paths = @configuration.resolve_path(path)
-        raise ConfigurationNonexistentPath.new(path) if resolved_paths.empty?
+        raise NonexistentPath.new(path) if resolved_paths.empty?
         resolved_paths.each do |resolved_path|
           load_path(resolved_path)
         end
@@ -323,7 +344,7 @@ module Milter
           content = File.read(path)
           Milter::Logger.debug("[configuration][load][start] <#{path}>")
           instance_eval(content, path)
-        rescue Configuration::InvalidValue
+        rescue InvalidValue, MissingValue
           backtrace = $!.backtrace.collect do |info|
             if /\A#{Regexp.escape(path)}:/ =~ info
               info
@@ -585,10 +606,11 @@ module Milter
         end
 
         def setup
-          if @configuration.type.nil?
-            raise MissingValue.new("database.type")
+          missing_values = @configuration.missing_values
+          unless missing_values.empty?
+            raise MissingValue.new("database.#{missing_values.first}")
           end
-          @configuration.setup("database.")
+          @configuration.setup
         end
 
         def load_models(path)
