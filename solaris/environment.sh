@@ -38,11 +38,17 @@ if test "$ARCHITECTURE" = "amd64"; then
     CC="$CC -m64"
     export CFLAGS=-m64
     export CXXFLAGS=-m64
+else
+    LD_LIBRARY_PATH=/opt/csw/lib:$LD_LIBRARY_PATH
+    PKG_CONFIG_PATH=/opt/csw/lib/pkgconfig:$PKG_CONFIG_PATH
+    export XGETTEXT=/opt/csw/bin/gxgettext
+    export MSGMERGE=/opt/csw/bin/gmsgmerge
+    export MSGFMT=/opt/csw/bin/gmsgfmt
 fi
 
-export MAKE="/usr/sfw/bin/gmake -j4"
+export MAKE="/usr/sfw/bin/gmake -j"
 export CPPFLAGS="-I$PREFIX/include"
-export LDFLAGS="-L$PREFIX/lib"
+export LDFLAGS="-L$PREFIX/lib -R$PREFIX/lib"
 export LD_LIBRARY_PATH=$PREFIX/lib:$LD_LIBRARY_PATH
-export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig
+export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig:$LD_LIBRARY_PATH
 export ACLOCAL_OPTIONS="-I $PREFIX/share/aclocal/"
