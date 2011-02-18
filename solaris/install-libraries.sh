@@ -17,7 +17,7 @@ if test "$ARCHITECTURE" != "i386"; then
 	--with-libiconv=gnu
 fi
 
-install_package ftp://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p136.tar.bz2 \
+install_package ftp://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p180.tar.bz2 \
     --disable-install-doc --enable-shared
 
 install_package http://downloads.sourceforge.net/cutter/cutter-1.1.7.tar.gz
