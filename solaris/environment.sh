@@ -5,7 +5,7 @@ PROTOTYPES="${base_dir}/prototypes"
 PKGS="${base_dir}/pkgs"
 
 PREFIX=/opt/milter-manager
-PATH=$PREFIX/bin:/opt/csw/bin:/usr/sfw/bin:$PATH
+PATH=$PREFIX/bin:/usr/ccs/bin:/opt/csw/bin:/usr/sfw/bin:$PATH
 
 if test -z "$SOLARIS_STUDIO_PREFIX"; then
     SOLARIS_STUDIO_PREFIX=$(echo /opt/solstudio* | sort -r | head -1)
@@ -22,9 +22,7 @@ fi
 
 if test "$COMPILER" = "solaris-studio"; then
     export CC=$SOLARIS_STUDIO_PREFIX/bin/cc
-    PATH=$SOLARIS_STUDIO_PREFIX/bin:$PATH
 else
-    export AR=/usr/ccs/bin/ar
     export CC=/usr/sfw/bin/gcc
 fi
 
