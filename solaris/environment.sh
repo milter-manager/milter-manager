@@ -55,3 +55,5 @@ export LDFLAGS="-L$PREFIX/lib -R$PREFIX/lib $LDFLAGS"
 export LD_LIBRARY_PATH=$PREFIX/lib:$LD_LIBRARY_PATH
 export PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig:$LD_LIBRARY_PATH
 export ACLOCAL_OPTIONS="-I $PREFIX/share/aclocal/"
+
+export NROFF=/opt/csw/bin/groff
