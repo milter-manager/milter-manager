@@ -68,6 +68,17 @@ install_package()
     run gtar xf "${SOURCES}/${tar_ball}" -C "${BUILDS}" > "${log}"
     echo "$(time_stamp): done."
 
+    if test -d "${PATCHES}/${base}"; then
+	for patch_file in $(echo "${PATCHES}/${base}/*" | sort); do
+	    echo "$(time_stamp): Patching ${base} (${patch_file})..."
+	    (
+		cd "${BUILDS}/${base}"
+		run patch -p1 < ${patch_file}
+	    ) > "${log}"
+	    echo "$(time_stamp): done."
+	done
+    fi
+
     echo "$(time_stamp): Configuring ${base}..."
     (
         cd "${BUILDS}/${base}"

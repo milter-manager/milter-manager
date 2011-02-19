@@ -1,5 +1,6 @@
 base_dir="$(cd $(dirname $0); pwd)"
 SOURCES="${base_dir}/sources"
+PATCHES="${base_dir}/patches"
 BUILDS="${base_dir}/builds"
 PROTOTYPES="${base_dir}/prototypes"
 PKGS="${base_dir}/pkgs"

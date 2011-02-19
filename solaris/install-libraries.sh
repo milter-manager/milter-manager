@@ -17,13 +17,8 @@ if test "$USE_OPEN_CSW" != "yes"; then
     install_package ${gnu_org}/libiconv/libiconv-1.13.1.tar.gz
     install_package ${gnu_org}/gettext/gettext-0.18.1.1.tar.gz \
 	--enable-relocatable --without-git
-    if test "$ARCHITECTURE" = "i386"; then
-	install_package ${gnome_org}/glib/2.24/glib-2.24.2.tar.bz2 \
-	    --with-libiconv=gnu
-    else
-	install_package ${gnome_org}/glib/2.22/glib-2.22.5.tar.bz2 \
-	    --with-libiconv=gnu
-    fi
+    install_package ${gnome_org}/glib/2.28/glib-2.28.1.tar.bz2 \
+	--with-libiconv=gnu LDFLAGS="-lsocket -lnsl $LDFLAGS"
 fi
 
 install_package ${mysql_downloads}/MySQL-5.5/mysql-5.5.9.tar.gz
