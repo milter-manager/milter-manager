@@ -71,7 +71,11 @@ install_package()
     echo "$(time_stamp): Configuring ${base}..."
     (
         cd "${BUILDS}/${base}"
-        run ./configure --enable-shared --prefix="${PREFIX}" "$@"
+	if test -f "CMakeLists.txt"; then
+	    run cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" "$@" .
+	else
+            run ./configure --enable-shared --prefix="${PREFIX}" "$@"
+	fi
     ) > "${log}"
     echo "$(time_stamp): done."
 
