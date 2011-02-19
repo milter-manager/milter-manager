@@ -20,6 +20,7 @@ if test -z "$COMPILER"; then
 	COMPILER="gcc"
     fi
 fi
+COMPILER="gcc" # force to GCC. Solaris Studio isn't supported.
 export COMPILER
 
 if test "$COMPILER" = "solaris-studio"; then
