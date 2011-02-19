@@ -49,8 +49,8 @@ EOP
 install_package()
 {
     local url="$1"
-    local tarball="${1##*/}"
-    local base="${tarball%.tar.*}"
+    local tar_ball="${1##*/}"
+    local base="${tar_ball%.tar.*}"
     local build_dir="${BUILDS}/${base}"
     local log="${BUILDS}/${base}.log"
     local time_stamp_file="${BUILDS}/${base}.time_stamp"
@@ -59,11 +59,13 @@ install_package()
     mkdir -p "${BUILDS}"
 
     echo "$(time_stamp): Downloading ${base}..."
-    run wget -N -P "${SOURCES}" "$url" > "${log}"
+    if test ! -f "${SOURCES}/${tar_ball}"; then
+	run wget -N -P "${SOURCES}" "$url" > "${log}"
+    fi
     echo "$(time_stamp): done."
 
     echo "$(time_stamp): Extracting ${base}..."
-    run gtar xf "${SOURCES}/${tarball}" -C "${BUILDS}" > "${log}"
+    run gtar xf "${SOURCES}/${tar_ball}" -C "${BUILDS}" > "${log}"
     echo "$(time_stamp): done."
 
     echo "$(time_stamp): Configuring ${base}..."
