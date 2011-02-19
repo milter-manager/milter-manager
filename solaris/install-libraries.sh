@@ -12,10 +12,12 @@ gnome_org="http://ftp.gnome.org/pub/gnome/sources"
 mysql_downloads="http://ftp.jaist.ac.jp/pub/mysql/Downloads"
 
 if test "$USE_OPEN_CSW" != "yes"; then
-    install_package ${gnu_org}/gettext/gettext-0.18.1.1.tar.gz \
+    CC="$CC -m64" \
+	install_package ${gnu_org}/gettext/gettext-0.18.1.1.tar.gz \
 	--enable-relocatable --without-git
     install_package ${gnu_org}/libiconv/libiconv-1.13.1.tar.gz
-    install_package ${gnu_org}/gettext/gettext-0.18.1.1.tar.gz \
+    CC="$CC -m64" \
+	install_package ${gnu_org}/gettext/gettext-0.18.1.1.tar.gz \
 	--enable-relocatable --without-git
     LDFLAGS="-lsocket -lnsl $LDFLAGS" \
 	install_package ${gnome_org}/glib/2.28/glib-2.28.1.tar.bz2 \
