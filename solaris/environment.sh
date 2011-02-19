@@ -30,7 +30,7 @@ else
 fi
 
 if test -z "$ARCHITECTURE"; then
-    ARCHITECTURE=i386
+    ARCHITECTURE=amd64
 fi
 export ARCHITECTURE
 
