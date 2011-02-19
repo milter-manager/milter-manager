@@ -5,7 +5,7 @@ BUILDS="${base_dir}/builds"
 PROTOTYPES="${base_dir}/prototypes"
 PKGS="${base_dir}/pkgs"
 
-PREFIX=/opt/milter-manager
+: ${PREFIX:=/opt/milter-manager}
 PATH=$PREFIX/bin:/opt/csw/bin:/usr/ccs/bin:/usr/sfw/bin:$PATH
 
 if test -z "$SOLARIS_STUDIO_PREFIX"; then
