@@ -76,14 +76,8 @@ module Milter::Manager
     def clear
       @maintained_hooks = nil
       @netstat_connection_checker = nil
-      @database = DatabaseConfiguration.new
-      @loaded_model_files ||= []
-      unless @loaded_model_files.empty?
-        $LOADED_FEATURES.reject! do |required_path|
-          @loaded_model_files.include?(required_path)
-        end
-      end
-      @loaded_model_files.clear
+      @database ||= Milter::Client::Configuration::DatabaseConfiguration.new(self)
+      @database.clear
     end
 
     def maintained_hooks
@@ -94,14 +88,19 @@ module Milter::Manager
       @netstat_connection_checker ||= NetstatConnectionChecker.new
     end
 
-    def add_loaded_model_file(model_file)
-      @loaded_model_files << model_file
-    end
-
     def expand_path(path)
       return path if Pathname(path).absolute?
       _prefix = (parsed_package_options || {})["prefix"] || prefix
       File.join(_prefix, path)
+    end
+
+    def update_location(key, reset, deep_level)
+      if reset
+        reset_location(key)
+      else
+        file, line, _ = caller[deep_level].split(/:/, 3)
+        set_location(key, file, line.to_i)
+      end
     end
 
     class DatabaseConfiguration
@@ -373,15 +372,6 @@ module Milter::Manager
         fallback_value
       end
 
-      def update_location(configuration, key, reset, deep_level)
-        if reset
-          configuration.reset_location(key)
-        else
-          file, line, _ = caller[deep_level].split(/:/, 3)
-          configuration.set_location(key, file, line.to_i)
-        end
-      end
-
       def resolve_path(configuration, path)
         return [path] if Pathname(path).absolute?
         configuration.load_paths.collect do |load_path|
@@ -416,7 +406,9 @@ module Milter::Manager
       @security = SecurityConfigurationLoader.new(configuration)
       @controller = ControllerConfigurationLoader.new(configuration)
       @manager = ManagerConfigurationLoader.new(configuration)
-      @database = DatabaseConfigurationLoader.new(configuration)
+      client_config_loader = Milter::Client::ConfigurationLoader
+      database_config = configuration.database
+      @database = client_config_loader::DatabaseConfigurationLoader.new(database_config)
       @policy_manager = Milter::Manager::PolicyManager.new(self)
     end
 
@@ -473,9 +465,7 @@ module Milter::Manager
     end
 
     def define_milter(name, &block)
-      ConfigurationLoader.update_location(@configuration,
-                                          "milter[#{name}]",
-                                          false, 1)
+      @configuration.update_location("milter[#{name}]", false, 1)
       loader = EggConfigurationLoader.new(name, self)
       yield(loader)
       loader.apply
@@ -487,9 +477,7 @@ module Milter::Manager
     end
 
     def define_applicable_condition(name)
-      ConfigurationLoader.update_location(@configuration,
-                                          "applicable_condition[#{name}]",
-                                          false, 1)
+      @configuration.update_location("applicable_condition[#{name}]", false, 1)
       loader = ApplicableConditionConfigurationLoader.new(name, self)
       yield(loader)
       loader.apply
@@ -786,8 +774,7 @@ module Milter::Manager
       private
       def update_location(key, reset, deep_level=2)
         full_key = "security.#{key}"
-        ConfigurationLoader.update_location(@configuration, full_key, reset,
-                                            deep_level)
+        @configuration.update_location(full_key, reset, deep_level)
       end
     end
 
@@ -841,8 +828,7 @@ module Milter::Manager
       private
       def update_location(key, reset, deep_level=2)
         full_key = "controller.#{key}"
-        ConfigurationLoader.update_location(@configuration, full_key, reset,
-                                            deep_level)
+        @configuration.update_location(full_key, reset, deep_level)
       end
     end
 
@@ -1065,8 +1051,7 @@ module Milter::Manager
       private
       def update_location(key, reset, deep_level=2)
         full_key = "manager.#{key}"
-        ConfigurationLoader.update_location(@configuration, full_key, reset,
-                                            deep_level)
+        @configuration.update_location(full_key, reset, deep_level)
       end
 
       class MemoryReporter
@@ -1111,151 +1096,6 @@ module Milter::Manager
         def memory_usage_in_kb
           `ps -o rss -p #{Process.pid}`.split(/\n/).last.to_i
         end
-      end
-    end
-
-    class DatabaseConfigurationLoader
-      def initialize(configuration)
-        @configuration = configuration
-        @database = @configuration.database
-      end
-
-      def type
-        @database.type
-      end
-
-      def type=(type)
-        update_location("type", nil)
-        @database.type = type
-      end
-
-      def name
-        @database.name
-      end
-
-      def name=(name)
-        update_location("name", nil)
-        @database.name = name
-      end
-
-      def host
-        @database.host
-      end
-
-      def host=(host)
-        update_location("host", nil)
-        @database.host = host
-      end
-
-      def port
-        @database.port
-      end
-
-      def port=(port)
-        update_location("port", nil)
-        @database.port = port
-      end
-
-      def path
-        @database.path
-      end
-
-      def path=(path)
-        update_location("path", nil)
-        @database.path = path
-      end
-
-      def user
-        @database.user
-      end
-
-      def user=(user)
-        update_location("user", nil)
-        @database.user = user
-      end
-
-      def password
-        @database.password
-      end
-
-      def password=(password)
-        update_location("password", nil)
-        @database.password = password
-      end
-
-      def setup
-        case @database.type
-        when nil
-          raise MissingValue.new("database.type")
-        when "mysql", "mysql2"
-          options = mysql_options
-        when "sqlite3"
-          options = sqlite3_options
-        else
-          options = default_options
-        end
-        Milter::Logger.info("[configuration][database][setup] " +
-                            "<#{options.inspect}>")
-        require 'active_record'
-        logger = Milter::ActiveRecordLogger.new(Milter::Logger.default)
-        ActiveRecord::Base.logger = logger
-        ActiveRecord::Base.establish_connection(options)
-      end
-
-      def load_models(path)
-        resolved_paths = ConfigurationLoader.resolve_path(@configuration, path)
-        resolved_paths.each do |resolved_path|
-          begin
-            require(resolved_path)
-            @configuration.add_loaded_model_file(resolved_path)
-          rescue Exception => error
-            Milter::Logger.error(error)
-          end
-        end
-      end
-
-      private
-      def update_location(key, reset, deep_level=2)
-        full_key = "database.#{key}"
-        ConfigurationLoader.update_location(@configuration, full_key, reset,
-                                            deep_level)
-      end
-
-      def mysql_options
-        options = {}
-        options[:adapter] = @database.type
-        raise MissingValue.new("database.name") if @database.name.nil?
-        options[:database] = @database.name
-        options[:host] = @database.host || "localhost"
-        options[:port] = @database.port || 3306
-        default_path = "/var/run/mysqld/mysqld.sock"
-        default_path = nil unless File.exist?(default_path)
-        options[:path] = @database.path || default_path
-        options[:username] = @database.user || "root"
-        options[:password] = @database.password
-        options
-      end
-
-      def sqlite3_options
-        options = @database.to_hash
-        options[:adapter] = options.delete(:type)
-        options[:database] = options.delete(:name) || options.delete(:path)
-        unless options[:database] == ":memory:"
-          options[:database] = expand_path(options[:database])
-        end
-        options
-      end
-
-      def default_options
-        options = @database.to_hash
-        options[:adapter] = options.delete(:type)
-        options[:database] = options.delete(:name)
-        options[:username] = options.delete(:user)
-        options
-      end
-
-      def expand_path(path)
-        @configuration.expand_path(path)
       end
     end
 
@@ -1361,8 +1201,7 @@ module Milter::Manager
       private
       def update_location(name, reset, deep_level=2)
         full_key = "milter[#{@egg.name}].#{name}"
-        ConfigurationLoader.update_location(@loader.configuration,
-                                            full_key, reset, deep_level)
+        @loader.configuration.update_location(full_key, reset, deep_level)
       end
     end
 
@@ -1557,8 +1396,7 @@ module Milter::Manager
 
       def update_location(name, reset, deep_level=2)
         full_key = "applicable_condition[#{@condition.name}].#{name}"
-        ConfigurationLoader.update_location(@loader.configuration,
-                                            full_key, reset, deep_level)
+        @loader.configuration.update_location(full_key, reset, deep_level)
       end
     end
   end
