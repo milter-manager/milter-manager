@@ -103,32 +103,6 @@ module Milter
           set_location(key, file, line.to_i)
         end
       end
-
-      class DatabaseConfiguration
-        attr_accessor :type, :name, :host, :port, :path
-        attr_accessor :user, :password
-        def initialize
-          @type = nil
-          @name = nil
-          @host = nil
-          @port = nil
-          @path = nil
-          @user = nil
-          @password = nil
-        end
-
-        def to_hash
-          {
-            :type => @type,
-            :name => @name,
-            :host => @host,
-            :port => @port,
-            :path => @path,
-            :user => @user,
-            :password => @password,
-          }
-        end
-      end
     end
 
     class ConfigurationDumper
