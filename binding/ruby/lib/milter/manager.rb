@@ -77,7 +77,7 @@ module Milter
       def clear
         @maintained_hooks = nil
         @netstat_connection_checker = nil
-        @database ||= Client::Configuration::DatabaseConfiguration.new(self)
+        @database ||= Client::DatabaseConfiguration.new(self)
         @database.clear
       end
 
@@ -385,9 +385,8 @@ module Milter
         @security = SecurityConfigurationLoader.new(configuration)
         @controller = ControllerConfigurationLoader.new(configuration)
         @manager = ManagerConfigurationLoader.new(configuration)
-        client_config_loader = Client::ConfigurationLoader
         database_config = configuration.database
-        @database = client_config_loader::DatabaseConfigurationLoader.new(database_config)
+        @database = Client::DatabaseConfigurationLoader.new(database_config)
         @policy_manager = Manager::PolicyManager.new(self)
       end
 
