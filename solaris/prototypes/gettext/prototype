@@ -249,13 +249,11 @@ f none lib/libasprintf.a 0644 root root
 f none lib/libasprintf.la 0755 root root
 f none lib/libasprintf.so.0.0.0 0755 root root
 f none lib/libgettextlib-0.18.1.so 0755 root root
-f none lib/libgettextlib.a 0644 root root
 f none lib/libgettextlib.la 0755 root root
 f none lib/libgettextpo.a 0644 root root
 f none lib/libgettextpo.la 0755 root root
 f none lib/libgettextpo.so.0.5.1 0755 root root
 f none lib/libgettextsrc-0.18.1.so 0755 root root
-f none lib/libgettextsrc.a 0644 root root
 f none lib/libgettextsrc.la 0755 root root
 f none lib/libintl.a 0644 root root
 f none lib/libintl.so.8.1.1 0755 root root

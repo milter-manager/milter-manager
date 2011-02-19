@@ -787,11 +787,8 @@ f none lib/ruby/1.9.1/yaml/dbm.rb 0644 root root
 f none lib/ruby/1.9.1/yaml/store.rb 0644 root root
 f none lib/ruby/1.9.1/yaml/syck.rb 0644 root root
 f none lib/ruby/gems/1.9.1/specifications/minitest-1.6.0.gemspec 0644 root root
-f none lib/ruby/gems/1.9.1/specifications/minitest.gemspec 0644 root root
 f none lib/ruby/gems/1.9.1/specifications/rake-0.8.7.gemspec 0644 root root
-f none lib/ruby/gems/1.9.1/specifications/rake.gemspec 0644 root root
 f none lib/ruby/gems/1.9.1/specifications/rdoc-2.5.8.gemspec 0644 root root
-f none lib/ruby/gems/1.9.1/specifications/rdoc.gemspec 0644 root root
 f none share/man/man1/erb.1 0644 root root
 f none share/man/man1/irb.1 0644 root root
 f none share/man/man1/rake.1 0644 root root
