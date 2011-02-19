@@ -84,6 +84,8 @@ install_package()
         cd "${BUILDS}/${base}"
 	if test -f "CMakeLists.txt"; then
 	    run cmake -DCMAKE_INSTALL_PREFIX="${PREFIX}" "$@" .
+	elif test -f "Configure"; then
+	    run ./Configure --prefix="${PREFIX}" "$@"
 	else
             run ./configure --enable-shared --prefix="${PREFIX}" "$@"
 	fi
