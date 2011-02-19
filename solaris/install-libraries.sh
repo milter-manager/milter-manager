@@ -24,7 +24,8 @@ if test "$USE_OPEN_CSW" != "yes"; then
 	--with-libiconv=gnu
 fi
 
-install_package ${mysql_downloads}/MySQL-5.5/mysql-5.5.9.tar.gz
+CC="$CC -m64" \
+    install_package ${mysql_downloads}/MySQL-5.5/mysql-5.5.9.tar.gz
 
 install_package ftp://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p180.tar.bz2 \
     --disable-install-doc --enable-shared
