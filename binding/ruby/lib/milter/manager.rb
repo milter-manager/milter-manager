@@ -322,32 +322,9 @@ module Milter
     end
 
     class ConfigurationLoader
-      class Error < Milter::Manager::Error
-      end
-
-      class InvalidValue < Error
-        def initialize(target, available_values, actual_value)
-          @target = target
-          @available_values = available_values
-          @actual_value = actual_value
-          super("#{@target} should be one of #{@available_values.inspect} " +
-                "but was #{@actual_value.inspect}")
-        end
-      end
-
-      class NonexistentPath < Error
-        def initialize(path)
-          @path = path
-          super("#{@path} doesn't exist.")
-        end
-      end
-
-      class MissingValue < Error
-        def initialize(target)
-          @target = target
-          super("#{@target} should be set")
-        end
-      end
+      InvalidValue = Client::ConfigurationLoader::InvalidValue
+      NonexistentPath = Client::ConfigurationLoader::NonexistentPath
+      MissingValue = Client::ConfigurationLoader::MissingValue
 
       class << self
         @@current_configuration = nil
@@ -370,7 +347,7 @@ module Milter
         def guard(fallback_value=nil)
           yield
         rescue Exception => error
-          Milter::Logger.error(error)
+          Logger.error(error)
           fallback_value
         end
 
