@@ -46,6 +46,47 @@ EOP
     echo "$(time_stamp): done."
 }
 
+download_package()
+{
+    local url="$1"
+    local tar_ball="${1##*/}"
+    local base="${tar_ball%.tar.*}"
+    local log="${BUILDS}/${base}.log"
+
+    mkdir -p "${BUILDS}"
+
+    echo "$(time_stamp): Downloading ${base}..."
+    if test ! -f "${SOURCES}/${tar_ball}"; then
+	run wget -N -P "${SOURCES}" "$url" > "${log}"
+    fi
+    echo "$(time_stamp): done."
+}
+
+extract_package()
+{
+    local url="$1"
+    local tar_ball="${1##*/}"
+    local base="${tar_ball%.tar.*}"
+    local build_dir="${BUILDS}/${base}"
+    local log="${BUILDS}/${base}.log"
+
+    echo "$(time_stamp): Extracting ${base}..."
+    run rm -rf "${build_dir}"
+    run gtar xf "${SOURCES}/${tar_ball}" -C "${BUILDS}" > "${log}"
+    echo "$(time_stamp): done."
+
+    if test -d "${PATCHES}/${base}"; then
+	for patch_file in $(echo "${PATCHES}/${base}/*" | sort); do
+	    echo "$(time_stamp): Patching ${base} (${patch_file})..."
+	    (
+		cd "${build_dir}"
+		run gpatch -p1 < ${patch_file}
+	    ) > "${log}"
+	    echo "$(time_stamp): done."
+	done
+    fi
+}
+
 install_package()
 {
     local url="$1"
@@ -57,27 +98,8 @@ install_package()
 
     mkdir -p "${BUILDS}"
 
-    echo "$(time_stamp): Downloading ${base}..."
-    if test ! -f "${SOURCES}/${tar_ball}"; then
-	run wget -N -P "${SOURCES}" "$url" > "${log}"
-    fi
-    echo "$(time_stamp): done."
-
-    echo "$(time_stamp): Extracting ${base}..."
-    run rm -rf "${BUILDS}/${base}"
-    run gtar xf "${SOURCES}/${tar_ball}" -C "${BUILDS}" > "${log}"
-    echo "$(time_stamp): done."
-
-    if test -d "${PATCHES}/${base}"; then
-	for patch_file in $(echo "${PATCHES}/${base}/*" | sort); do
-	    echo "$(time_stamp): Patching ${base} (${patch_file})..."
-	    (
-		cd "${BUILDS}/${base}"
-		run gpatch -p1 < ${patch_file}
-	    ) > "${log}"
-	    echo "$(time_stamp): done."
-	done
-    fi
+    download_package "$url"
+    extract_package "$url"
 
     echo "$(time_stamp): Configuring ${base}..."
     (
