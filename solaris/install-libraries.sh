@@ -7,14 +7,22 @@ source ./functions.sh
 
 echo "$(time_stamp): Installing libraries..."
 
-if test "$ARCHITECTURE" != "i386"; then
-    install_package http://ftp.gnu.org/pub/gnu/gettext/gettext-0.18.1.1.tar.gz \
+gnu_org="http://ftp.gnu.org/pub/gnu"
+gnome_org="http://ftp.gnome.org/pub/gnome/sources"
+
+if test "$USE_CSW" != "yes"; then
+    install_package ${gnu_org}/gettext/gettext-0.18.1.1.tar.gz \
 	--enable-relocatable --without-git
-    install_package http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.13.1.tar.gz
-    install_package http://ftp.gnu.org/pub/gnu/gettext/gettext-0.18.1.1.tar.gz \
+    install_package ${gnu_org}/libiconv/libiconv-1.13.1.tar.gz
+    install_package ${gnu_org}/gettext/gettext-0.18.1.1.tar.gz \
 	--enable-relocatable --without-git
-    install_package http://ftp.gnome.org/pub/gnome/sources/glib/2.22/glib-2.22.5.tar.bz2 \
-	--with-libiconv=gnu
+    if test "$ARCHITECTURE" = "i386"; then
+	install_package ${gnome_org}/glib/2.23/glib-2.23.5.tar.bz2 \
+	    --with-libiconv=gnu
+    else
+	install_package ${gnome_org}/glib/2.22/glib-2.22.5.tar.bz2 \
+	    --with-libiconv=gnu
+    fi
 fi
 
 install_package ftp://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p180.tar.bz2 \

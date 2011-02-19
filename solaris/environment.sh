@@ -19,10 +19,12 @@ if test -z "$COMPILER"; then
 	COMPILER="gcc"
     fi
 fi
+export COMPILER
 
 if test "$COMPILER" = "solaris-studio"; then
     export CC=$SOLARIS_STUDIO_PREFIX/bin/cc
     export AR=/usr/ccs/bin/ar
+    export LD="$SOLARIS_STUDIO_PREFIX/bin/cc -G"
     export LDSHARED="$SOLARIS_STUDIO_PREFIX/bin/cc -G"
 else
     export CC=/usr/sfw/bin/gcc
@@ -39,15 +41,17 @@ if test "$ARCHITECTURE" = "amd64"; then
     export CFLAGS=-m64
     export CXXFLAGS=-m64
 else
-    LDFLAGS="-R/opt/csw/lib $LDFLAGS"
-    LD_LIBRARY_PATH=/opt/csw/lib:$LD_LIBRARY_PATH
-    PKG_CONFIG_PATH=/opt/csw/lib/pkgconfig:$PKG_CONFIG_PATH
-    export XGETTEXT=/opt/csw/bin/gxgettext
-    export MSGMERGE=/opt/csw/bin/gmsgmerge
-    export MSGFMT=/opt/csw/bin/gmsgfmt
+    if test "$USE_CSW" = "yes"; then
+	LDFLAGS="-R/opt/csw/lib $LDFLAGS"
+	LD_LIBRARY_PATH=/opt/csw/lib:$LD_LIBRARY_PATH
+	PKG_CONFIG_PATH=/opt/csw/lib/pkgconfig:$PKG_CONFIG_PATH
+	export XGETTEXT=/opt/csw/bin/gxgettext
+	export MSGMERGE=/opt/csw/bin/gmsgmerge
+	export MSGFMT=/opt/csw/bin/gmsgfmt
+    fi
 fi
 
-export MAKE="/usr/sfw/bin/gmake -j"
+export MAKE="/usr/sfw/bin/gmake"
 export CPPFLAGS="-I$PREFIX/include"
 export LDFLAGS="-L$PREFIX/lib -R$PREFIX/lib $LDFLAGS"
 export LD_LIBRARY_PATH=$PREFIX/lib:$LD_LIBRARY_PATH
