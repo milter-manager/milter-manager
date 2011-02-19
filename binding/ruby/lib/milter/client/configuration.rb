@@ -80,224 +80,224 @@ module Milter
           @locations[key] = [file, line.to_i]
         end
       end
-    end
 
-    class MilterConfiguration
-      attr_accessor :name, :connection_spec, :user, :group
-      attr_accessor :unix_socket_mode, :unix_socket_group
-      attr_accessor :remove_unix_socket_on_create
-      attr_accessor :remove_unix_socket_on_close
-      attr_accessor :pid_file, :maintenance_interval
-      attr_accessor :suspend_time_on_unacceptable, :max_connections
-      attr_accessor :max_file_descriptors, :event_loop_backend
-      attr_accessor :n_workers, :packet_buffer_size
-      attr_accessor :syslog_facility, :status_on_error
-      attr_writer :daemon, :handle_signal, :run_gc_on_maintain, :use_syslog
-      def initialize(base_configuration)
-        @base_configuration = base_configuration
-        clear
-      end
-
-      def daemon?
-        @daemon
-      end
-
-      def handle_signal?
-        @handle_signal
-      end
-
-      def run_gc_on_maintain?
-        @run_gc_on_maintain
-      end
-
-      def use_syslog?
-        @use_syslog
-      end
-
-      def clear
-        @name = File.basename($PROGRAM_NAME, ".*"),
-        @connection_spec = "inet:20025"
-        @user = nil
-        @group = nil
-        @unix_socket_mode = 0770
-        @unix_socket_group = nil
-        @remove_unix_socket_on_create = true
-        @remove_unix_socket_on_close = true
-        @daemon = false
-        @pid_file = nil
-        @maintenance_interval = 100
-        @suspend_time_on_unacceptable =
-          Milter::Client::DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE
-        @max_connections = Milter::Client::DEFAULT_MAX_CONNECTIONS
-        @max_file_descriptors = 0
-        @event_loop_backend = Milter::Client::EVENT_LOOP_BACKEND_GLIB.nick
-        @n_workers = 0
-        @packet_buffer_size = 0
-        @run_gc_on_maintain = true
-        @use_syslog = false
-        @syslog_facility = "mail"
-        @handle_signal = true
-        @maintained_hooks = []
-      end
-
-      def setup(client)
-        client.start_syslog(@name, @syslog_facility) if @use_syslog
-        client.status_on_error = @status_on_error
-        client.connection_spec = @connection_spec
-        client.effective_user = @user
-        client.effective_group = @group
-        client.unix_socket_group = @unix_socket_group
-        client.unix_socket_mode = @unix_socket_mode if @unix_socket_mode
-        client.event_loop_backend = @event_loop_backend
-        client.default_packet_buffer_size = @packet_buffer_size
-        client.maintenance_interval = @maintenance_interval
-        if @run_gc_on_maintain
-          client.on_maintain do
-            GC.start
-          end
+      class MilterConfiguration
+        attr_accessor :name, :connection_spec, :user, :group
+        attr_accessor :unix_socket_mode, :unix_socket_group
+        attr_accessor :remove_unix_socket_on_create
+        attr_accessor :remove_unix_socket_on_close
+        attr_accessor :pid_file, :maintenance_interval
+        attr_accessor :suspend_time_on_unacceptable, :max_connections
+        attr_accessor :max_file_descriptors, :event_loop_backend
+        attr_accessor :n_workers, :packet_buffer_size
+        attr_accessor :syslog_facility, :status_on_error
+        attr_writer :daemon, :handle_signal, :run_gc_on_maintain, :use_syslog
+        def initialize(base_configuration)
+          @base_configuration = base_configuration
+          clear
         end
-        client.n_workers = @n_workers
-        unless @maintained_hooks.empty?
-          client.on_maintain do
-            @maintained_hooks.each do |hook|
-              hook.call
+
+        def daemon?
+          @daemon
+        end
+
+        def handle_signal?
+          @handle_signal
+        end
+
+        def run_gc_on_maintain?
+          @run_gc_on_maintain
+        end
+
+        def use_syslog?
+          @use_syslog
+        end
+
+        def clear
+          @name = File.basename($PROGRAM_NAME, ".*"),
+          @connection_spec = "inet:20025"
+          @user = nil
+          @group = nil
+          @unix_socket_mode = 0770
+          @unix_socket_group = nil
+          @remove_unix_socket_on_create = true
+          @remove_unix_socket_on_close = true
+          @daemon = false
+          @pid_file = nil
+          @maintenance_interval = 100
+          @suspend_time_on_unacceptable =
+            Milter::Client::DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE
+          @max_connections = Milter::Client::DEFAULT_MAX_CONNECTIONS
+          @max_file_descriptors = 0
+          @event_loop_backend = Milter::Client::EVENT_LOOP_BACKEND_GLIB.nick
+          @n_workers = 0
+          @packet_buffer_size = 0
+          @run_gc_on_maintain = true
+          @use_syslog = false
+          @syslog_facility = "mail"
+          @handle_signal = true
+          @maintained_hooks = []
+        end
+
+        def setup(client)
+          client.start_syslog(@name, @syslog_facility) if @use_syslog
+          client.status_on_error = @status_on_error
+          client.connection_spec = @connection_spec
+          client.effective_user = @user
+          client.effective_group = @group
+          client.unix_socket_group = @unix_socket_group
+          client.unix_socket_mode = @unix_socket_mode if @unix_socket_mode
+          client.event_loop_backend = @event_loop_backend
+          client.default_packet_buffer_size = @packet_buffer_size
+          client.maintenance_interval = @maintenance_interval
+          if @run_gc_on_maintain
+            client.on_maintain do
+              GC.start
+            end
+          end
+          client.n_workers = @n_workers
+          unless @maintained_hooks.empty?
+            client.on_maintain do
+              @maintained_hooks.each do |hook|
+                hook.call
+              end
             end
           end
         end
+
+        def update_location(key, reset, deep_level)
+          @base_configuration.update_location(key, reset, deep_level + 1)
+        end
       end
 
-      def update_location(key, reset, deep_level)
-        @base_configuration.update_location(key, reset, deep_level + 1)
-      end
-    end
+      class DatabaseConfiguration
+        attr_accessor :type, :name, :host, :port, :path
+        attr_accessor :user, :password
+        def initialize(base_configuration)
+          @base_configuration = base_configuration
+          @loaded_model_files = []
+          clear
+        end
 
-    class DatabaseConfiguration
-      attr_accessor :type, :name, :host, :port, :path
-      attr_accessor :user, :password
-      def initialize(base_configuration)
-        @base_configuration = base_configuration
-        @loaded_model_files = []
-        clear
-      end
+        def clear
+          @setup_done = false
+          @type = nil
+          @name = nil
+          @host = nil
+          @port = nil
+          @path = nil
+          @user = nil
+          @password = nil
+          unless @loaded_model_files.empty?
+            $LOADED_FEATURES.reject! do |required_path|
+              @loaded_model_files.include?(required_path)
+            end
+          end
+          @loaded_model_files.clear
+        end
 
-      def clear
-        @setup_done = false
-        @type = nil
-        @name = nil
-        @host = nil
-        @port = nil
-        @path = nil
-        @user = nil
-        @password = nil
-        unless @loaded_model_files.empty?
-          $LOADED_FEATURES.reject! do |required_path|
-            @loaded_model_files.include?(required_path)
+        def missing_values
+          return [:type] if @type.nil?
+          options = active_record_options
+          options[:missing_values] || []
+        end
+
+        def setup
+          return if @setup_done
+          return if @type.nil?
+          _missing_values = missing_values
+          options = active_record_options
+          unless _missing_values.empty?
+            Milter::Logger.warning("[configuration][database][setup][ignore]" +
+                                   "[missing] " +
+                                   "<#{_missing_values.inspect}>:" +
+                                   "<#{options.inspect}>")
+            return
+          end
+          Milter::Logger.info("[configuration][database][setup] " +
+                              "<#{options.inspect}>")
+          require 'active_record'
+          logger = Milter::ActiveRecordLogger.new(Milter::Logger.default)
+          ActiveRecord::Base.logger = logger
+          ActiveRecord::Base.establish_connection(options)
+          @setup_done = true
+        end
+
+        def to_hash
+          {
+            :type => type,
+            :name => name,
+            :host => host,
+            :port => port,
+            :path => path,
+            :user => user,
+            :password => password,
+          }
+        end
+
+        def update_location(key, reset, deep_level)
+          @base_configuration.update_location(key, reset, deep_level + 1)
+        end
+
+        def resolve_path(path)
+          @base_configuration.resolve_path(path)
+        end
+
+        def add_loaded_model_file(model_file)
+          @loaded_model_files << model_file
+        end
+
+        private
+        def active_record_options
+          case @type
+          when "mysql", "mysql2"
+            mysql_options
+          when "sqlite3"
+            sqlite3_options
+          else
+            default_options
           end
         end
-        @loaded_model_files.clear
-      end
 
-      def missing_values
-        return [:type] if @type.nil?
-        options = active_record_options
-        options[:missing_values] || []
-      end
-
-      def setup
-        return if @setup_done
-        return if @type.nil?
-        _missing_values = missing_values
-        options = active_record_options
-        unless _missing_values.empty?
-          Milter::Logger.warning("[configuration][database][setup][ignore]" +
-                                 "[missing] " +
-                                 "<#{_missing_values.inspect}>:" +
-                                 "<#{options.inspect}>")
-          return
+        def mysql_options
+          options = {}
+          options[:adapter] = @type
+          if @name.nil?
+            options[:missing_values] = [:name]
+            return options
+          end
+          options[:database] = @name
+          options[:host] = @host || "localhost"
+          options[:port] = @port || 3306
+          default_path = "/var/run/mysqld/mysqld.sock"
+          default_path = nil unless File.exist?(default_path)
+          options[:path] = @path || default_path
+          options[:username] = @user || "root"
+          options[:password] = @password
+          options
         end
-        Milter::Logger.info("[configuration][database][setup] " +
-                            "<#{options.inspect}>")
-        require 'active_record'
-        logger = Milter::ActiveRecordLogger.new(Milter::Logger.default)
-        ActiveRecord::Base.logger = logger
-        ActiveRecord::Base.establish_connection(options)
-        @setup_done = true
-      end
 
-      def to_hash
-        {
-          :type => type,
-          :name => name,
-          :host => host,
-          :port => port,
-          :path => path,
-          :user => user,
-          :password => password,
-        }
-      end
-
-      def update_location(key, reset, deep_level)
-        @base_configuration.update_location(key, reset, deep_level + 1)
-      end
-
-      def resolve_path(path)
-        @base_configuration.resolve_path(path)
-      end
-
-      def add_loaded_model_file(model_file)
-        @loaded_model_files << model_file
-      end
-
-      private
-      def active_record_options
-        case @type
-        when "mysql", "mysql2"
-          mysql_options
-        when "sqlite3"
-          sqlite3_options
-        else
-          default_options
+        def sqlite3_options
+          options = {}
+          options[:adapter] = @type
+          options[:database] = @name || @path
+          unless options[:database] == ":memory:"
+            options[:database] = expand_path(options[:database])
+          end
+          options
         end
-      end
 
-      def mysql_options
-        options = {}
-        options[:adapter] = @type
-        if @name.nil?
-          options[:missing_values] = [:name]
-          return options
+        def default_options
+          options = to_hash
+          options[:adapter] = options.delete(:type)
+          options[:database] = options.delete(:name)
+          options[:username] = options.delete(:user)
+          options
         end
-        options[:database] = @name
-        options[:host] = @host || "localhost"
-        options[:port] = @port || 3306
-        default_path = "/var/run/mysqld/mysqld.sock"
-        default_path = nil unless File.exist?(default_path)
-        options[:path] = @path || default_path
-        options[:username] = @user || "root"
-        options[:password] = @password
-        options
-      end
 
-      def sqlite3_options
-        options = {}
-        options[:adapter] = @type
-        options[:database] = @name || @path
-        unless options[:database] == ":memory:"
-          options[:database] = expand_path(options[:database])
+        def expand_path(path)
+          @base_configuration.expand_path(path)
         end
-        options
-      end
-
-      def default_options
-        options = to_hash
-        options[:adapter] = options.delete(:type)
-        options[:database] = options.delete(:name)
-        options[:username] = options.delete(:user)
-        options
-      end
-
-      def expand_path(path)
-        @base_configuration.expand_path(path)
       end
     end
 
@@ -380,278 +380,278 @@ module Milter
           Milter::Logger.debug("[configuration][load][end] <#{path}>")
         end
       end
-    end
 
-    class MilterConfigurationLoader
-      def initialize(configuration)
-        @configuration = configuration
+      class MilterConfigurationLoader
+        def initialize(configuration)
+          @configuration = configuration
+        end
+
+        def connection_spec
+          @configuration.connection_spec
+        end
+
+        def connection_spec=(spec)
+          Milter::Connection.parse_spec(spec) unless spec.nil?
+          update_location("connection_spec", spec.nil?)
+          @configuration.connection_spec = spec
+        end
+
+        def unix_socket_mode
+          @configuration.unix_socket_mode
+        end
+
+        def unix_socket_mode=(mode)
+          update_location("unix_socket_mode", false)
+          @configuration.unix_socket_mode = mode
+        end
+
+        def unix_socket_group
+          @configuration.unix_socket_group
+        end
+
+        def unix_socket_group=(group)
+          update_location("unix_socket_group", group.nil?)
+          @configuration.unix_socket_group = group
+        end
+
+        def remove_unix_socket_on_create?
+          @configuration.remove_unix_socket_on_create?
+        end
+
+        def remove_unix_socket_on_create=(remove)
+          update_location("remove_unix_socket_on_create", false)
+          @configuration.remove_unix_socket_on_create = remove
+        end
+
+        def remove_unix_socket_on_close?
+          @configuration.remove_unix_socket_on_close?
+        end
+
+        def remove_unix_socket_on_close=(remove)
+          update_location("remove_unix_socket_on_close", false)
+          @configuration.remove_unix_socket_on_close = remove
+        end
+
+        def daemon=(boolean)
+          update_location("daemon", false)
+          @configuration.daemon = boolean
+        end
+
+        def daemon?
+          @configuration.daemon?
+        end
+
+        def pid_file=(pid_file)
+          update_location("pid_file", pid_file.nil?)
+          @configuration.pid_file = pid_file
+        end
+
+        def pid_file
+          @configuration.pid_file
+        end
+
+        def maintenance_interval=(n_sessions)
+          update_location("maintenance_interval", n_sessions.nil?)
+          n_sessions ||= 0
+          @configuration.maintenance_interval = n_sessions
+        end
+
+        def maintenance_interval
+          @configuration.maintenance_interval
+        end
+
+        def suspend_time_on_unacceptable=(seconds)
+          update_location("suspend_time_on_unacceptable", seconds.nil?)
+          seconds ||= Milter::Client::DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE
+          @configuration.suspend_time_on_unacceptable = seconds
+        end
+
+        def suspend_time_on_unacceptable
+          @configuration.suspend_time_on_unacceptable
+        end
+
+        def max_connections=(n_connections)
+          update_location("max_connections", n_connections.nil?)
+          n_connections ||= Milter::Client::DEFAULT_MAX_CONNECTIONS
+          @configuration.max_connections = n_connections
+        end
+
+        def max_connections
+          @configuration.max_connections
+        end
+
+        def max_file_descriptors=(n_descriptors)
+          update_location("max_file_descriptors", n_descriptors.nil?)
+          n_descriptors ||= 0
+          @configuration.max_file_descriptors = n_descriptors
+        end
+
+        def max_file_descriptors
+          @configuration.max_file_descriptors
+        end
+
+        def connection_check_interval=(interval)
+          update_location("connection_check_interval", interval.nil?)
+          interval ||= 0
+          @configuration.connection_check_interval = interval
+        end
+
+        def event_loop_backend
+          @configuration.event_loop_backend
+        end
+
+        def event_loop_backend=(backend)
+          update_location("event_loop_backend", backend.nil?)
+          @configuration.event_loop_backend = backend
+        end
+
+        def n_workers
+          @configuration.n_workers
+        end
+
+        def n_workers=(n_workers)
+          update_location("n_workers", n_workers.nil?)
+          n_workers ||= 0
+          @configuration.n_workers = n_workers
+        end
+
+        def packet_buffer_size
+          @configuration.packet_buffer_size
+        end
+
+        def packet_buffer_size=(size)
+          update_location("size", size.nil?)
+          size ||= 0
+          @configuration.packet_buffer_size = size
+        end
+
+        def use_syslog?
+          @configuration.use_syslog?
+        end
+
+        def use_syslog=(boolean)
+          update_location("use_syslog", !boolean)
+          @configuration.use_syslog = boolean
+        end
+
+        def syslog_facility
+          @configuration.syslog_facility
+        end
+
+        def syslog_facility=(facility)
+          update_location("syslog_facility", facility == "mail")
+          @configuration.syslog_facility = facility
+        end
+
+        def maintained(hook=Proc.new)
+          guarded_hook = Proc.new do |configuration|
+            ConfigurationLoader.guard do
+              hook.call
+            end
+          end
+          @configuration.maintained_hooks << guarded_hook
+        end
+
+        private
+        def update_location(key, reset, deep_level=2)
+          full_key = "milter.#{key}"
+          @configuration.update_location(full_key, reset, deep_level)
+        end
       end
 
-      def connection_spec
-        @configuration.connection_spec
-      end
+      class DatabaseConfigurationLoader
+        def initialize(configuration)
+          @configuration = configuration
+        end
 
-      def connection_spec=(spec)
-        Milter::Connection.parse_spec(spec) unless spec.nil?
-        update_location("connection_spec", spec.nil?)
-        @configuration.connection_spec = spec
-      end
+        def type
+          @configuration.type
+        end
 
-      def unix_socket_mode
-        @configuration.unix_socket_mode
-      end
+        def type=(type)
+          update_location("type", type.nil?)
+          @configuration.type = type
+        end
 
-      def unix_socket_mode=(mode)
-        update_location("unix_socket_mode", false)
-        @configuration.unix_socket_mode = mode
-      end
+        def name
+          @configuration.name
+        end
 
-      def unix_socket_group
-        @configuration.unix_socket_group
-      end
+        def name=(name)
+          update_location("name", name.nil?)
+          @configuration.name = name
+        end
 
-      def unix_socket_group=(group)
-        update_location("unix_socket_group", group.nil?)
-        @configuration.unix_socket_group = group
-      end
+        def host
+          @configuration.host
+        end
 
-      def remove_unix_socket_on_create?
-        @configuration.remove_unix_socket_on_create?
-      end
+        def host=(host)
+          update_location("host", host.nil?)
+          @configuration.host = host
+        end
 
-      def remove_unix_socket_on_create=(remove)
-        update_location("remove_unix_socket_on_create", false)
-        @configuration.remove_unix_socket_on_create = remove
-      end
+        def port
+          @configuration.port
+        end
 
-      def remove_unix_socket_on_close?
-        @configuration.remove_unix_socket_on_close?
-      end
+        def port=(port)
+          update_location("port", port.nil?)
+          @configuration.port = port
+        end
 
-      def remove_unix_socket_on_close=(remove)
-        update_location("remove_unix_socket_on_close", false)
-        @configuration.remove_unix_socket_on_close = remove
-      end
+        def path
+          @configuration.path
+        end
 
-      def daemon=(boolean)
-        update_location("daemon", false)
-        @configuration.daemon = boolean
-      end
+        def path=(path)
+          update_location("path", path.nil?)
+          @configuration.path = path
+        end
 
-      def daemon?
-        @configuration.daemon?
-      end
+        def user
+          @configuration.user
+        end
 
-      def pid_file=(pid_file)
-        update_location("pid_file", pid_file.nil?)
-        @configuration.pid_file = pid_file
-      end
+        def user=(user)
+          update_location("user", user.nil?)
+          @configuration.user = user
+        end
 
-      def pid_file
-        @configuration.pid_file
-      end
+        def password
+          @configuration.password
+        end
 
-      def maintenance_interval=(n_sessions)
-        update_location("maintenance_interval", n_sessions.nil?)
-        n_sessions ||= 0
-        @configuration.maintenance_interval = n_sessions
-      end
+        def password=(password)
+          update_location("password", password.nil?)
+          @configuration.password = password
+        end
 
-      def maintenance_interval
-        @configuration.maintenance_interval
-      end
+        def setup
+          missing_values = @configuration.missing_values
+          unless missing_values.empty?
+            raise MissingValue.new("database.#{missing_values.first}")
+          end
+          @configuration.setup
+        end
 
-      def suspend_time_on_unacceptable=(seconds)
-        update_location("suspend_time_on_unacceptable", seconds.nil?)
-        seconds ||= Milter::Client::DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE
-        @configuration.suspend_time_on_unacceptable = seconds
-      end
-
-      def suspend_time_on_unacceptable
-        @configuration.suspend_time_on_unacceptable
-      end
-
-      def max_connections=(n_connections)
-        update_location("max_connections", n_connections.nil?)
-        n_connections ||= Milter::Client::DEFAULT_MAX_CONNECTIONS
-        @configuration.max_connections = n_connections
-      end
-
-      def max_connections
-        @configuration.max_connections
-      end
-
-      def max_file_descriptors=(n_descriptors)
-        update_location("max_file_descriptors", n_descriptors.nil?)
-        n_descriptors ||= 0
-        @configuration.max_file_descriptors = n_descriptors
-      end
-
-      def max_file_descriptors
-        @configuration.max_file_descriptors
-      end
-
-      def connection_check_interval=(interval)
-        update_location("connection_check_interval", interval.nil?)
-        interval ||= 0
-        @configuration.connection_check_interval = interval
-      end
-
-      def event_loop_backend
-        @configuration.event_loop_backend
-      end
-
-      def event_loop_backend=(backend)
-        update_location("event_loop_backend", backend.nil?)
-        @configuration.event_loop_backend = backend
-      end
-
-      def n_workers
-        @configuration.n_workers
-      end
-
-      def n_workers=(n_workers)
-        update_location("n_workers", n_workers.nil?)
-        n_workers ||= 0
-        @configuration.n_workers = n_workers
-      end
-
-      def packet_buffer_size
-        @configuration.packet_buffer_size
-      end
-
-      def packet_buffer_size=(size)
-        update_location("size", size.nil?)
-        size ||= 0
-        @configuration.packet_buffer_size = size
-      end
-
-      def use_syslog?
-        @configuration.use_syslog?
-      end
-
-      def use_syslog=(boolean)
-        update_location("use_syslog", !boolean)
-        @configuration.use_syslog = boolean
-      end
-
-      def syslog_facility
-        @configuration.syslog_facility
-      end
-
-      def syslog_facility=(facility)
-        update_location("syslog_facility", facility == "mail")
-        @configuration.syslog_facility = facility
-      end
-
-      def maintained(hook=Proc.new)
-        guarded_hook = Proc.new do |configuration|
-          ConfigurationLoader.guard do
-            hook.call
+        def load_models(path)
+          resolved_paths = @configuration.resolve_path(path)
+          resolved_paths.each do |resolved_path|
+            begin
+              require(resolved_path)
+              @configuration.add_loaded_model_file(resolved_path)
+            rescue Exception => error
+              Milter::Logger.error(error)
+            end
           end
         end
-        @configuration.maintained_hooks << guarded_hook
-      end
 
-      private
-      def update_location(key, reset, deep_level=2)
-        full_key = "milter.#{key}"
-        @configuration.update_location(full_key, reset, deep_level)
-      end
-    end
-
-    class DatabaseConfigurationLoader
-      def initialize(configuration)
-        @configuration = configuration
-      end
-
-      def type
-        @configuration.type
-      end
-
-      def type=(type)
-        update_location("type", type.nil?)
-        @configuration.type = type
-      end
-
-      def name
-        @configuration.name
-      end
-
-      def name=(name)
-        update_location("name", name.nil?)
-        @configuration.name = name
-      end
-
-      def host
-        @configuration.host
-      end
-
-      def host=(host)
-        update_location("host", host.nil?)
-        @configuration.host = host
-      end
-
-      def port
-        @configuration.port
-      end
-
-      def port=(port)
-        update_location("port", port.nil?)
-        @configuration.port = port
-      end
-
-      def path
-        @configuration.path
-      end
-
-      def path=(path)
-        update_location("path", path.nil?)
-        @configuration.path = path
-      end
-
-      def user
-        @configuration.user
-      end
-
-      def user=(user)
-        update_location("user", user.nil?)
-        @configuration.user = user
-      end
-
-      def password
-        @configuration.password
-      end
-
-      def password=(password)
-        update_location("password", password.nil?)
-        @configuration.password = password
-      end
-
-      def setup
-        missing_values = @configuration.missing_values
-        unless missing_values.empty?
-          raise MissingValue.new("database.#{missing_values.first}")
+        private
+        def update_location(key, reset, deep_level=2)
+          full_key = "database.#{key}"
+          @configuration.update_location(full_key, reset, deep_level)
         end
-        @configuration.setup
-      end
-
-      def load_models(path)
-        resolved_paths = @configuration.resolve_path(path)
-        resolved_paths.each do |resolved_path|
-          begin
-            require(resolved_path)
-            @configuration.add_loaded_model_file(resolved_path)
-          rescue Exception => error
-            Milter::Logger.error(error)
-          end
-        end
-      end
-
-      private
-      def update_location(key, reset, deep_level=2)
-        full_key = "database.#{key}"
-        @configuration.update_location(full_key, reset, deep_level)
       end
     end
   end
