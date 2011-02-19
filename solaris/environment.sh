@@ -35,11 +35,8 @@ fi
 export ARCHITECTURE
 
 if test "$ARCHITECTURE" = "amd64"; then
-    CC="$CC -m64"
     export CFLAGS=-m64
     export CXXFLAGS=-m64
-    LDFLAGS="-R/usr/lib/amd64 $LDFLAGS"
-    LD_LIBRARY_PATH=/usr/lib/amd64:$LD_LIBRARY_PATH
 else
     if test "$USE_OPEN_CSW" = "yes"; then
 	LDFLAGS="-R/opt/csw/lib $LDFLAGS"
