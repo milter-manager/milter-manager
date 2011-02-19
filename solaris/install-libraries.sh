@@ -11,7 +11,7 @@ gnu_org="http://ftp.gnu.org/pub/gnu"
 gnome_org="http://ftp.gnome.org/pub/gnome/sources"
 mysql_downloads="http://ftp.jaist.ac.jp/pub/mysql/Downloads"
 
-if test "$USE_CSW" != "yes"; then
+if test "$USE_OPEN_CSW" != "yes"; then
     install_package ${gnu_org}/gettext/gettext-0.18.1.1.tar.gz \
 	--enable-relocatable --without-git
     install_package ${gnu_org}/libiconv/libiconv-1.13.1.tar.gz

@@ -41,7 +41,7 @@ if test "$ARCHITECTURE" = "amd64"; then
     export CFLAGS=-m64
     export CXXFLAGS=-m64
 else
-    if test "$USE_CSW" = "yes"; then
+    if test "$USE_OPEN_CSW" = "yes"; then
 	LDFLAGS="-R/opt/csw/lib $LDFLAGS"
 	LD_LIBRARY_PATH=/opt/csw/lib:$LD_LIBRARY_PATH
 	PKG_CONFIG_PATH=/opt/csw/lib/pkgconfig:$PKG_CONFIG_PATH
