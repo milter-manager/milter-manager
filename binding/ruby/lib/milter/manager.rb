@@ -171,7 +171,8 @@ module Milter
         c = @configuration
         dump_item("manager.connection_spec", c.manager_connection_spec.inspect)
         dump_item("manager.unix_socket_mode", "%#o" % c.manager_unix_socket_mode)
-        dump_item("manager.unix_socket_group", c.manager_unix_socket_group.inspect)
+        dump_item("manager.unix_socket_group",
+                  c.manager_unix_socket_group.inspect)
         dump_item("manager.remove_unix_socket_on_create",
                   c.remove_manager_unix_socket_on_create?)
         dump_item("manager.remove_unix_socket_on_close",
@@ -268,7 +269,7 @@ module Milter
       def dump_applicable_condition(condition)
         name = condition.name
         dump_location("applicable_condition[#{name}]")
-        @result << "define_applicable_condition(#{name.inspect}) do |condition|\n"
+        @result << "define_applicable_condition(#{name.dump}) do |condition|\n"
         dump_applicable_condition_item(name, "description",
                                        condition.description.inspect)
         @result << "end\n"
@@ -577,7 +578,8 @@ module Milter
               @loader.define_milter(@egg_config["name"]) do |milter|
                 spec = @egg_config["connection_spec"] || ""
                 milter.connection_spec = spec unless spec.empty?
-                milter.applicable_conditions = @egg_config["applicable_conditions"]
+                milter.applicable_conditions =
+                  @egg_config["applicable_conditions"]
                 if @egg_config.has_key?("enabled")
                   milter.enabled = @egg_config["enabled"]
                 end
