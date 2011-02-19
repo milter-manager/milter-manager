@@ -53,7 +53,6 @@ install_package()
     local base="${tar_ball%.tar.*}"
     local build_dir="${BUILDS}/${base}"
     local log="${BUILDS}/${base}.log"
-    local time_stamp_file="${BUILDS}/${base}.time_stamp"
     shift
 
     mkdir -p "${BUILDS}"
