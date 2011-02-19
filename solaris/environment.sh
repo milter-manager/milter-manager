@@ -39,7 +39,7 @@ if test "$ARCHITECTURE" = "amd64"; then
     export CFLAGS=-m64
     export CXXFLAGS=-m64
 else
-    LD_FLAGS="-R/opt/csw/lib $LD_FLAGS"
+    LDFLAGS="-R/opt/csw/lib $LDFLAGS"
     LD_LIBRARY_PATH=/opt/csw/lib:$LD_LIBRARY_PATH
     PKG_CONFIG_PATH=/opt/csw/lib/pkgconfig:$PKG_CONFIG_PATH
     export XGETTEXT=/opt/csw/bin/gxgettext
