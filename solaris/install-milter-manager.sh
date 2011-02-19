@@ -11,6 +11,8 @@ install_milter_manager()
     local log="${BUILDS}/${base}.build.log"
     local build_dir="${base_dir}/../"
 
+    mkdir -p "${BUILDS}"
+
     if test -f "${build_dir}/Makefile"; then
 	echo "$(time_stamp): Cleaning ${base}..."
 	run ${MAKE} -C "${build_dir}" clean > "${log}"
