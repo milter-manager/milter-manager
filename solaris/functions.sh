@@ -73,7 +73,7 @@ install_package()
 	    echo "$(time_stamp): Patching ${base} (${patch_file})..."
 	    (
 		cd "${BUILDS}/${base}"
-		run patch -p1 < ${patch_file}
+		run gpatch -p1 < ${patch_file}
 	    ) > "${log}"
 	    echo "$(time_stamp): done."
 	done
