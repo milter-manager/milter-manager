@@ -65,6 +65,7 @@ install_package()
     echo "$(time_stamp): done."
 
     echo "$(time_stamp): Extracting ${base}..."
+    run rm -rf "${BUILDS}/${base}"
     run gtar xf "${SOURCES}/${tar_ball}" -C "${BUILDS}" > "${log}"
     echo "$(time_stamp): done."
 
