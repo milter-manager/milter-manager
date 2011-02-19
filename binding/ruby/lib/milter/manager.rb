@@ -77,7 +77,7 @@ module Milter
       def clear
         @maintained_hooks = nil
         @netstat_connection_checker = nil
-        @database ||= Milter::Client::Configuration::DatabaseConfiguration.new(self)
+        @database ||= Client::Configuration::DatabaseConfiguration.new(self)
         @database.clear
       end
 
@@ -407,17 +407,17 @@ module Milter
         @security = SecurityConfigurationLoader.new(configuration)
         @controller = ControllerConfigurationLoader.new(configuration)
         @manager = ManagerConfigurationLoader.new(configuration)
-        client_config_loader = Milter::Client::ConfigurationLoader
+        client_config_loader = Client::ConfigurationLoader
         database_config = configuration.database
         @database = client_config_loader::DatabaseConfigurationLoader.new(database_config)
-        @policy_manager = Milter::Manager::PolicyManager.new(self)
+        @policy_manager = Manager::PolicyManager.new(self)
       end
 
       def load_configuration(file)
         begin
           @load_level += 1
           content = File.read(file)
-          Milter::Logger.debug("[configuration][load][start] <#{file}>")
+          Logger.debug("[configuration][load][start] <#{file}>")
           instance_eval(content, file)
           apply_policies if @load_level == 1
         rescue InvalidValue
@@ -428,11 +428,11 @@ module Milter
               nil
             end
           end.compact
-          Milter::Logger.error("#{backtrace[0]}: #{$!.message}")
-          Milter::Logger.error(backtrace[1..-1].join("\n"))
+          Logger.error("#{backtrace[0]}: #{$!.message}")
+          Logger.error(backtrace[1..-1].join("\n"))
         ensure
           @load_level -= 1
-          Milter::Logger.debug("[configuration][load][end] <#{file}>")
+          Logger.debug("[configuration][load][end] <#{file}>")
         end
       end
 
@@ -515,7 +515,7 @@ module Milter
         def load(file)
           listener = Listener.new(@loader)
           File.open(file) do |input|
-            Milter::Logger.debug("[configuration][xml][load][start] <#{file}>")
+            Logger.debug("[configuration][xml][load][start] <#{file}>")
             parser = REXML::Parsers::StreamParser.new(input, listener)
             begin
               parser.parse
@@ -523,9 +523,9 @@ module Milter
               source = parser.source
               info = "#{file}:#{source.line}:#{source.position}"
               info << ":#{source.current_line}: #{$!.message}"
-              Milter::Logger.error(info)
+              Logger.error(info)
             ensure
-              Milter::Logger.debug("[configuration][xml][load][end] <#{file}>")
+              Logger.debug("[configuration][xml][load][end] <#{file}>")
             end
           end
         end
@@ -785,7 +785,7 @@ module Milter
         end
 
         def connection_spec=(spec)
-          Milter::Connection.parse_spec(spec) unless spec.nil?
+          Connection.parse_spec(spec) unless spec.nil?
           update_location("connection_spec", spec.nil?)
           @configuration.controller_connection_spec = spec
         end
@@ -840,7 +840,7 @@ module Milter
         end
 
         def connection_spec=(spec)
-          Milter::Connection.parse_spec(spec) unless spec.nil?
+          Connection.parse_spec(spec) unless spec.nil?
           update_location("connection_spec", spec.nil?)
           @configuration.manager_connection_spec = spec
         end
@@ -911,7 +911,7 @@ module Milter
 
         def suspend_time_on_unacceptable=(seconds)
           update_location("suspend_time_on_unacceptable", seconds.nil?)
-          seconds ||= Milter::Client::DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE
+          seconds ||= Client::DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE
           @configuration.suspend_time_on_unacceptable = seconds
         end
 
@@ -921,7 +921,7 @@ module Milter
 
         def max_connections=(n_connections)
           update_location("max_connections", n_connections.nil?)
-          n_connections ||= Milter::Client::DEFAULT_MAX_CONNECTIONS
+          n_connections ||= Client::DEFAULT_MAX_CONNECTIONS
           @configuration.max_connections = n_connections
         end
 
@@ -1045,7 +1045,7 @@ module Milter
 
         def report_memory_profile
           maintained do
-            Milter::MemoryProfile.report
+            MemoryProfile.report
           end
         end
 
@@ -1062,7 +1062,7 @@ module Milter
             message << "total:#{n_objects[:total]} "
             message << "Proc:#{n_objects[:proc]} "
             message << "GLib::Object:#{n_objects[:glib_object]}"
-            data = Milter::MemoryProfile.data
+            data = MemoryProfile.data
             if data
               n_allocates, n_zero_initializes, n_frees = data
               n_used_in_kb = (n_allocates - n_frees) / 1024.0
@@ -1072,7 +1072,7 @@ module Milter
               free_percent = n_frees.to_f / n_allocates * 100
               message << (" freed:%d(%.2f%%)" % [n_frees, free_percent])
             end
-            Milter::Logger.statistics(message)
+            Logger.statistics(message)
           end
 
           private
@@ -1125,7 +1125,7 @@ module Milter
         def applicable_conditions=(condition_names)
           configuration = @loader.configuration
           conditions = (condition_names || []).collect do |name|
-            if name.is_a?(Milter::Manager::ApplicableCondition)
+            if name.is_a?(ApplicableCondition)
               condition = name
             else
               condition = configuration.find_applicable_condition(name)
@@ -1166,10 +1166,10 @@ module Milter
 
         def fallback_status=(status)
           available_values = {
-            "accept" => Milter::Status::ACCEPT,
-            "reject" => Milter::Status::REJECT,
-            "temporary-failure" => Milter::Status::TEMPORARY_FAILURE,
-            "discard" => Milter::Status::DISCARD,
+            "accept" => Status::ACCEPT,
+            "reject" => Status::REJECT,
+            "temporary-failure" => Status::TEMPORARY_FAILURE,
+            "discard" => Status::DISCARD,
           }
           if status.respond_to?(:nick)
             normalized_status = status.nick
@@ -1208,7 +1208,7 @@ module Milter
 
       class ApplicableConditionConfigurationLoader
         def initialize(name, loader)
-          @condition = Milter::Manager::ApplicableCondition.new(name)
+          @condition = ApplicableCondition.new(name)
           @loader = loader
           @connect_stoppers = []
           @helo_stoppers = []
