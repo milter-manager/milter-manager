@@ -25,8 +25,6 @@ require "rexml/streamlistener"
 require 'milter'
 require 'milter_manager.so'
 
-require 'milter/compatible'
-
 require 'milter/manager/exception'
 
 require 'milter/manager/child-context'

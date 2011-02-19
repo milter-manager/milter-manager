@@ -13,5 +13,28 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'milter/client'
-require 'milter/server'
+module Milter
+  class ProtocolAgent
+    def set_macros(context, macros)
+      macros.each do |name, value|
+        set_macro(context, name, value)
+      end
+    end
+  end
+
+  module MacroNameNormalizer
+    def normalize_macro_name(name)
+      name.sub(/\A\{(.+)\}\z/, '\1')
+    end
+  end
+
+  module MacroPredicates
+    def authenticated?
+      (self["auth_type"] or self["auth_authen"]) ? true : false
+    end
+
+    def postfix?
+      (/\bPostfix\b/i =~ (self["v"] || '')) ? true : false
+    end
+  end
+end

@@ -13,6 +13,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
+require 'milter/core'
+
+require 'milter_client.so'
+require 'milter/client/configuration'
+require 'milter/client/command-line'
+
 module Milter
   class Client
     def status_on_error

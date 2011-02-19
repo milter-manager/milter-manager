@@ -16,73 +16,6 @@
 require 'ipaddr'
 
 module Milter
-  class Logger
-    @@domain = "milter"
-    class << self
-      def domain
-        @@domain
-      end
-
-      def domain=(domain)
-        @@domain = domain
-      end
-
-      def error(message)
-        default.log(:error, message, 1)
-      end
-
-      def critical(message)
-        default.log(:critical, message, 1)
-      end
-
-      def message(message)
-        default.log(:message, message, 1)
-      end
-
-      def warning(message)
-        default.log(:warning, message, 1)
-      end
-
-      def debug(message)
-        default.log(:debug, message, 1)
-      end
-
-      def info(message)
-        default.log(:info, message, 1)
-      end
-
-      def statistics(message)
-        default.log(:statistics, message, 1)
-      end
-    end
-
-    def log(level, message, n_call_depth=nil)
-      unless level.is_a?(Milter::LogLevelFlags)
-        level = Milter::LogLevelFlags.const_get(level.to_s.upcase)
-      end
-      n_call_depth ||= 0
-      file, line, info = caller[n_call_depth].split(/:(\d+):/, 3)
-      ensure_message(message).each_line do |one_line_message|
-        log_full(self.class.domain, level, file, line.to_i, info.to_s,
-                 one_line_message.chomp)
-      end
-    end
-
-    private
-    def ensure_message(message)
-      case message
-      when nil
-        ''
-      when String
-        message
-      when Exception
-        "#{message.class}: #{message.message}:\n#{message.backtrace.join("\n")}"
-      else
-        message.inspect
-      end
-    end
-  end
-
   module SocketAddress
     class IPv4
       def local?
@@ -151,30 +84,6 @@ module Milter
       def to_ip_address
         nil
       end
-    end
-  end
-
-  class ProtocolAgent
-    def set_macros(context, macros)
-      macros.each do |name, value|
-        set_macro(context, name, value)
-      end
-    end
-  end
-
-  module MacroNameNormalizer
-    def normalize_macro_name(name)
-      name.sub(/\A\{(.+)\}\z/, '\1')
-    end
-  end
-
-  module MacroPredicates
-    def authenticated?
-      (self["auth_type"] or self["auth_authen"]) ? true : false
-    end
-
-    def postfix?
-      (/\bPostfix\b/i =~ (self["v"] || '')) ? true : false
     end
   end
 end
