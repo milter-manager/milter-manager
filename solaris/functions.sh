@@ -49,8 +49,8 @@ EOP
 download_package()
 {
     local url="$1"
+    local base="$2"
     local tar_ball="${1##*/}"
-    local base="${tar_ball%.tar.*}"
     local log="${BUILDS}/${base}.log"
 
     mkdir -p "${BUILDS}"
@@ -64,9 +64,8 @@ download_package()
 
 extract_package()
 {
-    local url="$1"
-    local tar_ball="${1##*/}"
-    local base="${tar_ball%.tar.*}"
+    local tar_ball="$1"
+    local base="$2"
     local build_dir="${BUILDS}/${base}"
     local log="${BUILDS}/${base}.log"
 
@@ -98,8 +97,8 @@ install_package()
 
     mkdir -p "${BUILDS}"
 
-    download_package "$url"
-    extract_package "$url"
+    download_package "$url" "$base"
+    extract_package "$tar_ball" "$base"
 
     echo "$(time_stamp): Configuring ${base}..."
     (
