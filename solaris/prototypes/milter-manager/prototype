@@ -33,7 +33,9 @@ d none lib/milter-manager/binding/ext 0755 root root
 d none lib/milter-manager/binding/lib 0755 root root
 d none lib/milter-manager/binding/lib/milter 0755 root root
 d none lib/milter-manager/binding/lib/milter/client 0755 root root
+d none lib/milter-manager/binding/lib/milter/core 0755 root root
 d none lib/milter-manager/binding/lib/milter/manager 0755 root root
+d none lib/milter-manager/binding/lib/milter/server 0755 root root
 d none lib/milter-manager/module 0755 root root
 d none lib/milter-manager/module/configuration 0755 root root
 d none lib/pkgconfig 0755 root root
@@ -234,11 +236,15 @@ f none lib/milter-manager/binding/lib/glib-mkenums.rb 0644 root root
 f none lib/milter-manager/binding/lib/glib2.rb 0644 root root
 f none lib/milter-manager/binding/lib/gnome2-win32-binary-downloader.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter.rb 0644 root root
-f none lib/milter-manager/binding/lib/milter/active-record-logger.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter/client.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter/client/command-line.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter/client/configuration.rb 0644 root root
-f none lib/milter-manager/binding/lib/milter/compatible.rb 0644 root root
+f none lib/milter-manager/binding/lib/milter/core.rb 0644 root root
+f none lib/milter-manager/binding/lib/milter/core/compatible.rb 0644 root root
+f none lib/milter-manager/binding/lib/milter/core/logger.rb 0644 root root
+f none lib/milter-manager/binding/lib/milter/core/macro.rb 0644 root root
+f none lib/milter-manager/binding/lib/milter/core/path.rb 0644 root root
+f none lib/milter-manager/binding/lib/milter/core/socket-address.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter/manager.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter/manager/address-matcher.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter/manager/breaker.rb 0644 root root
@@ -265,7 +271,7 @@ f none lib/milter-manager/binding/lib/milter/manager/redhat-detector.rb 0644 roo
 f none lib/milter-manager/binding/lib/milter/manager/redhat-init-detector.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter/manager/redhat-upstart-detector.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter/server.rb 0644 root root
-f none lib/milter-manager/binding/lib/milter/toolkit.rb 0644 root root
+f none lib/milter-manager/binding/lib/milter/server/testing.rb 0644 root root
 f none lib/milter-manager/binding/lib/mkmf-gnome2.rb 0644 root root
 f none lib/milter-manager/binding/lib/pkg-config.rb 0644 root root
 f none lib/milter-manager/libmilter.la 0755 root root
