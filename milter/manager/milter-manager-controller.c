@@ -457,12 +457,8 @@ milter_manager_controller_listen (MilterManagerController *controller,
     config = milter_manager_get_configuration(priv->manager);
     spec = milter_manager_configuration_get_controller_connection_spec(config);
     if (!spec) {
-        local_error = g_error_new(MILTER_MANAGER_CONTROLLER_ERROR,
-                                  MILTER_MANAGER_CONTROLLER_ERROR_NO_SPEC,
-                                  "connection spec isn't specified");
-        milter_error("[controller][error][listen] %s", local_error->message);
-        g_propagate_error(error, local_error);
-        return FALSE;
+        milter_info("[controller][disabled] connection spec isn't specified");
+        return TRUE;
     }
 
     remove_socket = milter_manager_configuration_is_remove_controller_unix_socket_on_create(config);
