@@ -48,6 +48,8 @@ Milter::Logger.domain = "milter-manager"
 module Milter
   module Manager
     class Configuration
+      include Milter::PathResolver
+
       attr_reader :database
 
       def dump
@@ -324,30 +326,6 @@ module Milter
           Logger.error(error)
           fallback_value
         end
-
-        def resolve_path(configuration, path)
-          return [path] if Pathname(path).absolute?
-          configuration.load_paths.collect do |load_path|
-            full_path = File.join(load_path, path)
-            if File.directory?(full_path)
-              Dir.open(full_path) do |dir|
-                dir.each do |sub_path|
-                  next if sub_path == "." or sub_path == ".."
-                  full_sub_path = File.join(full_path, sub_path)
-                  next if File.directory?(full_sub_path)
-                  paths << full_sub_path
-                end
-              end
-              return paths
-            elsif File.exist?(full_path)
-              return [full_path]
-            else
-              Dir.glob(full_path).reject do |expanded_full_path|
-                File.directory?(expanded_full_path)
-              end
-            end
-          end.flatten
-        end
       end
 
       attr_reader :package, :security, :controller, :manager, :database
@@ -450,7 +428,7 @@ module Milter
 
       private
       def resolve_path(path)
-        resolved_paths = self.class.resolve_path(@configuration, path)
+        resolved_paths = @configuration.resolve_path(path)
         raise NonexistentPath.new(path) if resolved_paths.empty?
         resolved_paths
       end

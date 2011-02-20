@@ -13,11 +13,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'pathname'
-
 module Milter
   class Client
     class Configuration
+      include Milter::PathResolver
+
       attr_accessor :environment
       attr_reader :milter, :database, :load_paths, :prefix
       def initialize
@@ -36,31 +36,6 @@ module Milter
       def setup(client)
         @milter.setup(client)
         @database.setup
-      end
-
-      def resolve_path(path)
-        return [path] if Pathname(path).absolute?
-        @load_paths.collect do |load_path|
-          full_path = File.join(load_path, path)
-          if File.directory?(full_path)
-            paths = []
-            Dir.open(full_path) do |dir|
-              dir.each do |sub_path|
-                next if sub_path == "." or sub_path == ".."
-                full_sub_path = File.join(full_path, sub_path)
-                next if File.directory?(full_sub_path)
-                paths << full_sub_path
-              end
-            end
-            return paths
-          elsif File.exist?(full_path)
-            return [full_path]
-          else
-            Dir.glob(full_path).reject do |expanded_full_path|
-              File.directory?(expanded_full_path)
-            end
-          end
-        end.flatten
       end
 
       def expand_path(path)
