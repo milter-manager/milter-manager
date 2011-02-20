@@ -693,8 +693,7 @@ get_property (GObject    *object,
         g_value_set_uint(value, priv->workers.id);
         break;
     case PROP_EVENT_LOOP:
-        g_value_set_object(value,
-                           G_OBJECT(milter_client_get_event_loop(client)));
+        g_value_set_object(value, priv->event_loop);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
