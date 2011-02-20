@@ -1,6 +1,7 @@
 SUBDIRS =	\
 	core	\
 	client	\
+	server	\
 	manager
 
 binding_lib_milterdir = $(binding_libdir)/milter
