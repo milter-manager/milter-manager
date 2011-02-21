@@ -36,7 +36,8 @@ CC="$CC -m64" \
 dest_prefix=${PROTOTYPES_DESTDIR}${PREFIX}
 gem_prefix=${dest_prefix}/lib/ruby/gems/1.9.1
 gem_options="--no-ri --no-rdoc"
-gem_install="gem install ${gem_options} bundler mysql2 activerecord mail"
+gems="bundler mysql2 activerecord mail pkg-config"
+gem_install="gem install ${gem_options} ${gems}"
 run $gem_install
 CC="$CC -m64" \
     update_prototype "${ruby_base}" "${BUILDS}/${ruby_base}" \
