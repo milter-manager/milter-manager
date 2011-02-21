@@ -3,6 +3,7 @@ SOURCES="${base_dir}/sources"
 PATCHES="${base_dir}/patches"
 BUILDS="${base_dir}/builds"
 PROTOTYPES="${base_dir}/prototypes"
+PROTOTYPES_DESTDIR="${BUILDS}/tmp"
 PKGS="${base_dir}/pkgs"
 
 : ${PREFIX:=/opt/milter-manager}

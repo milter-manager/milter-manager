@@ -17,32 +17,36 @@ time_stamp()
 update_prototype()
 {
     local base="$1"
-    local build_dir="$2"
+    local build_dir="${BUILDS}/${base}"
     local package_name="${base%%-[0-9]*}"
     package_name="${package_name##lib}"
     local prototype_dir="${PROTOTYPES}/${package_name}"
     local prototype="${prototype_dir}/prototype"
     local user="$(/usr/xpg4/bin/id -un)"
     local group="$(/usr/xpg4/bin/id -gn)"
-    local dest_dir="${BUILDS}/tmp"
     local log="${BUILDS}/${base}.log"
+    shift
 
     echo "$(time_stamp): Updating prototype of ${base}..."
     run mkdir -p "$prototype_dir"
-    run rm -rf "${dest_dir}"
-    run ${MAKE} DESTDIR="${dest_dir}" -C "${build_dir}" install > "${log}"
+    run rm -rf "${PROTOTYPES_DESTDIR}"
+    run ${MAKE} DESTDIR="${PROTOTYPES_DESTDIR}" \
+	-C "${build_dir}" install > "${log}"
+    for command in "$@"; do
+	run $command > "${log}"
+    done
     cat <<EOP > "${prototype}"
 i pkginfo
 i depend
 i copyright
 EOP
-    find "${dest_dir}${PREFIX}" -print | \
+    find "${PROTOTYPES_DESTDIR}${PREFIX}" -print | \
 	pkgproto | \
-	grep -v " ${dest_dir}${PREFIX} " | \
-	gsed -e "s%${dest_dir}${PREFIX}/%%" | \
+	grep -v " ${PROTOTYPES_DESTDIR}${PREFIX} " | \
+	gsed -e "s%${PROTOTYPES_DESTDIR}${PREFIX}/%%" | \
 	gsed -e "s/$user $group\$/root root/" | \
 	sort >> "${prototype}"
-    run rm -rf "${dest_dir}"
+    run rm -rf "${PROTOTYPES_DESTDIR}"
     echo "$(time_stamp): done."
 }
 
@@ -121,7 +125,7 @@ install_package()
     run ${MAKE} -C "${build_dir}" install > "${log}"
     echo "$(time_stamp): done."
 
-    update_prototype "${base}" "${build_dir}"
+    update_prototype "${base}"
 }
 
 build_pkg()
