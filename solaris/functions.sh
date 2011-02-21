@@ -17,7 +17,9 @@ time_stamp()
 update_prototype()
 {
     local base="$1"
-    local build_dir="${BUILDS}/${base}"
+    shift
+    local build_dir="$2"
+    shift
     local package_name="${base%%-[0-9]*}"
     package_name="${package_name##lib}"
     local prototype_dir="${PROTOTYPES}/${package_name}"
@@ -25,7 +27,6 @@ update_prototype()
     local user="$(/usr/xpg4/bin/id -un)"
     local group="$(/usr/xpg4/bin/id -gn)"
     local log="${BUILDS}/${base}.log"
-    shift
 
     echo "$(time_stamp): Updating prototype of ${base}..."
     run mkdir -p "$prototype_dir"
@@ -125,7 +126,7 @@ install_package()
     run ${MAKE} -C "${build_dir}" install > "${log}"
     echo "$(time_stamp): done."
 
-    update_prototype "${base}"
+    update_prototype "${base}" "${build_dir}"
 }
 
 build_pkg()
