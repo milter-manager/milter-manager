@@ -30,7 +30,7 @@ CC="$CC -m64" \
 
 CC="$CC -m64" \
     install_package ${ruby_lang_org}/1.9/ruby-1.9.2-p180.tar.bz2 \
-    --disable-install-doc --enable-shared
+    --disable-install-doc --enable-shared --enable-load-relative
 
 install_package http://downloads.sourceforge.net/cutter/cutter-1.1.7.tar.gz
 
