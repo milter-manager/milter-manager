@@ -87,7 +87,6 @@ d none lib/ruby/1.9.1/xmlrpc 0755 root root
 d none lib/ruby/1.9.1/yaml 0755 root root
 d none lib/ruby/gems 0755 root root
 d none lib/ruby/gems/1.9.1 0755 root root
-d none lib/ruby/gems/1.9.1/bin 0755 root root
 d none lib/ruby/gems/1.9.1/cache 0755 root root
 d none lib/ruby/gems/1.9.1/doc 0755 root root
 d none lib/ruby/gems/1.9.1/gems 0755 root root
@@ -333,6 +332,7 @@ d none lib/ruby/vendor_ruby/1.9.1/x86_64-solaris2.10 0755 root root
 d none share 0755 root root
 d none share/man 0755 root root
 d none share/man/man1 0755 root root
+f none bin/bundle 0755 root root
 f none bin/erb 0755 root root
 f none bin/gem 0755 root root
 f none bin/irb 0755 root root
@@ -341,6 +341,7 @@ f none bin/rdoc 0755 root root
 f none bin/ri 0755 root root
 f none bin/ruby 0755 root root
 f none bin/testrb 0755 root root
+f none bin/tt 0755 root root
 f none include/ruby-1.9.1/ruby.h 0644 root root
 f none include/ruby-1.9.1/ruby/backward/rubyio.h 0644 root root
 f none include/ruby-1.9.1/ruby/backward/rubysig.h 0644 root root
@@ -1019,8 +1020,6 @@ f none lib/ruby/1.9.1/yaml.rb 0644 root root
 f none lib/ruby/1.9.1/yaml/dbm.rb 0644 root root
 f none lib/ruby/1.9.1/yaml/store.rb 0644 root root
 f none lib/ruby/1.9.1/yaml/syck.rb 0644 root root
-f none lib/ruby/gems/1.9.1/bin/bundle 0755 root root
-f none lib/ruby/gems/1.9.1/bin/tt 0755 root root
 f none lib/ruby/gems/1.9.1/cache/activemodel-3.0.4.gem 0644 root root
 f none lib/ruby/gems/1.9.1/cache/activerecord-3.0.4.gem 0644 root root
 f none lib/ruby/gems/1.9.1/cache/activesupport-3.0.4.gem 0644 root root
