@@ -33,12 +33,12 @@ CC="$CC -m64" \
     --disable-install-doc --enable-shared --enable-load-relative
 
 gem_prefix=${PROTOTYPES_DESTDIR}${PREFIX}/lib/ruby/gems/1.9.1
-gem_options="--no-ri --no-rdoc --install-dir ${gem_prefix}"
+gem_options="--no-ri --no-rdoc"
 gem_install="gem install ${gem_options} bundler mysql2 activerecord mail"
 run $gem_install
 CC="$CC -m64" \
     update_prototype ruby-1.9.2-p180 \
-    "$gem_intall"
+    "${gem_install} --install-dir ${gem_prefix}"
 
 install_package http://downloads.sourceforge.net/cutter/cutter-1.1.7.tar.gz
 
