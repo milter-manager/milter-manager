@@ -52,6 +52,7 @@ module Milter
             pid_file = open(@configuration.milter.pid_file, "w")
           rescue => error
             Milter::Logger.error("[pid_file][error] #{error.message}")
+            exit(false)
           end
         end
         client.listen

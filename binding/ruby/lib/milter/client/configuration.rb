@@ -139,7 +139,12 @@ module Milter
             end
           end
           if @max_file_descriptors
-            Process.setrlimit(Process::RLIMIT_NOFILE, @max_file_descriptors)
+            begin
+              Process.setrlimit(Process::RLIMIT_NOFILE, @max_file_descriptors)
+            rescue => error
+              Milter::Logger.error("[configuration][setrlimit][nofile] #{error.message}")
+              exit(false)
+            end
           end
         end
 
