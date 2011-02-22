@@ -942,7 +942,10 @@ find_file (MilterManagerConfiguration *configuration,
         }
     }
 
-    if (!full_path) {
+    if (full_path) {
+        milter_debug("[configuration][path][found] <%s>", full_path);
+    } else {
+        GError *local_error = NULL;
         GString *inspected_load_paths;
 
         inspected_load_paths = g_string_new("[");
@@ -954,12 +957,15 @@ find_file (MilterManagerConfiguration *configuration,
                 g_string_append(inspected_load_paths, ", ");
         }
         g_string_append(inspected_load_paths, "]");
-        g_set_error(error,
+        g_set_error(&local_error,
                     MILTER_MANAGER_CONFIGURATION_ERROR,
                     MILTER_MANAGER_CONFIGURATION_ERROR_NOT_EXIST,
                     "path %s doesn't exist in load path (%s)",
                     file_name, inspected_load_paths->str);
+        milter_debug("[configuration][path][nonexistent] %s",
+                     local_error->message);
         g_string_free(inspected_load_paths, TRUE);
+        g_propagate_error(error, local_error);
     }
 
     return full_path;
