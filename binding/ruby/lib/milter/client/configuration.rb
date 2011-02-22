@@ -103,7 +103,7 @@ module Milter
           @suspend_time_on_unacceptable =
             Milter::Client::DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE
           @max_connections = Milter::Client::DEFAULT_MAX_CONNECTIONS
-          @max_file_descriptors = 0
+          @max_file_descriptors = nil
           @event_loop_backend = Milter::Client::EVENT_LOOP_BACKEND_GLIB.nick
           @n_workers = 0
           @packet_buffer_size = 0
@@ -137,6 +137,9 @@ module Milter
                 hook.call
               end
             end
+          end
+          if @max_file_descriptors
+            Process.setrlimit(Process::RLIMIT_NOFILE, @max_file_descriptors)
           end
         end
 
@@ -457,7 +460,6 @@ module Milter
 
         def max_file_descriptors=(n_descriptors)
           update_location("max_file_descriptors", n_descriptors.nil?)
-          n_descriptors ||= 0
           @configuration.max_file_descriptors = n_descriptors
         end
 

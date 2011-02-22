@@ -160,6 +160,12 @@ module Milter
           milter_conf.unix_socket_mode = mode
         end
 
+        @option_parser.on("--max-file-descriptors=NUM",
+                          "Change maximum number of file descriptors to NUM",
+                          Integer) do |num|
+          milter_conf.max_file_descriptors = num
+        end
+
         backends = Milter::ClientEventLoopBackend.values.collect do |value|
           value.nick
         end
