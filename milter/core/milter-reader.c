@@ -217,7 +217,7 @@ read_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 
     priv = MILTER_READER_GET_PRIVATE(reader);
     priv->processing = TRUE;
-    milter_debug("[%d] [reader][callback][read][precess][start]", priv->tag);
+    milter_debug("[%d] [reader][callback][read][process][start]", priv->tag);
 
     if (!priv->shutdown_requested) {
         milter_debug("[%d] [reader][callback][read][reading] ...", priv->tag);
@@ -237,7 +237,7 @@ read_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
         finish(reader);
     }
 
-    milter_debug("[%d] [reader][callback][read][precess][done]", priv->tag);
+    milter_debug("[%d] [reader][callback][read][process][done]", priv->tag);
     priv->processing = FALSE;
 
     return keep_callback;
