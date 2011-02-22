@@ -584,7 +584,6 @@ append_custom_configuration_directory (MilterManagerConfiguration *config)
     struct passwd *password;
     const gchar *effective_user;
     gchar *custom_config_directory;
-    GError *error = NULL;
 
     effective_user = milter_manager_configuration_get_effective_user(config);
     if (!effective_user)
@@ -622,6 +621,12 @@ append_custom_configuration_directory (MilterManagerConfiguration *config)
     milter_manager_configuration_append_load_path(config,
                                                   custom_config_directory);
     g_free(custom_config_directory);
+}
+
+static void
+load_configuration (MilterManagerConfiguration *config)
+{
+    GError *error = NULL;
 
     if (!milter_manager_configuration_reload(config, &error)) {
         milter_manager_error("[manager][configuration][reload]"
@@ -729,6 +734,7 @@ milter_manager_main (void)
     g_signal_connect(client, "error", G_CALLBACK(cb_error), NULL);
 
     append_custom_configuration_directory(config);
+    load_configuration(config);
 
     if (option_show_config) {
         gchar *dumped_config;
