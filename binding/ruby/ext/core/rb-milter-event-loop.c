@@ -28,12 +28,10 @@
 
 #include "rb-milter-core-private.h"
 #ifdef RUBY_UBF_IO
-#  define USE_BLOCKING_REGION 1
-#else
-#  define USE_BLOCKING_REGION 0
-#endif
-#if !USE_BLOCKING_REGION
-#  include <rubysig.h>
+#  define USE_DIRECT_THREAD_BLOCKING_REGION 1
+struct rb_blocking_region_buffer;
+struct rb_blocking_region_buffer *rb_thread_blocking_region_begin(void);
+void rb_thread_blocking_region_end(struct rb_blocking_region_buffer *buffer);
 #endif
 
 #define SELF(self) RVAL2EVENT_LOOP(self)
@@ -315,38 +313,6 @@ rb_loop_remove (VALUE self, VALUE tag)
     return Qnil;
 }
 
-#if USE_BLOCKING_REGION
-static VALUE
-rb_custom_loop_run_block (void *arg)
-{
-    MilterEventLoop *loop = arg;
-    milter_event_loop_iterate(loop, TRUE);
-    return Qnil;
-}
-
-static void
-rb_custom_loop_run_unblock (void *arg)
-{
-    MilterEventLoop *loop = arg;
-    milter_event_loop_quit(loop);
-}
-#endif
-
-static void
-rb_custom_loop_run (MilterEventLoop *loop)
-{
-    while (milter_event_loop_is_running(loop)) {
-#if USE_BLOCKING_REGION
-	rb_thread_blocking_region(rb_custom_loop_run_block, loop,
-				  rb_custom_loop_run_unblock, loop);
-#else
-	TRAP_BEG;
-	milter_event_loop_iterate(loop, TRUE);
-	TRAP_END;
-#endif
-    }
-}
-
 static VALUE
 glib_initialize (int argc, VALUE *argv, VALUE self)
 {
@@ -388,12 +354,48 @@ libev_initialize (VALUE self)
     return Qnil;
 }
 
+#ifdef USE_DIRECT_THREAD_BLOCKING_REGION
+typedef struct _ReleaseData
+{
+    struct rb_blocking_region_buffer *buffer;
+} ReleaseData;
+
+static void
+cb_release (MilterEventLoop *loop, gpointer user_data)
+{
+    ReleaseData *data = user_data;
+    data->buffer = rb_thread_blocking_region_begin();
+}
+
+static void
+cb_acquire (MilterEventLoop *loop, gpointer user_data)
+{
+    ReleaseData *data = user_data;
+    rb_thread_blocking_region_end(data->buffer);
+}
+
+static void
+cb_notify (gpointer user_data)
+{
+    ReleaseData *data = user_data;
+    g_free(data);
+}
+#endif
+
 void
 rb_milter_event_loop_setup (MilterEventLoop *loop)
 {
+#ifdef USE_DIRECT_THREAD_BLOCKING_REGION
     if (MILTER_IS_LIBEV_EVENT_LOOP(loop)) {
-	milter_event_loop_set_custom_run_func(loop, rb_custom_loop_run);
+	ReleaseData *data;
+	data = g_new0(ReleaseData, 1);
+	milter_libev_event_loop_set_release_func(loop,
+						 (GFunc)cb_release,
+						 (GFunc)cb_acquire,
+						 data,
+						 cb_notify);
     }
+#endif
 }
 
 void

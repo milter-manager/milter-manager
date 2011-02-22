@@ -51,6 +51,13 @@ MilterEventLoop     *milter_libev_event_loop_default      (void);
 
 MilterEventLoop     *milter_libev_event_loop_new          (void);
 
+void                 milter_libev_event_loop_set_release_func
+                                                          (MilterEventLoop *loop,
+                                                           GFunc            release,
+                                                           GFunc            acquire,
+                                                           gpointer         data,
+                                                           GDestroyNotify   notify);
+
 
 G_END_DECLS
 

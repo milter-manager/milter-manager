@@ -34,6 +34,8 @@
 
 G_DEFINE_TYPE(MilterLibevEventLoop, milter_libev_event_loop, MILTER_TYPE_EVENT_LOOP)
 
+typedef void (*LibevCallbackFunc) (ev_loop *ev_loop);
+
 typedef struct _MilterLibevEventLoopPrivate	MilterLibevEventLoopPrivate;
 struct _MilterLibevEventLoopPrivate
 {
@@ -41,6 +43,10 @@ struct _MilterLibevEventLoopPrivate
     guint tag;
     GHashTable *watchers;
     guint n_called;
+    GFunc release_func;
+    GFunc acquire_func;
+    gpointer release_data;
+    GDestroyNotify release_notify;
 };
 
 enum
@@ -140,6 +146,31 @@ milter_libev_event_loop_init (MilterLibevEventLoop *loop)
     priv->watchers = g_hash_table_new_full(g_direct_hash, g_direct_equal,
                                            NULL, destroy_watcher);
     priv->n_called = 0;
+    priv->release_func = NULL;
+    priv->acquire_func = NULL;
+    priv->release_data = NULL;
+    priv->release_notify = NULL;
+}
+
+static void
+dispose_release (MilterLibevEventLoopPrivate *priv)
+{
+    if (priv->release_data && priv->release_notify) {
+        priv->release_notify(priv->release_data);
+    }
+    priv->release_data = NULL;
+    priv->release_notify = NULL;
+}
+
+static void
+dispose_ev_loop (MilterLibevEventLoopPrivate *priv)
+{
+    dispose_release(priv);
+    if (priv->ev_loop) {
+        ev_set_userdata(priv->ev_loop, NULL);
+        ev_loop_destroy(priv->ev_loop);
+        priv->ev_loop = NULL;
+    }
 }
 
 static void
@@ -158,10 +189,7 @@ dispose (GObject *object)
         priv->watchers = NULL;
     }
 
-    if (priv->ev_loop) {
-        ev_loop_destroy(priv->ev_loop);
-        priv->ev_loop = NULL;
-    }
+    dispose_ev_loop(priv);
 
     G_OBJECT_CLASS(milter_libev_event_loop_parent_class)->dispose(object);
 }
@@ -177,9 +205,11 @@ set_property (GObject      *object,
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(object);
     switch (prop_id) {
     case PROP_EV_LOOP:
-        if (priv->ev_loop)
-            ev_loop_destroy(priv->ev_loop);
+        dispose_ev_loop(priv);
         priv->ev_loop = g_value_get_pointer(value);
+        if (priv->ev_loop) {
+            ev_set_userdata(priv->ev_loop, object);
+        }
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -630,6 +660,52 @@ remove (MilterEventLoop *loop,
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
     success = g_hash_table_remove(priv->watchers, GUINT_TO_POINTER(tag));
     return success;
+}
+
+static void
+cb_release (ev_loop *ev_loop)
+{
+    MilterEventLoop *loop;
+    MilterLibevEventLoopPrivate *priv;
+
+    loop = ev_userdata(ev_loop);
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
+    priv->release_func(loop, priv->release_data);
+}
+
+static void
+cb_acquire (ev_loop *ev_loop)
+{
+    MilterEventLoop *loop;
+    MilterLibevEventLoopPrivate *priv;
+
+    loop = ev_userdata(ev_loop);
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
+    priv->acquire_func(loop, priv->release_data);
+}
+
+void
+milter_libev_event_loop_set_release_func (MilterEventLoop *loop,
+                                          GFunc            release,
+                                          GFunc            acquire,
+                                          gpointer         data,
+                                          GDestroyNotify   notify)
+{
+    MilterLibevEventLoopPrivate *priv;
+    LibevCallbackFunc release_func = NULL;
+    LibevCallbackFunc acquire_func = NULL;
+
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
+    dispose_release(priv);
+    priv->release_func = release;
+    priv->acquire_func = acquire;
+    if (priv->release_func)
+        release_func = cb_release;
+    if (priv->acquire_func)
+        acquire_func = cb_acquire;
+    ev_set_loop_release_cb(priv->ev_loop, release_func, acquire_func);
+    priv->release_data = data;
+    priv->release_notify = notify;
 }
 
 /*
