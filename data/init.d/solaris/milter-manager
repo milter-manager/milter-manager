@@ -1,0 +1,41 @@
+#!/bin/bash
+
+MILTER_MANAGER_ROOT=/opt/milter-manager
+MILTER_COMMAND=$MILTER_MANAGER_ROOT/sbin/milter-manager
+CONFIG_DIR=$MILTER_MANAGER_ROOT/etc/milter-manager
+
+PID_FILE=/opt/milter-manager/var/run/milter-manager.pid
+
+start()
+{
+    echo Starting <%= name %> ...
+    $MILTER_COMMAND \
+        --pid-file=$PID_FILE \
+        --config-dir=$CONFIG_DIR \
+        --daemon
+    return $?
+}
+
+stop()
+{
+    echo Stopping milter-manager ...
+    kill $(cat $PID_FILE)
+    return $?
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: $0 { start | stop | restart }"
+        exit 1
+        ;;
+esac
