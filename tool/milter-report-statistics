@@ -19,130 +19,163 @@ require 'pathname'
 require 'time'
 require 'optparse'
 
-class Top
-  def initialize
-    @pids = []
-  end
-
-  def <<(pid)
-    @pids << pid
-  end
-
-  def [](pid)
-    processes[pid]
-  end
-
-  private
-  def processes
-    @processes ||= retrieve
-  end
-
-  def split_pids
-    splitted_pids = []
-    @pids.each do |pid|
-      splitted_pids << pid
-      if splitted_pids.size >= 20
-        yield(splitted_pids)
-        splitted_pids.clear
+class LinuxStatuses
+  class << self
+    def find_all
+      statuses = new
+      Pathname.glob("/proc/[0-9]*") do |proc_path|
+        status = Status.new(proc_path)
+        statuses << status if yield(status)
       end
+      statuses
     end
-    yield(splitted_pids) unless splitted_pids.empty?
   end
 
-  def retrieve
-    _processes = {}
-    split_pids do |pids|
-      result = `env LANG=C top -n 1 -b -p #{pids.join(',')}`
-      header, body = result.split(/\n\n/, 2)
-      labels = nil
-      body.each_line do |line|
-        values = line.strip.split(/\s+/, 12)
-        if labels.nil?
-          labels = values[1..-1]
-        else
-          pid = values.shift
-          _processes[pid] = process = {}
-          labels.each_with_index do |label, i|
-            process[label] = values[i]
+  def initialize
+    @statuses = []
+    @top = Top.new
+  end
+
+  def <<(status)
+    @statuses << status
+  end
+
+  def each
+    @statuses.each do |status|
+      status.top = @top[status.pid] || {}
+      yield(status)
+    end
+  end
+
+  def empty?
+    @statuses.empty?
+  end
+
+  class Top
+    def initialize
+      @pids = []
+    end
+
+    def <<(pid)
+      @pids << pid
+    end
+
+    def [](pid)
+      processes[pid]
+    end
+
+    private
+    def processes
+      @processes ||= retrieve
+    end
+
+    def split_pids
+      splitted_pids = []
+      @pids.each do |pid|
+        splitted_pids << pid
+        if splitted_pids.size >= 20
+          yield(splitted_pids)
+          splitted_pids.clear
+        end
+      end
+      yield(splitted_pids) unless splitted_pids.empty?
+    end
+
+    def retrieve
+      _processes = {}
+      split_pids do |pids|
+        result = `env LANG=C top -n 1 -b -p #{pids.join(',')}`
+        header, body = result.split(/\n\n/, 2)
+        labels = nil
+        body.each_line do |line|
+          values = line.strip.split(/\s+/, 12)
+          if labels.nil?
+            labels = values[1..-1]
+          else
+            pid = values.shift
+            _processes[pid] = process = {}
+            labels.each_with_index do |label, i|
+              process[label] = values[i]
+            end
           end
         end
       end
-    end
-    _processes
-  end
-end
-
-class MilterStatus
-  attr_accessor :top
-  def initialize(proc_path)
-    @proc_path = proc_path
-    @status = parse_status(read_proc_path("status"))
-    @top = nil
-  end
-
-  def target?(targets)
-    _name = name
-    return false if _name.empty?
-    no_lt_name = _name.sub(/\Alt-/, '')
-    targets.any? {|target| _name == target or no_lt_name == target}
-  end
-
-  def name
-    @name ||= File.basename(command_line[0] || '')
-  end
-
-  def pid
-    @status["Pid"]
-  end
-
-  def vss
-    @status["VmSize"]
-  end
-
-  def rss
-    @status["VmRSS"]
-  end
-
-  def cpu_time
-    @top["TIME+"]
-  end
-
-  def cpu_percent
-    @top["%CPU"]
-  end
-
-  def n_file_descriptors
-    @n_file_descriptors ||= entries("fd").size
-  end
-
-  def command_line
-    @command_line ||= read_proc_path("cmdline").split(/\0/)
-  end
-
-  private
-  def read_proc_path(type)
-    begin
-      (@proc_path + type).read
-    rescue SystemCallError
-      ""
+      _processes
     end
   end
 
-  def entries(type)
-    begin
-      (@proc_path + type).entries
-    rescue SystemCallError
-      []
+  class Status
+    attr_accessor :top
+    def initialize(proc_path)
+      @proc_path = proc_path
+      @status = parse_status(read_proc_path("status"))
+      @top = nil
     end
-  end
 
-  def parse_status(status_text)
-    status = {}
-    status_text.each_line do |line|
-      key, value = line.chomp.split(/\s*:\s*/, 2)
-      status[key] = value
+    def target?(targets)
+      _name = name
+      return false if _name.empty?
+      no_lt_name = _name.sub(/\Alt-/, '')
+      targets.any? {|target| _name == target or no_lt_name == target}
     end
-    status
+
+    def name
+      @name ||= File.basename(command_line[0] || '')
+    end
+
+    def pid
+      @status["Pid"]
+    end
+
+    def vss
+      @status["VmSize"]
+    end
+
+    def rss
+      @status["VmRSS"]
+    end
+
+    def cpu_time
+      @top["TIME+"]
+    end
+
+    def cpu_percent
+      @top["%CPU"]
+    end
+
+    def n_file_descriptors
+      @n_file_descriptors ||= entries("fd").size
+    end
+
+    def command_line
+      @command_line ||= read_proc_path("cmdline").split(/\0/)
+    end
+
+    private
+    def read_proc_path(type)
+      begin
+        (@proc_path + type).read
+      rescue SystemCallError
+        ""
+      end
+    end
+
+    def entries(type)
+      begin
+        (@proc_path + type).entries
+      rescue SystemCallError
+        []
+      end
+    end
+
+    def parse_status(status_text)
+      status = {}
+      status_text.each_line do |line|
+        key, value = line.chomp.split(/\s*:\s*/, 2)
+        status[key] = value
+      end
+      status
+    end
   end
 end
 
@@ -181,19 +214,14 @@ class MilterStatisticsReporter
 
   def report
     reported = false
-    top = Top.new
-    statuses = []
-    Pathname.glob("/proc/[0-9]*") do |proc_path|
-      status = MilterStatus.new(proc_path)
-      next if status.pid.to_i == Process.pid
-      next unless status.target?(@targets)
+    statuses = statuses_class.find_all do |status|
+      next false if status.pid.to_i == Process.pid
+      next false unless status.target?(@targets)
       command_line = status.command_line.join(" ")
-      next unless @filters.all? {|filter| filter =~ command_line}
-      statuses << status
-      top << status.pid
+      next false unless @filters.all? {|filter| filter =~ command_line}
+      true
     end
     statuses.each do |status|
-      status.top = top[status.pid] || {}
       show(time_stamp,
            status.pid,
            status.vss,
@@ -235,6 +263,13 @@ class MilterStatisticsReporter
 
   def time_stamp
     Time.now.strftime("%H:%M:%S")
+  end
+
+  def statuses_class
+    case RUBY_PLATFORM
+    when /linux/
+      LinuxStatuses
+    end
   end
 end
 
