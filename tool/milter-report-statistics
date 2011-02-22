@@ -112,13 +112,6 @@ class LinuxStatuses
       @top = nil
     end
 
-    def target?(targets)
-      _name = name
-      return false if _name.empty?
-      no_lt_name = _name.sub(/\Alt-/, '')
-      targets.any? {|target| _name == target or no_lt_name == target}
-    end
-
     def name
       @name ||= File.basename(command_line[0] || '')
     end
@@ -179,6 +172,107 @@ class LinuxStatuses
   end
 end
 
+class SolarisStatuses
+  class << self
+    def find_all
+      statuses = new
+      n_processes = Pathname.glob("/proc/[0-9]*").size
+      prstat_result = `env LANG=C prstat -n #{n_processes} 0 1`
+      parse_prstat_result(prstat_result) do |status|
+        statuses << status if yield(status)
+      end
+      statuses
+    end
+
+    private
+    def parse_prstat_result(prstat_result)
+      header = nil
+      prstat_result.each_line do |line|
+        if header.nil?
+          header = line.split
+        else
+          case line
+          when /\A\s*$/, /\ATotal:/
+            break
+          else
+            values = line.lstrip.split(/\s+/, header.size)
+            attributes = {}
+            header.each_with_index do |name, i|
+              attributes[name] = values[i]
+            end
+            yield(Status.new(attributes))
+          end
+        end
+      end
+    end
+  end
+
+  def initialize
+    @statuses = []
+  end
+
+  def <<(status)
+    @statuses << status
+    self
+  end
+
+  def each
+    @statuses.each do |status|
+      yield(status)
+    end
+  end
+
+  def empty?
+    @statuses.empty?
+  end
+
+  class Status
+    def initialize(attributes)
+      @attributes = attributes
+    end
+
+    def name
+      @name ||= File.basename(command_line[0] || '')
+    end
+
+    def pid
+      @attributes["PID"]
+    end
+
+    def vss
+      @attributes["SIZE"]
+    end
+
+    def rss
+      @attributes["RSS"]
+    end
+
+    def cpu_time
+      @attributes["TIME"]
+    end
+
+    def cpu_percent
+      @attributes["CPU"]
+    end
+
+    def n_file_descriptors
+      @n_file_descriptors ||= retrieve_n_file_descriptors
+    end
+
+    def command_line
+      @command_line ||= [@attributes["PROCESS/NLWP"].gsub(/\/[^\/]+\z/, '')]
+    end
+
+    private
+    def retrieve_n_file_descriptors
+      proc_path = "/proc/#{pid}/path/"
+      return "-" unless File.readable?(proc_path)
+      return "-" unless File.executable?(proc_path)
+      Dir.glob("#{proc_path}[0-9]*").size.to_s
+    end
+  end
+end
+
 class MilterStatisticsReporter
   def initialize
     @targets = []
@@ -216,7 +310,7 @@ class MilterStatisticsReporter
     reported = false
     statuses = statuses_class.find_all do |status|
       next false if status.pid.to_i == Process.pid
-      next false unless status.target?(@targets)
+      next false unless target_process?(status.name)
       command_line = status.command_line.join(" ")
       next false unless @filters.all? {|filter| filter =~ command_line}
       true
@@ -269,7 +363,18 @@ class MilterStatisticsReporter
     case RUBY_PLATFORM
     when /linux/
       LinuxStatuses
+    when /solaris/
+      SolarisStatuses
+    else
+      raise "unsupported platform #{RUBY_PLATFORM}"
     end
+  end
+
+  def target_process?(name)
+    name
+    return false if name.empty?
+    no_lt_name = name.sub(/\Alt-/, '')
+    @targets.any? {|target| name == target or no_lt_name == target}
   end
 end
 
