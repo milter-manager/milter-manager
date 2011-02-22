@@ -814,6 +814,7 @@ AC_CONFIG_FILES([Makefile
 		 data/init.d/debian/default/Makefile
 		 data/init.d/redhat/Makefile
 		 data/init.d/redhat/sysconfig/Makefile
+		 data/init.d/solaris/Makefile
 		 data/cron.d/Makefile
 		 data/cron.d/debian/Makefile
 		 data/cron.d/redhat/Makefile
