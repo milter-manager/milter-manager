@@ -2892,7 +2892,8 @@ cb_decoder_add_header (MilterReplyDecoder *decoder,
     milter_debug("[%u] [server][receive][add-header] [%s] <%s>=<%s>",
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  milter_server_context_get_name(context),
-                 name, value);
+                 MILTER_LOG_NULL_SAFE_STRING(name),
+                 MILTER_LOG_NULL_SAFE_STRING(value));
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         MilterHeaders *headers;
@@ -2925,7 +2926,9 @@ cb_decoder_insert_header (MilterReplyDecoder *decoder,
     milter_debug("[%u] [server][receive][insert-header] [%s] [%u]<%s>=<%s>",
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  milter_server_context_get_name(context),
-                 index, name, value);
+                 index,
+                 MILTER_LOG_NULL_SAFE_STRING(name),
+                 MILTER_LOG_NULL_SAFE_STRING(value));
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         MilterHeaders *headers;
@@ -2958,7 +2961,9 @@ cb_decoder_change_header (MilterReplyDecoder *decoder,
     milter_debug("[%u] [server][receive][change-header] [%s] <%s>[%u]=<%s>",
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  milter_server_context_get_name(context),
-                 name, index, value);
+                 MILTER_LOG_NULL_SAFE_STRING(name),
+                 index,
+                 MILTER_LOG_NULL_SAFE_STRING(value));
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         MilterHeaders *headers;
@@ -2990,7 +2995,8 @@ cb_decoder_delete_header (MilterReplyDecoder *decoder,
     milter_debug("[%u] [server][receive][delete-header] [%s] <%s>[%u]",
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  milter_server_context_get_name(context),
-                 name, index);
+                 MILTER_LOG_NULL_SAFE_STRING(name),
+                 index);
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         MilterHeaders *headers;
@@ -3022,7 +3028,8 @@ cb_decoder_change_from (MilterReplyDecoder *decoder,
     milter_debug("[%u] [server][receive][change-from] [%s] <%s>:<%s>",
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  milter_server_context_get_name(context),
-                 from, parameters);
+                 MILTER_LOG_NULL_SAFE_STRING(from),
+                 MILTER_LOG_NULL_SAFE_STRING(parameters));
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         if (!check_reply_after_quit(context, priv->state, "change-from"))
@@ -3047,7 +3054,8 @@ cb_decoder_add_recipient (MilterReplyDecoder *decoder,
     milter_debug("[%u] [server][receive][add-recipient] [%s] <%s>:<%s>",
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  milter_server_context_get_name(context),
-                 recipient, parameters);
+                 MILTER_LOG_NULL_SAFE_STRING(recipient),
+                 MILTER_LOG_NULL_SAFE_STRING(parameters));
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         if (!check_reply_after_quit(context, priv->state, "add-recipient"))
@@ -3071,7 +3079,7 @@ cb_decoder_delete_recipient (MilterReplyDecoder *decoder,
     milter_debug("[%u] [server][receive][delete-recipient] [%s] <%s>",
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  milter_server_context_get_name(context),
-                 recipient);
+                 MILTER_LOG_NULL_SAFE_STRING(recipient));
 
     if (priv->state == MILTER_SERVER_CONTEXT_STATE_END_OF_MESSAGE) {
         if (!check_reply_after_quit(context, priv->state, "delete-recipient"))
