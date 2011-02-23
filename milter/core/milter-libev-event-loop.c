@@ -47,6 +47,7 @@ struct _MilterLibevEventLoopPrivate
     GFunc acquire_func;
     gpointer release_data;
     GDestroyNotify release_notify;
+    ev_async *breaker;
 };
 
 enum
@@ -150,6 +151,7 @@ milter_libev_event_loop_init (MilterLibevEventLoop *loop)
     priv->acquire_func = NULL;
     priv->release_data = NULL;
     priv->release_notify = NULL;
+    priv->breaker = NULL;
 }
 
 static void
@@ -163,10 +165,35 @@ dispose_release (MilterLibevEventLoopPrivate *priv)
 }
 
 static void
+cb_break (ev_loop *ev_loop, ev_async *watcher, int events)
+{
+    ev_break(ev_loop, EVBREAK_ONE);
+}
+
+static void
+setup_ev_loop (MilterLibevEventLoop *loop)
+{
+    MilterLibevEventLoopPrivate *priv;
+
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
+    if (priv->ev_loop) {
+        ev_set_userdata(priv->ev_loop, loop);
+        priv->breaker = g_new0(ev_async, 1);
+        ev_async_init(priv->breaker, cb_break);
+        ev_async_start(priv->ev_loop, priv->breaker);
+    }
+}
+
+static void
 dispose_ev_loop (MilterLibevEventLoopPrivate *priv)
 {
     dispose_release(priv);
     if (priv->ev_loop) {
+        if (priv->breaker) {
+            ev_async_stop(priv->ev_loop, priv->breaker);
+            g_free(priv->breaker);
+            priv->breaker = NULL;
+        }
         ev_set_userdata(priv->ev_loop, NULL);
         ev_loop_destroy(priv->ev_loop);
         priv->ev_loop = NULL;
@@ -200,16 +227,16 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
+    MilterLibevEventLoop *loop;
     MilterLibevEventLoopPrivate *priv;
 
-    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(object);
+    loop = MILTER_LIBEV_EVENT_LOOP(object);
+    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
     switch (prop_id) {
     case PROP_EV_LOOP:
         dispose_ev_loop(priv);
         priv->ev_loop = g_value_get_pointer(value);
-        if (priv->ev_loop) {
-            ev_set_userdata(priv->ev_loop, object);
-        }
+        setup_ev_loop(loop);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -360,7 +387,7 @@ quit (MilterEventLoop *loop)
     MilterLibevEventLoopPrivate *priv;
 
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
-    ev_break(priv->ev_loop, EVBREAK_ONE);
+    ev_async_send(priv->ev_loop, priv->breaker);
 }
 
 static short
