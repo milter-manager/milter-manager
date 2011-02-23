@@ -112,12 +112,9 @@ test_listen_no_spec (void)
 {
     milter_manager_configuration_set_controller_connection_spec(config, NULL);
 
-    cut_assert_false(milter_manager_controller_listen(controller,
-                                                      &actual_error));
-    expected_error = g_error_new(MILTER_MANAGER_CONTROLLER_ERROR,
-                                 MILTER_MANAGER_CONTROLLER_ERROR_NO_SPEC,
-                                 "connection spec isn't specified");
-    gcut_assert_equal_error(expected_error, actual_error);
+    cut_assert_true(milter_manager_controller_listen(controller,
+                                                     &actual_error));
+    gcut_assert_error(actual_error);
 }
 
 void
