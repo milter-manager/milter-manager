@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -112,6 +112,8 @@ typedef enum
                               MILTER_LOG_LEVEL_DEBUG |          \
                               MILTER_LOG_LEVEL_STATISTICS |     \
                               MILTER_LOG_LEVEL_PROFILE)
+
+#define MILTER_LOG_NULL_SAFE_STRING(string) ((string) ? (string) : "(null)")
 
 typedef enum
 {
