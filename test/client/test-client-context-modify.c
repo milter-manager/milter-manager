@@ -140,13 +140,13 @@ data_add_header (void)
         g_error_new(MILTER_CLIENT_CONTEXT_ERROR,
                     MILTER_CLIENT_CONTEXT_ERROR_NULL,
                     "both header name and value should not be NULL: "
-                    "<NULL>=<value>"));
+                    "<(null)>=<value>"));
     ADD("NULL value",
         "X-Name", NULL, END_OF_MESSAGE, "add-headers",
         g_error_new(MILTER_CLIENT_CONTEXT_ERROR,
                     MILTER_CLIENT_CONTEXT_ERROR_NULL,
                     "both header name and value should not be NULL: "
-                    "<X-Name>=<NULL>"));
+                    "<X-Name>=<(null)>"));
     ADD("invalid state",
         "X-Name", "value", BODY, "add-headers",
         g_error_new(MILTER_CLIENT_CONTEXT_ERROR,
@@ -247,13 +247,13 @@ data_insert_header (void)
         g_error_new(MILTER_CLIENT_CONTEXT_ERROR,
                     MILTER_CLIENT_CONTEXT_ERROR_NULL,
                     "both header name and value should not be NULL: "
-                    "<NULL>=<value>"));
+                    "<(null)>=<value>"));
     ADD("NULL value",
         0, "X-Name", NULL, END_OF_MESSAGE, "add-headers",
         g_error_new(MILTER_CLIENT_CONTEXT_ERROR,
                     MILTER_CLIENT_CONTEXT_ERROR_NULL,
                     "both header name and value should not be NULL: "
-                    "<X-Name>=<NULL>"));
+                    "<X-Name>=<(null)>"));
     ADD("invalid state",
         0, "X-Name", "value", BODY, "add-headers",
         g_error_new(MILTER_CLIENT_CONTEXT_ERROR,

@@ -2208,8 +2208,8 @@ milter_client_context_add_header (MilterClientContext *context,
                     MILTER_CLIENT_CONTEXT_ERROR,
                     MILTER_CLIENT_CONTEXT_ERROR_NULL,
                     "both header name and value should not be NULL: <%s>=<%s>",
-                    name ? name : "NULL",
-                    value ? value : "NULL");
+                    MILTER_LOG_NULL_SAFE_STRING(name),
+                    MILTER_LOG_NULL_SAFE_STRING(value));
         return FALSE;
     }
 
@@ -2252,8 +2252,8 @@ milter_client_context_insert_header (MilterClientContext *context,
                     MILTER_CLIENT_CONTEXT_ERROR,
                     MILTER_CLIENT_CONTEXT_ERROR_NULL,
                     "both header name and value should not be NULL: <%s>=<%s>",
-                    name ? name : "NULL",
-                    value ? value : "NULL");
+                    MILTER_LOG_NULL_SAFE_STRING(name),
+                    MILTER_LOG_NULL_SAFE_STRING(value));
         return FALSE;
     }
 
@@ -2297,7 +2297,7 @@ milter_client_context_change_header (MilterClientContext *context,
                     MILTER_CLIENT_CONTEXT_ERROR,
                     MILTER_CLIENT_CONTEXT_ERROR_NULL,
                     "header name should not be NULL: value=<%s>",
-                    value ? value : "NULL");
+                    MILTER_LOG_NULL_SAFE_STRING(value));
         return FALSE;
     }
 
@@ -2384,7 +2384,7 @@ milter_client_context_change_from (MilterClientContext *context,
                     MILTER_CLIENT_CONTEXT_ERROR,
                     MILTER_CLIENT_CONTEXT_ERROR_NULL,
                     "from should not be NULL: parameters=<%s>",
-                    parameters ? parameters : "NULL");
+                    MILTER_LOG_NULL_SAFE_STRING(parameters));
         return FALSE;
     }
 
@@ -2393,7 +2393,7 @@ milter_client_context_change_from (MilterClientContext *context,
                     MILTER_CLIENT_CONTEXT_ERROR,
                     MILTER_CLIENT_CONTEXT_ERROR_EMPTY,
                     "from should not be empty: parameters=<%s>",
-                    parameters ? parameters : "NULL");
+                    MILTER_LOG_NULL_SAFE_STRING(parameters));
         return FALSE;
     }
 
@@ -2413,7 +2413,7 @@ milter_client_context_change_from (MilterClientContext *context,
     milter_debug("[%u] [client][send][change-from] <%s>:<%s>",
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  from,
-                 parameters ? parameters : "NULL");
+                 MILTER_LOG_NULL_SAFE_STRING(parameters));
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_change_from(MILTER_REPLY_ENCODER(encoder),
@@ -2438,7 +2438,7 @@ milter_client_context_add_recipient (MilterClientContext *context,
                     MILTER_CLIENT_CONTEXT_ERROR,
                     MILTER_CLIENT_CONTEXT_ERROR_NULL,
                     "added recipient should not be NULL: parameters=<%s>",
-                    parameters ? parameters : "NULL");
+                    MILTER_LOG_NULL_SAFE_STRING(parameters));
         return FALSE;
     }
 
@@ -2447,7 +2447,7 @@ milter_client_context_add_recipient (MilterClientContext *context,
                     MILTER_CLIENT_CONTEXT_ERROR,
                     MILTER_CLIENT_CONTEXT_ERROR_EMPTY,
                     "added recipient should not be empty: parameters=<%s>",
-                    parameters ? parameters : "NULL");
+                    MILTER_LOG_NULL_SAFE_STRING(parameters));
         return FALSE;
     }
 
@@ -2468,7 +2468,7 @@ milter_client_context_add_recipient (MilterClientContext *context,
     milter_debug("[%u] [client][send][add-recipient] <%s>:<%s>",
                  milter_agent_get_tag(MILTER_AGENT(context)),
                  recipient,
-                 parameters ? parameters : "NULL");
+                 MILTER_LOG_NULL_SAFE_STRING(parameters));
 
     encoder = milter_agent_get_encoder(MILTER_AGENT(context));
     milter_reply_encoder_encode_add_recipient(MILTER_REPLY_ENCODER(encoder),

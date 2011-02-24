@@ -309,7 +309,7 @@ test_change_from_error_no_from (gconstpointer data)
                 MILTER_CLIENT_CONTEXT_ERROR,
                 MILTER_CLIENT_CONTEXT_ERROR_NULL,
                 "from should not be NULL: parameters=<%s>",
-                test_data->parameters ? test_data->parameters : "NULL");
+                MILTER_LOG_NULL_SAFE_STRING(test_data->parameters));
     gcut_assert_error(feed(packet, packet_size));
 }
 
@@ -343,7 +343,7 @@ test_change_from_error_empty_from (gconstpointer data)
                 MILTER_CLIENT_CONTEXT_ERROR,
                 MILTER_CLIENT_CONTEXT_ERROR_EMPTY,
                 "from should not be empty: parameters=<%s>",
-                test_data->parameters ? test_data->parameters : "NULL");
+                MILTER_LOG_NULL_SAFE_STRING(test_data->parameters));
     gcut_assert_error(feed(packet, packet_size));
 }
 
@@ -417,7 +417,7 @@ test_add_recipient_error_no_recipient (gconstpointer data)
                 MILTER_CLIENT_CONTEXT_ERROR,
                 MILTER_CLIENT_CONTEXT_ERROR_NULL,
                 "added recipient should not be NULL: parameters=<%s>",
-                test_data->parameters ? test_data->parameters : "NULL");
+                MILTER_LOG_NULL_SAFE_STRING(test_data->parameters));
     gcut_assert_error(feed(packet, packet_size));
 }
 
@@ -452,7 +452,7 @@ test_add_recipient_error_empty_recipient (gconstpointer data)
                 MILTER_CLIENT_CONTEXT_ERROR,
                 MILTER_CLIENT_CONTEXT_ERROR_EMPTY,
                 "added recipient should not be empty: parameters=<%s>",
-                test_data->parameters ? test_data->parameters : "NULL");
+                MILTER_LOG_NULL_SAFE_STRING(test_data->parameters));
     gcut_assert_error(feed(packet, packet_size));
 }
 
