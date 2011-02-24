@@ -154,14 +154,14 @@ module Milter
 
         @option_parser.on("--user=USER",
                           "Run as USER's process (need root privilege)",
-                          "(#{milter_conf.user})") do |user|
-          milter_conf.user = user
+                          "(#{milter_conf.effective_user})") do |user|
+          milter_conf.effective_user = user
         end
 
         @option_parser.on("--group=GROUP",
                           "Run as GROUP's process (need root privilege)",
-                          "(#{milter_conf.group})") do |group|
-          milter_conf.group = group
+                          "(#{milter_conf.effective_group})") do |group|
+          milter_conf.effective_group = group
         end
 
         @option_parser.on("--unix-socket-group=GROUP",
