@@ -57,7 +57,8 @@ module Milter
       end
 
       class MilterConfiguration
-        attr_accessor :name, :connection_spec, :user, :group
+        attr_accessor :name, :connection_spec
+        attr_accessor :effective_user, :effective_group
         attr_accessor :unix_socket_mode, :unix_socket_group
         attr_accessor :remove_unix_socket_on_create
         attr_accessor :remove_unix_socket_on_close
@@ -91,8 +92,8 @@ module Milter
         def clear
           @name = File.basename($PROGRAM_NAME, ".*"),
           @connection_spec = "inet:20025"
-          @user = nil
-          @group = nil
+          @effective_user = nil
+          @effective_group = nil
           @unix_socket_mode = 0770
           @unix_socket_group = nil
           @remove_unix_socket_on_create = true
@@ -118,8 +119,8 @@ module Milter
           client.start_syslog(@name, @syslog_facility) if @use_syslog
           client.status_on_error = @status_on_error
           client.connection_spec = @connection_spec
-          client.effective_user = @user
-          client.effective_group = @group
+          client.effective_user = @effective_user
+          client.effective_group = @effective_gruop
           client.unix_socket_group = @unix_socket_group
           client.unix_socket_mode = @unix_socket_mode if @unix_socket_mode
           client.event_loop_backend = @event_loop_backend
@@ -377,6 +378,24 @@ module Milter
           Milter::Connection.parse_spec(spec) unless spec.nil?
           update_location("connection_spec", spec.nil?)
           @configuration.connection_spec = spec
+        end
+
+        def effective_user
+          @configuration.effective_user
+        end
+
+        def effective_user=(user)
+          update_location("effective_uesr", user.nil?)
+          @configuration.effective_user = user
+        end
+
+        def effective_group
+          @configuration.effective_group
+        end
+
+        def effective_group=(group)
+          update_location("effective_uesr", group.nil?)
+          @configuration.effective_group = group
         end
 
         def unix_socket_mode
