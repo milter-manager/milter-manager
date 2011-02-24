@@ -29,6 +29,14 @@ class LinuxStatuses
       end
       statuses
     end
+
+    def find_pid(pids)
+      statuses = new
+      pids.each do |pid|
+        statuses << Status.new("/proc/#{pid}")
+      end
+      statuses
+    end
   end
 
   def initialize
@@ -184,6 +192,17 @@ class SolarisStatuses
       statuses
     end
 
+    def find_pid(pids)
+      statuses = new
+      unless pids.empty?
+        prstat_result = `env LANG=C prstat -p #{pids.join(',')} 0 1`
+        parse_prstat_result(prstat_result) do |status|
+          statuses << status
+        end
+      end
+      statuses
+    end
+
     private
     def parse_prstat_result(prstat_result)
       header = nil
@@ -277,12 +296,13 @@ class MilterStatisticsReporter
   def initialize
     @targets = []
     @filters = []
+    @target_pids = []
     @interval = 1
   end
 
   def parse(argv=ARGV)
     @targets = option_parser.parse!(argv)
-    if @targets.empty?
+    if @targets.empty? and @target_pids.empty?
       puts option_parser
       exit(false)
     end
@@ -293,7 +313,7 @@ class MilterStatisticsReporter
     loop do
       begin
         start = Time.now
-        report
+        report(@target_pids)
         report_time = Time.now - start
         sleep(@interval - report_time) if report_time < @interval
       rescue Interrupt
@@ -306,14 +326,18 @@ class MilterStatisticsReporter
     show("Time", "PID", "VSS", "RSS", "%CPU", "CPU time", "#FD", "command")
   end
 
-  def report
+  def report(pids)
     reported = false
-    statuses = statuses_class.find_all do |status|
-      next false if status.pid.to_i == Process.pid
-      next false unless target_process?(status.name)
-      command_line = status.command_line.join(" ")
-      next false unless @filters.all? {|filter| filter =~ command_line}
-      true
+    if !pids or pids.empty?
+      statuses = statuses_class.find_all do |status|
+        next false if status.pid.to_i == Process.pid
+        next false unless target_process?(status.name)
+        command_line = status.command_line.join(" ")
+        next false unless @filters.all? {|filter| filter =~ command_line}
+        true
+      end
+    else
+      statuses = statuses_class.find_pid(pids)
     end
     statuses.each do |status|
       show(time_stamp,
@@ -341,6 +365,11 @@ class MilterStatisticsReporter
                 "Filter report targets by REGEXP.",
                 "Multiple --filter options are accepted.") do |regexp|
         @filters << /#{regexp}/i
+      end
+
+      parser.on("--pid=PID",
+                "Report only process whose ID is PID.") do |pid|
+        @target_pids << pid
       end
 
       parser.on("--interval=INTERVAL", Float,
