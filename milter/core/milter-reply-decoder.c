@@ -531,7 +531,8 @@ decode_reply_change_from (MilterDecoder *decoder, GError **error)
 
     milter_debug("[%u] [reply-decoder][change-from] <%s>:<%s>",
                  milter_decoder_get_tag(decoder),
-                 from, parameters ? parameters : "NULL");
+                 from,
+                 MILTER_LOG_NULL_SAFE_STRING(parameters));
 
     g_signal_emit_by_name(decoder, "change-from", from, parameters);
 
@@ -585,7 +586,7 @@ decode_reply_add_recipient_with_parameters (MilterDecoder *decoder, GError **err
     milter_debug("[%u] [reply-decoder][add-recipient-with-parameters] <%s>:<%s>",
                  milter_decoder_get_tag(decoder),
                  recipient,
-                 parameters ? parameters : "NULL");
+                 MILTER_LOG_NULL_SAFE_STRING(parameters));
 
     g_signal_emit_by_name(decoder, "add-recipient", recipient, parameters);
 
