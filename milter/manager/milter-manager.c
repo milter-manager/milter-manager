@@ -116,6 +116,9 @@ static guint  get_default_packet_buffer_size
 static void   set_default_packet_buffer_size
                                           (MilterClient *client,
                                            guint         size);
+static const gchar *get_pid_file          (MilterClient *client);
+static void   set_pid_file                (MilterClient *client,
+                                           const char   *pid_file);
 
 static void
 milter_manager_class_init (MilterManagerClass *klass)
@@ -156,6 +159,8 @@ milter_manager_class_init (MilterManagerClass *klass)
         get_default_packet_buffer_size;
     client_class->set_default_packet_buffer_size =
         set_default_packet_buffer_size;
+    client_class->get_pid_file = get_pid_file;
+    client_class->set_pid_file = set_pid_file;
     client_class->maintain = maintain;
     client_class->sessions_finished = sessions_finished;
 
@@ -1041,6 +1046,32 @@ set_default_packet_buffer_size (MilterClient *client, guint size)
     configuration = priv->configuration;
     milter_manager_configuration_set_default_packet_buffer_size(configuration,
                                                                 size);
+}
+
+static const gchar *
+get_pid_file (MilterClient *client)
+{
+    MilterManager *manager;
+    MilterManagerPrivate *priv;
+    MilterManagerConfiguration *configuration;
+
+    manager = MILTER_MANAGER(client);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    configuration = priv->configuration;
+    return milter_manager_configuration_get_pid_file(configuration);
+}
+
+static void
+set_pid_file (MilterClient *client, const gchar *pid_file)
+{
+    MilterManager *manager;
+    MilterManagerPrivate *priv;
+    MilterManagerConfiguration *configuration;
+
+    manager = MILTER_MANAGER(client);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    configuration = priv->configuration;
+    milter_manager_configuration_set_pid_file(configuration, pid_file);
 }
 
 static void

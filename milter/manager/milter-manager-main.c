@@ -705,7 +705,6 @@ milter_manager_main (void)
     MilterManagerConfiguration *config;
     MilterEventLoop *loop;
     gboolean remove_socket, daemon;
-    gchar *pid_file = NULL;
     GError *error = NULL;
     struct sigaction report_stack_trace_action;
     struct sigaction shutdown_client_action;
@@ -799,21 +798,6 @@ milter_manager_main (void)
         }
     }
 
-    pid_file = g_strdup(milter_manager_configuration_get_pid_file(config));
-    if (pid_file) {
-        gchar *content;
-        GError *error = NULL;
-
-        content = g_strdup_printf("%u\n", getpid());
-        if (!g_file_set_contents(pid_file, content, -1, &error)) {
-            milter_error("[manager][error][pid][save] %s: %s",
-                         pid_file, error->message);
-            g_error_free(error);
-            g_free(pid_file);
-            pid_file = NULL;
-        }
-    }
-
     the_manager = manager;
 
 #define SETUP_SIGNAL_ACTION(handler)            \
@@ -862,13 +846,6 @@ milter_manager_main (void)
     if (the_manager) {
         g_object_unref(the_manager);
         the_manager = NULL;
-    }
-
-    if (pid_file) {
-        if (g_unlink(pid_file) == -1)
-            milter_error("[manager][error][pid][remove] %s: %s",
-                         pid_file, g_strerror(errno));
-        g_free(pid_file);
     }
 
     return TRUE;

@@ -1769,11 +1769,12 @@ milter_client_prepare (MilterClient *client, MilterEventLoop *loop,
     return TRUE;
 }
 
-static void
+static gboolean
 milter_client_cleanup (MilterClient *client, const gchar *pid_file,
                        GError **error)
 {
     MilterClientPrivate *priv;
+    gboolean success = TRUE;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
@@ -1782,38 +1783,45 @@ milter_client_cleanup (MilterClient *client, const gchar *pid_file,
         priv->listening_channel = NULL;
     }
 
-    if (priv->address) {
-        if (priv->address->sa_family == AF_UNIX &&
-            milter_client_is_remove_unix_socket_on_close(client)) {
-            struct sockaddr_un *address_un;
+    if (priv->address &&
+        priv->address->sa_family == AF_UNIX &&
+        milter_client_is_remove_unix_socket_on_close(client)) {
+        struct sockaddr_un *address_un;
 
-            address_un = (struct sockaddr_un *)priv->address;
-            if (g_unlink(address_un->sun_path) == -1) {
-                g_set_error(error,
-                            MILTER_CLIENT_ERROR,
-                            MILTER_CLIENT_ERROR_UNIX_SOCKET,
-                            "failed to remove used UNIX socket: %s: %s",
-                            address_un->sun_path, g_strerror(errno));
-                if (error) {
-                    milter_error("[client][unix][error] %s", (*error)->message);
-                }
-            }
+        address_un = (struct sockaddr_un *)priv->address;
+        if (g_unlink(address_un->sun_path) == -1) {
+            GError *local_error = NULL;
+            g_set_error(&local_error,
+                        MILTER_CLIENT_ERROR,
+                        MILTER_CLIENT_ERROR_UNIX_SOCKET,
+                        "failed to remove used UNIX socket: %s: %s",
+                        address_un->sun_path, g_strerror(errno));
+            milter_error("[client][unix][error] %s", local_error->message);
+            g_propagate_error(error, local_error);
+            success = FALSE;
         }
     }
 
     if (pid_file && milter_client_is_remove_pid_file_on_exit(client)) {
-        if (g_unlink(priv->pid_file) == -1) {
-            g_set_error(error,
+        if (g_unlink(pid_file) == -1) {
+            GError *local_error = NULL;
+            g_set_error(&local_error,
                         MILTER_CLIENT_ERROR,
                         MILTER_CLIENT_ERROR_PID_FILE,
                         "failed to remove created PID file: %s: %s",
                         priv->pid_file, g_strerror(errno));
-            if (error) {
-                milter_error("[client][pid-file][error][remove] %s",
-                             (*error)->message);
+            milter_error("[client][pid-file][error][remove] %s",
+                         local_error->message);
+            if (error && *error) {
+                g_error_free(local_error);
+            } else {
+                g_propagate_error(error, local_error);
             }
+            success = FALSE;
         }
     }
+
+    return success;
 }
 
 static gboolean
@@ -2023,12 +2031,12 @@ milter_client_run (MilterClient *client, GError **error)
     gboolean success;
     gchar *created_pid_file = NULL;
     const gchar *pid_file;
+    GError *local_error = NULL;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
     pid_file = milter_client_get_pid_file(client);
     if (pid_file) {
         gchar *content;
-        GError *local_error = NULL;
 
         content = g_strdup_printf("%u\n", getpid());
         if (g_file_set_contents(pid_file, content, -1, &local_error)) {
@@ -2049,20 +2057,18 @@ milter_client_run (MilterClient *client, GError **error)
 
     success = milter_client_run_loop(client, error);
 
-    if (success) {
-        GError *local_error = NULL;
-        milter_client_cleanup(client, created_pid_file, &local_error);
-        milter_error("[client][run][success][cleanup][error] "
-                     "failed to cleanup: %s",
-                     local_error->message);
-        g_propagate_error(error, local_error);
-    } else {
-        GError *local_error = NULL;
-        milter_client_cleanup(client, created_pid_file, &local_error);
-        milter_error("[client][run][fail][cleanup][error] "
-                     "failed to cleanup: %s",
-                     local_error->message);
-        g_error_free(local_error);
+    if (!milter_client_cleanup(client, created_pid_file, &local_error)) {
+        if (success) {
+            milter_error("[client][run][success][cleanup][error] "
+                         "failed to cleanup: %s",
+                         local_error->message);
+            g_propagate_error(error, local_error);
+        } else {
+            milter_error("[client][run][fail][cleanup][error] "
+                         "failed to cleanup: %s",
+                         local_error->message);
+            g_error_free(local_error);
+        }
     }
 
     if (created_pid_file)
