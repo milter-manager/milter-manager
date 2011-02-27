@@ -125,6 +125,7 @@ module Milter
           client.unix_socket_mode = @unix_socket_mode if @unix_socket_mode
           client.event_loop_backend = @event_loop_backend
           client.default_packet_buffer_size = @packet_buffer_size
+          client.pid_file = @pid_file
           client.maintenance_interval = @maintenance_interval
           if @run_gc_on_maintain
             client.on_maintain do

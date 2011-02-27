@@ -47,21 +47,9 @@ module Milter
         end
         yield(client, options) if block_given?
         @configuration.setup(client)
-        if @configuration.milter.pid_file
-          begin
-            pid_file = open(@configuration.milter.pid_file, "w")
-          rescue => error
-            Milter::Logger.error("[pid_file][error] #{error.message}")
-            exit(false)
-          end
-        end
         client.listen
         client.drop_privilege
         daemonize if @configuration.milter.daemon?
-        if pid_file
-          pid_file.puts($$)
-          pid_file.close
-        end
         setup_signal_handler(client) if @configuration.milter.handle_signal?
         client.run
       end
