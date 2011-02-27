@@ -114,6 +114,7 @@ typedef enum
     MILTER_CLIENT_ERROR_DAEMONIZE,
     MILTER_CLIENT_ERROR_NOT_LISTENED_YET,
     MILTER_CLIENT_ERROR_PROCESS,
+    MILTER_CLIENT_ERROR_PID_FILE
 } MilterClientError;
 
 typedef struct _MilterClientClass    MilterClientClass;
@@ -184,6 +185,12 @@ struct _MilterClientClass
                                           (MilterClient *client,
                                            guint         size);
     GPid   (*fork)                        (MilterClient *client);
+    const gchar *(*get_pid_file)          (MilterClient *client);
+    void   (*set_pid_file)                (MilterClient *client,
+                                           const gchar  *pid_file);
+    gboolean (*is_remove_pid_file_on_exit)(MilterClient *client);
+    void   (*set_remove_pid_file_on_exit) (MilterClient *client,
+                                           gboolean      remove);
 };
 
 GQuark               milter_client_error_quark       (void);
@@ -666,21 +673,6 @@ gboolean             milter_client_main              (MilterClient  *client);
 #endif
 
 /**
- * milter_client_run_master:
- * @client: a %MilterClient.
- * @error: return location for an error, or %NULL.
- *
- * Runs main loop in parent process. If the main loop isn't
- * quitted successfully and @error is not %NULL, error
- * detail is stored into @error.
- *
- * Returns: %TRUE if main loop is quitted successfully,
- * %FALSE otherwise.
- */
-gboolean             milter_client_run_master        (MilterClient  *client,
-                                                      GError       **error);
-
-/**
  * milter_client_shutdown:
  * @client: a %MilterClient.
  *
@@ -821,7 +813,7 @@ void                 milter_client_set_event_loop_backend
 guint                milter_client_get_n_workers     (MilterClient  *client);
 
 /**
- * milter_client_get_n_workers:
+ * milter_client_set_n_workers:
  * @client: a %MilterClient.
  * @n_workers: the number of worker processes.
  *
@@ -891,6 +883,47 @@ MilterClientCustomForkFunc
  */
 guint                milter_client_get_worker_id        (MilterClient *client);
 
+/**
+ * milter_client_get_pid_file:
+ * @client: a %MilterClient.
+ *
+ * Gets the PID file of @client.
+ *
+ * Returns: the PID file of @client.
+ */
+const gchar         *milter_client_get_pid_file         (MilterClient  *client);
+
+/**
+ * milter_client_set_pid_file:
+ * @client: a %MilterClient.
+ * @pid_file: the PID file of @client.
+ *
+ * Sets the PID file of @client.
+ */
+void                 milter_client_set_pid_file         (MilterClient  *client,
+                                                         const gchar   *pid_file);
+
+/**
+ * milter_client_is_remove_pid_file_on_exit:
+ * @client: a %MilterClient.
+ *
+ * Gets whether removing PID file after main loop is quitted.
+ *
+ * Returns: %TRUE if removing PID file on exit, %FALSE otherwise.
+ */
+gboolean             milter_client_is_remove_pid_file_on_exit
+                                                     (MilterClient  *client);
+
+/**
+ * milter_client_set_remove_pid_file_on_exit:
+ * @client: a %MilterClient.
+ * @remove: %TRUE if removing PID file on exit.
+ *
+ * Sets whether removing PID file after main loop is quitted.
+ */
+void                 milter_client_set_remove_pid_file_on_exit
+                                                     (MilterClient  *client,
+                                                      gboolean       remove);
 
 G_END_DECLS
 

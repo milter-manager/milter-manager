@@ -45,7 +45,9 @@ enum
     PROP_DEFAULT_PACKET_BUFFER_SIZE,
     PROP_MAINTENANCE_INTERVAL,
     PROP_WORKER_ID,
-    PROP_EVENT_LOOP
+    PROP_EVENT_LOOP,
+    PROP_PID_FILE,
+    PROP_REMOVE_PID_FILE_ON_EXIT
 };
 
 enum
@@ -111,6 +113,9 @@ struct _MilterClientPrivate
     MilterClientCustomForkFunc custom_fork;
 
     guint default_packet_buffer_size;
+
+    gchar *pid_file;
+    gboolean remove_pid_file_on_exit;
 };
 
 typedef struct _MilterClientProcessData
@@ -222,6 +227,22 @@ _milter_client_class_init (MilterClientClass *klass)
                                MILTER_TYPE_EVENT_LOOP,
                                G_PARAM_READABLE);
     g_object_class_install_property(gobject_class, PROP_EVENT_LOOP, spec);
+
+    spec = g_param_spec_string("pid-file",
+                               "PID File",
+                               "The PID file of the client",
+                               NULL,
+                               G_PARAM_READABLE);
+    g_object_class_install_property(gobject_class, PROP_PID_FILE, spec);
+
+    spec = g_param_spec_boolean("remove-pid-file-on-exit",
+                                "Remove PID File on Exit",
+                                "Whether removing PID file of the client "
+                                "on exist",
+                                TRUE,
+                                G_PARAM_READABLE);
+    g_object_class_install_property(gobject_class, PROP_REMOVE_PID_FILE_ON_EXIT,
+                                    spec);
 
     signals[CONNECTION_ESTABLISHED] =
         g_signal_new("connection-established",
@@ -352,6 +373,9 @@ _milter_client_init (MilterClient *client)
     priv->event_loop_backend = MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
 
     priv->default_packet_buffer_size = 0;
+
+    priv->pid_file = NULL;
+    priv->remove_pid_file_on_exit = TRUE;
 }
 
 static void
@@ -618,6 +642,11 @@ dispose (GObject *object)
     dispose_finisher(priv);
     dispose_finished_data(MILTER_CLIENT(object));
 
+    if (priv->pid_file) {
+        g_free(priv->pid_file);
+        priv->pid_file = NULL;
+    }
+
     if (priv->syslog_logger) {
         g_object_unref(priv->syslog_logger);
         priv->syslog_logger = NULL;
@@ -653,6 +682,13 @@ set_property (GObject      *object,
         break;
     case PROP_MAINTENANCE_INTERVAL:
         milter_client_set_maintenance_interval(client, g_value_get_uint(value));
+        break;
+    case PROP_PID_FILE:
+        milter_client_set_pid_file(client, g_value_get_string(value));
+        break;
+    case PROP_REMOVE_PID_FILE_ON_EXIT:
+        milter_client_set_remove_pid_file_on_exit(client,
+                                                  g_value_get_boolean(value));
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -694,6 +730,13 @@ get_property (GObject    *object,
         break;
     case PROP_EVENT_LOOP:
         g_value_set_object(value, priv->event_loop);
+        break;
+    case PROP_PID_FILE:
+        g_value_set_string(value, milter_client_get_pid_file(client));
+        break;
+    case PROP_REMOVE_PID_FILE_ON_EXIT:
+        g_value_set_boolean(value,
+                            milter_client_is_remove_pid_file_on_exit(client));
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -1727,7 +1770,8 @@ milter_client_prepare (MilterClient *client, MilterEventLoop *loop,
 }
 
 static void
-milter_client_cleanup (MilterClient *client)
+milter_client_cleanup (MilterClient *client, const gchar *pid_file,
+                       GError **error)
 {
     MilterClientPrivate *priv;
 
@@ -1745,16 +1789,28 @@ milter_client_cleanup (MilterClient *client)
 
             address_un = (struct sockaddr_un *)priv->address;
             if (g_unlink(address_un->sun_path) == -1) {
-                GError *error;
+                g_set_error(error,
+                            MILTER_CLIENT_ERROR,
+                            MILTER_CLIENT_ERROR_UNIX_SOCKET,
+                            "failed to remove used UNIX socket: %s: %s",
+                            address_un->sun_path, g_strerror(errno));
+                if (error) {
+                    milter_error("[client][unix][error] %s", (*error)->message);
+                }
+            }
+        }
+    }
 
-                error = g_error_new(MILTER_CLIENT_ERROR,
-                                    MILTER_CLIENT_ERROR_UNIX_SOCKET,
-                                    "failed to remove used UNIX socket: %s: %s",
-                                    address_un->sun_path, g_strerror(errno));
-                milter_error("[client][unix][error] %s", error->message);
-                milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client),
-                                            error);
-                g_error_free(error);
+    if (pid_file && milter_client_is_remove_pid_file_on_exit(client)) {
+        if (g_unlink(priv->pid_file) == -1) {
+            g_set_error(error,
+                        MILTER_CLIENT_ERROR,
+                        MILTER_CLIENT_ERROR_PID_FILE,
+                        "failed to remove created PID file: %s: %s",
+                        priv->pid_file, g_strerror(errno));
+            if (error) {
+                milter_error("[client][pid-file][error][remove] %s",
+                             (*error)->message);
             }
         }
     }
@@ -1903,8 +1959,8 @@ single_thread_single_loop_run (MilterClient *client, GError **error)
     return TRUE;
 }
 
-gboolean
-milter_client_run (MilterClient *client, GError **error)
+static gboolean
+milter_client_run_loop (MilterClient *client, GError **error)
 {
     MilterClientPrivate *priv;
     gboolean success;
@@ -1957,7 +2013,60 @@ milter_client_run (MilterClient *client, GError **error)
         }
     }
 
-    milter_client_cleanup(client);
+    return success;
+}
+
+gboolean
+milter_client_run (MilterClient *client, GError **error)
+{
+    MilterClientPrivate *priv;
+    gboolean success;
+    gchar *created_pid_file = NULL;
+    const gchar *pid_file;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    pid_file = milter_client_get_pid_file(client);
+    if (pid_file) {
+        gchar *content;
+        GError *local_error = NULL;
+
+        content = g_strdup_printf("%u\n", getpid());
+        if (g_file_set_contents(pid_file, content, -1, &local_error)) {
+            created_pid_file = g_strdup(pid_file);
+        } else {
+            milter_utils_set_error_with_sub_error(
+                error,
+                MILTER_CLIENT_ERROR,
+                MILTER_CLIENT_ERROR_PID_FILE,
+                local_error,
+                "failed to create PID file: <%s>: %s",
+                pid_file, local_error->message);
+            milter_error("[client][pid-file][error][save] <%s>: %s",
+                         pid_file, local_error->message);
+            return FALSE;
+        }
+    }
+
+    success = milter_client_run_loop(client, error);
+
+    if (success) {
+        GError *local_error = NULL;
+        milter_client_cleanup(client, created_pid_file, &local_error);
+        milter_error("[client][run][success][cleanup][error] "
+                     "failed to cleanup: %s",
+                     local_error->message);
+        g_propagate_error(error, local_error);
+    } else {
+        GError *local_error = NULL;
+        milter_client_cleanup(client, created_pid_file, &local_error);
+        milter_error("[client][run][fail][cleanup][error] "
+                     "failed to cleanup: %s",
+                     local_error->message);
+        g_error_free(local_error);
+    }
+
+    if (created_pid_file)
+        g_free(created_pid_file);
 
     return success;
 }
@@ -1975,17 +2084,6 @@ milter_client_main (MilterClient *client)
         g_error_free(error);
     }
     return success;
-}
-
-gboolean
-milter_client_run_master (MilterClient *client, GError **error)
-{
-    if (!run_master(client, error)) {
-        /* TODO: report error */
-        return FALSE;
-    }
-    milter_client_cleanup(client);
-    return TRUE;
 }
 
 static gboolean
@@ -2638,6 +2736,47 @@ milter_client_get_worker_id (MilterClient *client)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
     return priv->workers.id;
+}
+
+const gchar *
+milter_client_get_pid_file (MilterClient *client)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->get_pid_file)
+        return klass->get_pid_file(client);
+    return MILTER_CLIENT_GET_PRIVATE(client)->pid_file;
+}
+
+void
+milter_client_set_pid_file (MilterClient *client, const gchar *pid_file)
+{
+    MilterClientPrivate *priv;
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    if (klass->set_pid_file) {
+        klass->set_pid_file(client, pid_file);
+        return;
+    }
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    if (priv->pid_file)
+        g_free(priv->pid_file);
+    priv->pid_file = g_strdup(pid_file);
+}
+
+gboolean
+milter_client_is_remove_pid_file_on_exit (MilterClient *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->remove_pid_file_on_exit;
+}
+
+void
+milter_client_set_remove_pid_file_on_exit (MilterClient *client, gboolean remove)
+{
+    MILTER_CLIENT_GET_PRIVATE(client)->remove_pid_file_on_exit = remove;
 }
 
 /*

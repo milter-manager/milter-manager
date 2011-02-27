@@ -47,6 +47,8 @@ void test_remove_unix_socket_on_close (void);
 void test_remove_unix_socket_on_create_accessor (void);
 void test_remove_unix_socket_on_create (void);
 void test_not_remove_unix_socket_on_create (void);
+void test_remove_pid_file_on_exit_accessor (void);
+void test_remove_pid_file_on_exit (void);
 void test_suspend_time_on_unacceptable (void);
 void test_max_connections (void);
 void test_effective_user (void);
@@ -819,6 +821,49 @@ test_not_remove_unix_socket_on_create (void)
                                  "failed to bind(): %s: %s",
                                  spec, g_strerror(EADDRINUSE));
     gcut_assert_equal_error(expected_error, actual_error);
+}
+
+void
+test_remove_pid_file_on_exit_accessor (void)
+{
+    cut_assert_true(milter_client_is_remove_pid_file_on_exit(client));
+    milter_client_set_remove_pid_file_on_exit(client, FALSE);
+    cut_assert_false(milter_client_is_remove_pid_file_on_exit(client));
+}
+
+static const gchar *
+pid_file_path (void)
+{
+    return cut_take_printf("%s/milter.pid", tmp_dir);
+}
+
+static gboolean
+cb_idle_check_pid_file_existence (gpointer user_data)
+{
+    gboolean *pid_file_exist = user_data;
+
+    *pid_file_exist = g_file_test(pid_file_path(), G_FILE_TEST_EXISTS);
+
+    return FALSE;
+}
+
+void
+test_remove_pid_file_on_exit (void)
+{
+    gboolean pid_file_exist = FALSE;
+
+    cut_trace(setup_client());
+    milter_client_set_pid_file(client, pid_file_path());
+    milter_event_loop_add_idle_full(loop,
+                                    G_PRIORITY_HIGH,
+                                    cb_idle_check_pid_file_existence,
+                                    &pid_file_exist,
+                                    NULL);
+    cut_assert_true(milter_client_run(client, &actual_error));
+    gcut_assert_error(actual_error);
+    cut_assert_true(pid_file_exist);
+
+    cut_assert_false(g_file_test(pid_file_path(), G_FILE_TEST_EXISTS));
 }
 
 void
