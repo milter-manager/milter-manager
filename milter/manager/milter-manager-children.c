@@ -4046,51 +4046,7 @@ milter_manager_children_is_important_status (MilterManagerChildren *children,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     current_status = get_reply_status_for_state(children, state);
-
-    switch (current_status) {
-    case MILTER_STATUS_DISCARD:
-        return FALSE;
-        break;
-    case MILTER_STATUS_REJECT:
-        if (status == MILTER_STATUS_DISCARD)
-            return TRUE;
-        return FALSE;
-        break;
-    case MILTER_STATUS_TEMPORARY_FAILURE:
-        if (status == MILTER_STATUS_DISCARD ||
-            status == MILTER_STATUS_REJECT)
-            return TRUE;
-        return FALSE;
-        break;
-    case MILTER_STATUS_CONTINUE:
-        if (status == MILTER_STATUS_DISCARD ||
-            status == MILTER_STATUS_REJECT ||
-            status == MILTER_STATUS_TEMPORARY_FAILURE)
-            return TRUE;
-        return FALSE;
-    case MILTER_STATUS_SKIP:
-        if (status == MILTER_STATUS_DISCARD ||
-            status == MILTER_STATUS_REJECT ||
-            status == MILTER_STATUS_TEMPORARY_FAILURE ||
-            status == MILTER_STATUS_CONTINUE)
-            return TRUE;
-        return FALSE;
-        break;
-    case MILTER_STATUS_ACCEPT:
-        if (status == MILTER_STATUS_DISCARD ||
-            status == MILTER_STATUS_REJECT ||
-            status == MILTER_STATUS_TEMPORARY_FAILURE ||
-            status == MILTER_STATUS_SKIP ||
-            status == MILTER_STATUS_CONTINUE)
-            return TRUE;
-        return FALSE;
-        break;
-    default:
-        return TRUE;
-        break;
-    }
-
-    return TRUE;
+    return milter_status_is_important(current_status, status);
 }
 
 void

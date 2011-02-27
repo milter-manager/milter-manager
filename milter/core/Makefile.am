@@ -63,6 +63,7 @@ libmilter_core_la_SOURCES =		\
 	milter-marshalers.c		\
 	milter-marshalers.h		\
 	milter-core.c			\
+	milter-protocol.c  		\
 	milter-decoder.c		\
 	milter-command-decoder.c	\
 	milter-reply-decoder.c		\
