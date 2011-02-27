@@ -2037,9 +2037,14 @@ milter_client_run (MilterClient *client, GError **error)
     pid_file = milter_client_get_pid_file(client);
     if (pid_file) {
         gchar *content;
+        mode_t old_umask;
 
         content = g_strdup_printf("%u\n", getpid());
-        if (g_file_set_contents(pid_file, content, -1, &local_error)) {
+
+        old_umask = umask(0022);
+        success = g_file_set_contents(pid_file, content, -1, &local_error);
+        umask(old_umask);
+        if (success) {
             created_pid_file = g_strdup(pid_file);
         } else {
             milter_utils_set_error_with_sub_error(
