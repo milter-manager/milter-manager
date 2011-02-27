@@ -66,22 +66,21 @@ module Milter
       [:negotiate, :connect, :helo, :envelope_from, :envelope_recipient,
        :data, :unknown, :header, :end_of_header, :body, :end_of_message,
        :abort, :finished].each do |event|
-        if session.respond_to?(event)
-          context.signal_connect(event) do |_context, *args|
-            begin
-              if event == :end_of_message
-                session.send(event)
-              else
-                session.send(event, *args)
-              end
-            rescue Exception
-              Milter::Logger.error($!)
-              session_context.status = status_on_error
+        next unless session.respond_to?(event)
+        context.signal_connect(event) do |_context, *args|
+          begin
+            if event == :end_of_message
+              session.send(event)
+            else
+              session.send(event, *args)
             end
-            status = session_context.status
-            session_context.clear
-            status
+          rescue Exception
+            Milter::Logger.error($!)
+            session_context.status = status_on_error
           end
+          status = session_context.status
+          session_context.clear
+          status
         end
       end
     end
