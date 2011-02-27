@@ -44,7 +44,7 @@ static VALUE
 add_child (VALUE self, VALUE child)
 {
     milter_manager_children_add_child(SELF(self), RVAL2GOBJ(child));
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -65,7 +65,7 @@ static VALUE
 each (VALUE self)
 {
     milter_manager_children_foreach(SELF(self), cb_each, NULL);
-    return Qnil;
+    return self;
 }
 
 static VALUE

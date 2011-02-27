@@ -36,7 +36,7 @@ merge (VALUE self, VALUE other)
     condition = SELF(self);
     other_condition = SELF(other);
     milter_manager_applicable_condition_merge(condition, other_condition);
-    return Qnil;
+    return self;
 }
 
 void

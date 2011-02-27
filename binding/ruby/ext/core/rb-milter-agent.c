@@ -25,7 +25,7 @@ static VALUE
 agent_shutdown (VALUE self)
 {
     milter_agent_shutdown(SELF(self));
-    return Qnil;
+    return self;
 }
 
 void

@@ -32,7 +32,7 @@ set_macro (VALUE self, VALUE rb_macro_context, VALUE name, VALUE value)
     milter_protocol_agent_set_macro(agent, macro_context,
                                     RVAL2CSTR(name),
 				    RVAL2CSTR_ACCEPT_NIL(value));
-    return Qnil;
+    return self;
 }
 
 static void

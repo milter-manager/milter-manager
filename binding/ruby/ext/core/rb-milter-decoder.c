@@ -34,7 +34,7 @@ decode (VALUE self, VALUE chunk)
                                &error))
         RAISE_GERROR(error);
 
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -45,7 +45,7 @@ end_decode (VALUE self)
     if (!milter_decoder_end_decode(SELF(self), &error))
         RAISE_GERROR(error);
 
-    return Qnil;
+    return self;
 }
 
 static VALUE

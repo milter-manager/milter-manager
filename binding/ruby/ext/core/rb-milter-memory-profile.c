@@ -23,7 +23,7 @@ static VALUE
 s_report (VALUE klass)
 {
     milter_memory_profile_report();
-    return Qnil;
+    return klass;
 }
 
 static VALUE

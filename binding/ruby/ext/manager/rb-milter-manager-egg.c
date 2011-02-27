@@ -38,7 +38,7 @@ set_connection_spec (VALUE self, VALUE spec)
 						&error))
 	RAISE_GERROR(error);
 
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -49,7 +49,7 @@ merge (VALUE self, VALUE other)
     if (!milter_manager_egg_merge(SELF(self), SELF(other), &error))
 	RAISE_GERROR(error);
 
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -57,7 +57,7 @@ add_applicable_condition (VALUE self, VALUE condition)
 {
     milter_manager_egg_add_applicable_condition(SELF(self),
 						RVAL2GOBJ(condition));
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -73,7 +73,7 @@ static VALUE
 clear_applicable_conditions (VALUE self)
 {
     milter_manager_egg_clear_applicable_conditions(SELF(self));
-    return Qnil;
+    return self;
 }
 
 static VALUE

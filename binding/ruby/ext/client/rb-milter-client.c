@@ -79,7 +79,7 @@ client_run (VALUE self)
     if (!milter_client_run(SELF(self), &error))
 	RAISE_GERROR(error);
 
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -88,14 +88,14 @@ client_main (VALUE self)
     milter_warning("[ruby][client][deprecatd] Milter::Client#main is deprecated. "
 		   "Use Milter::Client#run instead.");
     milter_client_main(SELF(self));
-    return Qnil;
+    return self;
 }
 
 static VALUE
 client_shutdown (VALUE self)
 {
     milter_client_shutdown(SELF(self));
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -107,7 +107,7 @@ client_start_syslog (int argc, VALUE *argv, VALUE self)
     milter_client_start_syslog(SELF(self),
 			       RVAL2CSTR(identify),
 			       RVAL2CSTR(facility));
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -118,7 +118,7 @@ client_listen (VALUE self)
     if (!milter_client_listen(SELF(self), &error))
 	RAISE_GERROR(error);
 
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -129,7 +129,7 @@ client_drop_privilege (VALUE self)
     if (!milter_client_drop_privilege(SELF(self), &error))
 	RAISE_GERROR(error);
 
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -164,7 +164,7 @@ client_set_connection_spec (VALUE self, VALUE spec)
                                            StringValueCStr(spec), &error))
         RAISE_GERROR(error);
 
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -177,7 +177,7 @@ static VALUE
 client_set_effective_user (VALUE self, VALUE user)
 {
     milter_client_set_effective_user(SELF(self), RVAL2CSTR_ACCEPT_NIL(user));
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -190,7 +190,7 @@ static VALUE
 client_set_effective_group (VALUE self, VALUE group)
 {
     milter_client_set_effective_group(SELF(self), RVAL2CSTR_ACCEPT_NIL(group));
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -203,7 +203,7 @@ static VALUE
 client_set_unix_socket_group (VALUE self, VALUE group)
 {
     milter_client_set_unix_socket_group(SELF(self), RVAL2CSTR_ACCEPT_NIL(group));
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -233,7 +233,7 @@ client_set_unix_socket_mode (VALUE self, VALUE rb_mode)
     }
 
     milter_client_set_unix_socket_mode(SELF(self), mode);
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -263,7 +263,7 @@ client_set_default_unix_socket_mode (VALUE self, VALUE rb_mode)
     }
 
     milter_client_set_default_unix_socket_mode(SELF(self), mode);
-    return Qnil;
+    return self;
 }
 
 static void

@@ -48,7 +48,7 @@ log_full (VALUE self, VALUE domain, VALUE level, VALUE file, VALUE line,
 		      RVAL2CSTR(function),
 		      "%s",
 		      RVAL2CSTR(message));
-    return Qnil;
+    return self;
 }
 
 void

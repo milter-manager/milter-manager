@@ -76,14 +76,14 @@ remove_egg (VALUE self, VALUE name_or_egg)
 	milter_manager_configuration_remove_egg(SELF(self), egg);
     }
 
-    return Qnil;
+    return self;
 }
 
 static VALUE
 clear_eggs (VALUE self)
 {
     milter_manager_configuration_clear_eggs(SELF(self));
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -91,7 +91,7 @@ add_applicable_condition (VALUE self, VALUE condition)
 {
     milter_manager_configuration_add_applicable_condition(SELF(self),
 							  RVAL2GOBJ(condition));
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -131,35 +131,35 @@ remove_applicable_condition (VALUE self, VALUE name_or_condition)
 								 condition);
     }
 
-    return Qnil;
+    return self;
 }
 
 static VALUE
 clear_applicable_conditions (VALUE self)
 {
     milter_manager_configuration_clear_applicable_conditions(SELF(self));
-    return Qnil;
+    return self;
 }
 
 static VALUE
 append_load_path (VALUE self, VALUE path)
 {
     milter_manager_configuration_append_load_path(SELF(self), RVAL2CSTR(path));
-    return Qnil;
+    return self;
 }
 
 static VALUE
 prepend_load_path (VALUE self, VALUE path)
 {
     milter_manager_configuration_prepend_load_path(SELF(self), RVAL2CSTR(path));
-    return Qnil;
+    return self;
 }
 
 static VALUE
 clear_load_paths (VALUE self)
 {
     milter_manager_configuration_clear_load_paths(SELF(self));
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -181,7 +181,7 @@ setup_children (VALUE self, VALUE rb_children, VALUE rb_client_context)
     milter_manager_configuration_setup_children(SELF(self),
 						children,
 						client_context);
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -211,7 +211,7 @@ set_location (VALUE self, VALUE key, VALUE file, VALUE line)
 					      RVAL2CSTR_ACCEPT_NIL(file),
 					      NUM2INT(line));
 
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -220,7 +220,7 @@ reset_location (VALUE self, VALUE key)
     milter_manager_configuration_reset_location(SELF(self),
 						RVAL2CSTR(key));
 
-    return Qnil;
+    return self;
 }
 
 static VALUE

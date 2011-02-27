@@ -75,14 +75,14 @@ static VALUE
 add_action (VALUE self, VALUE action)
 {
     milter_option_add_action(SELF(self), RVAL2ACTION_FLAGS(action));
-    return Qnil;
+    return self;
 }
 
 static VALUE
 remove_step (VALUE self, VALUE step)
 {
     milter_option_remove_step(SELF(self), RVAL2STEP_FLAGS(step));
-    return Qnil;
+    return self;
 }
 
 void

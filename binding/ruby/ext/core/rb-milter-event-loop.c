@@ -296,21 +296,21 @@ static VALUE
 rb_loop_run (VALUE self)
 {
     milter_event_loop_run(SELF(self));
-    return Qnil;
+    return self;
 }
 
 static VALUE
 rb_loop_quit (VALUE self)
 {
     milter_event_loop_quit(SELF(self));
-    return Qnil;
+    return self;
 }
 
 static VALUE
 rb_loop_remove (VALUE self, VALUE tag)
 {
     milter_event_loop_remove(SELF(self), NUM2UINT(tag));
-    return Qnil;
+    return self;
 }
 
 static VALUE

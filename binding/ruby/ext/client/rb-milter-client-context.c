@@ -57,7 +57,7 @@ add_header (VALUE self, VALUE name, VALUE value)
                                           &error))
         RAISE_GERROR(error);
 
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -72,7 +72,7 @@ insert_header (VALUE self, VALUE index, VALUE name, VALUE value)
 					     &error))
         RAISE_GERROR(error);
 
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -87,7 +87,7 @@ change_header (VALUE self, VALUE name, VALUE index, VALUE value)
                                              &error))
         RAISE_GERROR(error);
 
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -101,7 +101,7 @@ delete_header (VALUE self, VALUE name, VALUE index)
                                              &error))
         RAISE_GERROR(error);
 
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -116,7 +116,7 @@ set_reply (VALUE self, VALUE code, VALUE extended_code, VALUE message)
                                          &error))
         RAISE_GERROR(error);
 
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -139,7 +139,7 @@ change_from (int argc, VALUE *argv, VALUE self)
     if (!milter_client_context_change_from(SELF(self), from, parameters, &error))
         RAISE_GERROR(error);
 
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -158,7 +158,7 @@ add_recipient (int argc, VALUE *argv, VALUE self)
 					     &error))
 	RAISE_GERROR(error);
 
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -171,7 +171,7 @@ delete_recipient (VALUE self, VALUE recipient)
 						&error))
 	RAISE_GERROR(error);
 
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -186,7 +186,7 @@ replace_body (VALUE self, VALUE rb_chunk)
 					    &error))
 	RAISE_GERROR(error);
 
-    return Qnil;
+    return self;
 }
 
 static VALUE
@@ -231,7 +231,7 @@ static VALUE
 set_packet_buffer_size (VALUE self, VALUE size)
 {
     milter_client_context_set_packet_buffer_size(SELF(self), NUM2UINT(size));
-    return Qnil;
+    return self;
 }
 
 static VALUE
