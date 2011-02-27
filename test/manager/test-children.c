@@ -1739,8 +1739,6 @@ data_important_status (void)
                  test_data(BODY, SKIP, REJECT), g_free,
                  "body - skip - discard",
                  test_data(BODY, SKIP, DISCARD), g_free,
-                 "body - accept - skip",
-                 test_data(BODY, ACCEPT, SKIP), g_free,
                  NULL);
     add_data("end of message", END_OF_MESSAGE);
 
