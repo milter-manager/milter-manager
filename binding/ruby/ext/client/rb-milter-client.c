@@ -133,6 +133,17 @@ client_drop_privilege (VALUE self)
 }
 
 static VALUE
+client_daemonize (VALUE self)
+{
+    GError *error = NULL;
+
+    if (!milter_client_daemonize(SELF(self), &error))
+	RAISE_GERROR(error);
+
+    return self;
+}
+
+static VALUE
 client_create_context (VALUE self)
 {
     return GOBJ2RVAL_UNREF(milter_client_create_context(SELF(self)));
@@ -291,6 +302,7 @@ Init_milter_client (void)
     rb_define_method(rb_cMilterClient, "listen", client_listen, 0);
     rb_define_method(rb_cMilterClient, "drop_privilege",
 		     client_drop_privilege, 0);
+    rb_define_method(rb_cMilterClient, "daemonize", client_daemonize, 0);
     rb_define_method(rb_cMilterClient, "create_context",
 		     client_create_context, 0);
     rb_define_method(rb_cMilterClient, "connection_spec",

@@ -49,7 +49,7 @@ module Milter
         @configuration.setup(client)
         client.listen
         client.drop_privilege
-        daemonize if @configuration.milter.daemon?
+        client.daemonize if @configuration.milter.daemon?
         setup_signal_handler(client) if @configuration.milter.handle_signal?
         client.run
       end
@@ -258,10 +258,6 @@ module Milter
                           "Alias of --log-level=all.") do
           ENV["MILTER_LOG_LEVEL"] = "all"
         end
-      end
-
-      def daemonize
-        WEBrick::Daemon.start
       end
 
       def setup_signal_handler(client)
