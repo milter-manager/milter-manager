@@ -45,6 +45,7 @@ static guint n_workers = 0;
 static MilterClientEventLoopBackend event_loop_backend =
     MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
 static guint packet_buffer_size = 0;
+static gchar *pid_file = NULL;
 
 static gboolean
 print_version (const gchar *option_name,
@@ -165,6 +166,8 @@ static const GOptionEntry option_entries[] =
     {"packet-buffer-size", 0, 0, G_OPTION_ARG_INT, &packet_buffer_size,
      N_("Use SIZE as packet buffer size in bytes. 0 disables packet buffering. "
         "(default: 0; disabled)"), "SIZE"},
+    {"pid-file", 0, 0, G_OPTION_ARG_FILENAME, &pid_file,
+     N_("Put PID to FILE." "(default: disabled)"), "FILE"},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
      N_("Show version"), NULL},
     {NULL}
@@ -543,6 +546,7 @@ main (int argc, char *argv[])
     if (n_workers > 0)
         milter_client_set_n_workers(client, n_workers);
     milter_client_set_default_packet_buffer_size(client, packet_buffer_size);
+    milter_client_set_pid_file(client, pid_file);
     if (spec)
         success = milter_client_set_connection_spec(client, spec, &error);
     if (success)
