@@ -2,6 +2,8 @@
 #
 # Licence: Ruby's
 
+require 'shellwords'
+
 module Shellwords
   unless respond_to?(:split)
     module_function
