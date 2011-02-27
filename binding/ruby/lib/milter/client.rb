@@ -99,11 +99,10 @@ module Milter
       [:connect, :helo, :envelope_from, :envelope_recipient,
        :body, :unknown, [:header, :headers], :end_of_header, :data,
       ].each do |method_name, step_name|
-        if respond_to?(method_name)
-          step_name ||= method_name
-          step = Milter::StepFlags.const_get("NO_#{step_name.to_s.upcase}")
-          option.remove_step(step)
-        end
+        next unless respond_to?(method_name)
+        step_name ||= method_name
+        step = Milter::StepFlags.const_get("NO_#{step_name.to_s.upcase}")
+        option.remove_step(step)
       end
       unless need_header_value_with_leading_space?
         option.remove_step(Milter::StepFlags::HEADER_VALUE_WITH_LEADING_SPACE)
