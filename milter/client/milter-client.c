@@ -232,7 +232,7 @@ _milter_client_class_init (MilterClientClass *klass)
                                "PID File",
                                "The PID file of the client",
                                NULL,
-                               G_PARAM_READABLE);
+                               G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_PID_FILE, spec);
 
     spec = g_param_spec_boolean("remove-pid-file-on-exit",
@@ -240,7 +240,7 @@ _milter_client_class_init (MilterClientClass *klass)
                                 "Whether removing PID file of the client "
                                 "on exist",
                                 TRUE,
-                                G_PARAM_READABLE);
+                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_REMOVE_PID_FILE_ON_EXIT,
                                     spec);
 
