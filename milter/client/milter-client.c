@@ -1679,6 +1679,8 @@ milter_client_daemonize (MilterClient *client, GError **error)
         return FALSE;
     }
 
+    umask(0);
+
     if (!milter_utils_detach_io(&error_message)) {
         g_set_error(error,
                     MILTER_CLIENT_ERROR,
