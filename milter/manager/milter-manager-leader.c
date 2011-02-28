@@ -693,8 +693,8 @@ cb_change_header (MilterReplySignals *_reply,
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(leader), error);
         g_error_free(error);
     } else if (value) {
-        milter_statistics(
-            "[session][header][add](%u): <%s>=<%s>", priv->tag, name, value);
+        milter_statistics("[session][header][add](%u): <%s>=<%s>",
+                          priv->tag, name, value);
     }
 }
 
