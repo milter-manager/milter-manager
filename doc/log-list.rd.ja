@@ -80,8 +80,6 @@ server, managerすべてのモジュールのログが出力されます。
 
    メッセージは任意の文字が入ります。
 
-
-
 以下は「セッションID」が省略されている例です。
 
   [agent][error][decode] Decode error
@@ -291,7 +289,7 @@ clientモジュールのログの一覧です。
 
 : error: [client][worker][run][listen][error]
 
-ワーカープロセスがlistenを開始する時にエラーが発生。
+  ワーカープロセスがlistenを開始する時にエラーが発生。
 
 === server
 
