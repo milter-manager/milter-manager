@@ -1,0 +1,302 @@
+# -*- rd -*-
+
+= ログ一覧 --- milter managerが出力するログの一覧
+
+== このドキュメントについて
+
+milter managerが出力するログについて説明します。
+
+== モジュール
+
+milter managerは以下の4つのモジュールに分かれています。
+
+  * core
+  * client
+  * server
+  * manager
+
+それぞれ以下のような役割になっています。
+
+: core
+   client, server, namagerのモジュールで共通に利用す
+   る機能を提供するモジュールです。入出力や通信データのエン
+   コード・デコード処理などを含んでいます。
+
+: client
+   milterを実装するために必要な機能を提供するモジュールです。
+   coreを利用しています。
+
+: server
+   MTA側のmilter通信部分を実装するために必要な機能を提供するモ
+   ジュールです。coreを利用しています。
+
+: manager
+   milter managerを実装するために必要な機能を提供するモジュー
+   ルです。core, client, serverを利用しています。
+
+libmilter-clientを利用して実装したmilterはclientモジュールを
+利用しているため、coreとclientのログが出力されます。milter
+managerはmanagerモジュールを利用しているため、core, client,
+server, managerすべてのモジュールのログが出力されます。
+
+== 出力レベル
+
+以下の出力レベルがあり、必要な情報のみログ出力することができ
+ます。複数の情報を出力したい場合は複数の出力レベルを指定しま
+す。
+
+  * default: critical, error, warningを出力
+  * none: 出力しない
+  * critical: 致命的な問題のみ出力
+  * error: エラーのみ出力
+  * warning: 警告のみ出力
+  * info: 付加情報のみ出力
+  * debug: デバッグ情報のみ出力
+  * statistics: 統計情報のみ出力
+  * all: すべての情報を出力
+
+== フォーマット
+
+ログは以下のようなフォーマットになっています。
+
+  [#{セッションID}] [#{タグ名1}][#{タグ名2}][...] #{メッセージ}
+
+このうち、「セッションID」と「メッセージ」は省略されている場
+合があります。
+
+: セッションID
+
+   セッションIDは数値です。セッション毎に重複しない値が使わ
+   れ、モジュールが異なっていてもセッションが同じであれば同
+   じセッションIDを用います。
+
+: タグ名
+
+   タグ名にはアルファベット・数字・ハイフン（-）・アンダーバー
+   （_）のみ利用します。利用しているタグ名には特に規則はあり
+   ません。
+
+: メッセージ
+
+   メッセージは任意の文字が入ります。
+
+
+
+以下は「セッションID」が省略されている例です。
+
+  [agent][error][decode] Decode error
+
+このログには下のタグがついています。
+
+  * agent
+  * error
+  * decode
+
+また、このログのメッセージは以下の通りです。
+
+  Decode error
+
+「セッションID」がつくと以下のようになります。
+
+  [29] [agent][error][decode] Decode error
+
+== ログ一覧
+
+モジュール毎にログの「タグ名」とログが出力される条件を説明します。
+
+以下のフォーマットで記述します。
+
+: #{出力レベル}: [#{タグ名1}][#{タグ名2}][...]
+
+   #{ログが出力される条件}
+
+例えば、以下のようになります。
+
+: error: [reader][error][read]
+
+   読み込み時にエラーが発生。
+
+これは、「読み込み時にエラーが発生」したときに
+「[reader][error][read]」というタグの付いたログが「出力レベル
+error」で出力されるということを表します。
+
+=== core
+
+coreモジュールのログの一覧です。
+
+coreモジュールには以下のオブジェクト（ひとまとまりの処理を実
+行する単位）があります。タグにオブジェクト名が含まれます。
+
+  * reader: データ読み込みオブジェクト。
+  * writer: データ書き込みオブジェクト。
+  * agent: データのやりとりをするオブジェクト。データの読み
+    書きにreaderとwriterを使う。
+
+: error: [reader][error][read]
+
+   読み込み時にエラーが発生。
+
+: error: [reader][callback][error]
+
+   入力エラーが発生。
+
+: error: [reader][watch][read][fail]
+
+   読み込み可能検出監視の登録に失敗。
+
+: error: [reader][watch][error][fail]
+
+   入力エラー検出監視の登録に失敗。
+
+: error: [reader][error][shutdown]
+
+   入力の終了処理に失敗。
+
+: error: [writer][flush-callback][error]
+
+   出力データのフラッシュ時にエラーが発生。
+
+: error: [writer][write-callback][error]
+
+   書き込み時にエラーが発生。
+
+: error: [writer][write][error]
+
+   書き込みリクエスト時にエラーが発生。
+
+: error: [writer][flush][error]
+
+   出力データのフラッシュリクエスト時にエラーが発生。
+
+: error: [writer][error-callback][error]
+
+   出力エラーが発生。
+
+: error: [writer][watch][fail]
+
+   出力エラー検出監視の登録に失敗。
+
+: error: [writer][shutdown][flush-buffer][write][error]
+
+   出力終了処理直前の未送信データ出力時にエラーが発生。
+
+: error: [writer][shutdown][flush-buffer][flush][error]
+
+   出力終了処理直前の未送信データのフラッシュ時にエラーが発生。
+
+: error: [writer][error][shutdown]
+
+   出力の終了処理に失敗。
+
+: error: [agent][error][decode]
+
+   入力データの解析時にエラーが発生。
+
+: error: [agent][error][reader]
+
+   入力データの読み込み時にエラーが発生。
+
+: error: [agent][error][writer]
+
+   出力データの書き込み時にエラーが発生。
+
+: error: [agent][error][set-writer][auto-flush]
+
+   出力先切替時の自動フラッシュ時にエラーが発生。
+
+=== client
+
+clientモジュールのログの一覧です。
+
+セッションに関係ない部分では「セッションID」は付きません。
+
+: error: [client][error][write]
+
+   出力データの書き込み時にエラーが発生。
+
+: error: [client][error][buffered-packets][write]
+
+   溜めていた出力データの書き込み時にエラーが発生。
+
+: error: [client][error][reply-on-end-of-message][flush]
+
+   end-of-messageイベント応答時の自動フラッシュでエラーが発
+   生。
+
+: statistics: [sessions][finished]
+
+   セッション終了時。メッセージとして以下のフォーマットの統
+   計情報が付く。
+
+     #{総処理セッション数}(+#{前回から処理したセッション数}) #{処理中のセッション数}
+
+   例えば、前回のログ出力時には27セッション処理した状態で、
+   現在は追加で2セッションの処理が完了し、3セッションを処理
+   中である場合は以下のようになります。
+
+     29(+2) 3
+
+: error: [client][error][unix]
+
+   UNIXドメインソケットの初期化中にエラーが発生。
+
+: error: [client][single-thread][start][error]
+
+   メインループ開始時にエラーが発生。
+
+: warning: [client][accept][suspend]
+
+   同時接続数が多すぎて（RLIMIT_NOFILEが足りない）新しく接続
+   を受け付けられず、一時的に接続受付を中断している時。
+
+: warning: [client][accept][resume]
+
+   一時中断していた接続受付を再開した時。
+
+: warning: [client][error][accept]
+
+   接続受付に失敗した時。
+
+: error: [client][single-thread][accept][start][error]
+
+   接続受付の開始に失敗した時。
+
+: error: [client][watch][error]
+
+   listen中のソケットにエラーが発生。
+
+: error: [client][prepare][error]
+
+   初期化時にエラーが発生。
+
+: error: [client][prepare][listen][error]
+
+   listenに失敗した時。
+
+: error: [client][run][success][cleanup][error]
+
+   正常終了時の後処理でエラーが発生。
+
+: error: [client][run][fail][cleanup][error]
+
+   異常終了時の後処理でエラーが発生。
+
+: error: [client][master][run][error]
+
+   マスタープロセスの実行時にエラーが発生。
+
+: error: [client][worker][run][error]
+
+   ワーカープロセスの実行時にエラーが発生。
+
+: error: [client][worker][run][listen][error]
+
+ワーカープロセスがlistenを開始する時にエラーが発生。
+
+=== server
+
+TOOD
+
+=== manager
+
+TODO
