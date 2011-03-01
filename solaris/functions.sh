@@ -22,6 +22,8 @@ update_prototype()
     package_name="${package_name##lib}"
     local prototype_dir="${PROTOTYPES}/${package_name}"
     local prototype="${prototype_dir}/prototype"
+    local preinstall="${prototype_dir}/preinstall"
+    local postinstall="${prototype_dir}/postinstall"
     local user="$(/usr/xpg4/bin/id -un)"
     local group="$(/usr/xpg4/bin/id -gn)"
     local log="${BUILDS}/${base}.log"
@@ -41,6 +43,8 @@ i pkginfo
 i depend
 i copyright
 EOP
+    test -f "${preinstall}" && echo "i preinstall" >> "${prototype}"
+    test -f "${postinstall}" && echo "i postinstall" >> "${prototype}"
     find "${PROTOTYPES_DESTDIR}${PREFIX}" -print | \
 	pkgproto | \
 	grep -v " ${PROTOTYPES_DESTDIR}${PREFIX} " | \

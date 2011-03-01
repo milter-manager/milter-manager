@@ -1,0 +1,8 @@
+#! /bin/bash
+
+TARGET_USER=mmanager
+TARGET_GROUP=mmanager
+
+mkdir -p $BASEDIR/var/run/milter-manager
+chown $TARGET_USER:$TARGET_GROUP $BASEDIR/var/run/milter-manager
+exit 0
