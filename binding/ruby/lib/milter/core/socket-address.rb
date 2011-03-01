@@ -27,6 +27,18 @@ module Milter
         false
       end
 
+      def ipv4?
+        true
+      end
+
+      def ipv6?
+        false
+      end
+
+      def unix?
+        false
+      end
+
       def unknown?
         false
       end
@@ -49,6 +61,18 @@ module Milter
         false
       end
 
+      def ipv4?
+        false
+      end
+
+      def ipv6?
+        true
+      end
+
+      def unix?
+        false
+      end
+
       def unknown?
         false
       end
@@ -63,6 +87,18 @@ module Milter
         true
       end
 
+      def ipv4?
+        false
+      end
+
+      def ipv6?
+        false
+      end
+
+      def unix?
+        true
+      end
+
       def unknown?
         false
       end
@@ -74,6 +110,18 @@ module Milter
 
     class Unknown
       def local?
+        false
+      end
+
+      def ipv4?
+        false
+      end
+
+      def ipv6?
+        false
+      end
+
+      def unix?
         false
       end
 
