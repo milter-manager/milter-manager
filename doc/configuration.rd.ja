@@ -1151,6 +1151,20 @@ S25R適用条件は以下の設定でカスタマイズできます。
        !(8..19).include?(Time.now.hour) and /\.jp\z/ === host
      end
 
+: s25r.check_only_ipv4=(boolean)
+
+   1.6.6から使用可能。
+
+   (({true}))を指定した場合はIPv4からの接続してきた場合のみ
+   S25Rのチェックを有効にします。(({false}))を指定するとIPv6
+   からの接続の場合でもチェックします。
+
+   例:
+     s25r.check_only_ipv4 = false # IPv4以外のときもチェック
+
+   初期値:
+     IPv4の場合のみチェックする
+
 === Remote Network
 
 この適用条件を使うと、外部ネットワークからアクセスしてきた

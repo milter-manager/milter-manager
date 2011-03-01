@@ -1172,6 +1172,20 @@ configurations:
        !(8..19).include?(Time.now.hour) and /\.jp\z/ === host
      end
 
+: s25r.check_only_ipv4=(boolean)
+
+   Since 1.6.6.
+
+   If (({true})) is specified, S25R check is enabled only
+   for IPv4 connection. If (({false})) is specified, S25R
+   check is also enabled for IPv6 connection.
+
+   Example:
+     s25r.check_only_ipv4 = false # enabled for non IPv4 connection
+
+   Default:
+     S25R check is enabled only for IPv4.
+
 === Remote Network
 
 This applicable condition applies a child milter to only
