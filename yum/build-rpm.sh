@@ -74,6 +74,7 @@ if test -f /tmp/${SOURCE_BASE_NAME}-$VERSION-*.src.rpm; then
         if ! yum info libdb-devel >/dev/null 2>&1; then
             sed -i'' -e 's/libdb-devel/db4-devel/g' ${PACKAGE}.spec
         fi
+        sed -i'' -e 's/BuildArch: noarch//g' ${PACKAGE}.spec
         mv ${PACKAGE}.spec ../SPECS/
         cd
     fi
