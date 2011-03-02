@@ -18,6 +18,7 @@ require 'milter/core'
 require 'milter_client.so'
 require 'milter/client/configuration'
 require 'milter/client/command-line'
+require 'milter/client/composite-session'
 
 module Milter
   class Client
