@@ -4046,7 +4046,7 @@ milter_manager_children_is_important_status (MilterManagerChildren *children,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     current_status = get_reply_status_for_state(children, state);
-    return milter_status_is_important(current_status, status);
+    return milter_status_compare(current_status, status) < 0;
 }
 
 void

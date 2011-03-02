@@ -23,38 +23,41 @@
 
 #include "milter-protocol.h"
 
-gboolean
-milter_status_is_important (MilterStatus current_status,
-                            MilterStatus new_status)
+gint
+milter_status_compare (MilterStatus current_status,
+                       MilterStatus new_status)
 {
+    if (current_status == new_status)
+        return 0;
+
     switch (current_status) {
     case MILTER_STATUS_DISCARD:
-        return FALSE;
+        return 1;
         break;
     case MILTER_STATUS_REJECT:
         if (new_status == MILTER_STATUS_DISCARD)
-            return TRUE;
-        return FALSE;
+            return -1;
+        return 1;
         break;
     case MILTER_STATUS_TEMPORARY_FAILURE:
         if (new_status == MILTER_STATUS_DISCARD ||
             new_status == MILTER_STATUS_REJECT)
-            return TRUE;
-        return FALSE;
+            return -1;
+        return 1;
         break;
     case MILTER_STATUS_CONTINUE:
         if (new_status == MILTER_STATUS_DISCARD ||
             new_status == MILTER_STATUS_REJECT ||
             new_status == MILTER_STATUS_TEMPORARY_FAILURE)
-            return TRUE;
-        return FALSE;
+            return -1;
+        return 1;
     case MILTER_STATUS_SKIP:
         if (new_status == MILTER_STATUS_DISCARD ||
             new_status == MILTER_STATUS_REJECT ||
             new_status == MILTER_STATUS_TEMPORARY_FAILURE ||
             new_status == MILTER_STATUS_CONTINUE)
-            return TRUE;
-        return FALSE;
+            return -1;
+        return 1;
         break;
     case MILTER_STATUS_ACCEPT:
         if (new_status == MILTER_STATUS_DISCARD ||
@@ -62,15 +65,15 @@ milter_status_is_important (MilterStatus current_status,
             new_status == MILTER_STATUS_TEMPORARY_FAILURE ||
             new_status == MILTER_STATUS_SKIP ||
             new_status == MILTER_STATUS_CONTINUE)
-            return TRUE;
-        return FALSE;
+            return -1;
+        return 1;
         break;
     default:
-        return TRUE;
+        return -1;
         break;
     }
 
-    return TRUE;
+    return -1;
 }
 
 /*

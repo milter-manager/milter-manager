@@ -122,8 +122,8 @@ typedef enum
     MILTER_MACRO_STAGE_END_OF_HEADER = 6
 } MilterMacroStage;
 
-gboolean milter_status_is_important (MilterStatus current_status,
-                                     MilterStatus new_status);
+gint       milter_status_compare        (MilterStatus status1,
+                                         MilterStatus status2);
 
 G_END_DECLS
 

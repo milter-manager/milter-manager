@@ -23,10 +23,8 @@
 #include <milter/core/milter-protocol.h>
 
 void test_status_is_pass (void);
-void data_important_status (void);
-void test_important_status (gconstpointer data);
-void data_not_important_status (void);
-void test_not_important_status (gconstpointer data);
+void data_compare (void);
+void test_compare (gconstpointer data);
 
 void
 setup (void)
@@ -58,22 +56,20 @@ test_status_is_pass (void)
     cut_assert_false(MILTER_STATUS_IS_PASS(MILTER_STATUS_ERROR));
 }
 
-void
-data_important_status (void)
-{
-#define ADD_DATUM(label, current_status, new_status)            \
+#define ADD_COMPARE_DATUM(label, expected, status1, status2)    \
     gcut_add_datum(label,                                       \
-                   "current-status", MILTER_TYPE_STATUS,        \
-                   MILTER_STATUS_ ## current_status,            \
-                   "new-status", MILTER_TYPE_STATUS,            \
-                   MILTER_STATUS_ ## new_status,                \
+                   "expected", G_TYPE_INT, expected,            \
+                   "status1", MILTER_TYPE_STATUS,               \
+                   MILTER_STATUS_ ## status1,                   \
+                   "status2", MILTER_TYPE_STATUS,               \
+                   MILTER_STATUS_ ## status2,                   \
                    NULL)
 
-    ADD_DATUM("default - accept", DEFAULT, ACCEPT);
-    ADD_DATUM("default - accept", DEFAULT, ACCEPT);
-    ADD_DATUM("default - accept", DEFAULT, ACCEPT);
-    ADD_DATUM("default - accept", DEFAULT, ACCEPT);
-    ADD_DATUM("default - accept", DEFAULT, ACCEPT);
+static void
+data_compare_small (void)
+{
+#define ADD_DATUM(label, status1, status2)              \
+    ADD_COMPARE_DATUM(label, -1, status1, status2)
 
     ADD_DATUM("default - accept", DEFAULT, ACCEPT);
     ADD_DATUM("default - continue", DEFAULT, ACCEPT);
@@ -81,80 +77,85 @@ data_important_status (void)
     ADD_DATUM("default - reject", DEFAULT, REJECT);
     ADD_DATUM("default - discard", DEFAULT, DISCARD);
     ADD_DATUM("default - skip", DEFAULT, SKIP);
+
     ADD_DATUM("not change - accept", NOT_CHANGE, ACCEPT);
     ADD_DATUM("not change - continue", NOT_CHANGE, ACCEPT);
     ADD_DATUM("not change - temporary failure", NOT_CHANGE, TEMPORARY_FAILURE);
     ADD_DATUM("not change - reject", NOT_CHANGE, REJECT);
     ADD_DATUM("not change - discard", NOT_CHANGE, DISCARD);
     ADD_DATUM("not change - skip", NOT_CHANGE, SKIP);
+
     ADD_DATUM("accept - continue", ACCEPT, CONTINUE);
     ADD_DATUM("accept - temporary failure", ACCEPT, TEMPORARY_FAILURE);
     ADD_DATUM("accept - reject", ACCEPT, REJECT);
     ADD_DATUM("accept - discard", ACCEPT, DISCARD);
     ADD_DATUM("accept - skip", ACCEPT, SKIP);
+
     ADD_DATUM("skip - continue", SKIP, CONTINUE);
     ADD_DATUM("skip - temporary failure", SKIP, TEMPORARY_FAILURE);
     ADD_DATUM("skip - reject", SKIP, REJECT);
     ADD_DATUM("skip - discard", SKIP, DISCARD);
+
     ADD_DATUM("continue - temporary failure", CONTINUE, TEMPORARY_FAILURE);
     ADD_DATUM("continue - reject", CONTINUE, REJECT);
     ADD_DATUM("continue - discard", CONTINUE, DISCARD);
+
     ADD_DATUM("temporary failure - reject", TEMPORARY_FAILURE, REJECT);
     ADD_DATUM("temporary failure - discard", TEMPORARY_FAILURE, DISCARD);
+
     ADD_DATUM("reject - discard", REJECT, DISCARD);
 
 #undef ADD_DATUM
 }
 
-void
-test_important_status (gconstpointer data)
+static void
+data_compare_large (void)
 {
-    MilterStatus current_status, new_status;
-
-    current_status = gcut_data_get_enum(data, "current-status");
-    new_status = gcut_data_get_enum(data, "new-status");
-    cut_assert_true(milter_status_is_important(current_status, new_status));
-}
-
-void
-data_not_important_status (void)
-{
-#define ADD_DATUM(label, current_status, new_status)            \
-    gcut_add_datum(label,                                       \
-                   "current-status", MILTER_TYPE_STATUS,        \
-                   MILTER_STATUS_ ## current_status,            \
-                   "new-status", MILTER_TYPE_STATUS,            \
-                   MILTER_STATUS_ ## new_status,                \
-                   NULL)
+#define ADD_DATUM(label, status1, status2) \
+    ADD_COMPARE_DATUM(label, 1, status1, status2)
 
     ADD_DATUM("continue - accept", CONTINUE, ACCEPT);
     ADD_DATUM("continue - skip", CONTINUE, SKIP);
+
     ADD_DATUM("temporary failure - continue", TEMPORARY_FAILURE, CONTINUE);
     ADD_DATUM("temporary failure - accept", TEMPORARY_FAILURE, ACCEPT);
     ADD_DATUM("temporary failure - skip", TEMPORARY_FAILURE, SKIP);
+
     ADD_DATUM("reject - continue", REJECT, CONTINUE);
     ADD_DATUM("reject - temporary failure", REJECT, TEMPORARY_FAILURE);
     ADD_DATUM("reject - accept", REJECT, ACCEPT);
     ADD_DATUM("reject - skip", REJECT, SKIP);
+
     ADD_DATUM("discard - continue", DISCARD, ACCEPT);
     ADD_DATUM("discard - temporary failure", DISCARD, TEMPORARY_FAILURE);
     ADD_DATUM("discard - accept", DISCARD, ACCEPT);
     ADD_DATUM("discard - reject", DISCARD, REJECT);
     ADD_DATUM("discard - skip", DISCARD, SKIP);
+
     ADD_DATUM("skip - default", SKIP, DEFAULT);
     ADD_DATUM("skip - not change", SKIP, NOT_CHANGE);
 
 #undef ADD_DATUM
 }
 
-void
-test_not_important_status (gconstpointer data)
-{
-    MilterStatus current_status, new_status;
+#undef ADD_COMPARE_DATUM
 
-    current_status = gcut_data_get_enum(data, "current-status");
-    new_status = gcut_data_get_enum(data, "new-status");
-    cut_assert_false(milter_status_is_important(current_status, new_status));
+void
+data_compare (void)
+{
+    data_compare_small();
+    data_compare_large();
+}
+
+void
+test_compare (gconstpointer data)
+{
+    MilterStatus status1, status2;
+
+    status1 = gcut_data_get_enum(data, "status1");
+    status2 = gcut_data_get_enum(data, "status2");
+    cut_assert_equal_int(gcut_data_get_int(data, "expected"),
+                         milter_status_compare(status1, status2));
 }
 
 /*
