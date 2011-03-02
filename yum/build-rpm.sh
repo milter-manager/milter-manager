@@ -7,6 +7,7 @@ VERSION=$(cat /tmp/build-version)
 SOURCE_BASE_NAME=$(cat /tmp/build-source-base-name)
 USER_NAME=$(cat /tmp/build-user)
 DEPENDED_PACKAGES=$(cat /tmp/depended-packages)
+USE_RPMFORGE=$(cat /tmp/build-use-rpmforge)
 BUILD_SCRIPT=/tmp/build-${PACKAGE}.sh
 
 run()
@@ -18,6 +19,8 @@ run()
     fi
 }
 
+yum_options=
+
 distribution=$(cut -d ' ' -f 1 /etc/redhat-release | tr 'A-Z' 'a-z')
 distribution_version=$(cut -d ' ' -f 3 /etc/redhat-release)
 if ! rpm -q ${distribution}-release > /dev/null 2>&1; then
@@ -27,9 +30,20 @@ if ! rpm -q ${distribution}-release > /dev/null 2>&1; then
     run rpm -Uvh --force ${packages_dir}/ca-certificates-*.rpm
 fi
 
-run yum update -y
-run yum install -y rpm-build tar ${DEPENDED_PACKAGES}
-run yum clean packages
+if test "$USE_RPMFORGE" = "yes"; then
+    if ! rpm -q rpmforge-release > /dev/null 2>&1; then
+	architecture=$(cut -d '-' -f 1 /etc/rpm/platform)
+	rpmforge_url=http://packages.sw.be/rpmforge-release
+	rpmforge_rpm_base=rpmforge-release-0.5.2-2.el5.rf.${architecture}.rpm
+	run rpm -Uvh $rpmforge_url/$rpmforge_rpm_base
+	sed -i'' -e 's/enabled = 1/enabled = 0/g' /etc/yum.repos.d/rpmforge.repo
+    fi
+    yum_options="$yum_options --enablerepo=rpmforge"
+fi
+
+run yum update ${yum_options} -y
+run yum install ${yum_options} -y rpm-build tar ${DEPENDED_PACKAGES}
+run yum clean ${yum_options} packages
 
 if ! id $USER_NAME >/dev/null 2>&1; then
     run useradd -m $USER_NAME

@@ -1,8 +1,8 @@
 #!/bin/sh
 
-if [ $# != 7 ]; then
-    echo "Usage: $0 PACKAGE VERSION SOURCE_BASE_NAME SPEC_DIR CHROOT_BASE ARCHITECTURES DISTRIBUTIONS"
-    echo " e.g.: $0 milter-manager 1.1.1 ../milter-manager ../rpm /var/lib/chroot 'i386 x86_64' 'fedora centos'"
+if [ $# != 8 ]; then
+    echo "Usage: $0 PACKAGE VERSION SOURCE_BASE_NAME SPEC_DIR CHROOT_BASE ARCHITECTURES DISTRIBUTIONS USE_RPMFORGE"
+    echo " e.g.: $0 milter-manager 1.1.1 ../milter-manager ../rpm /var/lib/chroot 'i386 x86_64' 'fedora centos' no"
     exit 1
 fi
 
@@ -13,6 +13,7 @@ SPEC_DIR=$4
 CHROOT_BASE=$5
 ARCHITECTURES=$6
 DISTRIBUTIONS=$7
+USE_RPMFORGE=$8
 
 PATH=/usr/local/sbin:/usr/sbin:$PATH
 
@@ -115,8 +116,8 @@ build()
     run echo $build_user > ${CHROOT_BASE}/$target/tmp/build-user
     run cp ${script_base_dir}/${PACKAGE}-depended-packages \
 	${CHROOT_BASE}/$target/tmp/depended-packages
-    run cp ${script_base_dir}/build-rpm.sh \
-	${CHROOT_BASE}/$target/tmp/
+    run echo $USE_RPMFORGE > ${CHROOT_BASE}/$target/tmp/build-use-rpmforge
+    run cp ${script_base_dir}/build-rpm.sh ${CHROOT_BASE}/$target/tmp/
     run_sudo rm -rf $rpm_dir $srpm_dir
     run_sudo su -c "chroot ${CHROOT_BASE}/$target /tmp/build-rpm.sh"
     run mkdir -p $binary_pool_dir
