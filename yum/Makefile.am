@@ -3,6 +3,7 @@ SERVER_PATH = $(SF_USER),$(SF_PROJECT_ID)@$(SF_HTDOCS)
 DISTRIBUTIONS = centos
 ARCHITECTURES = i386 x86_64
 CHROOT_BASE = /var/lib/chroot
+BASE_URL_PREFIX = http://$(PACKAGE).sourceforge.net
 HAVE_DEVELOPMENT_BRANCH = yes
 
 release: remove-existing-packages build sign update upload
@@ -45,7 +46,7 @@ build-in-chroot:
 build-repository-rpm: RPM-GPG-KEY-milter-manager
 	./build-repository-rpm.sh \
 	  $(PACKAGE) '$(PACKAGE_TITLE)' \
-	  http://$(PACKAGE).sourceforge.net \
+	  $(BASE_URL_PREFIX) \
 	  '$(DISTRIBUTIONS)' \
 	  $(HAVE_DEVELOPMENT_BRANCH)
 
