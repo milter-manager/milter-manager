@@ -105,10 +105,15 @@ build()
     pool_base_dir=${distribution}/${distribution_version}
     binary_pool_dir=$pool_base_dir/$architecture/Packages
     source_pool_dir=$pool_base_dir/source/SRPMS
-    run cp ${SOURCE_BASE_NAME}-${VERSION}.* \
-	${CHROOT_BASE}/$target/tmp/
-    run cp ${SPEC_DIR}/${distribution}/${PACKAGE}.spec \
-	${CHROOT_BASE}/$target/tmp/
+    if test -f ${SOURCE_BASE_NAME}-${VERSION}-*.src.rpm; then
+	run cp ${SOURCE_BASE_NAME}-${VERSION}-*.src.rpm \
+	    ${CHROOT_BASE}/$target/tmp/
+    else
+	run cp ${SOURCE_BASE_NAME}-${VERSION}.* \
+	    ${CHROOT_BASE}/$target/tmp/
+	run cp ${SPEC_DIR}/${distribution}/${PACKAGE}.spec \
+	    ${CHROOT_BASE}/$target/tmp/
+    fi
     run echo $PACKAGE > ${CHROOT_BASE}/$target/tmp/build-package
     run echo $VERSION > ${CHROOT_BASE}/$target/tmp/build-version
     run echo $(basename ${SOURCE_BASE_NAME}) > \

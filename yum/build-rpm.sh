@@ -64,8 +64,12 @@ mkdir -p rpm/BUILD
 mkdir -p rpm/RPMS
 mkdir -p rpm/SRPMS
 
-cp /tmp/${SOURCE_BASE_NAME}-$VERSION.* rpm/SOURCES/
-cp /tmp/${PACKAGE}.spec rpm/SPECS/
+if test -f /tmp/${SOURCE_BASE_NAME}-$VERSION-*.src.rpm; then
+    rpm -Uvh /tmp/${SOURCE_BASE_NAME}-$VERSION-*.src.rpm
+else
+    cp /tmp/${SOURCE_BASE_NAME}-$VERSION.* rpm/SOURCES/
+    cp /tmp/${PACKAGE}.spec rpm/SPECS/
+fi
 
 chmod o+rx . rpm rpm/RPMS rpm/SRPMS
 
