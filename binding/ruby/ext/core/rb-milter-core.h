@@ -42,6 +42,9 @@ extern VALUE rb_cMilterSocketAddressUnknown;
 #define CSTR2RVAL_SIZE_FREE(string, size)		\
     (rb_milter_cstr2rval_size_free(string, size))
 
+#define RVAL2STATUS(rb_status) RVAL2GENUM((rb_status), MILTER_TYPE_STATUS)
+
+
 VALUE rb_milter_cstr2rval_size_free(gchar *string, gsize size);
 
 #ifndef G_DEF_CLASS_WITH_GC_FUNC
