@@ -19,7 +19,7 @@ sign:
 	./sign-rpm.sh '$(DISTRIBUTIONS)'
 
 update:
-	./update-repository.sh '$(DISTRIBUTIONS)'
+	./update-repository.sh $(PACKAGE) '$(DISTRIBUTIONS)'
 
 upload:
 	for distribution in $(DISTRIBUTIONS); do		\
