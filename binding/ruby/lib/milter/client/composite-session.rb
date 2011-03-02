@@ -28,7 +28,7 @@ module Milter
       end
 
       def connect(host, address)
-        apply_sessions(:connect, :continue, hosts, address)
+        apply_sessions(:connect, :continue, host, address)
       end
 
       def helo(fqdn)
@@ -63,18 +63,33 @@ module Milter
         apply_sessions(:end_of_message, :continue)
       end
 
+      def abort(state)
+        apply_sessions(:abort, :continue, state)
+      end
+
+      def unknown(command)
+        apply_sessions(:unknown, :continue, command)
+      end
+
+      def finished
+        @sessions.each do |session|
+          session.finished if session.respond_to?(:finished)
+        end
+      end
+
       private
       def apply_sessions(method_name, default_status, *arguments)
-        status = default_status
+        status = nil
         @sessions.each do |session|
           next unless session.respond_to?(method_name)
           session.send(method_name, *arguments)
           status = resolve_status(status, @context.status)
         end
-        @context.status = status
+        @context.status = status || default_status
       end
 
       def resolve_status(current_status, new_status)
+        return new_status if current_status.nil?
         current_status = ensure_status(current_status)
         new_status = ensure_status(new_status)
         if (current_status <=> new_status) < 0
