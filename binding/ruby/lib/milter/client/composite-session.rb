@@ -13,6 +13,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
+# TODO: header...end-of-message events should be handled as an event set.
+# TODO: status handle may be buggy.
+# TODO: support asynchronous.
+
 module Milter
   class Client
     class CompositeSession
