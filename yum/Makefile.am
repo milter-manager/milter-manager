@@ -42,7 +42,7 @@ build-in-chroot:
 	./build-in-chroot.sh			\
 	  $(PACKAGE)				\
 	  $(VERSION)				\
-	  $(top_builddir)			\
+	  $(top_builddir)/$(PACKAGE)		\
 	  $(top_builddir)/rpm			\
 	  $(CHROOT_BASE)			\
 	  '$(ARCHITECTURES)'			\

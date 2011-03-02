@@ -1,14 +1,14 @@
 #!/bin/sh
 
 if [ $# != 7 ]; then
-    echo "Usage: $0 PACKAGE VERSION SOURCE_DIR SPEC_DIR CHROOT_BASE ARCHITECTURES DISTRIBUTIONS"
-    echo " e.g.: $0 milter-manager 1.1.1 .. ../rpm /var/lib/chroot 'i386 x86_64' 'fedora centos'"
+    echo "Usage: $0 PACKAGE VERSION SOURCE_BASE_NAME SPEC_DIR CHROOT_BASE ARCHITECTURES DISTRIBUTIONS"
+    echo " e.g.: $0 milter-manager 1.1.1 ../milter-manager ../rpm /var/lib/chroot 'i386 x86_64' 'fedora centos'"
     exit 1
 fi
 
 PACKAGE=$1
 VERSION=$2
-SOURCE_DIR=$3
+SOURCE_BASE_NAME=$3
 SPEC_DIR=$4
 CHROOT_BASE=$5
 ARCHITECTURES=$6
@@ -104,7 +104,7 @@ build()
     pool_base_dir=${distribution}/${distribution_version}
     binary_pool_dir=$pool_base_dir/$architecture/Packages
     source_pool_dir=$pool_base_dir/source/SRPMS
-    run cp ${SOURCE_DIR}/${PACKAGE}-${VERSION}.* \
+    run cp ${SOURCE_BASE_NAME}-${VERSION}.* \
 	${CHROOT_BASE}/$target/tmp/
     run cp ${SPEC_DIR}/${distribution}/${PACKAGE}.spec \
 	${CHROOT_BASE}/$target/tmp/
