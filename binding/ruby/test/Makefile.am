@@ -1,5 +1,7 @@
 SUBDIRS =	\
-	toolkit	\
+	core	\
+	client	\
+	server	\
 	manager
 
 TESTS = run-test.sh
