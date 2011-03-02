@@ -39,15 +39,21 @@ download:
 build: build-in-chroot build-repository-rpm
 
 build-in-chroot:
-	./build-in-chroot.sh \
-	  $(PACKAGE) $(VERSION) $(CHROOT_BASE) \
-	  '$(ARCHITECTURES)' '$(DISTRIBUTIONS)'
+	./build-in-chroot.sh			\
+	  $(PACKAGE)				\
+	  $(VERSION)				\
+	  $(top_builddir)			\
+	  $(top_builddir)/rpm			\
+	  $(CHROOT_BASE)			\
+	  '$(ARCHITECTURES)'			\
+	  '$(DISTRIBUTIONS)'
 
 build-repository-rpm: RPM-GPG-KEY-milter-manager
-	./build-repository-rpm.sh \
-	  $(PACKAGE) '$(PACKAGE_TITLE)' \
-	  $(BASE_URL_PREFIX) \
-	  '$(DISTRIBUTIONS)' \
+	./build-repository-rpm.sh		\
+	  $(PACKAGE)				\
+	  '$(PACKAGE_TITLE)'			\
+	  $(BASE_URL_PREFIX)			\
+	  '$(DISTRIBUTIONS)'			\
 	  $(HAVE_DEVELOPMENT_BRANCH)
 
 RPM-GPG-KEY-milter-manager:

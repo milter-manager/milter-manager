@@ -1,16 +1,18 @@
 #!/bin/sh
 
-if [ $# != 5 ]; then
-    echo "Usage: $0 PACKAGE VERSION CHROOT_BASE ARCHITECTURES DISTRIBUTIONS"
-    echo " e.g.: $0 milter-manager 1.1.1 /var/lib/chroot 'i386 x86_64' 'fedora centos'"
+if [ $# != 7 ]; then
+    echo "Usage: $0 PACKAGE VERSION SOURCE_DIR SPEC_DIR CHROOT_BASE ARCHITECTURES DISTRIBUTIONS"
+    echo " e.g.: $0 milter-manager 1.1.1 .. ../rpm /var/lib/chroot 'i386 x86_64' 'fedora centos'"
     exit 1
 fi
 
 PACKAGE=$1
 VERSION=$2
-CHROOT_BASE=$3
-ARCHITECTURES=$4
-DISTRIBUTIONS=$5
+SOURCE_DIR=$3
+SPEC_DIR=$4
+CHROOT_BASE=$5
+ARCHITECTURES=$6
+DISTRIBUTIONS=$7
 
 PATH=/usr/local/sbin:/usr/sbin:$PATH
 
@@ -94,7 +96,6 @@ build()
 	run build_chroot $architecture $distribution $distribution_version
     fi
 
-    source_dir=${script_base_dir}/..
     build_user=${PACKAGE}-build
     build_user_dir=${base_dir}/home/${build_user}
     rpm_base_dir=${build_user_dir}/rpm
@@ -103,9 +104,9 @@ build()
     pool_base_dir=${distribution}/${distribution_version}
     binary_pool_dir=$pool_base_dir/$architecture/Packages
     source_pool_dir=$pool_base_dir/source/SRPMS
-    run cp $source_dir/${PACKAGE}-${VERSION}.tar.gz \
+    run cp ${SOURCE_DIR}/${PACKAGE}-${VERSION}.tar.gz \
 	${CHROOT_BASE}/$target/tmp/
-    run cp $source_dir/rpm/${distribution}/${PACKAGE}.spec \
+    run cp ${SPEC_DIR}/${distribution}/${PACKAGE}.spec \
 	${CHROOT_BASE}/$target/tmp/
     run echo $PACKAGE > ${CHROOT_BASE}/$target/tmp/build-package
     run echo $VERSION > ${CHROOT_BASE}/$target/tmp/build-version
