@@ -49,7 +49,7 @@ mkdir -p rpm/BUILD
 mkdir -p rpm/RPMS
 mkdir -p rpm/SRPMS
 
-cp /tmp/${PACKAGE}-$VERSION.tar.gz rpm/SOURCES/
+cp /tmp/${PACKAGE}-$VERSION.* rpm/SOURCES/
 cp /tmp/${PACKAGE}.spec rpm/SPECS/
 
 chmod o+rx . rpm rpm/RPMS rpm/SRPMS

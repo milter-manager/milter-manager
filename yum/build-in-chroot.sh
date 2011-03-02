@@ -104,7 +104,7 @@ build()
     pool_base_dir=${distribution}/${distribution_version}
     binary_pool_dir=$pool_base_dir/$architecture/Packages
     source_pool_dir=$pool_base_dir/source/SRPMS
-    run cp ${SOURCE_DIR}/${PACKAGE}-${VERSION}.tar.gz \
+    run cp ${SOURCE_DIR}/${PACKAGE}-${VERSION}.* \
 	${CHROOT_BASE}/$target/tmp/
     run cp ${SPEC_DIR}/${distribution}/${PACKAGE}.spec \
 	${CHROOT_BASE}/$target/tmp/
