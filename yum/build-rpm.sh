@@ -65,7 +65,18 @@ mkdir -p rpm/RPMS
 mkdir -p rpm/SRPMS
 
 if test -f /tmp/${SOURCE_BASE_NAME}-$VERSION-*.src.rpm; then
-    rpm -Uvh /tmp/${SOURCE_BASE_NAME}-$VERSION-*.src.rpm
+    if ! rpm -Uvh /tmp/${SOURCE_BASE_NAME}-$VERSION-*.src.rpm; then
+        cd rpm/SOURCES
+        rpm2cpio /tmp/${SOURCE_BASE_NAME}-$VERSION-*.src.rpm | cpio -id
+        if ! yum info tcp_wrappers-devel >/dev/null 2>&1; then
+            sed -i'' -e 's/tcp_wrappers-devel/tcp_wrappers/g' ${PACKAGE}.spec
+        fi
+        if ! yum info libdb-devel >/dev/null 2>&1; then
+            sed -i'' -e 's/libdb-devel/db4-devel/g' ${PACKAGE}.spec
+        fi
+        mv ${PACKAGE}.spec ../SPECS/
+        cd
+    fi
 else
     cp /tmp/${SOURCE_BASE_NAME}-$VERSION.* rpm/SOURCES/
     cp /tmp/${PACKAGE}.spec rpm/SPECS/
