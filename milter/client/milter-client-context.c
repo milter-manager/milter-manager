@@ -70,6 +70,7 @@ enum
     PROP_0,
     PROP_CLIENT,
     PROP_STATE,
+    PROP_STATUS,
     PROP_OPTION,
     PROP_QUARANTINE_REASON,
     PROP_MESSAGE_RESULT,
@@ -256,6 +257,14 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                              MILTER_CLIENT_CONTEXT_STATE_INVALID,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_STATE, spec);
+
+    spec = g_param_spec_enum("status",
+                             "Status",
+                             "The status of client context",
+                             MILTER_TYPE_STATUS,
+                             MILTER_STATUS_DEFAULT,
+                             G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_STATUS, spec);
 
     spec = g_param_spec_object("option",
                                "Option",
@@ -1672,6 +1681,9 @@ set_property (GObject      *object,
     case PROP_STATE:
         milter_client_context_set_state(context, g_value_get_enum(value));
         break;
+    case PROP_STATUS:
+        milter_client_context_set_status(context, g_value_get_enum(value));
+        break;
     case PROP_OPTION:
         milter_client_context_set_option(context, g_value_get_object(value));
         break;
@@ -1708,6 +1720,9 @@ get_property (GObject    *object,
         break;
     case PROP_STATE:
         g_value_set_enum(value, priv->state);
+        break;
+    case PROP_STATUS:
+        g_value_set_enum(value, priv->status);
         break;
     case PROP_OPTION:
         g_value_set_object(value, priv->option);
