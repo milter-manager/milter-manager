@@ -48,6 +48,7 @@ rb_gstring_write (VALUE self, VALUE content)
     GString *string;
 
     string = SELF(self);
+    StringValue(content);
     g_string_append_len(string, RSTRING_PTR(content), RSTRING_LEN(content));
     return LL2NUM(RSTRING_LEN(content));
 }
