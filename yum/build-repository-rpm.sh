@@ -2,15 +2,17 @@
 
 script_base_dir=`dirname $0`
 
-if [ $# != 3 ]; then
-    echo "Usage: $0 PACKAGE PACKAGE_TITLE DISTRIBUTIONS"
-    echo " e.g.: $0 milter-manager 'milter manager' 'fedora centos'"
+if [ $# != 5 ]; then
+    echo "Usage: $0 PACKAGE PACKAGE_TITLE BASE_URL_PREFIX DISTRIBUTIONS HAVE_DEVELOPMENT_BRANCH"
+    echo " e.g.: $0 milter-manager 'milter manager' http://milter-manager.sourceforge.net' 'fedora centos' yes"
     exit 1
 fi
 
 PACKAGE=$1
 PACKAGE_TITLE=$2
-DISTRIBUTIONS=$3
+BASE_URL_PREFIX=$3
+DISTRIBUTIONS=$4
+HAVE_DEVELOPMENT_BRANCH=$5
 
 run()
 {
@@ -45,21 +47,32 @@ for distribution in ${DISTRIBUTIONS}; do
 	    ;;
     esac
     repo=${PACKAGE}.repo
-    run cat <<EOR > $repo
+    if test "$HAVE_DEVELOPMENT_BRANCH" = "yes"; then
+	run cat <<EOR > $repo
 [$PACKAGE]
 name=$PACKAGE_TITLE for $distribution_label \$releasever - \$basearch
-baseurl=http://$PACKAGE.sourceforge.net/$distribution/\$releasever/stable/\$basearch/
+baseurl=$BASE_URL_PREFIX/$distribution/\$releasever/stable/\$basearch/
 gpgcheck=1
 enabled=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-$PACKAGE
 
-[$PACKAGE]
+[$PACKAGE-development]
 name=$PACKAGE_TITLE for $distribution_label \$releasever - development - \$basearch
-baseurl=http://$PACKAGE.sourceforge.net/$distribution/\$releasever/development/\$basearch/
+baseurl=$BASE_URL_PREFIX/$distribution/\$releasever/development/\$basearch/
 gpgcheck=1
 enabled=0
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-$PACKAGE
 EOR
+    else
+	run cat <<EOR > $repo
+[$PACKAGE]
+name=$PACKAGE_TITLE for $distribution_label \$releasever - \$basearch
+baseurl=$BASE_URL_PREFIX/$distribution/\$releasever/\$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-$PACKAGE
+EOR
+    fi
     run tar cfz $rpm_base_dir/SOURCES/${PACKAGE}-repository.tar.gz \
 	-C ${script_base_dir} ${repo} RPM-GPG-KEY-${PACKAGE}
     run cp ${script_base_dir}/${PACKAGE}-repository.spec $rpm_base_dir/SPECS/
