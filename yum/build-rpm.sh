@@ -3,8 +3,9 @@
 LANG=C
 
 PACKAGE=$(cat /tmp/build-package)
-USER_NAME=$(cat /tmp/build-user)
 VERSION=$(cat /tmp/build-version)
+SOURCE_BASE_NAME=$(cat /tmp/build-source-base-name)
+USER_NAME=$(cat /tmp/build-user)
 DEPENDED_PACKAGES=$(cat /tmp/depended-packages)
 BUILD_SCRIPT=/tmp/build-${PACKAGE}.sh
 
@@ -49,7 +50,7 @@ mkdir -p rpm/BUILD
 mkdir -p rpm/RPMS
 mkdir -p rpm/SRPMS
 
-cp /tmp/${PACKAGE}-$VERSION.* rpm/SOURCES/
+cp /tmp/${SOURCE_BASE_NAME}-$VERSION.* rpm/SOURCES/
 cp /tmp/${PACKAGE}.spec rpm/SPECS/
 
 chmod o+rx . rpm rpm/RPMS rpm/SRPMS

@@ -110,6 +110,8 @@ build()
 	${CHROOT_BASE}/$target/tmp/
     run echo $PACKAGE > ${CHROOT_BASE}/$target/tmp/build-package
     run echo $VERSION > ${CHROOT_BASE}/$target/tmp/build-version
+    run echo $(basename ${SOURCE_BASE_NAME}) > \
+	${CHROOT_BASE}/$target/tmp/build-source-base-name
     run echo $build_user > ${CHROOT_BASE}/$target/tmp/build-user
     run cp ${script_base_dir}/${PACKAGE}-depended-packages \
 	${CHROOT_BASE}/$target/tmp/depended-packages
