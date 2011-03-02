@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2010-2011  Kouhei Sutou <kou@clear-code.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,8 +35,7 @@ class Session < Milter::ClientSession
       print_macros
     end
     super
-    option.remove_step(Milter::StepFlags::ENVELOPE_RECIPIENT_REJECTED |
-                       Milter::StepFlags::HEADER_VALUE_WITH_LEADING_SPACE)
+    option.remove_step(Milter::StepFlags::ENVELOPE_RECIPIENT_REJECTED)
   end
 
   def connect(host, address)
