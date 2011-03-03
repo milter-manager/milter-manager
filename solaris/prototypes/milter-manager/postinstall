@@ -5,4 +5,5 @@ TARGET_GROUP=mmanager
 
 mkdir -p $BASEDIR/var/run/milter-manager
 chown $TARGET_USER:$TARGET_GROUP $BASEDIR/var/run/milter-manager
+cp $BASEDIR/etc/milter-manager/init.d/solaris/milter-manager $BASEDIR/etc/init.d/
 exit 0
