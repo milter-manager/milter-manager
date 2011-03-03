@@ -52,6 +52,7 @@ static gchar *option_socket_group_name = NULL;
 static gboolean option_daemon = FALSE;
 static gboolean option_show_config = FALSE;
 static gboolean option_verbose = FALSE;
+static gint option_n_workers = 0;
 
 static gboolean io_detached = FALSE;
 
@@ -140,6 +141,8 @@ static const GOptionEntry option_entries[] =
      N_("Run as daemon process."), NULL},
     {"no-daemon", 0, G_OPTION_FLAG_REVERSE, G_OPTION_ARG_NONE, &option_daemon,
      N_("Cancel the prior --daemon options."), NULL},
+    {"n-workers", 0, 0, G_OPTION_ARG_INT, &option_n_workers,
+     N_("Run N_WORKERS processes (default: 0)"), "N_WORKERS"},
     {"show-config", 0, 0, G_OPTION_ARG_NONE, &option_show_config,
      N_("Show configuration and exit"), NULL},
     {"verbose", 0, 0, G_OPTION_ARG_NONE, &option_verbose,
@@ -576,6 +579,9 @@ apply_command_line_options (MilterManagerConfiguration *config)
             config, option_socket_group_name);
     if (option_daemon)
         milter_manager_configuration_set_daemon(config, TRUE);
+    if (option_n_workers > 0)
+        milter_manager_configuration_set_n_workers(config,
+                                                   (guint)option_n_workers);
 }
 
 static void
