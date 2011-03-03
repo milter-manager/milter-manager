@@ -53,6 +53,8 @@ static gboolean option_daemon = FALSE;
 static gboolean option_show_config = FALSE;
 static gboolean option_verbose = FALSE;
 static gint option_n_workers = 0;
+static MilterClientEventLoopBackend option_event_loop_backend =
+    MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
 
 static gboolean io_detached = FALSE;
 
@@ -115,6 +117,32 @@ parse_spec_arg (const gchar *option_name,
     return success;
 }
 
+static gboolean
+parse_event_loop_backend (const gchar *option_name,
+                          const gchar *value,
+                          gpointer data,
+                          GError **error)
+{
+    GEnumClass *backend_enum;
+    GEnumValue *backend_value;
+
+    backend_enum = g_type_class_ref(MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND);
+    backend_value = g_enum_get_value_by_nick(backend_enum, value);
+    g_type_class_unref(backend_enum);
+
+    if (backend_value) {
+        option_event_loop_backend = backend_value->value;
+        return TRUE;
+    } else {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    _("invalid name: %s"),
+                    value);
+        return FALSE;
+    }
+}
+
 static const GOptionEntry option_entries[] =
 {
     {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
@@ -143,6 +171,8 @@ static const GOptionEntry option_entries[] =
      N_("Cancel the prior --daemon options."), NULL},
     {"n-workers", 0, 0, G_OPTION_ARG_INT, &option_n_workers,
      N_("Run N_WORKERS processes (default: 0)"), "N_WORKERS"},
+    {"event-loop-backend", 0, 0, G_OPTION_ARG_CALLBACK, parse_event_loop_backend,
+     N_("Use BACKEND as event loop backend (default: glib)"), "[glib|libev]"},
     {"show-config", 0, 0, G_OPTION_ARG_NONE, &option_show_config,
      N_("Show configuration and exit"), NULL},
     {"verbose", 0, 0, G_OPTION_ARG_NONE, &option_verbose,
@@ -582,6 +612,9 @@ apply_command_line_options (MilterManagerConfiguration *config)
     if (option_n_workers > 0)
         milter_manager_configuration_set_n_workers(config,
                                                    (guint)option_n_workers);
+    if (option_event_loop_backend)
+        milter_manager_configuration_set_event_loop_backend(config,
+                                                            option_event_loop_backend);
 }
 
 static void
