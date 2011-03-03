@@ -32,6 +32,8 @@
 struct rb_blocking_region_buffer;
 struct rb_blocking_region_buffer *rb_thread_blocking_region_begin(void);
 void rb_thread_blocking_region_end(struct rb_blocking_region_buffer *buffer);
+#else
+#  include <rubysig.h>
 #endif
 
 #define SELF(self) RVAL2EVENT_LOOP(self)
@@ -380,12 +382,43 @@ cb_notify (gpointer user_data)
     ReleaseData *data = user_data;
     g_free(data);
 }
+#else
+typedef struct _ReleaseData
+{
+    int trap_immediate;
+} ReleaseData;
+
+static void
+cb_release (MilterEventLoop *loop, gpointer user_data)
+{
+    ReleaseData *data = user_data;
+    data->trap_immediate = rb_trap_immediate;
+    rb_trap_immediate = 1;
+}
+
+static void
+cb_acquire (MilterEventLoop *loop, gpointer user_data)
+{
+    ReleaseData *data = user_data;
+    int saved_errno;
+
+    rb_trap_immediate = data->trap_immediate;
+    saved_errno = errno;
+    CHECK_INTS;
+    errno = saved_errno;
+}
+
+static void
+cb_notify (gpointer user_data)
+{
+    ReleaseData *data = user_data;
+    g_free(data);
+}
 #endif
 
 void
 rb_milter_event_loop_setup (MilterEventLoop *loop)
 {
-#ifdef USE_DIRECT_THREAD_BLOCKING_REGION
     if (MILTER_IS_LIBEV_EVENT_LOOP(loop)) {
 	ReleaseData *data;
 	data = g_new0(ReleaseData, 1);
@@ -395,7 +428,6 @@ rb_milter_event_loop_setup (MilterEventLoop *loop)
 						 data,
 						 cb_notify);
     }
-#endif
 }
 
 void
