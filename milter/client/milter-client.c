@@ -47,7 +47,8 @@ enum
     PROP_WORKER_ID,
     PROP_EVENT_LOOP,
     PROP_PID_FILE,
-    PROP_REMOVE_PID_FILE_ON_EXIT
+    PROP_REMOVE_PID_FILE_ON_EXIT,
+    PROP_SYSLOG_FACILITIY
 };
 
 enum
@@ -116,6 +117,8 @@ struct _MilterClientPrivate
 
     gchar *pid_file;
     gboolean remove_pid_file_on_exit;
+
+    gchar *syslog_facility;
 };
 
 typedef struct _MilterClientProcessData
@@ -243,6 +246,13 @@ _milter_client_class_init (MilterClientClass *klass)
                                 G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_REMOVE_PID_FILE_ON_EXIT,
                                     spec);
+
+    spec = g_param_spec_string("syslog-facility",
+                               "Syslog Facility",
+                               "Syslog facility name of the client",
+                               NULL,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_SYSLOG_FACILITIY, spec);
 
     signals[CONNECTION_ESTABLISHED] =
         g_signal_new("connection-established",
@@ -376,6 +386,8 @@ _milter_client_init (MilterClient *client)
 
     priv->pid_file = NULL;
     priv->remove_pid_file_on_exit = TRUE;
+
+    priv->syslog_facility = NULL;
 }
 
 static void
@@ -690,6 +702,9 @@ set_property (GObject      *object,
         milter_client_set_remove_pid_file_on_exit(client,
                                                   g_value_get_boolean(value));
         break;
+    case PROP_SYSLOG_FACILITIY:
+        milter_client_set_syslog_facility(client, g_value_get_string(value));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -737,6 +752,9 @@ get_property (GObject    *object,
     case PROP_REMOVE_PID_FILE_ON_EXIT:
         g_value_set_boolean(value,
                             milter_client_is_remove_pid_file_on_exit(client));
+        break;
+    case PROP_SYSLOG_FACILITIY:
+        g_value_set_string(value, milter_client_get_syslog_facility(client));
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -2565,9 +2583,39 @@ milter_client_is_processing (MilterClient *client)
     return MILTER_CLIENT_GET_PRIVATE(client)->n_processing_sessions > 0;
 }
 
+const gchar *
+milter_client_get_syslog_facility (MilterClient *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->syslog_facility;
+}
+
 void
-milter_client_start_syslog (MilterClient *client, const gchar *identify,
-                            const gchar * facility)
+milter_client_set_syslog_facility (MilterClient *client, const gchar *facility)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+
+    if (priv->syslog_facility == facility)
+        return;
+
+    if (priv->syslog_facility) {
+        if (facility && g_utf8_collate(priv->syslog_facility, facility))
+            return;
+        g_free(priv->syslog_facility);
+        priv->syslog_facility = NULL;
+    }
+
+    priv->syslog_facility = g_strdup(facility);
+
+    if (priv->syslog_logger) {
+        g_object_unref(priv->syslog_logger);
+        milter_client_start_syslog(client, NULL);
+    }
+}
+
+void
+milter_client_start_syslog (MilterClient *client, const gchar *identify)
 {
     MilterClientPrivate *priv;
 
@@ -2576,7 +2624,8 @@ milter_client_start_syslog (MilterClient *client, const gchar *identify,
     if (priv->syslog_logger) {
         g_object_unref(priv->syslog_logger);
     }
-    priv->syslog_logger = milter_syslog_logger_new(identify, facility);
+    priv->syslog_logger = milter_syslog_logger_new(identify,
+                                                   priv->syslog_facility);
 }
 
 MilterEventLoop *

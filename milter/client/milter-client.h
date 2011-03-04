@@ -758,16 +758,35 @@ guint                milter_client_get_n_processing_sessions
 gboolean             milter_client_is_processing     (MilterClient  *client);
 
 /**
+ * milter_client_get_syslog_facility:
+ * @client: a %MilterClient.
+ *
+ * Gets the syslog facility name of the @client.
+ *
+ * Returns: syslog facility name.
+ */
+const gchar          *milter_client_get_syslog_facility
+                                                     (MilterClient  *client);
+
+/**
+ * milter_client_set_syslog_facility:
+ * @client: a %MilterClient.
+ *
+ * Sets the syslog facility name of the @client.
+ */
+void                  milter_client_set_syslog_facility
+                                                     (MilterClient  *client,
+                                                      const gchar   *facility);
+
+/**
  * milter_client_start_syslog:
  * @client: a %MilterClient.
  * @identify: the identify name in syslog.
- * @facility: the syslog facility. Maybe %NULL.
  *
  * Starts logging by syslog with @identify name.
  */
 void                 milter_client_start_syslog      (MilterClient  *client,
-                                                      const gchar   *identify,
-                                                      const gchar   *facility);
+                                                      const gchar   *identify);
 
 /**
  * milter_client_get_event_loop:

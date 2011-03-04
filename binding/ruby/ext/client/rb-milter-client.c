@@ -104,9 +104,9 @@ client_start_syslog (int argc, VALUE *argv, VALUE self)
     VALUE identify, facility;
 
     rb_scan_args(argc, argv, "11", &identify, &facility);
+    milter_client_set_syslog_facility(SELF(self), RVAL2CSTR(facility));
     milter_client_start_syslog(SELF(self),
-			       RVAL2CSTR(identify),
-			       RVAL2CSTR(facility));
+			       RVAL2CSTR(identify));
     return self;
 }
 

@@ -85,6 +85,19 @@ parse_verbose_arg (const gchar *option_name,
     return TRUE;
 }
 
+static gboolean
+parse_syslog_arg (const gchar *option_name,
+                  const gchar *value,
+                  gpointer data,
+                  GError **error)
+{
+    MilterClient *client = data;
+
+    milter_client_start_syslog(client,
+                               g_get_prgname());
+    return TRUE;
+}
+
 static const GOptionEntry option_entries[] =
 {
     {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
@@ -93,6 +106,8 @@ static const GOptionEntry option_entries[] =
     {"verbose", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
      parse_verbose_arg,
      N_("Be verbose"), NULL},
+    {"syslog", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, parse_syslog_arg,
+     N_("Use Syslog"), NULL},
     {NULL}
 };
 

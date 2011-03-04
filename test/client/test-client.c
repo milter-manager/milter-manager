@@ -49,6 +49,7 @@ void test_remove_unix_socket_on_create (void);
 void test_not_remove_unix_socket_on_create (void);
 void test_remove_pid_file_on_exit_accessor (void);
 void test_remove_pid_file_on_exit (void);
+void test_syslog_facilitiy_accessor (void);
 void test_suspend_time_on_unacceptable (void);
 void test_max_connections (void);
 void test_effective_user (void);
@@ -864,6 +865,14 @@ test_remove_pid_file_on_exit (void)
     cut_assert_true(pid_file_exist);
 
     cut_assert_false(g_file_test(pid_file_path(), G_FILE_TEST_EXISTS));
+}
+
+void
+test_syslog_facilitiy_accessor (void)
+{
+    cut_assert_equal_string(NULL, milter_client_get_syslog_facility(client));
+    milter_client_set_syslog_facility(client, "mail");
+    cut_assert_equal_string("mail", milter_client_get_syslog_facility(client));
 }
 
 void
