@@ -1,5 +1,7 @@
 #!/bin/sh
 
+update=yes
+
 run()
 {
     $@
@@ -12,6 +14,7 @@ run()
 svn_update()
 {
     local repo="$1" dir="${2-`basename \"$1\"`}"
+    if [ $update != yes ]; then return; fi
     if test -d "$dir/.svn"; then
 	svn update "$dir"
     else
@@ -22,6 +25,11 @@ svn_update()
 # for old intltoolize
 if [ ! -d config/po ]; then
     ln -s ../po config/po
+fi
+
+if [ x"$1" = x--no-update ]; then
+    shift
+    update=no
 fi
 
 cutter_repository=https://cutter.svn.sourceforge.net/svnroot/cutter/cutter
