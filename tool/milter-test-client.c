@@ -31,7 +31,6 @@
 
 static gboolean report_request = TRUE;
 static gboolean report_memory_profile = FALSE;
-static gchar *user = NULL;
 static gchar *group = NULL;
 static gchar *unix_socket_group = NULL;
 static guint unix_socket_mode = 0660;
@@ -112,8 +111,6 @@ static const GOptionEntry option_entries[] =
      G_OPTION_ARG_NONE, &report_memory_profile,
      N_("Report memory profile. "
         "Need to set MILTER_MEMORY_PROFILE=yes environment variable."), NULL},
-    {"user", 0, 0, G_OPTION_ARG_STRING, &user,
-     N_("Run as USER's process (need root privilege)"), "USER"},
     {"group", 0, 0, G_OPTION_ARG_STRING, &group,
      N_("Run as GROUP's process (need root privilege)"), "GROUP"},
     {"unix-socket-group", 0, 0, G_OPTION_ARG_STRING, &unix_socket_group,
@@ -494,7 +491,6 @@ main (int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    milter_client_set_effective_user(client, user);
     milter_client_set_effective_group(client, group);
     milter_client_set_unix_socket_mode(client, unix_socket_mode);
     milter_client_set_unix_socket_group(client, unix_socket_group);

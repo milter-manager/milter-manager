@@ -121,6 +121,18 @@ parse_daemon_arg (const gchar *option_name,
     return TRUE;
 }
 
+static gboolean
+parse_user_arg (const gchar *option_name,
+                  const gchar *value,
+                  gpointer data,
+                  GError **error)
+{
+    MilterClient *client = data;
+
+    milter_client_set_effective_user(client, value);
+    return TRUE;
+}
+
 static const GOptionEntry option_entries[] =
 {
     {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
@@ -136,6 +148,8 @@ static const GOptionEntry option_entries[] =
     {"daemon", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
      parse_daemon_arg,
      N_("Run as a daemon"), NULL},
+    {"user", 0, 0, G_OPTION_ARG_CALLBACK, parse_user_arg,
+     N_("Run as USER's process (need root privilege)"), "USER"},
     {NULL}
 };
 
