@@ -1994,6 +1994,8 @@ client_run_workers (MilterClient *client, guint n_workers, GError **error)
     }
     g_io_channel_unref(priv->workers.control);
     priv->workers.control = setup_client_channel(pipe_fds[MILTER_UTILS_WRITE_PIPE]);
+
+    milter_info("[client][workers][run] <%d>", n_workers);
     return TRUE;
 }
 
