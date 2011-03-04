@@ -20,7 +20,8 @@ test_files =					\
 	test-address-matcher.rb			\
 	test-breaker.rb				\
 	test-postfix-cidr-table.rb		\
-	test-postfix-regexp-table.rb
+	test-postfix-regexp-table.rb		\
+	test-gstring.rb
 
 EXTRA_DIST =		\
 	$(test_files)
