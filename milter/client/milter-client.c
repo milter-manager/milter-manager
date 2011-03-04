@@ -1616,6 +1616,9 @@ switch_user (MilterClient *client, GError **error)
         return FALSE;
     }
 
+    milter_info("[client][user][change] <%s>(<%d>)",
+                password->pw_name, password->pw_uid);
+
     return TRUE;
 }
 
