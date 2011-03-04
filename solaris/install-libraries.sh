@@ -26,7 +26,8 @@ if test "$USE_OPEN_CSW" != "yes"; then
 fi
 
 CC="$CC -m64" \
-    install_package ${mysql_downloads}/MySQL-5.5/mysql-5.5.9.tar.gz
+    install_package ${mysql_downloads}/MySQL-5.5/mysql-5.5.9.tar.gz \
+    -DWITH_UNIT_TESTS=0
 
 ruby_base="ruby-1.9.2-p180"
 CC="$CC -m64" \
