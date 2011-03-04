@@ -123,13 +123,25 @@ parse_daemon_arg (const gchar *option_name,
 
 static gboolean
 parse_user_arg (const gchar *option_name,
-                  const gchar *value,
-                  gpointer data,
-                  GError **error)
+                const gchar *value,
+                gpointer data,
+                GError **error)
 {
     MilterClient *client = data;
 
     milter_client_set_effective_user(client, value);
+    return TRUE;
+}
+
+static gboolean
+parse_group_arg (const gchar *option_name,
+                 const gchar *value,
+                 gpointer data,
+                 GError **error)
+{
+    MilterClient *client = data;
+
+    milter_client_set_effective_group(client, value);
     return TRUE;
 }
 
@@ -150,6 +162,8 @@ static const GOptionEntry option_entries[] =
      N_("Run as a daemon"), NULL},
     {"user", 0, 0, G_OPTION_ARG_CALLBACK, parse_user_arg,
      N_("Run as USER's process (need root privilege)"), "USER"},
+    {"group", 0, 0, G_OPTION_ARG_CALLBACK, parse_group_arg,
+     N_("Run as GROUP's process (need root privilege)"), "GROUP"},
     {NULL}
 };
 
