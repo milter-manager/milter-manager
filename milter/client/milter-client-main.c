@@ -157,6 +157,35 @@ parse_unix_socket_group_arg (const gchar *option_name,
     return TRUE;
 }
 
+static gboolean
+parse_unix_socket_mode (const gchar *option_name,
+                        const gchar *value,
+                        gpointer data,
+                        GError **error)
+{
+    MilterClient *client = data;
+    gboolean success;
+    guint unix_socket_mode;
+    gchar *error_message = NULL;
+
+    success = milter_utils_parse_file_mode(value,
+                                           &unix_socket_mode,
+                                           &error_message);
+    if (success) {
+        milter_client_set_unix_socket_mode(client, unix_socket_mode);
+    } else {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    _("%s"),
+                    error_message);
+        g_free(error_message);
+    }
+
+    return success;
+}
+
+
 static const GOptionEntry option_entries[] =
 {
     {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
@@ -179,6 +208,8 @@ static const GOptionEntry option_entries[] =
     {"unix-socket-group", 0, 0, G_OPTION_ARG_CALLBACK,
      parse_unix_socket_group_arg,
      N_("Change UNIX domain socket group to GROUP"), "GROUP"},
+    {"unix-socket-mode", 0, 0, G_OPTION_ARG_CALLBACK, parse_unix_socket_mode,
+     N_("Change UNIX domain socket mode to MODE (default: 0660)"), "MODE"},
     {NULL}
 };
 

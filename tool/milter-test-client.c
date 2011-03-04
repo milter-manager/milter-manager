@@ -31,7 +31,6 @@
 
 static gboolean report_request = TRUE;
 static gboolean report_memory_profile = FALSE;
-static guint unix_socket_mode = 0660;
 static MilterClient *client = NULL;
 static guint n_workers = 0;
 static MilterClientEventLoopBackend event_loop_backend =
@@ -48,30 +47,6 @@ print_version (const gchar *option_name,
     g_print("%s\n", VERSION);
     exit(EXIT_SUCCESS);
     return TRUE;
-}
-
-static gboolean
-parse_unix_socket_mode (const gchar *option_name,
-                        const gchar *value,
-                        gpointer data,
-                        GError **error)
-{
-    gboolean success;
-    gchar *error_message = NULL;
-
-    success = milter_utils_parse_file_mode(value,
-                                           &unix_socket_mode,
-                                           &error_message);
-    if (!success) {
-        g_set_error(error,
-                    G_OPTION_ERROR,
-                    G_OPTION_ERROR_BAD_VALUE,
-                    _("%s"),
-                    error_message);
-        g_free(error_message);
-    }
-
-    return success;
 }
 
 static gboolean
@@ -109,8 +84,6 @@ static const GOptionEntry option_entries[] =
      G_OPTION_ARG_NONE, &report_memory_profile,
      N_("Report memory profile. "
         "Need to set MILTER_MEMORY_PROFILE=yes environment variable."), NULL},
-    {"unix-socket-mode", 0, 0, G_OPTION_ARG_CALLBACK, parse_unix_socket_mode,
-     N_("Change UNIX domain socket mode to MODE (default: 0660)"), "MODE"},
     {"n-workers", 0, 0, G_OPTION_ARG_INT, &n_workers,
      N_("Run N_WORKERS processes (default: 0)"), "N_WORKERS"},
     {"event-loop-backend", 0, 0, G_OPTION_ARG_CALLBACK, parse_event_loop_backend,
@@ -485,7 +458,6 @@ main (int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    milter_client_set_unix_socket_mode(client, unix_socket_mode);
     milter_client_set_event_loop_backend(client, event_loop_backend);
     if (n_workers > 0)
         milter_client_set_n_workers(client, n_workers);
