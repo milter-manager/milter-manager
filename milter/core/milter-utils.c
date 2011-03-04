@@ -519,21 +519,39 @@ milter_utils_flags_from_string (GType        flags_type,
     return flags;
 }
 
+GQuark
+milter_enum_error_quark (void)
+{
+    return g_quark_from_static_string("milter-enum-error-quark");
+}
+
 gint
 milter_utils_enum_from_string (GType        enum_type,
-                               const gchar *enum_string)
+                               const gchar *enum_string,
+                               GError     **error)
 {
     GEnumClass *enum_class;
     GEnumValue *enum_value;
     gint value = 0;
 
-    if (!enum_string)
+    if (!enum_string) {
+        g_set_error(error,
+                    MILTER_ENUM_ERROR,
+                    MILTER_ENUM_ERROR_NULL_NAME,
+                    "enum name is NULL");
         return 0;
+    }
 
     enum_class = g_type_class_ref(enum_type);
     enum_value = g_enum_get_value_by_nick(enum_class, enum_string);
-    if (enum_value)
+    if (enum_value) {
         value = enum_value->value;
+    } else {
+        g_set_error(error,
+                    MILTER_ENUM_ERROR,
+                    MILTER_ENUM_ERROR_UNKNOWN_NAME,
+                    "unknown enum name: <%s>", enum_string);
+    }
     g_type_class_unref(enum_class);
 
     return value;

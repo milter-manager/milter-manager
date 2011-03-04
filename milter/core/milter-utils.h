@@ -116,7 +116,8 @@ guint            milter_utils_flags_from_string
                                               const gchar *flags_string);
 gint             milter_utils_enum_from_string
                                              (GType        enum_type,
-                                              const gchar *enum_string);
+                                              const gchar *enum_string,
+                                              GError     **error);
 
 void             milter_utils_append_indent  (GString *string,
                                               guint    size);
@@ -154,6 +155,16 @@ typedef enum {
     MILTER_UTILS_WRITE_PIPE
 } MilterUtilsPipeMode;
 
+
+#define MILTER_ENUM_ERROR           (milter_enum_error_quark())
+
+typedef enum
+{
+    MILTER_ENUM_ERROR_NULL_NAME,
+    MILTER_ENUM_ERROR_UNKNOWN_NAME
+} MilterEnumError;
+
+GQuark           milter_enum_error_quark       (void);
 
 
 G_END_DECLS

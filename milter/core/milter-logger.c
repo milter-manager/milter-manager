@@ -297,7 +297,8 @@ log_message (GString *log, MilterLogLevelFlags level, const gchar *message)
     colorize_type = g_getenv("MILTER_LOG_COLORIZE");
     if (colorize_type)
         colorize = milter_utils_enum_from_string(MILTER_TYPE_LOG_COLORIZE,
-                                                 colorize_type);
+                                                 colorize_type,
+                                                 NULL);
 
     if (colorize == MILTER_LOG_COLORIZE_DEFAULT) {
 

@@ -559,15 +559,21 @@ setup_milter_client_event_loop_backend (MilterClient *client)
 {
     const gchar *backend_env;
     MilterClientEventLoopBackend backend;
+    GError *error = NULL;
 
     backend_env = g_getenv("MILTER_EVENT_LOOP_BACKEND");
     if (!backend_env)
         return;
 
     backend = milter_utils_enum_from_string(MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND,
-                                            backend_env);
-    if (backend == 0)
+                                            backend_env,
+                                            &error);
+    if (error) {
+        milter_error("invalid MILTER_EVENT_LOOP_BACKEND value: <%s>: <%s>",
+                     backend_env, error->message);
+        g_error_free(error);
         return;
+    }
 
     milter_client_set_event_loop_backend(client, backend);
 }

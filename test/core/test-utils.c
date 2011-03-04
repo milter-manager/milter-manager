@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -37,8 +37,10 @@ void data_macro_stage_to_command (void);
 void test_macro_stage_to_command (gconstpointer data);
 void data_flags_from_string (void);
 void test_flags_from_string (gconstpointer _data);
-void data_enum_from_string (void);
-void test_enum_from_string (gconstpointer _data);
+void data_enum_from_string_success (void);
+void test_enum_from_string_success (gconstpointer _data);
+void data_enum_from_string_error (void);
+void test_enum_from_string_error (gconstpointer _data);
 void data_flags_names (void);
 void test_flags_names (gconstpointer _data);
 void test_append_index (void);
@@ -421,7 +423,7 @@ test_flags_from_string (gconstpointer data)
 }
 
 void
-data_enum_from_string (void)
+data_enum_from_string_success (void)
 {
 #define ADD(label, input, expected)                                     \
     gcut_add_datum(label,                                               \
@@ -431,23 +433,68 @@ data_enum_from_string (void)
                    NULL)
 
     ADD("one", "console", MILTER_LOG_COLORIZE_CONSOLE);
-    ADD("none", "", 0);
-    ADD("invalid", "unknown", 0);
 
 #undef ADD
 }
 
 void
-test_enum_from_string (gconstpointer data)
+test_enum_from_string_success (gconstpointer data)
 {
     const gchar *input;
     GType type;
+    GError *error = NULL;
 
     input = gcut_data_get_string(data, "/input");
     type = gcut_data_get_type(data, "/type");
     gcut_assert_equal_enum(type,
                            gcut_data_get_enum(data, "/expected"),
-                           milter_utils_enum_from_string(type, input));
+                           milter_utils_enum_from_string(type, input, &error));
+    gcut_assert_error(error);
+}
+
+void
+data_enum_from_string_error (void)
+{
+#define ADD(label, input, expected)                                     \
+    gcut_add_datum(label,                                               \
+                   "/input", G_TYPE_STRING, input,                      \
+                   "/type", G_TYPE_GTYPE, MILTER_TYPE_LOG_COLORIZE,     \
+                   "/expected", G_TYPE_POINTER, expected, g_error_free, \
+                   NULL)
+
+    ADD("null",
+        NULL,
+        g_error_new(MILTER_ENUM_ERROR,
+                    MILTER_ENUM_ERROR_NULL_NAME,
+                    "enum name is NULL"));
+    ADD("none",
+        "",
+        g_error_new(MILTER_ENUM_ERROR,
+                    MILTER_ENUM_ERROR_UNKNOWN_NAME,
+                    "unknown enum name: <>"));
+    ADD("invalid",
+        "unknown",
+        g_error_new(MILTER_ENUM_ERROR,
+                    MILTER_ENUM_ERROR_UNKNOWN_NAME,
+                    "unknown enum name: <unknown>"));
+
+#undef ADD
+}
+
+void
+test_enum_from_string_error (gconstpointer data)
+{
+    const gchar *input;
+    GType type;
+    GError *error = NULL;
+
+    input = gcut_data_get_string(data, "/input");
+    type = gcut_data_get_type(data, "/type");
+    gcut_assert_equal_enum(type,
+                           0,
+                           milter_utils_enum_from_string(type, input, &error));
+    gcut_assert_equal_error(gcut_data_get_pointer(data, "/expected"),
+                            error);
 }
 
 void
