@@ -769,6 +769,28 @@ const gchar          *milter_client_get_syslog_facility
                                                      (MilterClient  *client);
 
 /**
+ * milter_client_set_syslog_identify:
+ * @client: a %MilterClient.
+ * @identify: the identify in syslog.
+ *
+ * Sets the syslog identify of the @client.
+ */
+void                  milter_client_set_syslog_identify
+                                                     (MilterClient  *client,
+                                                      const gchar   *identify);
+
+/**
+ * milter_client_get_syslog_identify:
+ * @client: a %MilterClient.
+ *
+ * Gets the syslog identify name of the @client.
+ *
+ * Returns: syslog identify name.
+ */
+const gchar          *milter_client_get_syslog_identify
+                                                     (MilterClient  *client);
+
+/**
  * milter_client_set_syslog_facility:
  * @client: a %MilterClient.
  *
@@ -781,12 +803,10 @@ void                  milter_client_set_syslog_facility
 /**
  * milter_client_start_syslog:
  * @client: a %MilterClient.
- * @identify: the identify name in syslog.
  *
  * Starts logging by syslog with @identify name.
  */
-void                 milter_client_start_syslog      (MilterClient  *client,
-                                                      const gchar   *identify);
+void                 milter_client_start_syslog      (MilterClient  *client);
 
 /**
  * milter_client_get_event_loop:

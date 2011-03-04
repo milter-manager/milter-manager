@@ -101,12 +101,16 @@ client_shutdown (VALUE self)
 static VALUE
 client_start_syslog (int argc, VALUE *argv, VALUE self)
 {
+    MilterClient *client;
     VALUE identify, facility;
 
     rb_scan_args(argc, argv, "11", &identify, &facility);
-    milter_client_set_syslog_facility(SELF(self), RVAL2CSTR(facility));
-    milter_client_start_syslog(SELF(self),
-			       RVAL2CSTR(identify));
+
+    client = SELF(self);
+    milter_client_set_syslog_identify(client, RVAL2CSTR(identify));
+    milter_client_set_syslog_facility(client, RVAL2CSTR(facility));
+    milter_client_start_syslog(client);
+
     return self;
 }
 

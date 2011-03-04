@@ -93,7 +93,7 @@ parse_syslog_arg (const gchar *option_name,
 {
     MilterClient *client = data;
 
-    milter_client_start_syslog(client, g_get_prgname());
+    milter_client_start_syslog(client);
     return TRUE;
 }
 

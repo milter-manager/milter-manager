@@ -49,7 +49,8 @@ void test_remove_unix_socket_on_create (void);
 void test_not_remove_unix_socket_on_create (void);
 void test_remove_pid_file_on_exit_accessor (void);
 void test_remove_pid_file_on_exit (void);
-void test_syslog_facilitiy_accessor (void);
+void test_syslog_identify_accessor (void);
+void test_syslog_facility_accessor (void);
 void test_suspend_time_on_unacceptable (void);
 void test_max_connections (void);
 void test_effective_user (void);
@@ -868,7 +869,16 @@ test_remove_pid_file_on_exit (void)
 }
 
 void
-test_syslog_facilitiy_accessor (void)
+test_syslog_identify_accessor (void)
+{
+    cut_assert_equal_string(NULL, milter_client_get_syslog_identify(client));
+    milter_client_set_syslog_identify(client, "milter-test-client");
+    cut_assert_equal_string("milter-test-client",
+                            milter_client_get_syslog_identify(client));
+}
+
+void
+test_syslog_facility_accessor (void)
 {
     cut_assert_equal_string(NULL, milter_client_get_syslog_facility(client));
     milter_client_set_syslog_facility(client, "mail");

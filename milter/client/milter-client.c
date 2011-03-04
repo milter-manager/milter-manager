@@ -48,6 +48,7 @@ enum
     PROP_EVENT_LOOP,
     PROP_PID_FILE,
     PROP_REMOVE_PID_FILE_ON_EXIT,
+    PROP_SYSLOG_IDENTIFY,
     PROP_SYSLOG_FACILITIY
 };
 
@@ -118,6 +119,7 @@ struct _MilterClientPrivate
     gchar *pid_file;
     gboolean remove_pid_file_on_exit;
 
+    gchar *syslog_identify;
     gchar *syslog_facility;
 };
 
@@ -246,6 +248,13 @@ _milter_client_class_init (MilterClientClass *klass)
                                 G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_REMOVE_PID_FILE_ON_EXIT,
                                     spec);
+
+    spec = g_param_spec_string("syslog-identify",
+                               "Syslog Identify",
+                               "Syslog identify of the client",
+                               NULL,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_SYSLOG_IDENTIFY, spec);
 
     spec = g_param_spec_string("syslog-facility",
                                "Syslog Facility",
@@ -387,6 +396,7 @@ _milter_client_init (MilterClient *client)
     priv->pid_file = NULL;
     priv->remove_pid_file_on_exit = TRUE;
 
+    priv->syslog_identify = NULL;
     priv->syslog_facility = NULL;
 }
 
@@ -702,6 +712,9 @@ set_property (GObject      *object,
         milter_client_set_remove_pid_file_on_exit(client,
                                                   g_value_get_boolean(value));
         break;
+    case PROP_SYSLOG_IDENTIFY:
+        milter_client_set_syslog_identify(client, g_value_get_string(value));
+        break;
     case PROP_SYSLOG_FACILITIY:
         milter_client_set_syslog_facility(client, g_value_get_string(value));
         break;
@@ -752,6 +765,9 @@ get_property (GObject    *object,
     case PROP_REMOVE_PID_FILE_ON_EXIT:
         g_value_set_boolean(value,
                             milter_client_is_remove_pid_file_on_exit(client));
+        break;
+    case PROP_SYSLOG_IDENTIFY:
+        g_value_set_string(value, milter_client_get_syslog_identify(client));
         break;
     case PROP_SYSLOG_FACILITIY:
         g_value_set_string(value, milter_client_get_syslog_facility(client));
@@ -2584,6 +2600,36 @@ milter_client_is_processing (MilterClient *client)
 }
 
 const gchar *
+milter_client_get_syslog_identify (MilterClient *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->syslog_identify;
+}
+
+void
+milter_client_set_syslog_identify (MilterClient *client, const gchar *identify)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+
+    if (priv->syslog_identify == identify)
+        return;
+
+    if (priv->syslog_identify) {
+        if (identify && strcmp(priv->syslog_identify, identify) == 0)
+            return;
+        g_free(priv->syslog_identify);
+        priv->syslog_identify = NULL;
+    }
+
+    priv->syslog_identify = g_strdup(identify);
+
+    if (priv->syslog_logger) {
+        milter_client_start_syslog(client);
+    }
+}
+
+const gchar *
 milter_client_get_syslog_facility (MilterClient *client)
 {
     return MILTER_CLIENT_GET_PRIVATE(client)->syslog_facility;
@@ -2600,7 +2646,7 @@ milter_client_set_syslog_facility (MilterClient *client, const gchar *facility)
         return;
 
     if (priv->syslog_facility) {
-        if (facility && g_utf8_collate(priv->syslog_facility, facility))
+        if (facility && strcmp(priv->syslog_facility, facility) == 0)
             return;
         g_free(priv->syslog_facility);
         priv->syslog_facility = NULL;
@@ -2609,21 +2655,25 @@ milter_client_set_syslog_facility (MilterClient *client, const gchar *facility)
     priv->syslog_facility = g_strdup(facility);
 
     if (priv->syslog_logger) {
-        g_object_unref(priv->syslog_logger);
-        milter_client_start_syslog(client, NULL);
+        milter_client_start_syslog(client);
     }
 }
 
 void
-milter_client_start_syslog (MilterClient *client, const gchar *identify)
+milter_client_start_syslog (MilterClient *client)
 {
     MilterClientPrivate *priv;
+    gchar *identify;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
     if (priv->syslog_logger) {
         g_object_unref(priv->syslog_logger);
     }
+
+    identify = priv->syslog_identify;
+    if (!identify)
+        identify = g_get_prgname();
     priv->syslog_logger = milter_syslog_logger_new(identify,
                                                    priv->syslog_facility);
 }
