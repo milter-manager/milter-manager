@@ -598,6 +598,16 @@ if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = ""; then
 fi
 AC_MSG_RESULT($MILTER_MANAGER_PACKAGE_PLATFORM)
 
+AM_CONDITIONAL(WITH_INIT_SCRIPT, [
+case "$MILTER_MANAGER_PACKAGE_PLATFORM" in
+debian|redhat|solaris)
+  true
+  ;;
+*)
+  false
+  ;;
+esac])
+
 AC_ARG_WITH([rcddir],
              AS_HELP_STRING([--with-rcddir=DIR],
                             [Synonym for --with-packege-options=rcddir=DIR.
