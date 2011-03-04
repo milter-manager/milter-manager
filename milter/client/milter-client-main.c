@@ -53,10 +53,10 @@ milter_client_quit (void)
 }
 
 static gboolean
-parse_spec_arg (const gchar *option_name,
-                const gchar *value,
-                gpointer data,
-                GError **error)
+parse_connection_spec (const gchar *option_name,
+                       const gchar *value,
+                       gpointer data,
+                       GError **error)
 {
     MilterClient *client = data;
     GError *spec_error = NULL;
@@ -76,20 +76,20 @@ parse_spec_arg (const gchar *option_name,
 }
 
 static gboolean
-parse_verbose_arg (const gchar *option_name,
-                   const gchar *value,
-                   gpointer data,
-                   GError **error)
+parse_verbose (const gchar *option_name,
+               const gchar *value,
+               gpointer data,
+               GError **error)
 {
     milter_logger_set_target_level(milter_logger(), MILTER_LOG_LEVEL_ALL);
     return TRUE;
 }
 
 static gboolean
-parse_syslog_arg (const gchar *option_name,
-                  const gchar *value,
-                  gpointer data,
-                  GError **error)
+parse_syslog (const gchar *option_name,
+              const gchar *value,
+              gpointer data,
+              GError **error)
 {
     MilterClient *client = data;
 
@@ -98,10 +98,10 @@ parse_syslog_arg (const gchar *option_name,
 }
 
 static gboolean
-parse_syslog_facility_arg (const gchar *option_name,
-                           const gchar *value,
-                           gpointer data,
-                           GError **error)
+parse_syslog_facility (const gchar *option_name,
+                       const gchar *value,
+                       gpointer data,
+                       GError **error)
 {
     MilterClient *client = data;
 
@@ -110,10 +110,10 @@ parse_syslog_facility_arg (const gchar *option_name,
 }
 
 static gboolean
-parse_daemon_arg (const gchar *option_name,
-                  const gchar *value,
-                  gpointer data,
-                  GError **error)
+parse_daemon (const gchar *option_name,
+              const gchar *value,
+              gpointer data,
+              GError **error)
 {
     MilterClient *client = data;
 
@@ -122,10 +122,10 @@ parse_daemon_arg (const gchar *option_name,
 }
 
 static gboolean
-parse_user_arg (const gchar *option_name,
-                const gchar *value,
-                gpointer data,
-                GError **error)
+parse_user (const gchar *option_name,
+            const gchar *value,
+            gpointer data,
+            GError **error)
 {
     MilterClient *client = data;
 
@@ -134,10 +134,10 @@ parse_user_arg (const gchar *option_name,
 }
 
 static gboolean
-parse_group_arg (const gchar *option_name,
-                 const gchar *value,
-                 gpointer data,
-                 GError **error)
+parse_group (const gchar *option_name,
+             const gchar *value,
+             gpointer data,
+             GError **error)
 {
     MilterClient *client = data;
 
@@ -146,10 +146,10 @@ parse_group_arg (const gchar *option_name,
 }
 
 static gboolean
-parse_unix_socket_group_arg (const gchar *option_name,
-                             const gchar *value,
-                             gpointer data,
-                             GError **error)
+parse_unix_socket_group (const gchar *option_name,
+                         const gchar *value,
+                         gpointer data,
+                         GError **error)
 {
     MilterClient *client = data;
 
@@ -188,25 +188,22 @@ parse_unix_socket_mode (const gchar *option_name,
 
 static const GOptionEntry option_entries[] =
 {
-    {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
+    {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_connection_spec,
      N_("The spec of socket. (unix:PATH|inet:PORT[@HOST]|inet6:PORT[@HOST])"),
      "SPEC"},
-    {"verbose", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
-     parse_verbose_arg,
+    {"verbose", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, parse_verbose,
      N_("Be verbose"), NULL},
-    {"syslog", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, parse_syslog_arg,
+    {"syslog", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, parse_syslog,
      N_("Use Syslog"), NULL},
-    {"syslog-facility", 0, 0, G_OPTION_ARG_CALLBACK, parse_syslog_facility_arg,
+    {"syslog-facility", 0, 0, G_OPTION_ARG_CALLBACK, parse_syslog_facility,
      N_("Use facility for syslog"), "FACILITY"},
-    {"daemon", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
-     parse_daemon_arg,
+    {"daemon", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, parse_daemon,
      N_("Run as a daemon"), NULL},
-    {"user", 0, 0, G_OPTION_ARG_CALLBACK, parse_user_arg,
+    {"user", 0, 0, G_OPTION_ARG_CALLBACK, parse_user,
      N_("Run as USER's process (need root privilege)"), "USER"},
-    {"group", 0, 0, G_OPTION_ARG_CALLBACK, parse_group_arg,
+    {"group", 0, 0, G_OPTION_ARG_CALLBACK, parse_group,
      N_("Run as GROUP's process (need root privilege)"), "GROUP"},
-    {"unix-socket-group", 0, 0, G_OPTION_ARG_CALLBACK,
-     parse_unix_socket_group_arg,
+    {"unix-socket-group", 0, 0, G_OPTION_ARG_CALLBACK, parse_unix_socket_group,
      N_("Change UNIX domain socket group to GROUP"), "GROUP"},
     {"unix-socket-mode", 0, 0, G_OPTION_ARG_CALLBACK, parse_unix_socket_mode,
      N_("Change UNIX domain socket mode to MODE (default: 0660)"), "MODE"},
