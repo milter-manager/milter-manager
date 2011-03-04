@@ -674,6 +674,16 @@ dispose (GObject *object)
         priv->syslog_logger = NULL;
     }
 
+    if (priv->syslog_identify) {
+        g_free(priv->syslog_identify);
+        priv->syslog_identify = NULL;
+    }
+
+    if (priv->syslog_facility) {
+        g_free(priv->syslog_facility);
+        priv->syslog_facility = NULL;
+    }
+
     G_OBJECT_CLASS(_milter_client_parent_class)->dispose(object);
 }
 
