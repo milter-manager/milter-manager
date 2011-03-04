@@ -39,9 +39,9 @@ class TestGString < Test::Unit::TestCase
   end
 
   def test_argument_error
-    assert_raises(TypeError) {
+    assert_raises(TypeError) do
       @gstring.write(false)
-    }
+    end
     assert_equal("", @gstring.to_s)
   end
 end
