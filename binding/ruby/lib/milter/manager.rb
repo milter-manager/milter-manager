@@ -386,7 +386,8 @@ module Milter
 
       def load_if_exist(path)
         load(path)
-      rescue NonexistentPath
+      rescue NonexistentPath => e
+        raise unless e.message == path
         # ignore. log this?
       end
 
