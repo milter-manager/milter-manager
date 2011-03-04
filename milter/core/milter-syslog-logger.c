@@ -256,8 +256,15 @@ constructor (GType type, guint n_props, GObjectConstructParam *props)
     priv->logger = milter_logger();
     log_level_env = g_getenv("MILTER_LOG_SYSLOG_LEVEL");
     if (log_level_env) {
+        GError *error = NULL;
         milter_syslog_logger_set_target_level_by_string(syslog_logger,
-                                                        log_level_env);
+                                                        log_level_env,
+                                                        &error);
+        if (error) {
+            milter_warning("[syslog-logger][level][set][warning] %s",
+                           error->message);
+            g_error_free(error);
+        }
     } else {
         MilterLogLevelFlags log_level;
         log_level = milter_logger_get_target_level(priv->logger);
@@ -392,12 +399,18 @@ milter_syslog_logger_set_target_level (MilterSyslogLogger *logger,
 
 void
 milter_syslog_logger_set_target_level_by_string (MilterSyslogLogger *logger,
-                                                 const gchar *level_name)
+                                                 const gchar *level_name,
+                                                 GError **error)
 {
     MilterLogLevelFlags level;
 
     if (level_name) {
-        level = milter_log_level_flags_from_string(level_name);
+        GError *local_error = NULL;
+        level = milter_log_level_flags_from_string(level_name, &local_error);
+        if (local_error) {
+            g_propagate_error(error, local_error);
+            return;
+        }
     } else {
         level = MILTER_LOG_LEVEL_DEFAULT;
     }

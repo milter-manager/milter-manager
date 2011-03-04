@@ -35,14 +35,16 @@ void data_command_to_macro_stage (void);
 void test_command_to_macro_stage (gconstpointer data);
 void data_macro_stage_to_command (void);
 void test_macro_stage_to_command (gconstpointer data);
-void data_flags_from_string (void);
-void test_flags_from_string (gconstpointer _data);
+void data_flags_from_string_success (void);
+void test_flags_from_string_success (gconstpointer data);
+void data_flags_from_string_error (void);
+void test_flags_from_string_error (gconstpointer data);
 void data_enum_from_string_success (void);
-void test_enum_from_string_success (gconstpointer _data);
+void test_enum_from_string_success (gconstpointer data);
 void data_enum_from_string_error (void);
-void test_enum_from_string_error (gconstpointer _data);
+void test_enum_from_string_error (gconstpointer data);
 void data_flags_names (void);
-void test_flags_names (gconstpointer _data);
+void test_flags_names (gconstpointer data);
 void test_append_index (void);
 void test_xml_append_text_element (void);
 void test_xml_append_boolean_element (void);
@@ -389,7 +391,7 @@ test_macro_stage_to_command (gconstpointer data)
 }
 
 void
-data_flags_from_string (void)
+data_flags_from_string_success (void)
 {
 #define ADD(label, input, expected)                                     \
     gcut_add_datum(label,                                               \
@@ -406,20 +408,62 @@ data_flags_from_string (void)
         MILTER_LOG_LEVEL_ALL | MILTER_LOG_LEVEL_NONE);
 
 #undef ADD
-};
-
+}
 
 void
-test_flags_from_string (gconstpointer data)
+test_flags_from_string_success (gconstpointer data)
 {
     const gchar *input;
     GType type;
+    GError *error = NULL;
 
     input = gcut_data_get_string(data, "/input");
     type = gcut_data_get_type(data, "/type");
     gcut_assert_equal_flags(type,
                             gcut_data_get_flags(data, "/expected"),
-                            milter_utils_flags_from_string(type, input));
+                            milter_utils_flags_from_string(type, input, &error));
+    gcut_assert_error(error);
+}
+
+void
+data_flags_from_string_error (void)
+{
+#define ADD(label, input, expected)                                     \
+    gcut_add_datum(label,                                               \
+                   "/input", G_TYPE_STRING, input,                      \
+                   "/type", G_TYPE_GTYPE, MILTER_TYPE_LOG_LEVEL_FLAGS,  \
+                   "/expected", G_TYPE_POINTER, expected, g_error_free, \
+                   NULL)
+
+    ADD("null",
+        NULL,
+        g_error_new(MILTER_FLAGS_ERROR,
+                    MILTER_FLAGS_ERROR_NULL_NAME,
+                    "flags name is NULL (<MilterLogLevelFlags>)"));
+    ADD("invalid",
+        "unknown|nonexistent",
+        g_error_new(MILTER_FLAGS_ERROR,
+                    MILTER_FLAGS_ERROR_UNKNOWN_NAMES,
+                    "unknown flag names: [<unknown>|<nonexistent>]"
+                    "(<MilterLogLevelFlags>)"));
+
+#undef ADD
+}
+
+void
+test_flags_from_string_error (gconstpointer data)
+{
+    const gchar *input;
+    GType type;
+    GError *error = NULL;
+
+    input = gcut_data_get_string(data, "/input");
+    type = gcut_data_get_type(data, "/type");
+    gcut_assert_equal_flags(type,
+                            0,
+                            milter_utils_flags_from_string(type, input, &error));
+    gcut_assert_equal_error(gcut_data_get_pointer(data, "/expected"),
+                            error);
 }
 
 void

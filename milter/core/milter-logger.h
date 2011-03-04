@@ -167,8 +167,10 @@ GQuark           milter_logger_error_quark    (void);
 
 GType            milter_logger_get_type       (void) G_GNUC_CONST;
 
-MilterLogLevelFlags milter_log_level_flags_from_string (const gchar *level_name);
-MilterLogItemFlags  milter_log_item_flags_from_string  (const gchar *item_name);
+MilterLogLevelFlags milter_log_level_flags_from_string (const gchar *level_name,
+                                                        GError     **error);
+MilterLogItemFlags  milter_log_item_flags_from_string  (const gchar *item_name,
+                                                        GError     **error);
 
 MilterLogger    *milter_logger                (void);
 void             milter_logger_default_log_handler
@@ -209,7 +211,8 @@ void             milter_logger_set_target_level
                                                MilterLogLevelFlags  level);
 void             milter_logger_set_target_level_by_string
                                               (MilterLogger        *logger,
-                                               const gchar         *level_name);
+                                               const gchar         *level_name,
+                                               GError             **error);
 void             milter_logger_set_interesting_level
                                               (MilterLogger        *logger,
                                                const gchar         *key,
@@ -225,7 +228,8 @@ void             milter_logger_set_target_item
                                                MilterLogItemFlags   item);
 void             milter_logger_set_target_item_by_string
                                               (MilterLogger        *logger,
-                                               const gchar         *item_name);
+                                               const gchar         *item_name,
+                                               GError             **error);
 
 void             milter_logger_connect_default_handler
                                               (MilterLogger        *logger);

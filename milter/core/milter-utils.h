@@ -113,7 +113,8 @@ void             milter_utils_set_error_with_sub_error
 
 guint            milter_utils_flags_from_string
                                              (GType        flags_type,
-                                              const gchar *flags_string);
+                                              const gchar *flags_string,
+                                              GError     **error);
 gint             milter_utils_enum_from_string
                                              (GType        enum_type,
                                               const gchar *enum_string,
@@ -157,6 +158,7 @@ typedef enum {
 
 
 #define MILTER_ENUM_ERROR           (milter_enum_error_quark())
+#define MILTER_FLAGS_ERROR          (milter_flags_error_quark())
 
 typedef enum
 {
@@ -164,7 +166,14 @@ typedef enum
     MILTER_ENUM_ERROR_UNKNOWN_NAME
 } MilterEnumError;
 
+typedef enum
+{
+    MILTER_FLAGS_ERROR_NULL_NAME,
+    MILTER_FLAGS_ERROR_UNKNOWN_NAMES
+} MilterFlagsError;
+
 GQuark           milter_enum_error_quark       (void);
+GQuark           milter_flags_error_quark      (void);
 
 
 G_END_DECLS

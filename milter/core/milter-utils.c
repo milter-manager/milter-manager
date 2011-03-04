@@ -488,16 +488,30 @@ milter_utils_inspect_list_pointer (const GList *list)
     return g_string_free(inspected, FALSE);
 }
 
+GQuark
+milter_flags_error_quark (void)
+{
+    return g_quark_from_static_string("milter-flags-error-quark");
+}
+
 guint
 milter_utils_flags_from_string (GType        flags_type,
-                                const gchar *flags_string)
+                                const gchar *flags_string,
+                                GError     **error)
 {
     gchar **names, **name;
     GFlagsClass *flags_class;
     guint flags = 0;
+    GString *unknown_strings = NULL;
 
-    if (!flags_string)
+    if (!flags_string) {
+        g_set_error(error,
+                    MILTER_FLAGS_ERROR,
+                    MILTER_FLAGS_ERROR_NULL_NAME,
+                    "flags name is NULL (<%s>)",
+                    g_type_name(flags_type));
         return 0;
+    }
 
     names = g_strsplit(flags_string, "|", 0);
     flags_class = g_type_class_ref(flags_type);
@@ -509,12 +523,30 @@ milter_utils_flags_from_string (GType        flags_type,
             GFlagsValue *value;
 
             value = g_flags_get_value_by_nick(flags_class, *name);
-            if (value)
+            if (value) {
                 flags |= value->value;
+            } else {
+                if (!unknown_strings)
+                    unknown_strings = g_string_new(NULL);
+                g_string_append_printf(unknown_strings,
+                                       "%s<%s>",
+                                       unknown_strings->len > 0 ? "|" : "",
+                                       *name);
+            }
         }
     }
     g_type_class_unref(flags_class);
     g_strfreev(names);
+
+    if (unknown_strings) {
+        g_set_error(error,
+                    MILTER_FLAGS_ERROR,
+                    MILTER_FLAGS_ERROR_UNKNOWN_NAMES,
+                    "unknown flag names: [%s](<%s>)",
+                    unknown_strings->str,
+                    g_type_name(flags_type));
+        g_string_free(unknown_strings, TRUE);
+    }
 
     return flags;
 }

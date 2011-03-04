@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2009-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -27,7 +27,13 @@
 static VALUE
 s_from_string (VALUE self, VALUE string)
 {
-    return LOG_LEVEL2RVAL(milter_log_level_flags_from_string(RVAL2CSTR(string)));
+    MilterLogLevelFlags level;
+    GError *error = NULL;
+
+    level = milter_log_level_flags_from_string(RVAL2CSTR(string), &error);
+    if (error)
+	RAISE_GERROR(error);
+    return LOG_LEVEL2RVAL(level);
 }
 
 static VALUE

@@ -58,7 +58,8 @@ void                milter_syslog_logger_set_target_level
                                                MilterLogLevelFlags  level);
 void                milter_syslog_logger_set_target_level_by_string
                                               (MilterSyslogLogger  *logger,
-                                               const gchar         *level_name);
+                                               const gchar         *level_name,
+                                               GError             **error);
 
 G_END_DECLS
 
