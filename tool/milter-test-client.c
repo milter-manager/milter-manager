@@ -32,7 +32,6 @@
 static gboolean report_request = TRUE;
 static gboolean report_memory_profile = FALSE;
 static MilterClient *client = NULL;
-static guint n_workers = 0;
 static MilterClientEventLoopBackend event_loop_backend =
     MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
 static guint packet_buffer_size = 0;
@@ -84,8 +83,6 @@ static const GOptionEntry option_entries[] =
      G_OPTION_ARG_NONE, &report_memory_profile,
      N_("Report memory profile. "
         "Need to set MILTER_MEMORY_PROFILE=yes environment variable."), NULL},
-    {"n-workers", 0, 0, G_OPTION_ARG_INT, &n_workers,
-     N_("Run N_WORKERS processes (default: 0)"), "N_WORKERS"},
     {"event-loop-backend", 0, 0, G_OPTION_ARG_CALLBACK, parse_event_loop_backend,
      N_("Use BACKEND as event loop backend (default: glib)"), "[glib|libev]"},
     {"packet-buffer-size", 0, 0, G_OPTION_ARG_INT, &packet_buffer_size,
@@ -459,8 +456,6 @@ main (int argc, char *argv[])
     }
 
     milter_client_set_event_loop_backend(client, event_loop_backend);
-    if (n_workers > 0)
-        milter_client_set_n_workers(client, n_workers);
     milter_client_set_default_packet_buffer_size(client, packet_buffer_size);
     milter_client_set_pid_file(client, pid_file);
     if (success)

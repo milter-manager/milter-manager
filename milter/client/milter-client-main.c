@@ -21,6 +21,9 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <stdlib.h>
+#include <errno.h>
+
 #include <glib/gi18n.h>
 
 #include "../client.h"
@@ -67,7 +70,8 @@ parse_connection_spec (const gchar *option_name,
         g_set_error(error,
                     G_OPTION_ERROR,
                     G_OPTION_ERROR_BAD_VALUE,
-                    "%s",
+                    "%s: %s",
+                    option_name,
                     spec_error->message);
         g_error_free(spec_error);
     }
@@ -177,7 +181,8 @@ parse_unix_socket_mode (const gchar *option_name,
         g_set_error(error,
                     G_OPTION_ERROR,
                     G_OPTION_ERROR_BAD_VALUE,
-                    _("%s"),
+                    "%s: %s",
+                    option_name,
                     error_message);
         g_free(error_message);
     }
@@ -185,6 +190,48 @@ parse_unix_socket_mode (const gchar *option_name,
     return success;
 }
 
+static gboolean
+parse_n_workers (const gchar *option_name,
+                 const gchar *value,
+                 gpointer data,
+                 GError **error)
+{
+    MilterClient *client = data;
+    gchar *end;
+    glong n_workers;
+
+    errno = 0;
+    n_workers = strtol(value, &end, 0);
+
+    if (end[0] != '\0') {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    _("%s: invalid integer value: <%s>(%.*s>%c<%s)"),
+                    option_name,
+                    value,
+                    (int)(end - value), value,
+                    end[0],
+                    end + 1);
+        return FALSE;
+    }
+
+    if (n_workers > MILTER_CLIENT_MAX_N_WORKERS || errno == ERANGE) {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    _("%s: too big: <%s>: parsed=<%ld>, max=<%d>"),
+                    option_name,
+                    value,
+                    n_workers,
+                    MILTER_CLIENT_MAX_N_WORKERS);
+      return FALSE;
+    }
+
+    milter_client_set_n_workers(client, n_workers);
+
+    return TRUE;
+}
 
 static const GOptionEntry option_entries[] =
 {
@@ -207,6 +254,8 @@ static const GOptionEntry option_entries[] =
      N_("Change UNIX domain socket group to GROUP"), "GROUP"},
     {"unix-socket-mode", 0, 0, G_OPTION_ARG_CALLBACK, parse_unix_socket_mode,
      N_("Change UNIX domain socket mode to MODE (default: 0660)"), "MODE"},
+    {"n-workers", 0, 0, G_OPTION_ARG_CALLBACK, parse_n_workers,
+     N_("Run N_WORKERS processes (default: 0)"), "N_WORKERS"},
     {NULL}
 };
 
