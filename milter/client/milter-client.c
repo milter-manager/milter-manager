@@ -853,6 +853,10 @@ change_unix_socket_group (MilterClient *client, struct sockaddr_un *address_un)
             "[client][error][unix] "
             "failed to change UNIX socket group: <%s>: <%s>: %s",
             address_un->sun_path, socket_group, g_strerror(errno));
+    } else {
+        milter_info("[client][socket][unix][mode][change] <%s>(<%d>): <%s>",
+                    group->gr_name, group->gr_gid,
+                    address_un->sun_path);
     }
 }
 
