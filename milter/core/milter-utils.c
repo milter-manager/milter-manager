@@ -538,7 +538,8 @@ milter_utils_enum_from_string (GType        enum_type,
         g_set_error(error,
                     MILTER_ENUM_ERROR,
                     MILTER_ENUM_ERROR_NULL_NAME,
-                    "enum name is NULL");
+                    "enum name is NULL (<%s>)",
+                    g_type_name(enum_type));
         return 0;
     }
 
@@ -550,7 +551,9 @@ milter_utils_enum_from_string (GType        enum_type,
         g_set_error(error,
                     MILTER_ENUM_ERROR,
                     MILTER_ENUM_ERROR_UNKNOWN_NAME,
-                    "unknown enum name: <%s>", enum_string);
+                    "unknown enum name: <%s>(<%s>)",
+                    enum_string,
+                    g_type_name(enum_type));
     }
     g_type_class_unref(enum_class);
 

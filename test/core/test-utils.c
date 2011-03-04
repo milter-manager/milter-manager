@@ -466,17 +466,17 @@ data_enum_from_string_error (void)
         NULL,
         g_error_new(MILTER_ENUM_ERROR,
                     MILTER_ENUM_ERROR_NULL_NAME,
-                    "enum name is NULL"));
+                    "enum name is NULL (<MilterLogColorize>)"));
     ADD("none",
         "",
         g_error_new(MILTER_ENUM_ERROR,
                     MILTER_ENUM_ERROR_UNKNOWN_NAME,
-                    "unknown enum name: <>"));
+                    "unknown enum name: <>(<MilterLogColorize>)"));
     ADD("invalid",
         "unknown",
         g_error_new(MILTER_ENUM_ERROR,
                     MILTER_ENUM_ERROR_UNKNOWN_NAME,
-                    "unknown enum name: <unknown>"));
+                    "unknown enum name: <unknown>(<MilterLogColorize>)"));
 
 #undef ADD
 }
