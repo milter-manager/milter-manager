@@ -21,6 +21,8 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <glib/gi18n.h>
+
 #include "../client.h"
 #include "milter-client-private.h"
 
@@ -48,6 +50,66 @@ milter_client_quit (void)
 
     milter_client_log_handler_id = 0;
     initialized = FALSE;
+}
+
+static gboolean
+parse_spec_arg (const gchar *option_name,
+                const gchar *value,
+                gpointer data,
+                GError **error)
+{
+    MilterClient *client = data;
+    GError *spec_error = NULL;
+    gboolean success;
+
+    success = milter_client_set_connection_spec(client, value, error);
+    if (!success) {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    _("%s"), spec_error->message);
+        g_error_free(spec_error);
+    }
+
+    return success;
+}
+
+static const GOptionEntry option_entries[] =
+{
+    {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
+     N_("The spec of socket. (unix:PATH|inet:PORT[@HOST]|inet6:PORT[@HOST])"),
+     "SPEC"},
+    {NULL}
+};
+
+static gboolean
+hook_pre_parse (GOptionContext *context, GOptionGroup *group,
+                gpointer data, GError **error)
+{
+    return TRUE;
+}
+
+static gboolean
+hook_post_parse (GOptionContext *context, GOptionGroup *group,
+                 gpointer data, GError **error)
+{
+    return TRUE;
+}
+
+GOptionGroup *
+milter_client_get_option_group (MilterClient *client)
+{
+    GOptionGroup *group;
+
+    group = g_option_group_new("milter",
+                               "Milter Common Options",
+                               "Show milter help options",
+                               g_object_ref(client),
+                               (GDestroyNotify)g_object_unref);
+    g_option_group_add_entries(group, option_entries);
+    g_option_group_set_translation_domain(group, GETTEXT_PACKAGE);
+    g_option_group_set_parse_hooks(group, hook_pre_parse, hook_post_parse);
+    return group;
 }
 
 /*

@@ -139,14 +139,25 @@ G_BEGIN_DECLS
  * Call this function before using any other the milter-client
  * library functions.
  */
-void milter_client_init (void);
+void                 milter_client_init              (void);
 
 /**
  * milter_client_quit:
  *
  * Call this function after the milter-client library use.
  */
-void milter_client_quit (void);
+void                 milter_client_quit              (void);
+
+/**
+ * milter_client_get_option_group:
+ * @client: a %MilterClient.
+ *
+ * Gets a %GOptionGroup for the @client. The option group
+ * has common milter client options.
+ *
+ * Returns: a new %GOptionGroup for @client.
+ */
+GOptionGroup        *milter_client_get_option_group  (MilterClient *client);
 
 G_END_DECLS
 

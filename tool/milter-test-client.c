@@ -29,7 +29,6 @@
 
 #include <milter/client.h>
 
-static gchar *spec = NULL;
 static gboolean verbose = FALSE;
 static gboolean report_request = TRUE;
 static gboolean report_memory_profile = FALSE;
@@ -56,29 +55,6 @@ print_version (const gchar *option_name,
     g_print("%s\n", VERSION);
     exit(EXIT_SUCCESS);
     return TRUE;
-}
-
-static gboolean
-parse_spec_arg (const gchar *option_name,
-                const gchar *value,
-                gpointer data,
-                GError **error)
-{
-    GError *spec_error = NULL;
-    gboolean success;
-
-    success = milter_connection_parse_spec(value, NULL, NULL, NULL, &spec_error);
-    if (success) {
-        spec = g_strdup(value);
-    } else {
-        g_set_error(error,
-                    G_OPTION_ERROR,
-                    G_OPTION_ERROR_BAD_VALUE,
-                    _("%s"), spec_error->message);
-        g_error_free(spec_error);
-    }
-
-    return success;
 }
 
 static gboolean
@@ -133,9 +109,6 @@ parse_event_loop_backend (const gchar *option_name,
 
 static const GOptionEntry option_entries[] =
 {
-    {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
-     N_("The spec of socket. (unix:PATH|inet:PORT[@HOST]|inet6:PORT[@HOST])"),
-     "SPEC"},
     {"verbose", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_NONE, &verbose,
      N_("Be verbose"), NULL},
     {"syslog", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_NONE, &use_syslog,
@@ -513,25 +486,28 @@ main (int argc, char *argv[])
     gboolean success = TRUE;
     GError *error = NULL;
     GOptionContext *option_context;
-    GOptionGroup *main_group;
+    GOptionGroup *milter_group;
 
     milter_init();
     milter_client_init();
 
     option_context = g_option_context_new(NULL);
     g_option_context_add_main_entries(option_context, option_entries, NULL);
-    main_group = g_option_context_get_main_group(option_context);
+
+    client = milter_client_new();
+    milter_group = milter_client_get_option_group(client);
+    g_option_context_add_group(option_context, milter_group);
 
     if (!g_option_context_parse(option_context, &argc, &argv, &error)) {
         g_print("%s\n", error->message);
         g_error_free(error);
         g_option_context_free(option_context);
+        g_object_unref(client);
         exit(EXIT_FAILURE);
     }
 
     if (verbose)
         g_setenv("MILTER_LOG_LEVEL", "all", FALSE);
-    client = milter_client_new();
     if (use_syslog) {
         milter_client_start_syslog(client,
                                    "milter-test-client",
@@ -547,8 +523,6 @@ main (int argc, char *argv[])
         milter_client_set_n_workers(client, n_workers);
     milter_client_set_default_packet_buffer_size(client, packet_buffer_size);
     milter_client_set_pid_file(client, pid_file);
-    if (spec)
-        success = milter_client_set_connection_spec(client, spec, &error);
     if (success)
         success = milter_client_listen(client, &error);
     if (success)
