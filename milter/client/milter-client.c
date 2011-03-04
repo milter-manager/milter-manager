@@ -854,7 +854,7 @@ change_unix_socket_group (MilterClient *client, struct sockaddr_un *address_un)
             "failed to change UNIX socket group: <%s>: <%s>: %s",
             address_un->sun_path, socket_group, g_strerror(errno));
     } else {
-        milter_info("[client][socket][unix][mode][change] <%s>(<%d>): <%s>",
+        milter_info("[client][socket][unix][group][change] <%s>(<%d>): <%s>",
                     group->gr_name, group->gr_gid,
                     address_un->sun_path);
     }
@@ -877,6 +877,9 @@ change_unix_socket_mode (MilterClient *client, struct sockaddr_un *address_un)
         milter_error("[client][error][unix] %s", error->message);
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), error);
         g_error_free(error);
+    } else {
+        milter_info("[client][socket][unix][mode][change] <%#o>: <%s>",
+                    mode, address_un->sun_path);
     }
 }
 
