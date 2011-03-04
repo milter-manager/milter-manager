@@ -31,7 +31,6 @@
 
 static gboolean report_request = TRUE;
 static gboolean report_memory_profile = FALSE;
-static gchar *syslog_facility = NULL;
 static gboolean run_as_daemon = FALSE;
 static gchar *user = NULL;
 static gchar *group = NULL;
@@ -107,8 +106,6 @@ parse_event_loop_backend (const gchar *option_name,
 
 static const GOptionEntry option_entries[] =
 {
-    {"syslog-facility", 0, 0, G_OPTION_ARG_STRING, &syslog_facility,
-     N_("Use facility for syslog"), "FACILITY"},
     {"no-report-request", 0, G_OPTION_FLAG_NO_ARG | G_OPTION_FLAG_REVERSE,
      G_OPTION_ARG_NONE, &report_request,
      N_("Don't report request values"), NULL},

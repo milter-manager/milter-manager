@@ -93,8 +93,19 @@ parse_syslog_arg (const gchar *option_name,
 {
     MilterClient *client = data;
 
-    milter_client_start_syslog(client,
-                               g_get_prgname());
+    milter_client_start_syslog(client, g_get_prgname());
+    return TRUE;
+}
+
+static gboolean
+parse_syslog_facility_arg (const gchar *option_name,
+                           const gchar *value,
+                           gpointer data,
+                           GError **error)
+{
+    MilterClient *client = data;
+
+    milter_client_set_syslog_facility(client, value);
     return TRUE;
 }
 
@@ -108,6 +119,8 @@ static const GOptionEntry option_entries[] =
      N_("Be verbose"), NULL},
     {"syslog", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, parse_syslog_arg,
      N_("Use Syslog"), NULL},
+    {"syslog-facility", 0, 0, G_OPTION_ARG_CALLBACK, &parse_syslog_facility_arg,
+     N_("Use facility for syslog"), "FACILITY"},
     {NULL}
 };
 
