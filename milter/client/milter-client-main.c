@@ -109,6 +109,18 @@ parse_syslog_facility_arg (const gchar *option_name,
     return TRUE;
 }
 
+static gboolean
+parse_daemon_arg (const gchar *option_name,
+                  const gchar *value,
+                  gpointer data,
+                  GError **error)
+{
+    MilterClient *client = data;
+
+    milter_client_set_run_as_daemon(client, TRUE);
+    return TRUE;
+}
+
 static const GOptionEntry option_entries[] =
 {
     {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
@@ -119,8 +131,11 @@ static const GOptionEntry option_entries[] =
      N_("Be verbose"), NULL},
     {"syslog", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, parse_syslog_arg,
      N_("Use Syslog"), NULL},
-    {"syslog-facility", 0, 0, G_OPTION_ARG_CALLBACK, &parse_syslog_facility_arg,
+    {"syslog-facility", 0, 0, G_OPTION_ARG_CALLBACK, parse_syslog_facility_arg,
      N_("Use facility for syslog"), "FACILITY"},
+    {"daemon", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
+     parse_daemon_arg,
+     N_("Run as a daemon"), NULL},
     {NULL}
 };
 

@@ -31,7 +31,6 @@
 
 static gboolean report_request = TRUE;
 static gboolean report_memory_profile = FALSE;
-static gboolean run_as_daemon = FALSE;
 static gchar *user = NULL;
 static gchar *group = NULL;
 static gchar *unix_socket_group = NULL;
@@ -113,8 +112,6 @@ static const GOptionEntry option_entries[] =
      G_OPTION_ARG_NONE, &report_memory_profile,
      N_("Report memory profile. "
         "Need to set MILTER_MEMORY_PROFILE=yes environment variable."), NULL},
-    {"daemon", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_NONE, &run_as_daemon,
-     N_("Run as a daemon"), NULL},
     {"user", 0, 0, G_OPTION_ARG_STRING, &user,
      N_("Run as USER's process (need root privilege)"), "USER"},
     {"group", 0, 0, G_OPTION_ARG_STRING, &group,
@@ -510,8 +507,6 @@ main (int argc, char *argv[])
         success = milter_client_listen(client, &error);
     if (success)
         success = milter_client_drop_privilege(client, &error);
-    if (success && run_as_daemon)
-        success = milter_client_daemonize(client, &error);
     if (success) {
         void (*sigint_handler) (int signum);
         void (*sigterm_handler) (int signum);

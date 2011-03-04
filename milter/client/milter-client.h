@@ -964,6 +964,27 @@ void                 milter_client_set_remove_pid_file_on_exit
                                                      (MilterClient  *client,
                                                       gboolean       remove);
 
+/**
+ * milter_client_is_run_as_daemon:
+ * @client: a %MilterClient.
+ *
+ * Gets whether running as a daemon or not.
+ *
+ * Returns: %TRUE if running as a daemon, %FALSE otherwise.
+ */
+gboolean             milter_client_is_run_as_daemon
+                                                     (MilterClient  *client);
+
+/**
+ * milter_client_set_run_as_daemon:
+ * @client: a %MilterClient.
+ * @daemon: %TRUE if runnning as a daemon.
+ *
+ * Sets whether running as a daemon.
+ */
+void                 milter_client_set_run_as_daemon (MilterClient  *client,
+                                                      gboolean       daemon);
+
 G_END_DECLS
 
 #endif /* __MILTER_CLIENT_CLIENT_H__ */

@@ -49,7 +49,8 @@ enum
     PROP_PID_FILE,
     PROP_REMOVE_PID_FILE_ON_EXIT,
     PROP_SYSLOG_IDENTIFY,
-    PROP_SYSLOG_FACILITIY
+    PROP_SYSLOG_FACILITIY,
+    PROP_RUN_AS_DAEMON
 };
 
 enum
@@ -121,6 +122,8 @@ struct _MilterClientPrivate
 
     gchar *syslog_identify;
     gchar *syslog_facility;
+    gboolean run_as_daemon;
+    gboolean daemonized;
 };
 
 typedef struct _MilterClientProcessData
@@ -263,6 +266,13 @@ _milter_client_class_init (MilterClientClass *klass)
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_SYSLOG_FACILITIY, spec);
 
+    spec = g_param_spec_string("run-as-daemon",
+                               "Run As Daemon",
+                               "Whether running the client as a daemon or not",
+                               NULL,
+                               G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_RUN_AS_DAEMON, spec);
+
     signals[CONNECTION_ESTABLISHED] =
         g_signal_new("connection-established",
                      MILTER_TYPE_CLIENT,
@@ -398,6 +408,9 @@ _milter_client_init (MilterClient *client)
 
     priv->syslog_identify = NULL;
     priv->syslog_facility = NULL;
+
+    priv->run_as_daemon = FALSE;
+    priv->daemonized = FALSE;
 }
 
 static void
@@ -728,6 +741,9 @@ set_property (GObject      *object,
     case PROP_SYSLOG_FACILITIY:
         milter_client_set_syslog_facility(client, g_value_get_string(value));
         break;
+    case PROP_RUN_AS_DAEMON:
+        milter_client_set_run_as_daemon(client, g_value_get_boolean(value));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -781,6 +797,9 @@ get_property (GObject    *object,
         break;
     case PROP_SYSLOG_FACILITIY:
         g_value_set_string(value, milter_client_get_syslog_facility(client));
+        break;
+    case PROP_RUN_AS_DAEMON:
+        g_value_set_boolean(value, milter_client_is_run_as_daemon(client));
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -1673,6 +1692,7 @@ milter_client_drop_privilege (MilterClient *client, GError **error)
 gboolean
 milter_client_daemonize (MilterClient *client, GError **error)
 {
+    MilterClientPrivate *priv;
     gchar *error_message = NULL;
 
     switch (milter_client_fork(client)) {
@@ -1713,6 +1733,9 @@ milter_client_daemonize (MilterClient *client, GError **error)
         _exit(EXIT_SUCCESS);
         break;
     }
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    priv->daemonized = TRUE;
 
     if (g_chdir("/") == -1) {
         g_set_error(error,
@@ -2080,6 +2103,12 @@ milter_client_run (MilterClient *client, GError **error)
     GError *local_error = NULL;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
+
+    if (milter_client_is_run_as_daemon(client) && !priv->daemonized) {
+        if (!milter_client_daemonize(client, error))
+            return FALSE;
+    }
+
     pid_file = milter_client_get_pid_file(client);
     if (pid_file) {
         gchar *content;
@@ -2899,6 +2928,18 @@ void
 milter_client_set_remove_pid_file_on_exit (MilterClient *client, gboolean remove)
 {
     MILTER_CLIENT_GET_PRIVATE(client)->remove_pid_file_on_exit = remove;
+}
+
+gboolean
+milter_client_is_run_as_daemon (MilterClient *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->run_as_daemon;
+}
+
+void
+milter_client_set_run_as_daemon (MilterClient *client, gboolean daemon)
+{
+    MILTER_CLIENT_GET_PRIVATE(client)->run_as_daemon = daemon;
 }
 
 /*
