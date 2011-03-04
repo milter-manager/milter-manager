@@ -1616,7 +1616,7 @@ switch_user (MilterClient *client, GError **error)
         return FALSE;
     }
 
-    milter_info("[client][user][change] <%s>(<%d>)",
+    milter_info("[client][user][switch] <%s>(<%d>)",
                 password->pw_name, password->pw_uid);
 
     return TRUE;
@@ -1679,6 +1679,9 @@ switch_group (MilterClient *client, GError **error)
                     g_strerror(errno));
         return FALSE;
     }
+
+    milter_info("[client][group][switch] <%s>(<%d>)",
+                group->gr_name, group->gr_gid);
 
     return TRUE;
 }
