@@ -9,19 +9,29 @@ run()
     fi
 }
 
+svn_update()
+{
+    local repo="$1" dir="${2-`basename \"$1\"`}"
+    if test -d "$dir/.svn"; then
+	svn update "$dir"
+    else
+	svn export --force "$repo" "$dir"
+    fi
+}
+
 # for old intltoolize
 if [ ! -d config/po ]; then
     ln -s ../po config/po
 fi
 
 cutter_repository=https://cutter.svn.sourceforge.net/svnroot/cutter/cutter
-svn export --force ${cutter_repository}/trunk/misc
+run svn_update ${cutter_repository}/trunk/misc
 
 clear_code_repository=http://www.clear-code.com/repos/svn
-svn export --force ${clear_code_repository}/tdiary html/blog/clear-code
+run svn_update ${clear_code_repository}/tdiary html/blog/clear-code
 
 test_unit_repository=http://test-unit.rubyforge.org/svn
-svn export --force ${test_unit_repository}/trunk binding/ruby/test-unit
+run svn_update ${test_unit_repository}/trunk binding/ruby/test-unit
 
 run ${ACLOCAL:-aclocal} $ACLOCAL_OPTIONS
 run ${LIBTOOLIZE:-libtoolize} --copy --force
