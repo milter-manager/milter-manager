@@ -29,7 +29,6 @@
 
 #include <milter/client.h>
 
-static gboolean verbose = FALSE;
 static gboolean report_request = TRUE;
 static gboolean report_memory_profile = FALSE;
 static gboolean use_syslog = FALSE;
@@ -109,8 +108,6 @@ parse_event_loop_backend (const gchar *option_name,
 
 static const GOptionEntry option_entries[] =
 {
-    {"verbose", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_NONE, &verbose,
-     N_("Be verbose"), NULL},
     {"syslog", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_NONE, &use_syslog,
      N_("Use Syslog"), NULL},
     {"syslog-facility", 0, 0, G_OPTION_ARG_STRING, &syslog_facility,
@@ -506,8 +503,6 @@ main (int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    if (verbose)
-        g_setenv("MILTER_LOG_LEVEL", "all", FALSE);
     if (use_syslog) {
         milter_client_start_syslog(client,
                                    "milter-test-client",

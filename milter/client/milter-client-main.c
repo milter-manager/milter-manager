@@ -67,11 +67,22 @@ parse_spec_arg (const gchar *option_name,
         g_set_error(error,
                     G_OPTION_ERROR,
                     G_OPTION_ERROR_BAD_VALUE,
-                    _("%s"), spec_error->message);
+                    "%s",
+                    spec_error->message);
         g_error_free(spec_error);
     }
 
     return success;
+}
+
+static gboolean
+parse_verbose_arg (const gchar *option_name,
+                   const gchar *value,
+                   gpointer data,
+                   GError **error)
+{
+    milter_logger_set_target_level(milter_logger(), MILTER_LOG_LEVEL_ALL);
+    return TRUE;
 }
 
 static const GOptionEntry option_entries[] =
@@ -79,6 +90,9 @@ static const GOptionEntry option_entries[] =
     {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
      N_("The spec of socket. (unix:PATH|inet:PORT[@HOST]|inet6:PORT[@HOST])"),
      "SPEC"},
+    {"verbose", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
+     parse_verbose_arg,
+     N_("Be verbose"), NULL},
     {NULL}
 };
 
