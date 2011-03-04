@@ -445,19 +445,17 @@ milter_logger (void)
 
         singleton_milter_logger = milter_logger_new();
         milter_logger_connect_default_handler(singleton_milter_logger);
-        milter_logger_set_target_level_by_string(singleton_milter_logger,
-                                                 g_getenv("MILTER_LOG_LEVEL"),
-                                                 &error);
-        if (error) {
+        if (!milter_logger_set_target_level_by_string(singleton_milter_logger,
+                                                      g_getenv("MILTER_LOG_LEVEL"),
+                                                      &error)) {
             INTERNAL_LOG(MILTER_LOG_LEVEL_WARNING,
                          "[logger][level][set][warning] %s", error->message);
             g_error_free(error);
             error = NULL;
         }
-        milter_logger_set_target_item_by_string(singleton_milter_logger,
-                                                g_getenv("MILTER_LOG_ITEM"),
-                                                &error);
-        if (error) {
+        if (!milter_logger_set_target_item_by_string(singleton_milter_logger,
+                                                     g_getenv("MILTER_LOG_ITEM"),
+                                                     &error)) {
             INTERNAL_LOG(MILTER_LOG_LEVEL_WARNING,
                          "[logger][item][set][warning] %s", error->message);
             g_error_free(error);
@@ -535,7 +533,7 @@ milter_logger_set_target_level (MilterLogger *logger,
     milter_logger_set_interesting_level(logger, DEFAULT_KEY, interesting_level);
 }
 
-void
+gboolean
 milter_logger_set_target_level_by_string (MilterLogger *logger,
                                           const gchar *level_name,
                                           GError **error)
@@ -547,12 +545,13 @@ milter_logger_set_target_level_by_string (MilterLogger *logger,
         level = milter_log_level_flags_from_string(level_name, &local_error);
         if (local_error) {
             g_propagate_error(error, local_error);
-            return;
+            return FALSE;
         }
     } else {
         level = MILTER_LOG_LEVEL_DEFAULT;
     }
     milter_logger_set_target_level(logger, level);
+    return TRUE;
 }
 
 static void
@@ -601,7 +600,7 @@ milter_logger_set_target_item (MilterLogger *logger,
     MILTER_LOGGER_GET_PRIVATE(logger)->target_item = item;
 }
 
-void
+gboolean
 milter_logger_set_target_item_by_string (MilterLogger *logger,
                                          const gchar *item_name,
                                          GError **error)
@@ -613,13 +612,13 @@ milter_logger_set_target_item_by_string (MilterLogger *logger,
         item = milter_log_item_flags_from_string(item_name, &local_error);
         if (local_error) {
             g_propagate_error(error, local_error);
-            return;
+            return FALSE;
         }
     } else {
         item = MILTER_LOG_ITEM_DEFAULT;
     }
     milter_logger_set_target_item(logger, item);
-
+    return TRUE;
 }
 
 void

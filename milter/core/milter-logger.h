@@ -209,7 +209,7 @@ MilterLogLevelFlags
 void             milter_logger_set_target_level
                                               (MilterLogger        *logger,
                                                MilterLogLevelFlags  level);
-void             milter_logger_set_target_level_by_string
+gboolean         milter_logger_set_target_level_by_string
                                               (MilterLogger        *logger,
                                                const gchar         *level_name,
                                                GError             **error);
@@ -226,7 +226,7 @@ MilterLogItemFlags
 void             milter_logger_set_target_item
                                               (MilterLogger        *logger,
                                                MilterLogItemFlags   item);
-void             milter_logger_set_target_item_by_string
+gboolean         milter_logger_set_target_item_by_string
                                               (MilterLogger        *logger,
                                                const gchar         *item_name,
                                                GError             **error);
