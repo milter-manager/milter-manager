@@ -35,7 +35,7 @@ lib_LTLIBRARIES =		\
 libmilter_client_la_SOURCES =			\
 	milter-client-enum-types.c		\
 	milter-client.c				\
-	milter-client-init.c			\
+	milter-client-main.c			\
 	milter-client-context.c			\
 	milter-client-runner.c			\
 	milter-client-single-thread-runner.c
