@@ -590,6 +590,9 @@ if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = ""; then
   NetBSD|DragonFly)
     MILTER_MANAGER_PACKAGE_PLATFORM="pkgsrc"
     ;;
+  SunOS)
+    MILTER_MANAGER_PACKAGE_PLATFORM="solaris"
+    ;;
   esac
 fi
 
