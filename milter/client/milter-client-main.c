@@ -145,6 +145,18 @@ parse_group_arg (const gchar *option_name,
     return TRUE;
 }
 
+static gboolean
+parse_unix_socket_group_arg (const gchar *option_name,
+                             const gchar *value,
+                             gpointer data,
+                             GError **error)
+{
+    MilterClient *client = data;
+
+    milter_client_set_unix_socket_group(client, value);
+    return TRUE;
+}
+
 static const GOptionEntry option_entries[] =
 {
     {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
@@ -164,6 +176,9 @@ static const GOptionEntry option_entries[] =
      N_("Run as USER's process (need root privilege)"), "USER"},
     {"group", 0, 0, G_OPTION_ARG_CALLBACK, parse_group_arg,
      N_("Run as GROUP's process (need root privilege)"), "GROUP"},
+    {"unix-socket-group", 0, 0, G_OPTION_ARG_CALLBACK,
+     parse_unix_socket_group_arg,
+     N_("Change UNIX domain socket group to GROUP"), "GROUP"},
     {NULL}
 };
 

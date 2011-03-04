@@ -31,7 +31,6 @@
 
 static gboolean report_request = TRUE;
 static gboolean report_memory_profile = FALSE;
-static gchar *unix_socket_group = NULL;
 static guint unix_socket_mode = 0660;
 static MilterClient *client = NULL;
 static guint n_workers = 0;
@@ -110,8 +109,6 @@ static const GOptionEntry option_entries[] =
      G_OPTION_ARG_NONE, &report_memory_profile,
      N_("Report memory profile. "
         "Need to set MILTER_MEMORY_PROFILE=yes environment variable."), NULL},
-    {"unix-socket-group", 0, 0, G_OPTION_ARG_STRING, &unix_socket_group,
-     N_("Change UNIX domain socket group to GROUP"), "GROUP"},
     {"unix-socket-mode", 0, 0, G_OPTION_ARG_CALLBACK, parse_unix_socket_mode,
      N_("Change UNIX domain socket mode to MODE (default: 0660)"), "MODE"},
     {"n-workers", 0, 0, G_OPTION_ARG_INT, &n_workers,
@@ -489,7 +486,6 @@ main (int argc, char *argv[])
     }
 
     milter_client_set_unix_socket_mode(client, unix_socket_mode);
-    milter_client_set_unix_socket_group(client, unix_socket_group);
     milter_client_set_event_loop_backend(client, event_loop_backend);
     if (n_workers > 0)
         milter_client_set_n_workers(client, n_workers);
