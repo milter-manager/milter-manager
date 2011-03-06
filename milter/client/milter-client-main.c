@@ -263,6 +263,61 @@ parse_event_loop_backend (const gchar *option_name,
     return success;
 }
 
+static gboolean
+parse_packet_buffer_size (const gchar *option_name,
+                          const gchar *value,
+                          gpointer data,
+                          GError **error)
+{
+    MilterClient *client = data;
+    gchar *end;
+    glong packet_buffer_size;
+
+    errno = 0;
+    packet_buffer_size = strtol(value, &end, 0);
+
+    if (end[0] != '\0') {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    _("%s: invalid integer value: <%s>(%.*s>%c<%s)"),
+                    option_name,
+                    value,
+                    (int)(end - value), value,
+                    end[0],
+                    end + 1);
+        return FALSE;
+    }
+
+    if (packet_buffer_size > G_MAXUINT || errno == ERANGE) {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    _("%s: too big: <%s>: parsed=<%ld>, max=<%u>"),
+                    option_name,
+                    value,
+                    packet_buffer_size,
+                    G_MAXUINT);
+      return FALSE;
+    }
+
+    if (packet_buffer_size < 0) {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    _("%s: must be larger than 0 or equal to 0: "
+                      "<%s>: parsed=<%ld>"),
+                    option_name,
+                    value,
+                    packet_buffer_size);
+      return FALSE;
+    }
+
+    milter_client_set_default_packet_buffer_size(client, packet_buffer_size);
+
+    return TRUE;
+}
+
 static const GOptionEntry option_entries[] =
 {
     {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_connection_spec,
@@ -289,6 +344,9 @@ static const GOptionEntry option_entries[] =
     {"event-loop-backend", 0, 0, G_OPTION_ARG_CALLBACK, parse_event_loop_backend,
      N_("Use BACKEND as event loop backend (glib|libev) (default: glib)"),
      "BACKEND"},
+    {"packet-buffer-size", 0, 0, G_OPTION_ARG_CALLBACK, parse_packet_buffer_size,
+     N_("Use SIZE as packet buffer size in bytes. 0 disables packet buffering. "
+        "(default: 0; disabled)"), "SIZE"},
     {NULL}
 };
 

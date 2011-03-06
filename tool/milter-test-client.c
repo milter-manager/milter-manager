@@ -32,7 +32,6 @@
 static gboolean report_request = TRUE;
 static gboolean report_memory_profile = FALSE;
 static MilterClient *client = NULL;
-static guint packet_buffer_size = 0;
 static gchar *pid_file = NULL;
 
 static gboolean
@@ -55,9 +54,6 @@ static const GOptionEntry option_entries[] =
      G_OPTION_ARG_NONE, &report_memory_profile,
      N_("Report memory profile. "
         "Need to set MILTER_MEMORY_PROFILE=yes environment variable."), NULL},
-    {"packet-buffer-size", 0, 0, G_OPTION_ARG_INT, &packet_buffer_size,
-     N_("Use SIZE as packet buffer size in bytes. 0 disables packet buffering. "
-        "(default: 0; disabled)"), "SIZE"},
     {"pid-file", 0, 0, G_OPTION_ARG_FILENAME, &pid_file,
      N_("Put PID to FILE." "(default: disabled)"), "FILE"},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
@@ -425,7 +421,6 @@ main (int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    milter_client_set_default_packet_buffer_size(client, packet_buffer_size);
     milter_client_set_pid_file(client, pid_file);
     if (success)
         success = milter_client_listen(client, &error);
