@@ -58,6 +58,21 @@ milter_client_quit (void)
     initialized = FALSE;
 }
 
+static void
+set_invalid_integer_value_error (GError **error, const gchar *option_name,
+                                 const gchar *value, const gchar *end)
+{
+    g_set_error(error,
+                G_OPTION_ERROR,
+                G_OPTION_ERROR_BAD_VALUE,
+                _("%s: invalid integer value: <%s>(%.*s>%c<%s)"),
+                option_name,
+                value,
+                (int)(end - value), value,
+                end[0],
+                end + 1);
+}
+
 static gboolean
 parse_connection_spec (const gchar *option_name,
                        const gchar *value,
@@ -180,15 +195,7 @@ parse_user_id (const gchar *option_name,
 
     uid = strtol(value, &end, 0);
     if (end[0] != '\0') {
-        g_set_error(error,
-                    G_OPTION_ERROR,
-                    G_OPTION_ERROR_BAD_VALUE,
-                    _("%s: invalid integer value: <%s>(%.*s>%c<%s)"),
-                    option_name,
-                    value,
-                    (int)(end - value), value,
-                    end[0],
-                    end + 1);
+        set_invalid_integer_value_error(error, option_name, value, end);
         return FALSE;
     }
 
@@ -243,6 +250,40 @@ parse_group (const gchar *option_name,
         }
     } else {
         milter_client_set_effective_group(client, value);
+    }
+
+    return TRUE;
+}
+
+static gboolean
+parse_group_id (const gchar *option_name,
+                const gchar *value,
+                gpointer data,
+                GError **error)
+{
+    MilterClient *client = data;
+    gchar *end;
+    glong gid;
+    struct group *group;
+
+    gid = strtol(value, &end, 0);
+    if (end[0] != '\0') {
+        set_invalid_integer_value_error(error, option_name, value, end);
+        return FALSE;
+    }
+
+    group = getgrgid(gid);
+    if (group) {
+        milter_client_set_effective_group(client, group->gr_name);
+    } else {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    _("%s: invalid GID: <%s>(%ld)"),
+                    option_name,
+                    value,
+                    gid);
+        return FALSE;
     }
 
     return TRUE;
@@ -315,15 +356,7 @@ parse_n_workers (const gchar *option_name,
     n_workers = strtol(value, &end, 0);
 
     if (end[0] != '\0') {
-        g_set_error(error,
-                    G_OPTION_ERROR,
-                    G_OPTION_ERROR_BAD_VALUE,
-                    _("%s: invalid integer value: <%s>(%.*s>%c<%s)"),
-                    option_name,
-                    value,
-                    (int)(end - value), value,
-                    end[0],
-                    end + 1);
+        set_invalid_integer_value_error(error, option_name, value, end);
         return FALSE;
     }
 
@@ -388,15 +421,7 @@ parse_packet_buffer_size (const gchar *option_name,
     packet_buffer_size = strtol(value, &end, 0);
 
     if (end[0] != '\0') {
-        g_set_error(error,
-                    G_OPTION_ERROR,
-                    G_OPTION_ERROR_BAD_VALUE,
-                    _("%s: invalid integer value: <%s>(%.*s>%c<%s)"),
-                    option_name,
-                    value,
-                    (int)(end - value), value,
-                    end[0],
-                    end + 1);
+        set_invalid_integer_value_error(error, option_name, value, end);
         return FALSE;
     }
 
@@ -490,6 +515,8 @@ static const GOptionEntry option_entries[] =
     {"group", 0, 0, G_OPTION_ARG_CALLBACK, parse_group,
      N_("Run as GID_OR_GROUP_NAME group's process (need root privilege)"),
      "GID_OR_GROUP_NAME"},
+    {"group-id", 0, 0, G_OPTION_ARG_CALLBACK, parse_group_id,
+     N_("Run as GID group's process (need root privilege)"), "GID"},
     {"group-name", 0, 0, G_OPTION_ARG_CALLBACK, parse_group_name,
      N_("Run as GROUP_NAME group's process (need root privilege)"),
      "GROUP_NAME"},
