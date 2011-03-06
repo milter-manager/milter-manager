@@ -32,8 +32,6 @@
 static gboolean report_request = TRUE;
 static gboolean report_memory_profile = FALSE;
 static MilterClient *client = NULL;
-static MilterClientEventLoopBackend event_loop_backend =
-    MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
 static guint packet_buffer_size = 0;
 static gchar *pid_file = NULL;
 
@@ -48,32 +46,6 @@ print_version (const gchar *option_name,
     return TRUE;
 }
 
-static gboolean
-parse_event_loop_backend (const gchar *option_name,
-                        const gchar *value,
-                        gpointer data,
-                        GError **error)
-{
-    GEnumClass *backend_enum;
-    GEnumValue *backend_value;
-
-    backend_enum = g_type_class_ref(MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND);
-    backend_value = g_enum_get_value_by_nick(backend_enum, value);
-    g_type_class_unref(backend_enum);
-
-    if (backend_value) {
-        event_loop_backend = backend_value->value;
-        return TRUE;
-    } else {
-        g_set_error(error,
-                    G_OPTION_ERROR,
-                    G_OPTION_ERROR_BAD_VALUE,
-                    _("invalid name: %s"),
-                    value);
-        return FALSE;
-    }
-}
-
 static const GOptionEntry option_entries[] =
 {
     {"no-report-request", 0, G_OPTION_FLAG_NO_ARG | G_OPTION_FLAG_REVERSE,
@@ -83,8 +55,6 @@ static const GOptionEntry option_entries[] =
      G_OPTION_ARG_NONE, &report_memory_profile,
      N_("Report memory profile. "
         "Need to set MILTER_MEMORY_PROFILE=yes environment variable."), NULL},
-    {"event-loop-backend", 0, 0, G_OPTION_ARG_CALLBACK, parse_event_loop_backend,
-     N_("Use BACKEND as event loop backend (default: glib)"), "[glib|libev]"},
     {"packet-buffer-size", 0, 0, G_OPTION_ARG_INT, &packet_buffer_size,
      N_("Use SIZE as packet buffer size in bytes. 0 disables packet buffering. "
         "(default: 0; disabled)"), "SIZE"},
@@ -455,7 +425,6 @@ main (int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    milter_client_set_event_loop_backend(client, event_loop_backend);
     milter_client_set_default_packet_buffer_size(client, packet_buffer_size);
     milter_client_set_pid_file(client, pid_file);
     if (success)

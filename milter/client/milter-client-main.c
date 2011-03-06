@@ -233,6 +233,36 @@ parse_n_workers (const gchar *option_name,
     return TRUE;
 }
 
+static gboolean
+parse_event_loop_backend (const gchar *option_name,
+                          const gchar *value,
+                          gpointer data,
+                          GError **error)
+{
+    MilterClient *client = data;
+    GEnumClass *backend_enum;
+    GEnumValue *backend_value;
+    gboolean success;
+
+    backend_enum = g_type_class_ref(MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND);
+    backend_value = g_enum_get_value_by_nick(backend_enum, value);
+    if (backend_value) {
+        milter_client_set_event_loop_backend(client, backend_value->value);
+        success = TRUE;
+    } else {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    _("%s: unknown event loop backend: <%s> "
+                      "available values: [glib|libev]"),
+                    option_name, value);
+        success = FALSE;
+    }
+    g_type_class_unref(backend_enum);
+
+    return success;
+}
+
 static const GOptionEntry option_entries[] =
 {
     {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_connection_spec,
@@ -256,6 +286,9 @@ static const GOptionEntry option_entries[] =
      N_("Change UNIX domain socket mode to MODE (default: 0660)"), "MODE"},
     {"n-workers", 0, 0, G_OPTION_ARG_CALLBACK, parse_n_workers,
      N_("Run N_WORKERS processes (default: 0)"), "N_WORKERS"},
+    {"event-loop-backend", 0, 0, G_OPTION_ARG_CALLBACK, parse_event_loop_backend,
+     N_("Use BACKEND as event loop backend (glib|libev) (default: glib)"),
+     "BACKEND"},
     {NULL}
 };
 
