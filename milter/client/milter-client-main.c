@@ -167,6 +167,48 @@ parse_user (const gchar *option_name,
 }
 
 static gboolean
+parse_user_id (const gchar *option_name,
+               const gchar *value,
+               gpointer data,
+               GError **error)
+{
+    MilterClient *client = data;
+    gchar *end;
+    glong uid;
+    struct passwd *password;
+
+    uid = strtol(value, &end, 0);
+    if (end[0] != '\0') {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    _("%s: invalid integer value: <%s>(%.*s>%c<%s)"),
+                    option_name,
+                    value,
+                    (int)(end - value), value,
+                    end[0],
+                    end + 1);
+        return FALSE;
+    }
+
+    password = getpwuid(uid);
+    if (password) {
+        milter_client_set_effective_user(client, password->pw_name);
+    } else {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    _("%s: invalid UID: <%s>(%ld)"),
+                    option_name,
+                    value,
+                    uid);
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+static gboolean
 parse_user_name (const gchar *option_name,
                  const gchar *value,
                  gpointer data,
@@ -413,6 +455,8 @@ static const GOptionEntry option_entries[] =
     {"user", 0, 0, G_OPTION_ARG_CALLBACK, parse_user,
      N_("Run as UID_OR_USER_NAME user's process (need root privilege)"),
      "UID_OR_USER_NAME"},
+    {"user-id", 0, 0, G_OPTION_ARG_CALLBACK, parse_user_id,
+     N_("Run as UID user's process (need root privilege)"), "UID"},
     {"user-name", 0, 0, G_OPTION_ARG_CALLBACK, parse_user_name,
      N_("Run as USER_NAME user's process (need root privilege)"), "USER_NAME"},
     {"group", 0, 0, G_OPTION_ARG_CALLBACK, parse_group,
