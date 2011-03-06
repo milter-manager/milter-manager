@@ -452,7 +452,7 @@ static const GOptionEntry option_entries[] =
     {"no-daemon", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
      parse_no_daemon,
      N_("Cancel the prior --daemon options."), NULL},
-    {"user", 0, 0, G_OPTION_ARG_CALLBACK, parse_user,
+    {"user", 'u', 0, G_OPTION_ARG_CALLBACK, parse_user,
      N_("Run as UID_OR_USER_NAME user's process (need root privilege)"),
      "UID_OR_USER_NAME"},
     {"user-id", 0, 0, G_OPTION_ARG_CALLBACK, parse_user_id,
