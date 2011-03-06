@@ -23,6 +23,8 @@
 
 #include <stdlib.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 #include <glib/gi18n.h>
 
@@ -142,6 +144,33 @@ parse_user (const gchar *option_name,
             const gchar *value,
             gpointer data,
             GError **error)
+{
+    MilterClient *client = data;
+    gchar *end;
+    glong uid;
+
+    uid = strtol(value, &end, 0);
+    if (end[0] == '\0') {
+        struct passwd *password;
+
+        password = getpwuid(uid);
+        if (password) {
+            milter_client_set_effective_user(client, password->pw_name);
+        } else {
+            milter_client_set_effective_user(client, value);
+        }
+    } else {
+        milter_client_set_effective_user(client, value);
+    }
+
+    return TRUE;
+}
+
+static gboolean
+parse_user_name (const gchar *option_name,
+                 const gchar *value,
+                 gpointer data,
+                 GError **error)
 {
     MilterClient *client = data;
 
@@ -382,7 +411,10 @@ static const GOptionEntry option_entries[] =
      parse_no_daemon,
      N_("Cancel the prior --daemon options."), NULL},
     {"user", 0, 0, G_OPTION_ARG_CALLBACK, parse_user,
-     N_("Run as USER's process (need root privilege)"), "USER"},
+     N_("Run as UID_OR_USER_NAME user's process (need root privilege)"),
+     "UID_OR_USER_NAME"},
+    {"user-name", 0, 0, G_OPTION_ARG_CALLBACK, parse_user_name,
+     N_("Run as USER_NAME user's process (need root privilege)"), "USER_NAME"},
     {"group", 0, 0, G_OPTION_ARG_CALLBACK, parse_group,
      N_("Run as GROUP's process (need root privilege)"), "GROUP"},
     {"unix-socket-group", 0, 0, G_OPTION_ARG_CALLBACK, parse_unix_socket_group,
