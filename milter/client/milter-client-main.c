@@ -512,7 +512,7 @@ static const GOptionEntry option_entries[] =
      N_("Run as UID user's process (need root privilege)"), "UID"},
     {"user-name", 0, 0, G_OPTION_ARG_CALLBACK, parse_user_name,
      N_("Run as USER_NAME user's process (need root privilege)"), "USER_NAME"},
-    {"group", 0, 0, G_OPTION_ARG_CALLBACK, parse_group,
+    {"group", 'g', 0, G_OPTION_ARG_CALLBACK, parse_group,
      N_("Run as GID_OR_GROUP_NAME group's process (need root privilege)"),
      "GID_OR_GROUP_NAME"},
     {"group-id", 0, 0, G_OPTION_ARG_CALLBACK, parse_group_id,
