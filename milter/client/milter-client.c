@@ -2128,24 +2128,29 @@ milter_client_run (MilterClient *client, GError **error)
     if (pid_file) {
         gchar *content;
         mode_t old_umask;
+        pid_t pid;
 
-        content = g_strdup_printf("%u\n", getpid());
-
+        pid = getpid();
+        content = g_strdup_printf("%u\n", pid);
         old_umask = umask(0022);
         success = g_file_set_contents(pid_file, content, -1, &local_error);
         umask(old_umask);
+        g_free(content);
+
         if (success) {
             created_pid_file = g_strdup(pid_file);
+            milter_info("[client][pid-file][save] <%s>: <%u>",
+                        created_pid_file, pid);
         } else {
+            milter_error("[client][pid-file][save][error] <%s>: <%u>: %s",
+                         pid_file, pid, local_error->message);
             milter_utils_set_error_with_sub_error(
                 error,
                 MILTER_CLIENT_ERROR,
                 MILTER_CLIENT_ERROR_PID_FILE,
                 local_error,
-                "failed to create PID file: <%s>: %s",
-                pid_file, local_error->message);
-            milter_error("[client][pid-file][error][save] <%s>: %s",
-                         pid_file, local_error->message);
+                "failed to create PID file: <%s>",
+                pid_file);
             return FALSE;
         }
     }
