@@ -25,6 +25,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <pwd.h>
+#include <grp.h>
 
 #include <glib/gi18n.h>
 
@@ -225,6 +226,33 @@ parse_group (const gchar *option_name,
              const gchar *value,
              gpointer data,
              GError **error)
+{
+    MilterClient *client = data;
+    gchar *end;
+    glong gid;
+
+    gid = strtol(value, &end, 0);
+    if (end[0] == '\0') {
+        struct group *group;
+
+        group = getgrgid(gid);
+        if (group) {
+            milter_client_set_effective_group(client, group->gr_name);
+        } else {
+            milter_client_set_effective_group(client, value);
+        }
+    } else {
+        milter_client_set_effective_group(client, value);
+    }
+
+    return TRUE;
+}
+
+static gboolean
+parse_group_name (const gchar *option_name,
+                  const gchar *value,
+                  gpointer data,
+                  GError **error)
 {
     MilterClient *client = data;
 
@@ -460,7 +488,11 @@ static const GOptionEntry option_entries[] =
     {"user-name", 0, 0, G_OPTION_ARG_CALLBACK, parse_user_name,
      N_("Run as USER_NAME user's process (need root privilege)"), "USER_NAME"},
     {"group", 0, 0, G_OPTION_ARG_CALLBACK, parse_group,
-     N_("Run as GROUP's process (need root privilege)"), "GROUP"},
+     N_("Run as GID_OR_GROUP_NAME group's process (need root privilege)"),
+     "GID_OR_GROUP_NAME"},
+    {"group-name", 0, 0, G_OPTION_ARG_CALLBACK, parse_group_name,
+     N_("Run as GROUP_NAME group's process (need root privilege)"),
+     "GROUP_NAME"},
     {"unix-socket-group", 0, 0, G_OPTION_ARG_CALLBACK, parse_unix_socket_group,
      N_("Change UNIX domain socket group to GROUP"), "GROUP"},
     {"unix-socket-mode", 0, 0, G_OPTION_ARG_CALLBACK, parse_unix_socket_mode,
