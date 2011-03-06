@@ -318,6 +318,41 @@ parse_packet_buffer_size (const gchar *option_name,
     return TRUE;
 }
 
+static gboolean
+parse_pid_file (const gchar *option_name,
+                const gchar *value,
+                gpointer data,
+                GError **error)
+{
+    MilterClient *client = data;
+
+#ifdef G_OS_WIN32
+    {
+        gchar *pid_file;
+        GError *conversion_error = NULL;
+
+        pid_file = g_locale_to_utf8(value, -1, NULL, NULL, &conversion_error);
+        if (!pid_file) {
+            g_set_error(error,
+                        G_OPTION_ERROR,
+                        G_OPTION_ERROR_BAD_VALUE,
+                        _("%s: invalid encoding: <%s>: %s"),
+                        option_name,
+                        value,
+                        conversion_error->message);
+            g_error_free(conversion_error);
+            return FALSE;
+        }
+        milter_client_set_pid_file(client, pid_file);
+        g_free(pid_file);
+    }
+#else
+    milter_client_set_pid_file(client, value);
+#endif
+
+    return TRUE;
+}
+
 static const GOptionEntry option_entries[] =
 {
     {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_connection_spec,
@@ -347,6 +382,8 @@ static const GOptionEntry option_entries[] =
     {"packet-buffer-size", 0, 0, G_OPTION_ARG_CALLBACK, parse_packet_buffer_size,
      N_("Use SIZE as packet buffer size in bytes. 0 disables packet buffering. "
         "(default: 0; disabled)"), "SIZE"},
+    {"pid-file", 0, 0, G_OPTION_ARG_CALLBACK, parse_pid_file,
+     N_("Put PID to FILE (default: disabled)"), "FILE"},
     {NULL}
 };
 

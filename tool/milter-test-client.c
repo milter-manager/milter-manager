@@ -32,7 +32,6 @@
 static gboolean report_request = TRUE;
 static gboolean report_memory_profile = FALSE;
 static MilterClient *client = NULL;
-static gchar *pid_file = NULL;
 
 static gboolean
 print_version (const gchar *option_name,
@@ -54,8 +53,6 @@ static const GOptionEntry option_entries[] =
      G_OPTION_ARG_NONE, &report_memory_profile,
      N_("Report memory profile. "
         "Need to set MILTER_MEMORY_PROFILE=yes environment variable."), NULL},
-    {"pid-file", 0, 0, G_OPTION_ARG_FILENAME, &pid_file,
-     N_("Put PID to FILE." "(default: disabled)"), "FILE"},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
      N_("Show version"), NULL},
     {NULL}
@@ -421,7 +418,6 @@ main (int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    milter_client_set_pid_file(client, pid_file);
     if (success)
         success = milter_client_listen(client, &error);
     if (success)
