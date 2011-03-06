@@ -126,6 +126,18 @@ parse_daemon (const gchar *option_name,
 }
 
 static gboolean
+parse_no_daemon (const gchar *option_name,
+                 const gchar *value,
+                 gpointer data,
+                 GError **error)
+{
+    MilterClient *client = data;
+
+    milter_client_set_run_as_daemon(client, FALSE);
+    return TRUE;
+}
+
+static gboolean
 parse_user (const gchar *option_name,
             const gchar *value,
             gpointer data,
@@ -366,6 +378,9 @@ static const GOptionEntry option_entries[] =
      N_("Use facility for syslog"), "FACILITY"},
     {"daemon", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, parse_daemon,
      N_("Run as a daemon"), NULL},
+    {"no-daemon", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
+     parse_no_daemon,
+     N_("Cancel the prior --daemon options."), NULL},
     {"user", 0, 0, G_OPTION_ARG_CALLBACK, parse_user,
      N_("Run as USER's process (need root privilege)"), "USER"},
     {"group", 0, 0, G_OPTION_ARG_CALLBACK, parse_group,
