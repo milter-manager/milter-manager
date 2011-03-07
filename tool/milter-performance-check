@@ -650,7 +650,7 @@ class MilterPerformanceChecker
         Find.find(mail) do |file|
           if File.file?(file)
             expanded_mails << file
-            read_mail_source_from_file(file)
+            cache_mail_source_from_file(file)
           end
         end
       end
@@ -802,6 +802,11 @@ class MilterPerformanceChecker
   end
 
   def read_mail_source_from_file(file)
+    cache_mail_source_from_file(file)
+    @mail_source_files[file]
+  end
+
+  def cache_mail_source_from_file(file)
     @mail_source_files[file] ||= File.open(file, "rb") {|mail| mail.read}
   end
 
