@@ -298,6 +298,8 @@ module Milter
       end
 
       class NonexistentPath < Error
+        attr_reader :path
+
         def initialize(path)
           @path = path
           super("#{@path} doesn't exist.")
@@ -305,6 +307,8 @@ module Milter
       end
 
       class MissingValue < Error
+        attr_reader :target
+
         def initialize(target)
           @target = target
           super("#{@target} should be set")
@@ -329,7 +333,8 @@ module Milter
 
       def load_if_exist(path)
         load(path)
-      rescue NonexistentPath
+      rescue NonexistentPath => e
+        raise unless e.path == path
         Milter::Logger.debug("[configuration][load][nonexistent][ignore] " +
                              "<#{path}>")
       end
