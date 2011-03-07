@@ -64,7 +64,7 @@ milter_utils_inspect_enum (GType enum_type, gint enum_value)
 
     enum_class = g_type_class_ref(enum_type);
     if (!enum_class)
-        return g_strdup_printf("unknown enum type: %s(%" G_GSIZE_FORMAT ")",
+        return g_strdup_printf("unknown enum type: %s(%lu)",
                                g_type_name(enum_type), enum_type);
 
     value = g_enum_get_value(enum_class, enum_value);
@@ -93,7 +93,7 @@ milter_utils_get_enum_name (GType enum_type, gint enum_value)
 
     enum_class = g_type_class_ref(enum_type);
     if (!enum_class)
-        return g_strdup_printf("unknown enum type: %s(%" G_GSIZE_FORMAT ")",
+        return g_strdup_printf("unknown enum type: %s(%lu)",
                                g_type_name(enum_type), enum_type);
 
     value = g_enum_get_value(enum_class, enum_value);
@@ -117,7 +117,7 @@ milter_utils_get_enum_nick_name (GType enum_type, gint enum_value)
 
     enum_class = g_type_class_ref(enum_type);
     if (!enum_class)
-        return g_strdup_printf("unknown enum type: %s(%" G_GSIZE_FORMAT ")",
+        return g_strdup_printf("unknown enum type: %s(%lu)",
                                g_type_name(enum_type), enum_type);
 
     value = g_enum_get_value(enum_class, enum_value);
@@ -141,7 +141,7 @@ milter_utils_inspect_flags (GType flags_type, guint flags)
 
     flags_class = g_type_class_ref(flags_type);
     if (!flags_class)
-        return g_strdup_printf("unknown flags type: %s(%" G_GSIZE_FORMAT ")",
+        return g_strdup_printf("unknown flags type: %s(%lu)",
                                g_type_name(flags_type), flags_type);
 
 
@@ -187,7 +187,7 @@ milter_utils_get_flags_names (GType flags_type, guint flags)
 
     flags_class = g_type_class_ref(flags_type);
     if (!flags_class)
-        return g_strdup_printf("unknown flags type: %s(%" G_GSIZE_FORMAT ")",
+        return g_strdup_printf("unknown flags type: %s(%lu)",
                                g_type_name(flags_type), flags_type);
 
     names = g_string_new(NULL);
