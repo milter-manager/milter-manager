@@ -103,6 +103,9 @@ darwin*)
   export RC_ARCHS
 esac
 
+ORIGINAL_CFLAGS="$CFLAGS"
+AC_SUBST(ORIGINAL_CFLAGS)
+
 if test "x$GCC" = "xyes"; then
   case " $CFLAGS " in
   *[\ \	]-Wall[\ \	]*) ;;
