@@ -14,7 +14,7 @@ BuildRequires: make
 BuildRequires: glib2-devel
 BuildRequires: ruby
 BuildRequires: ruby-devel
-Requires: ruby-milter-toolkit = %{version}-%{release}
+Requires: ruby-milter-client = %{version}-%{release}
 Requires(pre): /usr/bin/getent, /usr/sbin/useradd
 Requires(pre): /usr/bin/id, /usr/sbin/groupadd
 Requires(post): /sbin/chkconfig
@@ -39,6 +39,7 @@ and libmilter-server.
 %package -n libmilter-core-devel
 Summary: Development files for libmilter-core
 Group: Development/Libraries
+Requires: glib2-devel
 Requires: libmilter-core = %{version}-%{release}
 
 %description -n libmilter-core-devel
@@ -48,7 +49,7 @@ required for developing applications against libmilter-core.
 %package -n libmilter-client
 Summary: A client-side milter protocol library
 Group: System Environment/Libraries
-Requires: glib2
+Requires: libmilter-core = %{version}-%{release}
 
 %description -n libmilter-client
 Client-side milter protocol is implemented.
@@ -58,6 +59,7 @@ built using libmilter-client.
 %package -n libmilter-client-devel
 Summary: Development files for libmilter-client
 Group: Development/Libraries
+Requires: libmilter-core-devel = %{version}-%{release}
 Requires: libmilter-client = %{version}-%{release}
 
 %description -n libmilter-client-devel
@@ -67,7 +69,7 @@ required for developing applications against libmilter-client.
 %package -n libmilter-server
 Summary: A server-side milter protocol library
 Group: System Environment/Libraries
-Requires: glib2
+Requires: libmilter-server = %{version}-%{release}
 
 %description -n libmilter-server
 Server-side milter protocol is implemented.
@@ -77,6 +79,7 @@ built using libmilter-server.
 %package -n libmilter-server-devel
 Summary: Development files for libmilter-server
 Group: Development/Libraries
+Requires: libmilter-core-devel = %{version}-%{release}
 Requires: libmilter-server = %{version}-%{release}
 
 %description -n libmilter-server-devel
@@ -95,7 +98,7 @@ This package contains the Ruby bindings for libmilter-toolkit.
 %package -n libmilter-compatible
 Summary: libmilter API and ABI compatible milter library
 Group: System Environment/Libraries
-Requires: libmilter-toolkit = %{version}-%{release}
+Requires: libmilter-client = %{version}-%{release}
 
 %description -n libmilter-compatible
 A libmilter API and ABI compatible library based on libmilter-toolkit.
@@ -105,8 +108,8 @@ built using Sendmail libmilter or libmilter-compatible.
 %package -n libmilter-compatible-devel
 Summary: Development files for libmilter-compatible
 Group: Development/Libraries
+Requires: libmilter-client-devel = %{version}-%{release}
 Requires: libmilter-compatible = %{version}-%{release}
-Requires: libmilter-toolkit-devel = %{version}-%{release}
 
 %description -n libmilter-compatible-devel
 This package contains the headers, and other support files
@@ -115,8 +118,8 @@ required for developing applications against libmilter-compatible.
 %package -n milter-manager-munin-plugins
 Summary: Munin plugins for milter manager
 Group: System Environment/Libraries
-Requires: milter-manager = %{version}-%{release}
 Requires: munin-node
+Requires: milter-manager = %{version}-%{release}
 
 %description -n milter-manager-munin-plugins
 This package contains the munin plugins for munin-node.
