@@ -1,7 +1,7 @@
 ACLOCAL_AMFLAGS = $$ACLOCAL_OPTIONS
 
 SUBDIRS =					\
-	libev-4.03				\
+	libev-4.04				\
 	milter					\
 	libmilter				\
 	binding					\

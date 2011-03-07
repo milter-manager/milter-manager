@@ -511,7 +511,7 @@ dnl Check for libev.
 dnl **************************************************************
 
 libev_available=no
-m4_define([BUNDLED_LIBEV_VERSION], [4.03])
+m4_define([BUNDLED_LIBEV_VERSION], [4.04])
 AC_ARG_WITH(libev,
   [AS_HELP_STRING([--with-libev],
     [Specify libev installed prefix. [default=auto]])],

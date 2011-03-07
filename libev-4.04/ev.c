@@ -6,14 +6,14 @@
  *
  * Redistribution and use in source and binary forms, with or without modifica-
  * tion, are permitted provided that the following conditions are met:
- * 
+ *
  *   1.  Redistributions of source code must retain the above copyright notice,
  *       this list of conditions and the following disclaimer.
- * 
+ *
  *   2.  Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MER-
  * CHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO
@@ -378,7 +378,8 @@ EV_CPP(extern "C" {)
 #endif
 
 #if !EV_USE_NANOSLEEP
-# ifndef _WIN32
+/* hp-ux has it in sys/time.h, which we unconditionally include above */
+# if !defined(_WIN32) && !defined(__hpux)
 #  include <sys/select.h>
 # endif
 #endif
@@ -817,6 +818,14 @@ ev_sleep (ev_tstamp delay)
     }
 }
 
+inline_speed int
+ev_timeout_to_ms (ev_tstamp timeout)
+{
+  int ms = timeout * 1000. + .999999;
+
+  return expect_true (ms) ? ms : timeout < 1e-6 ? 0 : 1;
+}
+
 /*****************************************************************************/
 
 #define MALLOC_ROUND 4096 /* prefer to allocate in chunks of this size, must be 2**n and >> 4 longs */
@@ -967,6 +976,31 @@ fd_reify (EV_P)
 {
   int i;
 
+#if EV_SELECT_IS_WINSOCKET || EV_USE_IOCP
+  for (i = 0; i < fdchangecnt; ++i)
+    {
+      int fd = fdchanges [i];
+      ANFD *anfd = anfds + fd;
+
+      if (anfd->reify & EV__IOFDSET)
+        {
+          SOCKET handle = EV_FD_TO_WIN32_HANDLE (fd);
+
+          if (handle != anfd->handle)
+            {
+              unsigned long arg;
+
+              assert (("libev: only socket fds supported in this configuration", ioctlsocket (handle, FIONREAD, &arg) == 0));
+
+              /* handle changed, but fd didn't - we need to do it in two steps */
+              backend_modify (EV_A_ fd, anfd->events, 0);
+              anfd->events = 0;
+              anfd->handle = handle;
+            }
+        }
+    }
+#endif
+
   for (i = 0; i < fdchangecnt; ++i)
     {
       int fd = fdchanges [i];
@@ -977,16 +1011,6 @@ fd_reify (EV_P)
       unsigned char o_reify  = anfd->reify;
 
       anfd->reify  = 0;
-
-#if EV_SELECT_IS_WINSOCKET || EV_USE_IOCP
-      if (o_reify & EV__IOFDSET)
-        {
-          unsigned long arg;
-          anfd->handle = EV_FD_TO_WIN32_HANDLE (fd);
-          assert (("libev: only socket fds supported in this configuration", ioctlsocket (anfd->handle, FIONREAD, &arg) == 0));
-          printf ("oi %d %x\n", fd, anfd->handle);//D
-        }
-#endif
 
       /*if (expect_true (o_reify & EV_ANFD_REIFY)) probably a deoptimisation */
         {
@@ -1345,14 +1369,16 @@ pipecb (EV_P_ ev_io *iow, int revents)
       read (evpipe [0], &dummy, 1);
     }
 
+#if EV_SIGNAL_ENABLE
   if (sig_pending)
-    {    
+    {
       sig_pending = 0;
 
       for (i = EV_NSIG - 1; i--; )
         if (expect_false (signals [i].pending))
           ev_feed_signal_event (EV_A_ i + 1);
     }
+#endif
 
 #if EV_ASYNC_ENABLE
   if (async_pending)
@@ -2183,6 +2209,15 @@ timers_reify (EV_P)
 }
 
 #if EV_PERIODIC_ENABLE
+
+inline_speed void
+periodic_recalc (EV_P_ ev_periodic *w)
+{
+  /* TODO: use slow but potentially more correct incremental algo, */
+  /* also do not rely on ceil */
+  ev_at (w) = w->offset + ceil ((ev_rt_now - w->offset) / w->interval) * w->interval;
+}
+
 /* make periodics pending */
 inline_size void
 periodics_reify (EV_P)
@@ -2211,7 +2246,8 @@ periodics_reify (EV_P)
             }
           else if (w->interval)
             {
-              ev_at (w) = w->offset + ceil ((ev_rt_now - w->offset) / w->interval) * w->interval;
+              periodic_recalc (EV_A_ w);
+
               /* if next trigger time is not sufficiently in the future, put it there */
               /* this might happen because of floating point inexactness */
               if (ev_at (w) - ev_rt_now < TIME_EPSILON)
@@ -2255,7 +2291,7 @@ periodics_reschedule (EV_P)
       if (w->reschedule_cb)
         ev_at (w) = w->reschedule_cb (w, ev_rt_now);
       else if (w->interval)
-        ev_at (w) = w->offset + ceil ((ev_rt_now - w->offset) / w->interval) * w->interval;
+        periodic_recalc (EV_A_ w);
 
       ANHE_at_cache (periodics [i]);
     }
@@ -2757,8 +2793,7 @@ ev_periodic_start (EV_P_ ev_periodic *w)
   else if (w->interval)
     {
       assert (("libev: ev_periodic_start called with negative interval value", w->interval >= 0.));
-      /* this formula differs from the one in periodic_reify because we do not always round up */
-      ev_at (w) = w->offset + ceil ((ev_rt_now - w->offset) / w->interval) * w->interval;
+      periodic_recalc (EV_A_ w);
     }
   else
     ev_at (w) = w->offset;
@@ -3045,7 +3080,7 @@ infy_add (EV_P_ ev_stat *w)
 
               *pend = 0;
               w->wd = inotify_add_watch (fs_fd, path, mask);
-            } 
+            }
           while (w->wd < 0 && (errno == ENOENT || errno == EACCES));
         }
     }
