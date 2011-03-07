@@ -725,7 +725,7 @@ class MilterPerformanceChecker
   def prepare_send_mail(mail_source_file)
     if mail_source_file
       if mail_source_file == "-" and !File.exist?(mail_source_file)
-        mail_source = read_mails_source_from_stdin
+        mail_source = read_mail_source_from_stdin
       else
         mail_source = @mail_source_files[mail_source_file] ||=
           File.open(mail_source_file, "rb") {|mail| mail.read}
@@ -785,7 +785,7 @@ class MilterPerformanceChecker
                       wall_clock_time, response_time, source.size)
   end
 
-  def read_mails_source_from_stdin
+  def read_mail_source_from_stdin
     if @mail_source_from_stdin
       @mail_source_from_stdin.gsub(/^Message-Id:.*$/) do
         "Message-Id: <#{random_tag}@mail.example.com>"
