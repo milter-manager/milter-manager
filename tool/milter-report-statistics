@@ -373,7 +373,8 @@ class MilterStatisticsReporter
       end
 
       parser.on("--pid-directory=DIR",
-                "Report only processes which have the pid file with .pid extension under DIR.") do |dir|
+                "Report only processes which have the pid file " +
+                "with .pid extension under DIR.") do |dir|
         Dir.glob(dir+"/**/*.pid") do |pid_file|
           if File.file?(pid_file)
             @target_pids << File.read(pid_file).chomp
