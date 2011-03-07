@@ -1,3 +1,9 @@
-crondir = $(pkgsysconfdir)/cron.d/redhat
-dist_cron_SCRIPTS =		\
-	milter-manager-log
+crondir = $(sysconfdir)/cron.d
+
+cron_script = milter-manager-log
+
+if REDHAT_PLATFORM
+dist_cron_SCRIPTS = $(cron_script)
+else
+EXTRA_DIST = $(cron_script)
+endif
