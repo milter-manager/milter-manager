@@ -511,6 +511,7 @@ dnl Check for libev.
 dnl **************************************************************
 
 libev_available=no
+m4_define([BUNDLED_LIBEV_VERSION], [4.03])
 AC_ARG_WITH(libev,
   [AS_HELP_STRING([--with-libev],
     [Specify libev installed prefix. [default=auto]])],
@@ -550,10 +551,10 @@ if test "x$with_libev" != "xno"; then
   if test "$libev_available" = no; then
     libev_available=yes
     libev_prefix=bundled
-    m4_include([libev-4.03/libev.m4])
+    m4_include([libev-]BUNDLED_LIBEV_VERSION[/libev.m4])
     AC_DEFINE(HAVE_LIBEV, [1], [Define to 1 if libev is available.])
-    LIBEV_CFLAGS='-I$(top_srcdir)/libev-4.03'
-    LIBEV_LA='$(top_builddir)/libev-4.03/libev.la'
+    LIBEV_CFLAGS='-I$(top_srcdir)/libev-'BUNDLED_LIBEV_VERSION
+    LIBEV_LA='$(top_builddir)/libev-'BUNDLED_LIBEV_VERSION'/libev.la'
     LIBEV_LIBS='$(LIBEV_LA)'
   fi
   AC_DEFINE(HAVE_LIBEV, [1], [Define to 1 if libev is available.])
@@ -786,7 +787,7 @@ AC_CONFIG_FILES([Makefile
 		 milter-manager.pc
 		 ruby-milter.pc
 		 rpm/centos/milter-manager.spec
-		 libev-4.03/Makefile
+		 libev-]BUNDLED_LIBEV_VERSION[/Makefile
 		 milter/Makefile
 		 milter/core/Makefile
 		 milter/core/milter-version.h
