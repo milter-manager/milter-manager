@@ -1,6 +1,6 @@
 SUBDIRS = sysconfig
 
-initdir = $(sysconfdir)/init.d
+initdir = $(sysconfdir)/rc.d/init.d
 init_script = milter-manager
 
 if REDHAT_PLATFORM
