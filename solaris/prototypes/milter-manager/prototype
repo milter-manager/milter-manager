@@ -5,6 +5,7 @@ i preinstall
 i postinstall
 d none bin 0755 root root
 d none etc 0755 root root
+d none etc/init.d 0755 root root
 d none etc/milter-manager 0755 root root
 d none etc/milter-manager/applicable-conditions 0755 root root
 d none etc/milter-manager/cron.d 0755 root root
@@ -12,8 +13,6 @@ d none etc/milter-manager/cron.d/debian 0755 root root
 d none etc/milter-manager/cron.d/freebsd 0755 root root
 d none etc/milter-manager/cron.d/redhat 0755 root root
 d none etc/milter-manager/defaults 0755 root root
-d none etc/milter-manager/init.d 0755 root root
-d none etc/milter-manager/init.d/solaris 0755 root root
 d none etc/milter-manager/models 0755 root root
 d none etc/milter-manager/rc.d 0755 root root
 d none include 0755 root root
@@ -115,6 +114,7 @@ f none bin/milter-report-statistics 0755 root root
 f none bin/milter-test-client 0755 root root
 f none bin/milter-test-client-libmilter 0755 root root
 f none bin/milter-test-server 0755 root root
+f none etc/init.d/milter-manager 0755 root root
 f none etc/milter-manager/applicable-conditions/authentication.conf 0644 root root
 f none etc/milter-manager/applicable-conditions/remote-network.conf 0644 root root
 f none etc/milter-manager/applicable-conditions/restrict-accounts.conf 0644 root root
@@ -129,7 +129,6 @@ f none etc/milter-manager/defaults/debian.conf 0644 root root
 f none etc/milter-manager/defaults/freebsd.conf 0644 root root
 f none etc/milter-manager/defaults/pkgsrc.conf 0644 root root
 f none etc/milter-manager/defaults/redhat.conf 0644 root root
-f none etc/milter-manager/init.d/solaris/milter-manager 0755 root root
 f none etc/milter-manager/milter-manager.conf 0644 root root
 f none etc/milter-manager/models/example.rb 0644 root root
 f none etc/milter-manager/rc.d/milter-manager 0755 root root
