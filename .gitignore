@@ -65,3 +65,11 @@ Makefile.in
 /solaris/pkgs/
 /admin/log/*
 /admin/config/secret
+/yum/*.repo
+/yum/RPM-GPG-KEY-*
+/yum/centos/
+/milter-manager-*.tar.gz
+/html/mini-heading-mark.png
+/html/mini-upgrade.png
+/html/upgrade.png
+/html/what-is-milter-manager.png
