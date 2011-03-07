@@ -51,6 +51,13 @@ module Milter::Manager
       nil
     end
 
+    def smtp_server_interface_port(client_address)
+      info = connection_info(client_address, :retry => true)
+      return nil if info.nil?
+      return info.local_port if info.state == "ESTABLISHED"
+      nil
+    end
+
     def database_lifetime
       @options[:database_lifetime] || 5
     end
