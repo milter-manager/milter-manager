@@ -1,3 +1,3 @@
-initdir = $(pkgsysconfdir)/init.d/solaris
+initdir = $(sysconfdir)/init.d
 dist_init_SCRIPTS =	\
 	milter-manager
