@@ -109,6 +109,7 @@ test_unit_files =						\
 	test-unit/test/collector/test_dir.rb			\
 	test-unit/test/collector/test_objectspace.rb		\
 	test-unit/test/run-test.rb				\
+	test-unit/test/test-assertions.rb			\
 	test-unit/test/test-attribute.rb			\
 	test-unit/test/test-color-scheme.rb			\
 	test-unit/test/test-color.rb				\
@@ -120,7 +121,6 @@ test_unit_files =						\
 	test-unit/test/test-pending.rb				\
 	test-unit/test/test-priority.rb				\
 	test-unit/test/test-testcase.rb				\
-	test-unit/test/test_assertions.rb			\
 	test-unit/test/test_error.rb				\
 	test-unit/test/test_failure.rb				\
 	test-unit/test/test_testresult.rb			\
