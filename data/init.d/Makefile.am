@@ -1,5 +1,1 @@
-if WITH_INIT_SCRIPT
-SUBDIRS = @MILTER_MANAGER_PACKAGE_PLATFORM@
-else
-SUBDIRS = # no init script
-endif
+SUBDIRS = debian redhat solaris

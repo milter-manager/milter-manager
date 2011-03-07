@@ -605,15 +605,12 @@ if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = ""; then
 fi
 AC_MSG_RESULT($MILTER_MANAGER_PACKAGE_PLATFORM)
 
-AM_CONDITIONAL(WITH_INIT_SCRIPT, [
-case "$MILTER_MANAGER_PACKAGE_PLATFORM" in
-debian|redhat|solaris)
-  true
-  ;;
-*)
-  false
-  ;;
-esac])
+AM_CONDITIONAL(DEBIAN_PLATFORM,
+               [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "debian"])
+AM_CONDITIONAL(REDHAT_PLATFORM,
+               [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat"])
+AM_CONDITIONAL(SOLARIS_PLATFORM,
+               [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "solaris"])
 
 AC_ARG_WITH([rcddir],
              AS_HELP_STRING([--with-rcddir=DIR],

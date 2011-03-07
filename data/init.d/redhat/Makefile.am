@@ -1,5 +1,10 @@
 SUBDIRS = sysconfig
 
-initdir = $(pkgsysconfdir)/init.d/redhat
-dist_init_SCRIPTS =	\
-	milter-manager
+initdir = $(sysconfdir)/init.d
+init_script = milter-manager
+
+if REDHAT_PLATFORM
+dist_init_SCRIPTS = $(init_script)
+else
+EXTRA_DIST = $(init_script)
+endif
