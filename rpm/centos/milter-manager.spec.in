@@ -86,14 +86,32 @@ Requires: libmilter-server = %{version}-%{release}
 This package contains the headers, and other support files
 required for developing applications against libmilter-server.
 
-%package -n ruby-milter-toolkit
-Summary: Ruby bindings for libmilter-toolkit
+%package -n ruby-milter-core
+Summary: Ruby bindings for libmilter-core
 Group: Development/Libraries
 Requires: ruby
-Requires: libmilter-toolkit = %{version}-%{release}
+Requires: libmilter-core = %{version}-%{release}
 
-%description -n ruby-milter-toolkit
-This package contains the Ruby bindings for libmilter-toolkit.
+%description -n ruby-milter-core
+This package contains the Ruby bindings for libmilter-core.
+
+%package -n ruby-milter-client
+Summary: Ruby bindings for libmilter-client
+Group: Development/Libraries
+Requires: ruby
+Requires: libmilter-client = %{version}-%{release}
+
+%description -n ruby-milter-client
+This package contains the Ruby bindings for libmilter-client.
+
+%package -n ruby-milter-server
+Summary: Ruby bindings for libmilter-server
+Group: Development/Libraries
+Requires: ruby
+Requires: libmilter-server = %{version}-%{release}
+
+%description -n ruby-milter-server
+This package contains the Ruby bindings for libmilter-server.
 
 %package -n libmilter-compatible
 Summary: libmilter API and ABI compatible milter library
@@ -309,27 +327,54 @@ fi
 %{_libdir}/libmilter-server.la
 %{_libdir}/pkgconfig/milter-server.pc
 
-%files -n ruby-milter-toolkit
+%files -n ruby-milter-core
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
 %doc %{_datadir}/milter-manager/license/
 %doc %{_datadir}/gtk-doc/html/milter-manager/
-%{_exec_prefix}/lib/ruby/1.8/*.rb
-%{_libdir}/milter-manager/binding/ext/*.so
-%{_libdir}/milter-manager/binding/ext/*.la
-%{_libdir}/milter-manager/binding/ext/*.h
+%{_exec_prefix}/lib/ruby/1.8/milter/core.rb
+%{_libdir}/milter-manager/binding/ext/glib2.so
+%{_libdir}/milter-manager/binding/ext/rbg*.h
+%{_libdir}/milter-manager/binding/ext/glib*.h
+%{_libdir}/milter-manager/binding/ext/milter_core.so
+%{_libdir}/milter-manager/binding/ext/milter_core.la
+%{_libdir}/milter-manager/binding/ext/rb-milter-core.h
 %{_libdir}/milter-manager/binding/lib/milter.rb
 %{_libdir}/milter-manager/binding/lib/milter/core.rb
 %{_libdir}/milter-manager/binding/lib/milter/core/
-%{_libdir}/milter-manager/binding/lib/milter/client.rb
-%{_libdir}/milter-manager/binding/lib/milter/client/
-%{_libdir}/milter-manager/binding/lib/milter/server.rb
-%{_libdir}/milter-manager/binding/lib/milter/server/
 %{_libdir}/milter-manager/binding/lib/glib*.rb
 %{_libdir}/milter-manager/binding/lib/mkmf-gnome2.rb
 %{_libdir}/milter-manager/binding/lib/pkg-config.rb
-%{_libdir}/pkgconfig/ruby-milter.pc
+%{_libdir}/pkgconfig/ruby-milter-core.pc
+
+%files -n ruby-milter-client
+%defattr(-,root,root)
+%doc README README.ja NEWS NEWS.ja TODO
+%doc %{_datadir}/milter-manager/license/
+%doc %{_datadir}/gtk-doc/html/milter-manager/
+%{_exec_prefix}/lib/ruby/1.8/milter.rb
+%{_exec_prefix}/lib/ruby/1.8/milter/client.rb
+%{_libdir}/milter-manager/binding/ext/milter_client.so
+%{_libdir}/milter-manager/binding/ext/milter_client.la
+%{_libdir}/milter-manager/binding/ext/rb-milter-client.h
+%{_libdir}/milter-manager/binding/lib/milter/client.rb
+%{_libdir}/milter-manager/binding/lib/milter/client/
 %{_datadir}/milter-manager/sample/ruby/*
+%{_libdir}/pkgconfig/ruby-milter.pc
+%{_libdir}/pkgconfig/ruby-milter-client.pc
+
+%files -n ruby-milter-server
+%defattr(-,root,root)
+%doc README README.ja NEWS NEWS.ja TODO
+%doc %{_datadir}/milter-manager/license/
+%doc %{_datadir}/gtk-doc/html/milter-manager/
+%{_exec_prefix}/lib/ruby/1.8/milter/server.rb
+%{_libdir}/milter-manager/binding/ext/milter_server.so
+%{_libdir}/milter-manager/binding/ext/milter_server.la
+%{_libdir}/milter-manager/binding/ext/rb-milter-server.h
+%{_libdir}/milter-manager/binding/lib/milter/server.rb
+%{_libdir}/milter-manager/binding/lib/milter/server/
+%{_libdir}/pkgconfig/ruby-milter-server.pc
 
 %files -n libmilter-compatible
 %defattr(-,root,root)
