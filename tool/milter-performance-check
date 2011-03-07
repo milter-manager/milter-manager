@@ -648,7 +648,10 @@ class MilterPerformanceChecker
         expanded_mails << mail
       else
         Find.find(mail) do |file|
-          expanded_mails << file if File.file?(file)
+          if File.file?(file)
+            expanded_mails << file
+            read_mail_source_from_file(file)
+          end
         end
       end
     end
