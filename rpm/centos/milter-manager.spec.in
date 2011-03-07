@@ -100,14 +100,7 @@ make %{?_smp_mflags}
 rm -rf %{buildroot}
 make install DESTDIR=%{buildroot}
 
-mkdir -p %{buildroot}%{_initrddir}
-install -m 755 data/init.d/redhat/milter-manager %{buildroot}%{_initrddir}/milter-manager
-
-mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
-install -m 644 data/init.d/redhat/sysconfig/milter-manager %{buildroot}%{_sysconfdir}/sysconfig/milter-manager
-
-mkdir -p %{buildroot}%{_sysconfdir}/cron.d
-install -m 600 data/cron.d/redhat/milter-manager-log %{buildroot}%{_sysconfdir}/cron.d/milter-manager-log
+chmod 600 %{buildroot}%{_sysconfdir}/cron.d/milter-manager-log
 
 mkdir -p %{buildroot}%{_localstatedir}/run/milter-manager/
 
