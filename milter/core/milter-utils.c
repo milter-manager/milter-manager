@@ -894,7 +894,7 @@ milter_utils_hash_table_get_keys (GHashTable *table)
 {
     GList *keys = NULL;
 
-    g_hash_table_foreach(hash_table, collect_key, &keys);
+    g_hash_table_foreach(table, collect_key, &keys);
 
     return keys;
 }
