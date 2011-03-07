@@ -25,24 +25,63 @@ Requires(postun): /sbin/service, /sbin/chkconfig, /usr/sbin/userdel
 milter manager administrates milters instead of MTA to reduce milter
 administration cost and combine milters flexibly.
 
-%package -n libmilter-toolkit
-Summary: A milter protocol library
+%package -n libmilter-core
+Summary: A common library for milter protocol libraries
 Group: System Environment/Libraries
 Requires: glib2
 
-%description -n libmilter-toolkit
-Both of client-side and server-side milter protocol are implemented.
-This package contains the library files required for running services
-built using libmilter-toolkit.
+%description -n libmilter-core
+Common libraries for both of client-side and server-side milter protocol
+libraries.
+This package contains the library files required for libmilter-client
+and libmilter-server.
 
-%package -n libmilter-toolkit-devel
-Summary: Development files for libmilter-toolkit
+%package -n libmilter-core-devel
+Summary: Development files for libmilter-core
 Group: Development/Libraries
-Requires: libmilter-toolkit = %{version}-%{release}
+Requires: libmilter-core = %{version}-%{release}
 
-%description -n libmilter-toolkit-devel
+%description -n libmilter-core-devel
 This package contains the headers, and other support files
-required for developing applications against libmilter-toolkit.
+required for developing applications against libmilter-core.
+
+%package -n libmilter-client
+Summary: A client-side milter protocol library
+Group: System Environment/Libraries
+Requires: glib2
+
+%description -n libmilter-client
+Client-side milter protocol is implemented.
+This package contains the library files required for running services
+built using libmilter-client.
+
+%package -n libmilter-client-devel
+Summary: Development files for libmilter-client
+Group: Development/Libraries
+Requires: libmilter-client = %{version}-%{release}
+
+%description -n libmilter-client-devel
+This package contains the headers, and other support files
+required for developing applications against libmilter-client.
+
+%package -n libmilter-server
+Summary: A server-side milter protocol library
+Group: System Environment/Libraries
+Requires: glib2
+
+%description -n libmilter-server
+Server-side milter protocol is implemented.
+This package contains the library files required for running services
+built using libmilter-server.
+
+%package -n libmilter-server-devel
+Summary: Development files for libmilter-server
+Group: Development/Libraries
+Requires: libmilter-server = %{version}-%{release}
+
+%description -n libmilter-server-devel
+This package contains the headers, and other support files
+required for developing applications against libmilter-server.
 
 %package -n ruby-milter-toolkit
 Summary: Ruby bindings for libmilter-toolkit
@@ -211,36 +250,61 @@ fi
 %defattr(-, milter-manager, milter-manager, 0755)
 %dir %{_localstatedir}/run/milter-manager/
 
-%files -n libmilter-toolkit
+%files -n libmilter-core
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
 %doc %{_datadir}/milter-manager/license/
-%{_bindir}/milter-test-*
 %{_libdir}/libmilter-core.so.*
-%{_libdir}/libmilter-client.so.*
-%{_libdir}/libmilter-server.so.*
-%{_mandir}/man1/milter-test-*
-%{_mandir}/ja/man1/milter-test-*
 
-%files -n libmilter-toolkit-devel
+%files -n libmilter-core-devel
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
 %doc %{_datadir}/milter-manager/license/
 %doc %{_datadir}/gtk-doc/html/milter-manager/
 %{_includedir}/milter-manager/milter/core.h
 %{_includedir}/milter-manager/milter/core/
-%{_includedir}/milter-manager/milter/client.h
-%{_includedir}/milter-manager/milter/client/
-%{_includedir}/milter-manager/milter/server.h
-%{_includedir}/milter-manager/milter/server/
 %{_libdir}/libmilter-core.so
 %{_libdir}/libmilter-core.la
+%{_libdir}/pkgconfig/milter-core.pc
+
+%files -n libmilter-client
+%defattr(-,root,root)
+%doc README README.ja NEWS NEWS.ja TODO
+%doc %{_datadir}/milter-manager/license/
+%{_bindir}/milter-test-client
+%{_libdir}/libmilter-client.so.*
+%{_mandir}/man1/milter-test-client*
+%{_mandir}/ja/man1/milter-test-client*
+
+%files -n libmilter-client-devel
+%defattr(-,root,root)
+%doc README README.ja NEWS NEWS.ja TODO
+%doc %{_datadir}/milter-manager/license/
+%doc %{_datadir}/gtk-doc/html/milter-manager/
+%{_includedir}/milter-manager/milter/client.h
+%{_includedir}/milter-manager/milter/client/
 %{_libdir}/libmilter-client.so
 %{_libdir}/libmilter-client.la
+%{_libdir}/pkgconfig/milter-client.pc
+
+%files -n libmilter-server
+%defattr(-,root,root)
+%doc README README.ja NEWS NEWS.ja TODO
+%doc %{_datadir}/milter-manager/license/
+%{_bindir}/milter-test-server
+%{_libdir}/libmilter-server.so.*
+%{_mandir}/man1/milter-test-server*
+%{_mandir}/ja/man1/milter-test-server*
+
+%files -n libmilter-server-devel
+%defattr(-,root,root)
+%doc README README.ja NEWS NEWS.ja TODO
+%doc %{_datadir}/milter-manager/license/
+%doc %{_datadir}/gtk-doc/html/milter-manager/
+%{_includedir}/milter-manager/milter/server.h
+%{_includedir}/milter-manager/milter/server/
 %{_libdir}/libmilter-server.so
 %{_libdir}/libmilter-server.la
-%{_libdir}/pkgconfig/milter-core.pc
-%{_libdir}/pkgconfig/milter-client.pc
 %{_libdir}/pkgconfig/milter-server.pc
 
 %files -n ruby-milter-toolkit
@@ -287,6 +351,10 @@ fi
 %config %{_sysconfdir}/munin/plugin-conf.d/
 
 %changelog
+* Fri Mar 11 2011 Kouhei Sutou <kou@clear-code.com> - 1.6.6-0
+- new upstream release.
+- split toolkit to core, client and server.
+
 * Wed Jan 26 2011 Kouhei Sutou <kou@clear-code.com> - 1.6.5-0
 - new upstream release.
 
