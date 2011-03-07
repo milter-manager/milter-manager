@@ -727,8 +727,7 @@ class MilterPerformanceChecker
       if mail_source_file == "-" and !File.exist?(mail_source_file)
         mail_source = read_mail_source_from_stdin
       else
-        mail_source = @mail_source_files[mail_source_file] ||=
-          File.open(mail_source_file, "rb") {|mail| mail.read}
+        mail_source = read_mail_source_from_file(mail_source_file)
       end
     else
       mail_source = generate_mail_source
@@ -793,6 +792,10 @@ class MilterPerformanceChecker
     else
       @mail_source_from_stdin = ARGF.read
     end
+  end
+
+  def read_mail_source_from_file(file)
+    @mail_source_files[file] ||= File.open(file, "rb") {|mail| mail.read}
   end
 
   def parse_mail_source(source)
