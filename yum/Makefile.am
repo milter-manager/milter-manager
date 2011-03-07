@@ -5,6 +5,7 @@ ARCHITECTURES = i386 x86_64
 CHROOT_BASE = /var/lib/chroot
 BASE_URL_PREFIX = http://$(PACKAGE).sourceforge.net
 HAVE_DEVELOPMENT_BRANCH = yes
+USE_RPMFORGE = no
 
 release: remove-existing-packages build sign update upload
 
@@ -46,7 +47,8 @@ build-in-chroot:
 	  $(top_builddir)/rpm			\
 	  $(CHROOT_BASE)			\
 	  '$(ARCHITECTURES)'			\
-	  '$(DISTRIBUTIONS)'
+	  '$(DISTRIBUTIONS)'			\
+	  '$(USE_RPMFORGE)'
 
 build-repository-rpm: RPM-GPG-KEY-milter-manager
 	./build-repository-rpm.sh		\
