@@ -1,6 +1,8 @@
 i pkginfo
 i depend
 i copyright
+i preinstall
+i postinstall
 d none bin 0755 root root
 d none etc 0755 root root
 d none etc/milter-manager 0755 root root
@@ -11,10 +13,7 @@ d none etc/milter-manager/cron.d/freebsd 0755 root root
 d none etc/milter-manager/cron.d/redhat 0755 root root
 d none etc/milter-manager/defaults 0755 root root
 d none etc/milter-manager/init.d 0755 root root
-d none etc/milter-manager/init.d/debian 0755 root root
-d none etc/milter-manager/init.d/debian/default 0755 root root
-d none etc/milter-manager/init.d/redhat 0755 root root
-d none etc/milter-manager/init.d/redhat/sysconfig 0755 root root
+d none etc/milter-manager/init.d/solaris 0755 root root
 d none etc/milter-manager/models 0755 root root
 d none etc/milter-manager/rc.d 0755 root root
 d none include 0755 root root
@@ -130,10 +129,7 @@ f none etc/milter-manager/defaults/debian.conf 0644 root root
 f none etc/milter-manager/defaults/freebsd.conf 0644 root root
 f none etc/milter-manager/defaults/pkgsrc.conf 0644 root root
 f none etc/milter-manager/defaults/redhat.conf 0644 root root
-f none etc/milter-manager/init.d/debian/default/milter-manager 0644 root root
-f none etc/milter-manager/init.d/debian/milter-manager 0755 root root
-f none etc/milter-manager/init.d/redhat/milter-manager 0755 root root
-f none etc/milter-manager/init.d/redhat/sysconfig/milter-manager 0644 root root
+f none etc/milter-manager/init.d/solaris/milter-manager 0755 root root
 f none etc/milter-manager/milter-manager.conf 0644 root root
 f none etc/milter-manager/models/example.rb 0644 root root
 f none etc/milter-manager/rc.d/milter-manager 0755 root root
@@ -238,6 +234,7 @@ f none lib/milter-manager/binding/lib/gnome2-win32-binary-downloader.rb 0644 roo
 f none lib/milter-manager/binding/lib/milter.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter/client.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter/client/command-line.rb 0644 root root
+f none lib/milter-manager/binding/lib/milter/client/composite-session.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter/client/configuration.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter/core.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter/core/compatible.rb 0644 root root
@@ -479,6 +476,7 @@ f none share/milter-manager/sample/ruby/milter-regexp.rb 0644 root root
 f none share/milter-manager/sample/ruby/milter-reject-empty-body.rb 0644 root root
 f none share/milter-manager/sample/ruby/milter-reject-nil-sender.rb 0644 root root
 f none share/milter-manager/sample/ruby/milter-tarpit.rb 0644 root root
+f none share/milter-manager/sample/ruby/milter-test-client-composite.rb 0644 root root
 f none share/milter-manager/sample/ruby/milter-test-client.rb 0644 root root
 s none lib/libmilter-client.so.0=libmilter-client.so.0.0.0
 s none lib/libmilter-client.so=libmilter-client.so.0.0.0

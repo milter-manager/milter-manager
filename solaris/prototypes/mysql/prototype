@@ -306,7 +306,6 @@ f none man/man1/replace.1 0644 root root
 f none man/man1/resolve_stack_dump.1 0644 root root
 f none man/man1/resolveip.1 0644 root root
 f none man/man8/mysqld.8 0644 root root
-f none mysql-test/CTestTestfile.cmake 0644 root root
 f none mysql-test/Makefile 0644 root root
 f none mysql-test/README 0644 root root
 f none mysql-test/README.gcov 0644 root root
