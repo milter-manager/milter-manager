@@ -237,14 +237,13 @@ fi
 %{_mandir}/ja/man1/milter-manager-log-analyzer.*
 %{_initrddir}/milter-manager
 %{_datadir}/milter-manager/admin/
-%{_sysconfdir}/milter-manager/cron.d/
-%{_sysconfdir}/milter-manager/init.d/
-%{_sysconfdir}/milter-manager/rc.d/
+%{_sysconfdir}/init.d/
 %{_sysconfdir}/cron.d/
 %config %{_sysconfdir}/sysconfig/milter-manager
 %config %{_sysconfdir}/milter-manager/milter-manager.conf
 %config %{_sysconfdir}/milter-manager/defaults/
 %config %{_sysconfdir}/milter-manager/applicable-conditions/
+%config %{_sysconfdir}/milter-manager/models/
 %config %{_sysconfdir}/httpd/conf.d/milter-manager-log.conf
 
 %defattr(-, milter-manager, milter-manager, 0755)
@@ -273,8 +272,8 @@ fi
 %doc %{_datadir}/milter-manager/license/
 %{_bindir}/milter-test-client
 %{_libdir}/libmilter-client.so.*
-%{_mandir}/man1/milter-test-client*
-%{_mandir}/ja/man1/milter-test-client*
+%{_mandir}/man1/milter-test-client.*
+%{_mandir}/ja/man1/milter-test-client.*
 
 %files -n libmilter-client-devel
 %defattr(-,root,root)
@@ -293,8 +292,8 @@ fi
 %doc %{_datadir}/milter-manager/license/
 %{_bindir}/milter-test-server
 %{_libdir}/libmilter-server.so.*
-%{_mandir}/man1/milter-test-server*
-%{_mandir}/ja/man1/milter-test-server*
+%{_mandir}/man1/milter-test-server.*
+%{_mandir}/ja/man1/milter-test-server.*
 
 %files -n libmilter-server-devel
 %defattr(-,root,root)
@@ -317,10 +316,12 @@ fi
 %{_libdir}/milter-manager/binding/ext/*.la
 %{_libdir}/milter-manager/binding/ext/*.h
 %{_libdir}/milter-manager/binding/lib/milter.rb
-%{_libdir}/milter-manager/binding/lib/milter/compatible.rb
-%{_libdir}/milter-manager/binding/lib/milter/toolkit.rb
+%{_libdir}/milter-manager/binding/lib/milter/core.rb
+%{_libdir}/milter-manager/binding/lib/milter/core/
 %{_libdir}/milter-manager/binding/lib/milter/client.rb
 %{_libdir}/milter-manager/binding/lib/milter/client/
+%{_libdir}/milter-manager/binding/lib/milter/server.rb
+%{_libdir}/milter-manager/binding/lib/milter/server/
 %{_libdir}/milter-manager/binding/lib/glib*.rb
 %{_libdir}/milter-manager/binding/lib/mkmf-gnome2.rb
 %{_libdir}/milter-manager/binding/lib/pkg-config.rb
@@ -331,6 +332,7 @@ fi
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
 %doc %{_datadir}/milter-manager/license/
+%{_bindir}/milter-test-client-libmilter
 %{_libdir}/milter-manager/libmilter.so.*
 
 %files -n libmilter-compatible-devel
