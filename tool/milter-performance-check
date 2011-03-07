@@ -637,15 +637,19 @@ class MilterPerformanceChecker
     end
   end
 
+  def stdin_file?(file)
+    file == "-" and not File.exist?(file)
+  end
+
   def expand_mails(mails)
     expanded_mails = []
     mails.each do |mail|
-      if mail == "-" and !File.exist?(mail)
+      if stdin_file?(mail)
         expanded_mails << mail
-        next
-      end
-      Find.find(mail) do |file|
-        expanded_mails << file if File.file?(file)
+      else
+        Find.find(mail) do |file|
+          expanded_mails << file if File.file?(file)
+        end
       end
     end
     expanded_mails.sort
@@ -724,7 +728,7 @@ class MilterPerformanceChecker
 
   def prepare_send_mail(mail_source_file)
     if mail_source_file
-      if mail_source_file == "-" and !File.exist?(mail_source_file)
+      if stdin_file?(mail_source_file)
         mail_source = read_mail_source_from_stdin
       else
         mail_source = read_mail_source_from_file(mail_source_file)
