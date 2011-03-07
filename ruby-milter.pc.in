@@ -1,6 +1,6 @@
 libdir=@ruby_milterdir@
 
-Name: Ruby milter
-Description: Ruby bindings for milter-core, milter-client, milter-server and milter-manager.
+Name: Ruby milter (deprecated)
+Description: Ruby bindings for milter-client. This pc is deprecated. Use ruby-mitler-client instead.
 Version: @VERSION@
-Requires: milter-manager = @VERSION@
+Requires: milter-client = @VERSION@

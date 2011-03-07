@@ -1,0 +1,6 @@
+libdir=@ruby_milterdir@
+
+Name: Ruby milter server
+Description: Ruby bindings for milter-server.
+Version: @VERSION@
+Requires: milter-server = @VERSION@

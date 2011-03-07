@@ -30,7 +30,11 @@ pkgconfig_DATA =				\
 	libmilter.pc
 
 if WITH_RUBY_MILTER
-pkgconfig_DATA += ruby-milter.pc
+pkgconfig_DATA +=				\
+	ruby-milter.pc				\
+	ruby-milter-core.pc			\
+	ruby-milter-client.pc			\
+	ruby-milter-server.pc
 endif
 
 EXTRA_DIST =					\

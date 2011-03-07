@@ -1,0 +1,6 @@
+libdir=@ruby_milterdir@
+
+Name: Ruby milter core
+Description: Ruby bindings for milter-core.
+Version: @VERSION@
+Requires: milter-core = @VERSION@

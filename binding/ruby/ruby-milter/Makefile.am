@@ -1,3 +1,6 @@
+SUBDIRS = 					\
+	milter
+
 EXTRA_DIST =					\
 	milter.rb.in
 

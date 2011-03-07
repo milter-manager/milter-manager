@@ -1,4 +1,5 @@
 # This file is generated automatically.
-# This file is just for backward compatibility.
 
+$LOAD_PATH.unshift('$(binding_extdir)')
+$LOAD_PATH.unshift('$(binding_libdir)')
 load '$(binding_libdir)/milter/client.rb'

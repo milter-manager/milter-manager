@@ -28,7 +28,6 @@
 /milter-client.pc
 /milter-core.pc
 /milter-manager.pc
-/milter-manager.spec
 /milter-server.pc
 /misc
 /stamp-h1
@@ -44,6 +43,9 @@ Makefile.in
 /binding/ruby/ruby-milter/milter.rb
 /rpm/centos/milter-manager.spec
 /ruby-milter.pc
+/ruby-milter-core.pc
+/ruby-milter-client.pc
+/ruby-milter-server.pc
 /tool/milter-test-client-libmilter
 /doc/reference/html/
 /doc/reference/tmpl/
