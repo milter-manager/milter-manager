@@ -2,14 +2,27 @@ Source: milter-manager
 Section: mail
 Priority: optional
 Maintainer: Kouhei Sutou <kou@clear-code.com>, Jun Kobayashi <jkbys@ubuntu.com>
-Build-Depends: debhelper (>= 5), autotools-dev, libglib2.0-dev, ruby, ruby1.8-dev, cdbs, intltool
+Build-Depends:
+	debhelper (>= 5),
+	autotools-dev,
+	libglib2.0-dev,
+	ruby,
+	ruby1.8-dev,
+	cdbs,
+	intltool
 Standards-Version: 3.7.3.0
 Homepage: http://milter-manager.sourceforge.net/
 
 Package: milter-manager
 Section: mail
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ruby, libmilter-toolkit-ruby1.8 (= ${binary:Version}), librrd-ruby1.8, adduser
+Depends:
+	${shlibs:Depends},
+	${misc:Depends},
+	ruby,
+	libmilter-toolkit-ruby1.8 (= ${binary:Version}),
+	librrd-ruby1.8,
+	adduser
 Suggests: postfix | sendmail, spamass-milter, clamav-milter, milter-greylist
 Description: A milter to use milters effectively
  milter manager administrates milters instead of MTA to reduce milter
@@ -28,7 +41,11 @@ Description: Documentation of milter manager
 Package: milter-manager-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, milter-manager (= ${binary:Version}), libmilter-toolkit-dev (= ${binary:Version})
+Depends:
+	${shlibs:Depends},
+	${misc:Depends},
+	milter-manager (= ${binary:Version}),
+	libmilter-toolkit-dev (= ${binary:Version})
 Description: Development files to extend milter manager by C
  milter manager administrates milters instead of MTA to reduce milter
  administration cost and combine milters flexibly.
@@ -39,7 +56,12 @@ Description: Development files to extend milter manager by C
 Package: milter-manager-admin
 Section: admin
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, milter-manager (= ${binary:Version}), ruby, ruby1.8
+Depends:
+	${shlibs:Depends},
+ 	${misc:Depends},
+	milter-manager (= ${binary:Version}),
+	ruby,
+	ruby1.8
 Description: A Web based administaration interface for milter manager
  milter manager administrates milters instead of MTA to reduce milter
  administration cost and combine milters flexibly.
@@ -50,7 +72,12 @@ Description: A Web based administaration interface for milter manager
 Package: milter-manager-munin-plugins
 Section: net
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, milter-manager (= ${binary:Version}), munin-node, ruby
+Depends:
+	${shlibs:Depends},
+	${misc:Depends},
+	milter-manager (= ${binary:Version}),
+	munin-node,
+	ruby
 Description: munin-node plugins for milter manager
  milter manager administrates milters instead of MTA to reduce milter
  administration cost and combine milters flexibly.
@@ -61,7 +88,10 @@ Description: munin-node plugins for milter manager
 Package: libmilter-toolkit
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libglib2.0-0
+Depends:
+	${shlibs:Depends},
+	${misc:Depends},
+	libglib2.0-0
 Description: Libraries and tools for implementing milter protocol
  milter toolkit includes "core", "client" and "server" libraries.
  "core" is a common library for "client" and "server" libraries.
@@ -72,7 +102,10 @@ Description: Libraries and tools for implementing milter protocol
 Package: libmilter-toolkit-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libmilter-toolkit (= ${binary:Version})
+Depends:
+	${shlibs:Depends},
+	${misc:Depends},
+	libmilter-toolkit (= ${binary:Version})
 Description: Development files for milter toolkit
  milter toolkit includes "core", "client" and "server" libraries.
  "core" is a common library for "client" and "server" libraries.
@@ -88,7 +121,11 @@ Section: ruby
 Architecture: any
 Replaces: milter-manager (<< 1.6.1-1)
 Breaks: milter-manager (<< 1.6.1-1)
-Depends: ${shlibs:Depends}, ${misc:Depends}, libmilter-toolkit (= ${binary:Version}), ruby
+Depends:
+	${shlibs:Depends},
+	${misc:Depends},
+	libmilter-toolkit (= ${binary:Version}),
+	ruby
 Description: Development files for milter toolkit
  milter toolkit includes "core", "client" and "server" libraries.
  "core" is a common library for "client" and "server" libraries.
@@ -101,7 +138,10 @@ Description: Development files for milter toolkit
 Package: libmilter-compatible
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libmilter-toolkit (= ${binary:Version})
+Depends:
+	${shlibs:Depends},
+	${misc:Depends},
+	libmilter-toolkit (= ${binary:Version})
 Description: A milter library which has ABI compatiblity with Sendmail's libmilter
  libmilter-compatible is a milter toolkit based library which has ABI
  compatiblity with Sendmail's libmilter. It can be used with a milter
@@ -111,7 +151,10 @@ Description: A milter library which has ABI compatiblity with Sendmail's libmilt
 Package: libmilter-compatible-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libmilter-compatible (= ${binary:Version})
+Depends:
+	${shlibs:Depends},
+	${misc:Depends},
+	libmilter-compatible (= ${binary:Version})
 Description: Milter developement files which have API compatiblity with Sendmail's libmilter
  This provides API that is compatible with Sendmail's libmilter. Milters can
  be built and run with libmilter-compatible-dev and libmilter-compatible.
