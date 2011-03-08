@@ -33,7 +33,7 @@ isn't milter.
 : --filter=REGEXP
 
    Filters target processes by regular expression
-   ((|REGEXP|)). Processes which matches their command line
+   ((|REGEXP|)) . Processes which matches their command line
    in all processes that has ((*target process name*)) to
    ((|REGEXP|)) are only reported their statistics.
 
