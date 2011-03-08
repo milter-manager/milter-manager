@@ -43,8 +43,17 @@ module Milter
           command_line.concat(["--#{key}", value])
         end
       end
-      escaped_command_line = Shellwords.join(command_line)
-      parse(`#{escaped_command_line}`)
+      escaped_command_line = nil
+      begin
+        IO.popen(command_line, 'r') do |command_result|
+          parse(command_result)
+        end
+      rescue TypeError
+        raise if escaped_command_line
+        escaped_command_line = Shellwords.join(command_line)
+        command_line = escaped_command_line
+        retry
+      end
     end
 
     private
@@ -59,7 +68,6 @@ module Milter
 
     def parse(command_result)
       result = TestServerResult.new
-      command_result = StringIO.new(command_result)
 
       result.status = command_result.gets.chomp.split(/: /, 2)[1]
       result.elapsed_time = command_result.gets.split(/: /, 2)[1].split[0]
