@@ -43,16 +43,9 @@ module Milter
           command_line.concat(["--#{key}", value])
         end
       end
-      escaped_command_line = nil
-      begin
-        IO.popen(command_line, 'r') do |command_result|
-          parse(command_result)
-        end
-      rescue TypeError
-        raise if escaped_command_line
-        escaped_command_line = Shellwords.join(command_line)
-        command_line = escaped_command_line
-        retry
+      escaped_command_line = Shellwords.join(command_line)
+      IO.popen(escaped_command_line, 'r') do |command_result|
+        parse(command_result)
       end
     end
 
