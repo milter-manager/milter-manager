@@ -34,4 +34,11 @@ module Shellwords
       return str
     end
   end
+
+  unless respond_to?(:join)
+    module_function
+    def join(array)
+      array.collect {|str| escape(str)}.join(' ')
+    end
+  end
 end

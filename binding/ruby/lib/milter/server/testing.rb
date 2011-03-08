@@ -43,9 +43,7 @@ module Milter
           command_line.concat(["--#{key}", value])
         end
       end
-      escaped_command_line = command_line.collect do |argument|
-        Shellwords.escape(argument)
-      end.join(" ")
+      escaped_command_line = Shellwords.join(command_line)
       parse(`#{escaped_command_line}`)
     end
 
