@@ -1,5 +1,3 @@
-* Sendmail Compatible: set {daemon_port}.
-  NetstatConnectionChecker may be used.
 * milter-server: disable define macros on HEADER and
   BODY. Macro definitions on those states are invalid in
   libmilter. Wow!
