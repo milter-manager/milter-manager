@@ -66,11 +66,23 @@ DEB_INSTALL_DIRS_libmilter-server-dev =			\
 	/usr/lib/pkgconfig				\
 	/usr/include/milter-manager/milter/server
 
-DEB_INSTALL_DIRS_libmilter-toolkit-ruby1.8 =		\
+DEB_INSTALL_DIRS_libmilter-core-ruby1.8 =		\
 	/usr/lib/pkgconfig				\
-	/usr/lib/ruby					\
+	/usr/lib/ruby/1.8/milter			\
 	/usr/lib/milter-manager/binding/ext		\
-	/usr/lib/milter-manager/binding/lib/milter
+	/usr/lib/milter-manager/binding/lib/milter/core
+
+DEB_INSTALL_DIRS_libmilter-client-ruby1.8 =			\
+	/usr/lib/pkgconfig					\
+	/usr/lib/ruby/1.8/milter				\
+	/usr/lib/milter-manager/binding/ext			\
+	/usr/lib/milter-manager/binding/lib/milter/client
+
+DEB_INSTALL_DIRS_libmilter-server-ruby1.8 =			\
+	/usr/lib/pkgconfig					\
+	/usr/lib/ruby/1.8/milter				\
+	/usr/lib/milter-manager/binding/ext			\
+	/usr/lib/milter-manager/binding/lib/milter/server
 
 DEB_INSTALL_DIRS_libmilter-compatible =			\
 	/usr/lib/milter-manager
@@ -199,29 +211,53 @@ install/libmilter-server-dev::
 	cp -ar debian/tmp/usr/include/milter-manager/milter/server/* \
 		debian/libmilter-server-dev/usr/include/milter-manager/milter/server/
 
-install/libmilter-toolkit-ruby1.8::
-	cp -ar debian/tmp/usr/lib/pkgconfig/ruby-milter.pc \
-		debian/libmilter-toolkit-ruby1.8/usr/lib/pkgconfig/
-	cp -ar debian/tmp/usr/lib/ruby/* \
-		debian/libmilter-toolkit-ruby1.8/usr/lib/ruby/
+install/libmilter-core-ruby1.8::
+	cp -ar debian/tmp/usr/lib/pkgconfig/ruby-milter-core.pc \
+		debian/libmilter-core-ruby1.8/usr/lib/pkgconfig/
+	cp -ar debian/tmp/usr/lib/ruby/1.8/milter/core.rb \
+		debian/libmilter-core-ruby1.8/usr/lib/ruby/1.8/milter/
 	cp -ar debian/tmp/usr/lib/milter-manager/binding/ext/glib* \
-		debian/libmilter-toolkit-ruby1.8/usr/lib/milter-manager/binding/ext
+		debian/libmilter-core-ruby1.8/usr/lib/milter-manager/binding/ext
 	cp -ar debian/tmp/usr/lib/milter-manager/binding/ext/rbg* \
-		debian/libmilter-toolkit-ruby1.8/usr/lib/milter-manager/binding/ext
-	cp -ar debian/tmp/usr/lib/milter-manager/binding/ext/milter_toolkit.* \
-		debian/libmilter-toolkit-ruby1.8/usr/lib/milter-manager/binding/ext
+		debian/libmilter-core-ruby1.8/usr/lib/milter-manager/binding/ext
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/ext/milter_core.* \
+		debian/libmilter-core-ruby1.8/usr/lib/milter-manager/binding/ext
 	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/g*.rb \
-		debian/libmilter-toolkit-ruby1.8/usr/lib/milter-manager/binding/lib/
+		debian/libmilter-core-ruby1.8/usr/lib/milter-manager/binding/lib/
 	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/mkmf-gnome2.rb \
-		debian/libmilter-toolkit-ruby1.8/usr/lib/milter-manager/binding/lib/
+		debian/libmilter-core-ruby1.8/usr/lib/milter-manager/binding/lib/
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter/core.rb \
+		debian/libmilter-core-ruby1.8/usr/lib/milter-manager/binding/lib/milter/
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter/core/* \
+		debian/libmilter-core-ruby1.8/usr/lib/milter-manager/binding/lib/milter/core/
+
+install/libmilter-client-ruby1.8::
+	cp -ar debian/tmp/usr/lib/pkgconfig/ruby-milter.pc \
+		debian/libmilter-client-ruby1.8/usr/lib/pkgconfig/
+	cp -ar debian/tmp/usr/lib/pkgconfig/ruby-milter-client.pc \
+		debian/libmilter-client-ruby1.8/usr/lib/pkgconfig/
+	cp -ar debian/tmp/usr/lib/ruby/1.8/milter/client.rb \
+		debian/libmilter-client-ruby1.8/usr/lib/ruby/1.8/milter/
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/ext/milter_client.* \
+		debian/libmilter-client-ruby1.8/usr/lib/milter-manager/binding/ext
 	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter.rb \
-		debian/libmilter-toolkit-ruby1.8/usr/lib/milter-manager/binding/lib/
-	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter/compatible.rb \
-		debian/libmilter-toolkit-ruby1.8/usr/lib/milter-manager/binding/lib/milter/
-	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter/toolkit.rb \
-		debian/libmilter-toolkit-ruby1.8/usr/lib/milter-manager/binding/lib/milter/
-	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter/client* \
-		debian/libmilter-toolkit-ruby1.8/usr/lib/milter-manager/binding/lib/milter/
+		debian/libmilter-client-ruby1.8/usr/lib/milter-manager/binding/lib/
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter/client.rb \
+		debian/libmilter-client-ruby1.8/usr/lib/milter-manager/binding/lib/milter/
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter/client/* \
+		debian/libmilter-client-ruby1.8/usr/lib/milter-manager/binding/lib/milter/client/
+
+install/libmilter-server-ruby1.8::
+	cp -ar debian/tmp/usr/lib/pkgconfig/ruby-milter-server.pc \
+		debian/libmilter-server-ruby1.8/usr/lib/pkgconfig/
+	cp -ar debian/tmp/usr/lib/ruby/1.8/milter/server.rb \
+		debian/libmilter-server-ruby1.8/usr/lib/ruby/1.8/milter/
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/ext/milter_server.* \
+		debian/libmilter-server-ruby1.8/usr/lib/milter-manager/binding/ext
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter/server.rb \
+		debian/libmilter-server-ruby1.8/usr/lib/milter-manager/binding/lib/milter/
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter/server/* \
+		debian/libmilter-server-ruby1.8/usr/lib/milter-manager/binding/lib/milter/server/
 
 install/libmilter-compatible::
 	cp -ar debian/tmp/usr/lib/milter-manager/libmilter* \

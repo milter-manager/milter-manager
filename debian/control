@@ -173,26 +173,67 @@ Description: Development files for milter toolkit
  This provides development environment to build softwares against
  libmilter-server.
 
-Package: libmilter-toolkit-ruby1.8
+Package: libmilter-core-ruby1.8
 Section: ruby
 Architecture: any
-Replaces: milter-manager (<< 1.6.1-1)
-Breaks: milter-manager (<< 1.6.1-1)
+Replaces:
+	milter-manager (<< 1.6.1-1),
+	libmilter-toolkit-ruby1.8 (<< 1.6.5-1)
+Breaks:
+	milter-manager (<< 1.6.1-1),
+	libmilter-toolkit-ruby1.8 (<< 1.6.5-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	libmilter-core (= ${binary:Version}),
-	libmilter-client (= ${binary:Version}),
-	libmilter-server (= ${binary:Version}),
 	ruby
-Description: Development files for milter toolkit
- milter toolkit includes "core", "client" and "server" libraries.
- "core" is a common library for "client" and "server" libraries.
- "client" is a library which implements client-side (milter-slide)
- milter protocol. "server" is a library which implements server-side
+Description: Ruby bindings for milter core library
+ milter "core" library is a common library for mitler "client" and
+ milter "server" libraries.
+ .
+ This provides Ruby bindings for libmilter-core.
+
+Package: libmilter-client-ruby1.8
+Section: ruby
+Architecture: any
+Replaces:
+	milter-manager (<< 1.6.1-1),
+	libmilter-toolkit-ruby1.8 (<< 1.6.5-1)
+Breaks:
+	milter-manager (<< 1.6.1-1),
+	libmilter-toolkit-ruby1.8 (<< 1.6.5-1)
+Depends:
+	${shlibs:Depends},
+	${misc:Depends},
+	libmilter-client (= ${binary:Version}),
+	libmilter-core-ruby1.8 (= ${binary:Version}),
+	ruby
+Description: Ruby bindings for milter client
+ milter "client" library is a library which implements client-side
+ (milter-slide) milter protocol.
+ .
+ This provides Ruby bindings for libmilter-client.
+
+Package: libmilter-server-ruby1.8
+Section: ruby
+Architecture: any
+Replaces:
+	milter-manager (<< 1.6.1-1),
+	libmilter-toolkit-ruby1.8 (<< 1.6.5-1)
+Breaks:
+	milter-manager (<< 1.6.1-1),
+	libmilter-toolkit-ruby1.8 (<< 1.6.5-1)
+Depends:
+	${shlibs:Depends},
+	${misc:Depends},
+	libmilter-server (= ${binary:Version}),
+	libmilter-core-ruby1.8 (= ${binary:Version}),
+	ruby
+Description: Ruby bindings for milter server
+ milter "server" library is a library which implements server-side
  (MTA-side) milter protocol.
  .
- This provides Ruby bindings for libmilter-toolkit.
+ This provides Ruby bindings for libmilter-server.
 
 Package: libmilter-compatible
 Section: libs
