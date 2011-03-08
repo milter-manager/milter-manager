@@ -20,7 +20,8 @@ Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	ruby,
-	libmilter-toolkit-ruby1.8 (= ${binary:Version}),
+	libmilter-client-ruby1.8 (= ${binary:Version}),
+	libmilter-server-ruby1.8 (= ${binary:Version}),
 	librrd-ruby1.8,
 	adduser
 Suggests: postfix | sendmail, spamass-milter, clamav-milter, milter-greylist
@@ -86,7 +87,7 @@ Description: munin-node plugins for milter manager
  This provides munin-node plugins to monitor milter manager and related
  softwares. (e.g. Postfix, Sendmail and milters.)
 
-Package: libmilter-core
+Package: libmilter-core0
 Section: libs
 Architecture: any
 Replaces: libmilter-toolkit (<< 1.6.5-1)
@@ -107,7 +108,7 @@ Breaks: libmilter-toolkit-dev (<< 1.6.5-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	libmilter-core (= ${binary:Version})
+	libmilter-core0 (= ${binary:Version})
 Description: Development files for milter core library
  milter "core" library is a common library for mitler "client" and
  milter "server" libraries.
@@ -115,7 +116,7 @@ Description: Development files for milter core library
  This provides development environment to build softwares against
  libmilter-core.
 
-Package: libmilter-client
+Package: libmilter-client0
 Section: libs
 Architecture: any
 Replaces: libmilter-toolkit (<< 1.6.5-1)
@@ -123,7 +124,7 @@ Breaks: libmilter-toolkit (<< 1.6.5-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	libmilter-core (= ${binary:Version})
+	libmilter-core0 (= ${binary:Version})
 Description: Libraries and tools for implementing milter protocol
  milter "client" library is a library which implements client-side
  (milter-slide) milter protocol.
@@ -136,7 +137,7 @@ Breaks: libmilter-toolkit-dev (<< 1.6.5-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	libmilter-client (= ${binary:Version})
+	libmilter-client0 (= ${binary:Version})
 Description: Development files for milter client library
  milter "client" library is a library which implements client-side
  (milter-slide) milter protocol.
@@ -144,7 +145,7 @@ Description: Development files for milter client library
  This provides development environment to build softwares against
  libmilter-client.
 
-Package: libmilter-server
+Package: libmilter-server0
 Section: libs
 Architecture: any
 Replaces: libmilter-toolkit (<< 1.6.5-1)
@@ -152,7 +153,7 @@ Breaks: libmilter-toolkit (<< 1.6.5-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	libmilter-core (= ${binary:Version})
+	libmilter-core0 (= ${binary:Version})
 Description: Libraries and tools for implementing milter protocol
  milter "server" library is a library which implements server-side
  (MTA-side) milter protocol.
@@ -165,7 +166,7 @@ Breaks: libmilter-toolkit-dev (<< 1.6.5-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	libmilter-server (= ${binary:Version})
+	libmilter-server0 (= ${binary:Version})
 Description: Development files for milter toolkit
  milter "server" library is a library which implements server-side
  (MTA-side) milter protocol.
@@ -185,7 +186,7 @@ Breaks:
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	libmilter-core (= ${binary:Version}),
+	libmilter-core0 (= ${binary:Version}),
 	ruby
 Description: Ruby bindings for milter core library
  milter "core" library is a common library for mitler "client" and
@@ -205,7 +206,7 @@ Breaks:
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	libmilter-client (= ${binary:Version}),
+	libmilter-client0 (= ${binary:Version}),
 	libmilter-core-ruby1.8 (= ${binary:Version}),
 	ruby
 Description: Ruby bindings for milter client
@@ -226,7 +227,7 @@ Breaks:
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	libmilter-server (= ${binary:Version}),
+	libmilter-server0 (= ${binary:Version}),
 	libmilter-core-ruby1.8 (= ${binary:Version}),
 	ruby
 Description: Ruby bindings for milter server
@@ -241,7 +242,7 @@ Architecture: any
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	libmilter-client (= ${binary:Version})
+	libmilter-client0 (= ${binary:Version})
 Description: A milter library which has ABI compatiblity with Sendmail's libmilter
  libmilter-compatible is a milter toolkit based library which has ABI
  compatiblity with Sendmail's libmilter. It can be used with a milter
