@@ -46,6 +46,12 @@ download:
 	done
 
 build:
+	cp $(srcdir)/data/init.d/debian/milter-manager \
+	  $(srcdir)/debian/milter-manager.init
+	cp $(srcdir)/data/init.d/debian/default/milter-manager \
+	  $(srcdir)/debian/milter-manager.default
+	cp $(srcdir)/data/cron.d/debian/milter-manager-log \
+	  $(srcdir)/debian/milter-manager.cron.d
 	./build-in-chroot.sh \
 	  $(VERSION) $(CHROOT_BASE) \
 	  '$(ARCHITECTURES)' '$(CODE_NAMES)'
