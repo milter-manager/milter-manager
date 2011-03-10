@@ -19,9 +19,8 @@ Architecture: any
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
+	libmilter-manager0 (= ${binary:Version}),
 	ruby,
-	libmilter-client-ruby1.8 (= ${binary:Version}),
-	libmilter-server-ruby1.8 (= ${binary:Version}),
 	librrd-ruby1.8,
 	adduser
 Suggests: postfix | sendmail, spamass-milter, clamav-milter, milter-greylist
@@ -39,13 +38,31 @@ Description: Documentation of milter manager
  .
  This provides reference manual of milter manager.
 
-Package: milter-manager-dev
-Section: libdevel
+Package: libmilter-manager0
+Section: libs
 Architecture: any
+Replaces: milter-manager (<< 1.6.5-1)
+Breaks: milter-manager (<< 1.6.5-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	milter-manager (= ${binary:Version}),
+	libmilter-client0 (= ${binary:Version}),
+	libmilter-server0 (= ${binary:Version})
+Description: Libraries for extending milter manager by C
+ milter manager administrates milters instead of MTA to reduce milter
+ administration cost and combine milters flexibly.
+ .
+ This provides libraries for extending milter manager by C.
+
+Package: libmilter-manager-dev
+Section: libdevel
+Architecture: any
+Replaces: milter-manager-dev (<< 1.6.5-1)
+Breaks: milter-manager-dev (<< 1.6.5-1)
+Depends:
+	${shlibs:Depends},
+	${misc:Depends},
+	libmilter-manager0 (= ${binary:Version}),
 	libmilter-client-dev (= ${binary:Version}),
 	libmilter-server-dev (= ${binary:Version})
 Description: Development files to extend milter manager by C

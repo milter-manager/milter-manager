@@ -13,22 +13,23 @@ DEB_CONFIGURE_USER_FLAGS =							\
 	--enable-ruby-milter=$$(ruby -rrbconfig -e 'print Config::CONFIG["rubylibdir"]')
 
 DEB_INSTALL_DIRS_milter-manager =			\
-	/usr/lib/milter-manager/binding/ext		\
-	/usr/lib/milter-manager/binding/lib/milter	\
-	/usr/lib/milter-manager/module/configuration	\
 	/usr/bin					\
 	/usr/sbin					\
 	/usr/share/man/man1				\
 	/usr/share/man/ja/man1				\
-	/etc/milter-manager/applicable-conditions	\
-	/etc/milter-manager/defaults			\
-	/var/run/milter-manager				\
 	/var/spool/postfix/milter-manager
 
 DEB_INSTALL_DIRS_milter-manager-doc =			\
 	/usr/share/gtk-doc/html/milter-manager
 
-DEB_INSTALL_DIRS_milter-manager-dev =			\
+DEB_INSTALL_DIRS_libmilter-manager0 =			\
+	/usr/lib/milter-manager/binding/ext		\
+	/usr/lib/milter-manager/binding/lib/milter	\
+	/usr/lib/milter-manager/module/configuration	\
+	/etc/milter-manager/applicable-conditions	\
+	/etc/milter-manager/defaults
+
+DEB_INSTALL_DIRS_libmilter-manager-dev =		\
 	/usr/lib/pkgconfig				\
 	/usr/include/milter-manager/milter/manager
 
@@ -101,14 +102,6 @@ DEB_SHLIBDEPS_INCLUDE_libmilter-compatible =:	\
 	libmilter-client
 
 install/milter-manager::
-	cp -ar debian/tmp/usr/lib/libmilter-manager.* debian/milter-manager/usr/lib/
-	cp -ar debian/tmp/usr/lib/milter-manager/binding/ext/milter_manager.* \
-		debian/milter-manager/usr/lib/milter-manager/binding/ext
-	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter/manager* \
-		debian/milter-manager/usr/lib/milter-manager/binding/lib/milter/
-	cp -ar debian/tmp/usr/lib/milter-manager/module/configuration/* \
-		debian/milter-manager/usr/lib/milter-manager/module/configuration/
-
 	cp -ar debian/tmp/usr/bin/milter-performance-check \
 		debian/milter-manager/usr/bin/
 	cp -ar debian/tmp/usr/bin/milter-report-statistics \
@@ -130,24 +123,36 @@ install/milter-manager::
 	cp -ar debian/tmp/usr/share/man/ja/man1/milter-report-statistics* \
 		debian/milter-manager/usr/share/man/ja/man1/
 
+install/libmilter-manager0::
+	cp -ar debian/tmp/usr/lib/libmilter-manager.so.* \
+		debian/libmilter-manager0/usr/lib/
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/ext/milter_manager.* \
+		debian/libmilter-manager0/usr/lib/milter-manager/binding/ext
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter/manager* \
+		debian/libmilter-manager0/usr/lib/milter-manager/binding/lib/milter/
+	cp -ar debian/tmp/usr/lib/milter-manager/module/configuration/* \
+		debian/libmilter-manager0/usr/lib/milter-manager/module/configuration/
+
 	cp -ar debian/tmp/etc/milter-manager/applicable-conditions/ \
-		debian/milter-manager/etc/milter-manager/
+		debian/libmilter-manager0/etc/milter-manager/
 	cp -ar debian/tmp/etc/milter-manager/defaults/ \
-		debian/milter-manager/etc/milter-manager/
+		debian/libmilter-manager0/etc/milter-manager/
 	cp -ar debian/tmp/etc/milter-manager/milter-manager.conf \
-		debian/milter-manager/etc/milter-manager/
+		debian/libmilter-manager0/etc/milter-manager/
 
 install/milter-manager-doc::
 	cp -ar debian/tmp/usr/share/gtk-doc/html/milter-manager/* \
 		debian/milter-manager-doc/usr/share/gtk-doc/html/milter-manager/
 
-install/milter-manager-dev::
+install/libmilter-manager-dev::
+	cp -ar debian/tmp/usr/lib/libmilter-manager.so \
+		debian/libmilter-manager-dev/usr/lib/
 	cp -ar debian/tmp/usr/lib/pkgconfig/milter-manager.pc \
-		debian/milter-manager-dev/usr/lib/pkgconfig/
+		debian/libmilter-manager-dev/usr/lib/pkgconfig/
 	cp -ar debian/tmp/usr/include/milter-manager/milter/manager.h \
-		debian/milter-manager-dev/usr/include/milter-manager/milter/
+		debian/libmilter-manager-dev/usr/include/milter-manager/milter/
 	cp -ar debian/tmp/usr/include/milter-manager/milter/manager/* \
-		debian/milter-manager-dev/usr/include/milter-manager/milter/manager/
+		debian/libmilter-manager-dev/usr/include/milter-manager/milter/manager/
 
 install/milter-manager-admin::
 	cp -ar debian/tmp/usr/share/milter-manager/admin/* \
@@ -177,7 +182,7 @@ install/libmilter-core-dev::
 install/libmilter-client0::
 	cp -ar debian/tmp/usr/bin/milter-test-client \
 		debian/libmilter-client0/usr/bin/
-	cp -ar debian/tmp/usr/lib/libmilter-client.so.0* \
+	cp -ar debian/tmp/usr/lib/libmilter-client.so.* \
 		debian/libmilter-client0/usr/lib/
 	cp -ar debian/tmp/usr/share/man/man1/milter-test-client.* \
 		debian/libmilter-client0/usr/share/man/man1/
