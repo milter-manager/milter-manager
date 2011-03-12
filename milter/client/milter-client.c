@@ -39,6 +39,7 @@
 enum
 {
     PROP_0,
+    PROP_CONNECTION_SPEC,
     PROP_EVENT_LOOP_BACKEND,
     PROP_N_WORKERS,
     PROP_CUSTOM_FORK,
@@ -150,8 +151,12 @@ static void get_property   (GObject         *object,
                             GValue          *value,
                             GParamSpec      *pspec);
 
-static gchar *get_default_connection_spec
+static const gchar *get_connection_spec
                            (MilterClient    *client);
+static gboolean set_connection_spec
+                           (MilterClient    *client,
+                            const gchar     *spec,
+                            GError         **error);
 static void   listen_started
                            (MilterClient    *client,
                             struct sockaddr *address,
@@ -177,9 +182,17 @@ _milter_client_class_init (MilterClientClass *klass)
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
 
-    client_class->get_default_connection_spec = get_default_connection_spec;
+    client_class->get_connection_spec = get_connection_spec;
+    client_class->set_connection_spec = set_connection_spec;
     client_class->listen_started = listen_started;
     client_class->fork = default_fork;
+
+    spec = g_param_spec_string("connection-spec",
+                               "Connection Spec",
+                               "The connection spec of the client",
+                               NULL,
+                               G_PARAM_READABLE);
+    g_object_class_install_property(gobject_class, PROP_CONNECTION_SPEC, spec);
 
     spec = g_param_spec_enum("event-loop-backend",
                              "Event loop backend",
@@ -762,6 +775,9 @@ get_property (GObject    *object,
     client = MILTER_CLIENT(object);
     priv = MILTER_CLIENT_GET_PRIVATE(object);
     switch (prop_id) {
+    case PROP_CONNECTION_SPEC:
+        g_value_set_string(value, milter_client_get_connection_spec(client));
+        break;
     case PROP_EVENT_LOOP_BACKEND:
         g_value_set_enum(value, milter_client_get_event_loop_backend(client));
         break;
@@ -898,33 +914,30 @@ listen_started (MilterClient *client,
     change_unix_socket_mode(client, address_un);
 }
 
-static gchar *
-get_default_connection_spec (MilterClient *client)
+static const gchar *
+get_connection_spec (MilterClient *client)
 {
-    return g_strdup("inet:10025@[127.0.0.1]");
-}
+    MilterClientPrivate *priv;
 
-gchar *
-milter_client_get_default_connection_spec (MilterClient *client)
-{
-    MilterClientClass *klass;
-
-    klass = MILTER_CLIENT_GET_CLASS(client);
-    if (klass->get_default_connection_spec)
-        return klass->get_default_connection_spec(client);
-    else
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    if (priv->connection_spec) {
+        return priv->connection_spec;
+    } else {
         return NULL;
+    }
 }
 
 const gchar *
 milter_client_get_connection_spec (MilterClient *client)
 {
-    return MILTER_CLIENT_GET_PRIVATE(client)->connection_spec;
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    return klass->get_connection_spec(client);
 }
 
-gboolean
-milter_client_set_connection_spec (MilterClient *client, const gchar *spec,
-                                   GError **error)
+static gboolean
+set_connection_spec (MilterClient *client, const gchar *spec, GError **error)
 {
     MilterClientPrivate *priv;
     gboolean success;
@@ -943,6 +956,16 @@ milter_client_set_connection_spec (MilterClient *client, const gchar *spec,
         priv->connection_spec = g_strdup(spec);
 
     return success;
+}
+
+gboolean
+milter_client_set_connection_spec (MilterClient *client, const gchar *spec,
+                                   GError **error)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    return klass->set_connection_spec(client, spec, error);
 }
 
 GIOChannel *
@@ -1513,22 +1536,14 @@ milter_client_listen_channel (MilterClient  *client, GError **error)
 {
     MilterClientPrivate *priv;
     GIOChannel *channel;
+    const gchar *connection_spec;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
     dispose_address(priv);
 
-    if (!priv->connection_spec) {
-        gchar *default_connection_spec;
-
-        default_connection_spec =
-            milter_client_get_default_connection_spec(client);
-        milter_client_set_connection_spec(client, default_connection_spec,
-                                          NULL);
-        g_free(default_connection_spec);
-    }
-
-    channel = milter_connection_listen(priv->connection_spec,
+    connection_spec = milter_client_get_connection_spec(client);
+    channel = milter_connection_listen(connection_spec,
                                        priv->listen_backlog,
                                        &(priv->address),
                                        &(priv->address_size),

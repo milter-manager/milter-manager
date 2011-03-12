@@ -548,6 +548,25 @@ static gboolean
 hook_post_parse (GOptionContext *context, GOptionGroup *group,
                  gpointer data, GError **error)
 {
+    MilterClient *client = data;
+
+    if (!milter_client_get_connection_spec(client)) {
+        const gchar *default_spec;
+        GError *error = NULL;
+
+        default_spec = g_getenv("MILTER_DEFAULT_CONNECTION_SPEC");
+        if (!default_spec)
+            default_spec = "inet:10025@[127.0.0.1]";
+        if (milter_client_set_connection_spec(client, default_spec,
+                                              &error)) {
+            milter_info("[client][connection-spec][default] <%s>", default_spec);
+        } else {
+            milter_error("[client][connection-spec][default][error] <%s>: %s",
+                         default_spec, error->message);
+            g_error_free(error);
+        }
+    }
+
     return TRUE;
 }
 

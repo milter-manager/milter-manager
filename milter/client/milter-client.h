@@ -141,7 +141,10 @@ struct _MilterClientClass
     void   (*listen_started)              (MilterClient *client,
                                            struct sockaddr *address,
                                            socklen_t        address_size);
-    gchar *(*get_default_connection_spec) (MilterClient *client);
+    const gchar *(*get_connection_spec)   (MilterClient *client);
+    gboolean (*set_connection_spec)       (MilterClient *client,
+                                           const gchar  *spec,
+                                           GError      **error);
     guint  (*get_unix_socket_mode)        (MilterClient *client);
     void   (*set_unix_socket_mode)        (MilterClient *client,
                                            guint         mode);

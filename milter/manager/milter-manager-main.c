@@ -586,11 +586,18 @@ update_max_file_descriptors (MilterManager *manager)
 }
 
 static void
-apply_command_line_options (MilterManagerConfiguration *config)
+apply_command_line_options (MilterManager *manager)
 {
-    if (option_spec)
-        milter_manager_configuration_set_manager_connection_spec(config,
-                                                                 option_spec);
+    MilterManagerConfiguration *config;
+
+    config = milter_manager_get_configuration(manager);
+    if (option_spec) {
+        milter_client_set_connection_spec(MILTER_CLIENT(manager), option_spec,
+                                          NULL);
+        milter_manager_configuration_reset_location(config,
+                                                    "manager.connection_spec");
+    }
+
     if (option_pid_file)
         milter_manager_configuration_set_pid_file(config, option_pid_file);
     if (option_user_name)
@@ -667,7 +674,7 @@ load_configuration (MilterManager *manager)
                              error->message);
         g_error_free(error);
     }
-    apply_command_line_options(milter_manager_get_configuration(manager));
+    apply_command_line_options(manager);
 }
 
 static gchar report_stack_trace_window[4096];
@@ -758,7 +765,7 @@ milter_manager_main (void)
             error = NULL;
         }
     }
-    apply_command_line_options(config);
+    apply_command_line_options(manager);
     if (getuid() != 0)
         milter_manager_configuration_set_privilege_mode(config, FALSE);
 

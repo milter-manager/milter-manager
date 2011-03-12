@@ -154,12 +154,6 @@ client_create_context (VALUE self)
 }
 
 static VALUE
-client_get_connection_spec (VALUE self)
-{
-    return CSTR2RVAL(milter_client_get_connection_spec(SELF(self)));
-}
-
-static VALUE
 client_set_connection_spec (VALUE self, VALUE spec)
 {
     GError *error = NULL;
@@ -309,8 +303,6 @@ Init_milter_client (void)
     rb_define_method(rb_cMilterClient, "daemonize", client_daemonize, 0);
     rb_define_method(rb_cMilterClient, "create_context",
 		     client_create_context, 0);
-    rb_define_method(rb_cMilterClient, "connection_spec",
-                     client_get_connection_spec, 0);
     rb_define_method(rb_cMilterClient, "set_connection_spec",
                      client_set_connection_spec, 1);
     rb_define_method(rb_cMilterClient, "effective_user",

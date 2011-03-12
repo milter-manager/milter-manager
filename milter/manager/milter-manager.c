@@ -74,7 +74,10 @@ static void get_property   (GObject         *object,
 
 static void   connection_established      (MilterClient *client,
                                            MilterClientContext *context);
-static gchar *get_default_connection_spec (MilterClient *client);
+static const gchar *get_connection_spec   (MilterClient *client);
+static gboolean     set_connection_spec   (MilterClient *client,
+                                           const gchar  *spec,
+                                           GError      **error);
 static guint  get_unix_socket_mode        (MilterClient *client);
 static void   set_unix_socket_mode        (MilterClient *client,
                                            guint         mode);
@@ -135,7 +138,8 @@ milter_manager_class_init (MilterManagerClass *klass)
     gobject_class->get_property = get_property;
 
     client_class->connection_established      = connection_established;
-    client_class->get_default_connection_spec = get_default_connection_spec;
+    client_class->get_connection_spec         = get_connection_spec;
+    client_class->set_connection_spec         = set_connection_spec;
     client_class->get_unix_socket_mode        = get_unix_socket_mode;
     client_class->set_unix_socket_mode        = set_unix_socket_mode;
     client_class->get_unix_socket_group       = get_unix_socket_group;
@@ -796,8 +800,8 @@ connection_established (MilterClient *client, MilterClientContext *context)
     start_periodical_connection_checker(manager);
 }
 
-static gchar *
-get_default_connection_spec (MilterClient *client)
+static const gchar *
+get_connection_spec (MilterClient *client)
 {
     MilterManager *manager;
     MilterManagerPrivate *priv;
@@ -810,13 +814,35 @@ get_default_connection_spec (MilterClient *client)
     spec =
         milter_manager_configuration_get_manager_connection_spec(configuration);
     if (spec) {
-        return g_strdup(spec);
+        return spec;
     } else {
         MilterClientClass *klass;
 
         klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
-        return klass->get_default_connection_spec(MILTER_CLIENT(manager));
+        return klass->get_connection_spec(MILTER_CLIENT(manager));
     }
+}
+
+static gboolean
+set_connection_spec (MilterClient *client, const gchar *spec, GError **error)
+{
+    MilterClientClass *klass;
+    MilterManager *manager;
+    gboolean success;
+
+    manager = MILTER_MANAGER(client);
+    klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+    success = klass->set_connection_spec(MILTER_CLIENT(manager), spec, error);
+    if (success) {
+        MilterManagerPrivate *priv;
+        MilterManagerConfiguration *configuration;
+
+        priv = MILTER_MANAGER_GET_PRIVATE(manager);
+        configuration = priv->configuration;
+        milter_manager_configuration_set_manager_connection_spec(configuration,
+                                                                 spec);
+    }
+    return success;
 }
 
 static guint
@@ -1146,13 +1172,37 @@ milter_manager_get_leaders (MilterManager *manager)
     return MILTER_MANAGER_GET_PRIVATE(manager)->leaders;
 }
 
+static void
+apply_custom_parameters (MilterManager *manager)
+{
+    MilterClient *client;
+    MilterClientClass *klass;
+    MilterManagerPrivate *priv;
+    MilterManagerConfiguration *configuration;
+    const gchar *spec;
+
+    client = MILTER_CLIENT(manager);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    configuration = priv->configuration;
+
+    klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+    spec = klass->get_connection_spec(client);
+    if (spec) {
+        milter_manager_configuration_set_manager_connection_spec(configuration,
+                                                                 spec);
+    }
+}
+
 gboolean
 milter_manager_reload (MilterManager *manager, GError **error)
 {
     MilterManagerPrivate *priv;
+    gboolean success;
 
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
-    return milter_manager_configuration_reload(priv->configuration, error);
+    success = milter_manager_configuration_reload(priv->configuration, error);
+    apply_custom_parameters(manager);
+    return success;
 }
 
 void
