@@ -79,3 +79,6 @@ Makefile.in
 /debian/milter-manager.cron.d
 /debian/milter-manager.default
 /debian/milter-manager.init
+/binding/ruby/ruby-milter/milter/client.rb
+/binding/ruby/ruby-milter/milter/core.rb
+/binding/ruby/ruby-milter/milter/server.rb
