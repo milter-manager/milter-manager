@@ -1146,6 +1146,15 @@ milter_manager_get_leaders (MilterManager *manager)
     return MILTER_MANAGER_GET_PRIVATE(manager)->leaders;
 }
 
+gboolean
+milter_manager_reload (MilterManager *manager, GError **error)
+{
+    MilterManagerPrivate *priv;
+
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    return milter_manager_configuration_reload(priv->configuration, error);
+}
+
 void
 milter_manager_set_launcher_channel (MilterManager *manager,
                                      GIOChannel *read_channel,

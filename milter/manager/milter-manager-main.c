@@ -292,18 +292,12 @@ static gboolean
 cb_idle_reload_configuration (gpointer user_data)
 {
     if (the_manager) {
-        MilterManagerConfiguration *config;
+        GError *error = NULL;
 
-        config = milter_manager_get_configuration(the_manager);
-        if (config) {
-            GError *error = NULL;
-
-            if (!milter_manager_configuration_reload(config, &error)) {
-                milter_error("[manager][configuration][reload][signal][error] "
-                             "%s",
-                             error->message);
-                g_error_free(error);
-            }
+        if (!milter_manager_reload(the_manager, &error)) {
+            milter_error("[manager][reload][signal][error] %s",
+                         error->message);
+            g_error_free(error);
         }
     }
 
@@ -664,17 +658,16 @@ append_custom_configuration_directory (MilterManagerConfiguration *config)
 }
 
 static void
-load_configuration (MilterManagerConfiguration *config)
+load_configuration (MilterManager *manager)
 {
     GError *error = NULL;
 
-    if (!milter_manager_configuration_reload(config, &error)) {
-        milter_manager_error("[manager][configuration][reload]"
-                             "[custom-load-path][error] %s",
+    if (!milter_manager_reload(manager, &error)) {
+        milter_manager_error("[manager][reload][custom-load-path][error] %s",
                              error->message);
         g_error_free(error);
     }
-    apply_command_line_options(config);
+    apply_command_line_options(milter_manager_get_configuration(manager));
 }
 
 static gchar report_stack_trace_window[4096];
@@ -751,10 +744,13 @@ milter_manager_main (void)
     struct sigaction reload_configuration_request_action;
 
     config = milter_manager_configuration_new(NULL);
+    manager = milter_manager_new(config);
+    g_object_unref(config);
+
     if (option_config_dir) {
         milter_manager_configuration_prepend_load_path(config,
                                                        option_config_dir);
-        if (!milter_manager_configuration_reload(config, &error)) {
+        if (!milter_manager_reload(manager, &error)) {
             milter_manager_error("[manager][configuration][reload]"
                                  "[command-line-load-path][error] %s",
                                  error->message);
@@ -766,14 +762,12 @@ milter_manager_main (void)
     if (getuid() != 0)
         milter_manager_configuration_set_privilege_mode(config, FALSE);
 
-    manager = milter_manager_new(config);
-    g_object_unref(config);
 
     client = MILTER_CLIENT(manager);
     g_signal_connect(client, "error", G_CALLBACK(cb_error), NULL);
 
     append_custom_configuration_directory(config);
-    load_configuration(config);
+    load_configuration(manager);
 
     if (option_show_config) {
         gchar *dumped_config;
