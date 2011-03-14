@@ -177,6 +177,12 @@ static const gchar *get_effective_group
 static void         set_effective_group
                            (MilterClient    *client,
                             const gchar     *effective_group);
+static MilterClientEventLoopBackend
+                    get_event_loop_backend
+                           (MilterClient    *client);
+static void         set_event_loop_backend
+                           (MilterClient    *client,
+                            MilterClientEventLoopBackend backend);
 static guint        get_n_workers
                            (MilterClient    *client);
 static void         set_n_workers
@@ -212,22 +218,24 @@ _milter_client_class_init (MilterClientClass *klass)
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
 
-    client_class->get_connection_spec   = get_connection_spec;
-    client_class->set_connection_spec   = set_connection_spec;
-    client_class->get_unix_socket_mode  = get_unix_socket_mode;
-    client_class->set_unix_socket_mode  = set_unix_socket_mode;
-    client_class->get_unix_socket_group = get_unix_socket_group;
-    client_class->set_unix_socket_group = set_unix_socket_group;
-    client_class->get_effective_user    = get_effective_user;
-    client_class->set_effective_user    = set_effective_user;
-    client_class->get_effective_group   = get_effective_group;
-    client_class->set_effective_group   = set_effective_group;
-    client_class->get_n_workers         = get_n_workers;
-    client_class->set_n_workers         = set_n_workers;
-    client_class->get_pid_file          = get_pid_file;
-    client_class->set_pid_file          = set_pid_file;
-    client_class->listen_started        = listen_started;
-    client_class->fork                  = default_fork;
+    client_class->get_connection_spec    = get_connection_spec;
+    client_class->set_connection_spec    = set_connection_spec;
+    client_class->get_unix_socket_mode   = get_unix_socket_mode;
+    client_class->set_unix_socket_mode   = set_unix_socket_mode;
+    client_class->get_unix_socket_group  = get_unix_socket_group;
+    client_class->set_unix_socket_group  = set_unix_socket_group;
+    client_class->get_effective_user     = get_effective_user;
+    client_class->set_effective_user     = set_effective_user;
+    client_class->get_effective_group    = get_effective_group;
+    client_class->set_effective_group    = set_effective_group;
+    client_class->get_event_loop_backend = get_event_loop_backend;
+    client_class->set_event_loop_backend = set_event_loop_backend;
+    client_class->get_n_workers          = get_n_workers;
+    client_class->set_n_workers          = set_n_workers;
+    client_class->get_pid_file           = get_pid_file;
+    client_class->set_pid_file           = set_pid_file;
+    client_class->listen_started         = listen_started;
+    client_class->fork                   = default_fork;
 
     spec = g_param_spec_string("connection-spec",
                                "Connection Spec",
@@ -2838,32 +2846,39 @@ milter_client_get_event_loop (MilterClient *client)
     }
 }
 
+static MilterClientEventLoopBackend
+get_event_loop_backend (MilterClient *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->event_loop_backend;
+}
+
 MilterClientEventLoopBackend
-milter_client_get_event_loop_backend (MilterClient  *client)
+milter_client_get_event_loop_backend (MilterClient *client)
 {
     MilterClientClass *klass;
 
     klass = MILTER_CLIENT_GET_CLASS(client);
-    if (klass->get_event_loop_backend)
-        return klass->get_event_loop_backend(client);
-    return MILTER_CLIENT_GET_PRIVATE(client)->event_loop_backend;
+    return klass->get_event_loop_backend(client);
+}
+
+static void
+set_event_loop_backend (MilterClient *client,
+                        MilterClientEventLoopBackend backend)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    priv->event_loop_backend = backend;
 }
 
 void
 milter_client_set_event_loop_backend (MilterClient  *client,
                                       MilterClientEventLoopBackend backend)
 {
-    MilterClientPrivate *priv;
     MilterClientClass *klass;
 
     klass = MILTER_CLIENT_GET_CLASS(client);
-    if (klass->set_event_loop_backend) {
-        klass->set_event_loop_backend(client, backend);
-        return;
-    }
-
-    priv = MILTER_CLIENT_GET_PRIVATE(client);
-    priv->event_loop_backend = backend;
+    klass->set_event_loop_backend(client, backend);
 }
 
 static guint

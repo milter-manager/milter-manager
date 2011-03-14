@@ -1230,19 +1230,39 @@ set_n_workers (MilterClient *client, guint n_workers)
 static MilterClientEventLoopBackend
 get_event_loop_backend (MilterClient *client)
 {
-    MilterManagerPrivate *priv;
+    MilterClientClass *klass;
+    MilterManager *manager;
+    MilterClientEventLoopBackend backend;
 
-    priv = MILTER_MANAGER_GET_PRIVATE(client);
-    return milter_manager_configuration_get_event_loop_backend(priv->configuration);
+    manager = MILTER_MANAGER(client);
+
+    klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+    backend = klass->get_event_loop_backend(client);
+    if (backend == MILTER_CLIENT_EVENT_LOOP_BACKEND_DEFAULT) {
+        MilterManagerPrivate *priv;
+        MilterManagerConfiguration *config;
+
+        priv = MILTER_MANAGER_GET_PRIVATE(manager);
+        config = priv->configuration;
+        backend = milter_manager_configuration_get_event_loop_backend(config);
+    }
+    return backend;
 }
 
 static void
 set_event_loop_backend (MilterClient *client,
                         MilterClientEventLoopBackend backend)
 {
+    MilterClientClass *klass;
+    MilterManager *manager;
     MilterManagerPrivate *priv;
 
-    priv = MILTER_MANAGER_GET_PRIVATE(client);
+    manager = MILTER_MANAGER(client);
+
+    klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+    klass->set_event_loop_backend(client, backend);
+
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
     milter_manager_configuration_set_event_loop_backend(priv->configuration,
                                                         backend);
 }
@@ -1270,12 +1290,14 @@ apply_custom_parameters (MilterManager *manager)
     const gchar *pid_file;
     const gchar *effective_user;
     const gchar *unix_socket_group;
+    MilterClientEventLoopBackend backend;
 
     client = MILTER_CLIENT(manager);
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
     configuration = priv->configuration;
 
     klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+
     spec = klass->get_connection_spec(client);
     if (spec) {
         milter_manager_configuration_set_manager_connection_spec(configuration,
@@ -1305,6 +1327,14 @@ apply_custom_parameters (MilterManager *manager)
                                                                    unix_socket_group);
         milter_manager_configuration_reset_location(configuration,
                                                     "manager.unix_socket_group");
+    }
+
+    backend = klass->get_event_loop_backend(client);
+    if (backend != MILTER_CLIENT_EVENT_LOOP_BACKEND_DEFAULT) {
+        milter_manager_configuration_set_event_loop_backend(configuration,
+                                                            backend);
+        milter_manager_configuration_reset_location(configuration,
+                                                    "manager.event_loop_backend");
     }
 }
 

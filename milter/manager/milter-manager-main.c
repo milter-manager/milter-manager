@@ -610,9 +610,8 @@ apply_command_line_options (MilterManager *manager)
         milter_manager_configuration_set_daemon(config, TRUE);
     if (option_n_workers >= 0)
         milter_client_set_n_workers(client, (guint)option_n_workers);
-    if (option_event_loop_backend)
-        milter_manager_configuration_set_event_loop_backend(config,
-                                                            option_event_loop_backend);
+    if (option_event_loop_backend != MILTER_CLIENT_EVENT_LOOP_BACKEND_DEFAULT)
+        milter_client_set_event_loop_backend(client, option_event_loop_backend);
 }
 
 static void
