@@ -314,6 +314,21 @@ parse_unix_socket_group (const gchar *option_name,
 }
 
 static gboolean
+parse_socket_group_name (const gchar *option_name,
+                         const gchar *value,
+                         gpointer data,
+                         GError **error)
+{
+    MilterClient *client = data;
+
+    milter_warning("[client][option][deprecated][%s] "
+                   "use --unix-socket-group instead",
+                   option_name);
+    milter_client_set_unix_socket_group(client, value);
+    return TRUE;
+}
+
+static gboolean
 parse_unix_socket_mode (const gchar *option_name,
                         const gchar *value,
                         gpointer data,
@@ -522,6 +537,8 @@ static const GOptionEntry option_entries[] =
      "GROUP_NAME"},
     {"unix-socket-group", 0, 0, G_OPTION_ARG_CALLBACK, parse_unix_socket_group,
      N_("Change UNIX domain socket group to GROUP"), "GROUP"},
+    {"socket-group-name", 0, 0, G_OPTION_ARG_CALLBACK, parse_socket_group_name,
+     N_("Change UNIX domain socket group to GROUP (deprecated)"), "GROUP"},
     {"unix-socket-mode", 0, 0, G_OPTION_ARG_CALLBACK, parse_unix_socket_mode,
      N_("Change UNIX domain socket mode to MODE (default: 0660)"), "MODE"},
     {"n-workers", 0, 0, G_OPTION_ARG_CALLBACK, parse_n_workers,
