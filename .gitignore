@@ -82,3 +82,4 @@ Makefile.in
 /binding/ruby/ruby-milter/milter/client.rb
 /binding/ruby/ruby-milter/milter/core.rb
 /binding/ruby/ruby-milter/milter/server.rb
+/configure.lineno
