@@ -54,6 +54,7 @@ struct _MilterManagerPrivate
     GList *finished_leaders;
 
     gboolean is_custom_n_workers;
+    gboolean is_custom_run_as_daemon;
 };
 
 enum
@@ -123,7 +124,10 @@ static void   set_default_packet_buffer_size
                                            guint         size);
 static const gchar *get_pid_file          (MilterClient *client);
 static void   set_pid_file                (MilterClient *client,
-                                           const char   *pid_file);
+                                           const gchar  *pid_file);
+static gboolean is_run_as_daemon          (MilterClient *client);
+static void   set_run_as_daemon           (MilterClient *client,
+                                           gboolean      daemon);
 
 static void
 milter_manager_class_init (MilterManagerClass *klass)
@@ -167,6 +171,8 @@ milter_manager_class_init (MilterManagerClass *klass)
         set_default_packet_buffer_size;
     client_class->get_pid_file = get_pid_file;
     client_class->set_pid_file = set_pid_file;
+    client_class->is_run_as_daemon = is_run_as_daemon;
+    client_class->set_run_as_daemon = set_run_as_daemon;
     client_class->maintain = maintain;
     client_class->sessions_finished = sessions_finished;
 
@@ -1265,6 +1271,46 @@ set_event_loop_backend (MilterClient *client,
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
     milter_manager_configuration_set_event_loop_backend(priv->configuration,
                                                         backend);
+}
+
+static gboolean
+is_run_as_daemon (MilterClient *client)
+{
+    MilterManager *manager;
+    MilterManagerPrivate *priv;
+    gboolean run_as_daemon;
+
+    manager = MILTER_MANAGER(client);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    if (priv->is_custom_run_as_daemon) {
+        MilterClientClass *klass;
+
+        klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+        run_as_daemon = klass->is_run_as_daemon(client);
+    } else {
+        MilterManagerConfiguration *configuration;
+
+        configuration = priv->configuration;
+        run_as_daemon = milter_manager_configuration_is_daemon(configuration);
+    }
+    return run_as_daemon;
+}
+
+static void
+set_run_as_daemon (MilterClient *client, gboolean run_as_daemon)
+{
+    MilterClientClass *klass;
+    MilterManager *manager;
+    MilterManagerPrivate *priv;
+
+    manager = MILTER_MANAGER(client);
+
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    priv->is_custom_run_as_daemon = TRUE;
+
+    klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+    klass->set_run_as_daemon(client, run_as_daemon);
+    milter_manager_configuration_set_daemon(priv->configuration, run_as_daemon);
 }
 
 MilterManagerConfiguration *
