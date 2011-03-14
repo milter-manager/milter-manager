@@ -195,6 +195,9 @@ struct _MilterClientClass
     gboolean (*is_remove_pid_file_on_exit)(MilterClient *client);
     void   (*set_remove_pid_file_on_exit) (MilterClient *client,
                                            gboolean      remove);
+    gboolean (*is_run_as_daemon)          (MilterClient *client);
+    void   (*set_run_as_daemon)           (MilterClient *client,
+                                           gboolean      daemon);
 };
 
 GQuark               milter_client_error_quark       (void);
@@ -976,8 +979,7 @@ void                 milter_client_set_remove_pid_file_on_exit
  *
  * Returns: %TRUE if running as a daemon, %FALSE otherwise.
  */
-gboolean             milter_client_is_run_as_daemon
-                                                     (MilterClient  *client);
+gboolean             milter_client_is_run_as_daemon  (MilterClient  *client);
 
 /**
  * milter_client_set_run_as_daemon:

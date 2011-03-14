@@ -193,6 +193,11 @@ static const gchar *get_pid_file
 static void         set_pid_file
                            (MilterClient    *client,
                             const gchar     *pid_file);
+static gboolean     is_run_as_daemon
+                           (MilterClient    *client);
+static void         set_run_as_daemon
+                           (MilterClient    *client,
+                            gboolean         daemon);
 static void   listen_started
                            (MilterClient    *client,
                             struct sockaddr *address,
@@ -234,6 +239,8 @@ _milter_client_class_init (MilterClientClass *klass)
     client_class->set_n_workers          = set_n_workers;
     client_class->get_pid_file           = get_pid_file;
     client_class->set_pid_file           = set_pid_file;
+    client_class->is_run_as_daemon       = is_run_as_daemon;
+    client_class->set_run_as_daemon      = set_run_as_daemon;
     client_class->listen_started         = listen_started;
     client_class->fork                   = default_fork;
 
@@ -3062,16 +3069,34 @@ milter_client_set_remove_pid_file_on_exit (MilterClient *client, gboolean remove
     MILTER_CLIENT_GET_PRIVATE(client)->remove_pid_file_on_exit = remove;
 }
 
+static gboolean
+is_run_as_daemon (MilterClient *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->run_as_daemon;
+}
+
 gboolean
 milter_client_is_run_as_daemon (MilterClient *client)
 {
-    return MILTER_CLIENT_GET_PRIVATE(client)->run_as_daemon;
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    return klass->is_run_as_daemon(client);
+}
+
+static void
+set_run_as_daemon (MilterClient *client, gboolean daemon)
+{
+    MILTER_CLIENT_GET_PRIVATE(client)->run_as_daemon = daemon;
 }
 
 void
 milter_client_set_run_as_daemon (MilterClient *client, gboolean daemon)
 {
-    MILTER_CLIENT_GET_PRIVATE(client)->run_as_daemon = daemon;
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    klass->set_run_as_daemon(client, daemon);
 }
 
 /*
