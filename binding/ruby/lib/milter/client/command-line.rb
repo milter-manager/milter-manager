@@ -223,13 +223,13 @@ module Milter
         level_names = Milter::LogLevelFlags.values.collect {|value| value.nick}
         level_names << "all"
         @option_parser.on("--log-level=LEVEL",
-                          "Specify log level as [LEVEL].",
+                          "Specify log level as LEVEL.",
                           "Select from [%s]." % level_names.join(', '),
                           "(#{ENV['MILTER_LOG_LEVEL'] || 'default'})") do |level|
-          if level.empty?
-            ENV["MILTER_LOG_LEVEL"] = nil
+          if level.empty? or level == "default"
+            Milter::Logger.default.target_level = nil
           else
-            ENV["MILTER_LOG_LEVEL"] = level
+            Milter::Logger.default.target_level = level
           end
         end
 

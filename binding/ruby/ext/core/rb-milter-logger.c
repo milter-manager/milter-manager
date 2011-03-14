@@ -24,6 +24,8 @@
 #define RVAL2LOG_LEVEL(level) RVAL2GFLAGS(level, MILTER_TYPE_LOG_LEVEL_FLAGS)
 #define LOG_ITEM2RVAL(item) GFLAGS2RVAL(item, MILTER_TYPE_LOG_ITEM_FLAGS)
 
+static VALUE rb_cMilterLogLevelFlags;
+
 static VALUE
 s_from_string (VALUE self, VALUE string)
 {
@@ -57,11 +59,36 @@ log_full (VALUE self, VALUE domain, VALUE level, VALUE file, VALUE line,
     return self;
 }
 
+static VALUE
+set_target_level (VALUE self, VALUE rb_level)
+{
+    MilterLogger *logger;
+
+    logger = SELF(self);
+    if (RVAL2CBOOL(rb_obj_is_kind_of(rb_level, rb_cMilterLogLevelFlags))) {
+	milter_logger_set_target_level(logger, RVAL2LOG_LEVEL(rb_level));
+    } else if (RVAL2CBOOL(rb_obj_is_kind_of(rb_level, rb_cNumeric))) {
+	milter_logger_set_target_level(logger, NUM2INT(rb_level));
+    } else {
+	GError *error = NULL;
+	const char *level;
+	if (NIL_P(rb_level)) {
+	    level = NULL;
+	} else {
+	    rb_level = rb_str_to_str(rb_level);
+	    level = StringValueCStr(rb_level);
+	}
+	if (!milter_logger_set_target_level_by_string(logger, level, &error)) {
+	    RAISE_GERROR(error);
+	}
+    }
+    return self;
+}
+
 void
 Init_milter_logger (void)
 {
     VALUE rb_cMilterLogger;
-    VALUE rb_cMilterLogLevelFlags;
     VALUE rb_cMilterLogItemFlags;
 
     rb_cMilterLogger = G_DEF_CLASS(MILTER_TYPE_LOGGER, "Logger", rb_mMilter);
@@ -95,6 +122,9 @@ Init_milter_logger (void)
     rb_define_singleton_method(rb_cMilterLogger, "default", s_default, 0);
 
     rb_define_method(rb_cMilterLogger, "log_full", log_full, 6);
+    rb_undef_method(rb_cMilterLogger, "set_target_level");
+    rb_undef_method(rb_cMilterLogger, "target_level=");
+    rb_define_method(rb_cMilterLogger, "set_target_level", set_target_level, 1);
 
     G_DEF_SETTERS(rb_cMilterLogger);
 }
