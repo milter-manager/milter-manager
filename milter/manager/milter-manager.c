@@ -94,10 +94,10 @@ static guint  get_max_connections         (MilterClient *client);
 static void   set_max_connections         (MilterClient *client,
                                            guint         max_connections);
 static const gchar *get_effective_user    (MilterClient *client);
-static void   set_effective_user          (MilterClient *client,
+static void         set_effective_user    (MilterClient *client,
                                            const gchar  *effective_user);
 static const gchar *get_effective_group   (MilterClient *client);
-static void   set_effective_group         (MilterClient *client,
+static void         set_effective_group   (MilterClient *client,
                                            const gchar  *effective_group);
 static guint  get_maintenance_interval    (MilterClient *client);
 static void   set_maintenance_interval    (MilterClient *client,
@@ -985,7 +985,7 @@ get_effective_user (MilterClient *client)
         MilterClientClass *klass;
 
         klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
-        return klass->get_effective_user(MILTER_CLIENT(manager));
+        return klass->get_effective_user(client);
     }
 }
 
@@ -1013,22 +1013,36 @@ get_effective_group (MilterClient *client)
     MilterManager *manager;
     MilterManagerPrivate *priv;
     MilterManagerConfiguration *configuration;
+    const gchar *effective_group;
 
     manager = MILTER_MANAGER(client);
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
     configuration = priv->configuration;
-    return milter_manager_configuration_get_effective_group(configuration);
+    effective_group =
+        milter_manager_configuration_get_effective_group(configuration);
+    if (effective_group) {
+        return effective_group;
+    } else {
+        MilterClientClass *klass;
+
+        klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+        return klass->get_effective_group(client);
+    }
 }
 
 static void
 set_effective_group (MilterClient *client, const gchar *effective_group)
 {
+    MilterClientClass *klass;
     MilterManager *manager;
     MilterManagerPrivate *priv;
     MilterManagerConfiguration *configuration;
 
     manager = MILTER_MANAGER(client);
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+    klass->set_effective_group(client, effective_group);
+
     configuration = priv->configuration;
     milter_manager_configuration_set_effective_group(configuration,
                                                      effective_group);

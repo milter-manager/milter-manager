@@ -603,8 +603,7 @@ apply_command_line_options (MilterManager *manager)
     if (option_user_name)
         milter_client_set_effective_user(client, option_user_name);
     if (option_group_name)
-        milter_manager_configuration_set_effective_group(config,
-                                                         option_group_name);
+        milter_client_set_effective_group(client, option_group_name);
     if (option_socket_group_name)
         milter_manager_configuration_set_manager_unix_socket_group(
             config, option_socket_group_name);

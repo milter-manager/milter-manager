@@ -162,6 +162,11 @@ static const gchar *get_effective_user
 static void         set_effective_user
                            (MilterClient    *client,
                             const gchar     *effective_user);
+static const gchar *get_effective_group
+                           (MilterClient    *client);
+static void         set_effective_group
+                           (MilterClient    *client,
+                            const gchar     *effective_group);
 static const gchar *get_pid_file
                            (MilterClient    *client);
 static void         set_pid_file
@@ -196,6 +201,8 @@ _milter_client_class_init (MilterClientClass *klass)
     client_class->set_connection_spec = set_connection_spec;
     client_class->get_effective_user  = get_effective_user;
     client_class->set_effective_user  = set_effective_user;
+    client_class->get_effective_group = get_effective_group;
+    client_class->set_effective_group = set_effective_group;
     client_class->get_pid_file        = get_pid_file;
     client_class->set_pid_file        = set_pid_file;
     client_class->listen_started      = listen_started;
@@ -2600,16 +2607,29 @@ milter_client_set_effective_user (MilterClient *client,
     klass->set_effective_user(client, effective_user);
 }
 
+static const gchar *
+get_effective_group (MilterClient *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->effective_group;
+}
+
 const gchar *
 milter_client_get_effective_group (MilterClient *client)
 {
     MilterClientClass *klass;
 
     klass = MILTER_CLIENT_GET_CLASS(client);
-    if (klass->get_effective_group)
-        return klass->get_effective_group(client);
-    else
-        return MILTER_CLIENT_GET_PRIVATE(client)->effective_group;
+    return klass->get_effective_group(client);
+}
+
+static void
+set_effective_group (MilterClient *client, const gchar *effective_group)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    g_free(priv->effective_group);
+    priv->effective_group = g_strdup(effective_group);
 }
 
 void
@@ -2619,15 +2639,7 @@ milter_client_set_effective_group (MilterClient *client,
     MilterClientClass *klass;
 
     klass = MILTER_CLIENT_GET_CLASS(client);
-    if (klass->set_effective_group) {
-        klass->set_effective_group(client, effective_group);
-    } else {
-        MilterClientPrivate *priv;
-
-        priv = MILTER_CLIENT_GET_PRIVATE(client);
-        g_free(priv->effective_group);
-        priv->effective_group = g_strdup(effective_group);
-    }
+    klass->set_effective_group(client, effective_group);
 }
 
 guint
