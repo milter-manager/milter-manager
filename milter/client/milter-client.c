@@ -177,6 +177,11 @@ static const gchar *get_effective_group
 static void         set_effective_group
                            (MilterClient    *client,
                             const gchar     *effective_group);
+static guint        get_n_workers
+                           (MilterClient    *client);
+static void         set_n_workers
+                           (MilterClient    *client,
+                            guint            n_workers);
 static const gchar *get_pid_file
                            (MilterClient    *client);
 static void         set_pid_file
@@ -217,6 +222,8 @@ _milter_client_class_init (MilterClientClass *klass)
     client_class->set_effective_user    = set_effective_user;
     client_class->get_effective_group   = get_effective_group;
     client_class->set_effective_group   = set_effective_group;
+    client_class->get_n_workers         = get_n_workers;
+    client_class->set_n_workers         = set_n_workers;
     client_class->get_pid_file          = get_pid_file;
     client_class->set_pid_file          = set_pid_file;
     client_class->listen_started        = listen_started;
@@ -2858,32 +2865,38 @@ milter_client_set_event_loop_backend (MilterClient  *client,
     priv->event_loop_backend = backend;
 }
 
+static guint
+get_n_workers (MilterClient *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->workers.n_process;
+}
+
 guint
-milter_client_get_n_workers (MilterClient  *client)
+milter_client_get_n_workers (MilterClient *client)
 {
     MilterClientClass *klass;
 
     klass = MILTER_CLIENT_GET_CLASS(client);
-    if (klass->get_n_workers)
-        return klass->get_n_workers(client);
-    return MILTER_CLIENT_GET_PRIVATE(client)->workers.n_process;
+    return klass->get_n_workers(client);
+}
+
+static void
+set_n_workers (MilterClient *client, guint n_workers)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    priv->workers.n_process = n_workers;
 }
 
 void
 milter_client_set_n_workers (MilterClient  *client,
                              guint          n_workers)
 {
-    MilterClientPrivate *priv;
     MilterClientClass *klass;
 
     klass = MILTER_CLIENT_GET_CLASS(client);
-    if (klass->set_n_workers) {
-        klass->set_n_workers(client, n_workers);
-        return;
-    }
-
-    priv = MILTER_CLIENT_GET_PRIVATE(client);
-    priv->workers.n_process = n_workers;
+    klass->set_n_workers(client, n_workers);
 }
 
 static GPid

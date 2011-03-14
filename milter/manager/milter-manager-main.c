@@ -52,7 +52,7 @@ static gchar *option_socket_group_name = NULL;
 static gboolean option_daemon = FALSE;
 static gboolean option_show_config = FALSE;
 static gboolean option_verbose = FALSE;
-static gint option_n_workers = 0;
+static gint option_n_workers = -1;
 static MilterClientEventLoopBackend option_event_loop_backend =
     MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
 
@@ -608,9 +608,8 @@ apply_command_line_options (MilterManager *manager)
         milter_client_set_unix_socket_group(client, option_socket_group_name);
     if (option_daemon)
         milter_manager_configuration_set_daemon(config, TRUE);
-    if (option_n_workers > 0)
-        milter_manager_configuration_set_n_workers(config,
-                                                   (guint)option_n_workers);
+    if (option_n_workers >= 0)
+        milter_client_set_n_workers(client, (guint)option_n_workers);
     if (option_event_loop_backend)
         milter_manager_configuration_set_event_loop_backend(config,
                                                             option_event_loop_backend);

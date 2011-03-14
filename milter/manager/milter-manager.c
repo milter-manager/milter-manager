@@ -52,6 +52,8 @@ struct _MilterManagerPrivate
     guint current_periodical_connection_check_interval;
 
     GList *finished_leaders;
+
+    gboolean is_custom_n_workers;
 };
 
 enum
@@ -1141,7 +1143,7 @@ get_pid_file (MilterClient *client)
         MilterClientClass *klass;
 
         klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
-        pid_file = klass->get_pid_file(MILTER_CLIENT(manager));
+        pid_file = klass->get_pid_file(client);
     }
     return pid_file;
 }
@@ -1188,18 +1190,40 @@ sessions_finished (MilterClient *client, guint n_finished_sessions)
 static guint
 get_n_workers (MilterClient *client)
 {
+    MilterManager *manager;
     MilterManagerPrivate *priv;
+    guint n_workers;
 
-    priv = MILTER_MANAGER_GET_PRIVATE(client);
-    return milter_manager_configuration_get_n_workers(priv->configuration);
+    manager = MILTER_MANAGER(client);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    if (priv->is_custom_n_workers) {
+        MilterClientClass *klass;
+
+        klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+        n_workers = klass->get_n_workers(client);
+    } else {
+        MilterManagerConfiguration *configuration;
+
+        configuration = priv->configuration;
+        n_workers = milter_manager_configuration_get_n_workers(configuration);
+    }
+    return n_workers;
 }
 
 static void
 set_n_workers (MilterClient *client, guint n_workers)
 {
+    MilterClientClass *klass;
+    MilterManager *manager;
     MilterManagerPrivate *priv;
 
-    priv = MILTER_MANAGER_GET_PRIVATE(client);
+    manager = MILTER_MANAGER(client);
+
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    priv->is_custom_n_workers = TRUE;
+
+    klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+    klass->set_n_workers(client, n_workers);
     milter_manager_configuration_set_n_workers(priv->configuration, n_workers);
 }
 
