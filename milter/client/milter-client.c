@@ -157,6 +157,10 @@ static gboolean set_connection_spec
                            (MilterClient    *client,
                             const gchar     *spec,
                             GError         **error);
+static const gchar *get_pid_file
+                           (MilterClient    *client);
+static void   set_pid_file (MilterClient    *client,
+                            const gchar     *pid_file);
 static void   listen_started
                            (MilterClient    *client,
                             struct sockaddr *address,
@@ -184,8 +188,10 @@ _milter_client_class_init (MilterClientClass *klass)
 
     client_class->get_connection_spec = get_connection_spec;
     client_class->set_connection_spec = set_connection_spec;
-    client_class->listen_started = listen_started;
-    client_class->fork = default_fork;
+    client_class->get_pid_file        = get_pid_file;
+    client_class->set_pid_file        = set_pid_file;
+    client_class->listen_started      = listen_started;
+    client_class->fork                = default_fork;
 
     spec = g_param_spec_string("connection-spec",
                                "Connection Spec",
@@ -2931,33 +2937,39 @@ milter_client_get_worker_id (MilterClient *client)
     return priv->workers.id;
 }
 
+static const gchar *
+get_pid_file (MilterClient *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->pid_file;
+}
+
 const gchar *
 milter_client_get_pid_file (MilterClient *client)
 {
     MilterClientClass *klass;
 
     klass = MILTER_CLIENT_GET_CLASS(client);
-    if (klass->get_pid_file)
-        return klass->get_pid_file(client);
-    return MILTER_CLIENT_GET_PRIVATE(client)->pid_file;
+    return klass->get_pid_file(client);
 }
 
-void
-milter_client_set_pid_file (MilterClient *client, const gchar *pid_file)
+static void
+set_pid_file (MilterClient *client, const gchar *pid_file)
 {
     MilterClientPrivate *priv;
-    MilterClientClass *klass;
-
-    klass = MILTER_CLIENT_GET_CLASS(client);
-    if (klass->set_pid_file) {
-        klass->set_pid_file(client, pid_file);
-        return;
-    }
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
     if (priv->pid_file)
         g_free(priv->pid_file);
     priv->pid_file = g_strdup(pid_file);
+}
+
+void
+milter_client_set_pid_file (MilterClient *client, const gchar *pid_file)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    klass->set_pid_file(client, pid_file);
 }
 
 gboolean

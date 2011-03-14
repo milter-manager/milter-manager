@@ -588,18 +588,18 @@ update_max_file_descriptors (MilterManager *manager)
 static void
 apply_command_line_options (MilterManager *manager)
 {
+    MilterClient *client;
     MilterManagerConfiguration *config;
 
+    client = MILTER_CLIENT(manager);
     config = milter_manager_get_configuration(manager);
-    if (option_spec) {
-        milter_client_set_connection_spec(MILTER_CLIENT(manager), option_spec,
-                                          NULL);
-        milter_manager_configuration_reset_location(config,
-                                                    "manager.connection_spec");
-    }
+
+    if (option_spec)
+        milter_client_set_connection_spec(client, option_spec, NULL);
 
     if (option_pid_file)
-        milter_manager_configuration_set_pid_file(config, option_pid_file);
+        milter_client_set_pid_file(client, option_pid_file);
+
     if (option_user_name)
         milter_manager_configuration_set_effective_user(config,
                                                         option_user_name);

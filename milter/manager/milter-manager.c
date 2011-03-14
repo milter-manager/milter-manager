@@ -1080,21 +1080,34 @@ get_pid_file (MilterClient *client)
     MilterManager *manager;
     MilterManagerPrivate *priv;
     MilterManagerConfiguration *configuration;
+    const gchar *pid_file;
 
     manager = MILTER_MANAGER(client);
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
     configuration = priv->configuration;
-    return milter_manager_configuration_get_pid_file(configuration);
+    pid_file = milter_manager_configuration_get_pid_file(configuration);
+    if (pid_file) {
+        return pid_file;
+    } else {
+        MilterClientClass *klass;
+
+        klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+        return klass->get_pid_file(MILTER_CLIENT(manager));
+    }
 }
 
 static void
 set_pid_file (MilterClient *client, const gchar *pid_file)
 {
+    MilterClientClass *klass;
     MilterManager *manager;
     MilterManagerPrivate *priv;
     MilterManagerConfiguration *configuration;
 
     manager = MILTER_MANAGER(client);
+    klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+    klass->set_pid_file(MILTER_CLIENT(manager), pid_file);
+
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
     configuration = priv->configuration;
     milter_manager_configuration_set_pid_file(configuration, pid_file);
@@ -1180,6 +1193,7 @@ apply_custom_parameters (MilterManager *manager)
     MilterManagerPrivate *priv;
     MilterManagerConfiguration *configuration;
     const gchar *spec;
+    const gchar *pid_file;
 
     client = MILTER_CLIENT(manager);
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
@@ -1190,6 +1204,15 @@ apply_custom_parameters (MilterManager *manager)
     if (spec) {
         milter_manager_configuration_set_manager_connection_spec(configuration,
                                                                  spec);
+        milter_manager_configuration_reset_location(configuration,
+                                                    "manager.connection_spec");
+    }
+
+    pid_file = klass->get_pid_file(client);
+    if (pid_file) {
+        milter_manager_configuration_set_pid_file(configuration, pid_file);
+        milter_manager_configuration_reset_location(configuration,
+                                                    "manager.pid_file");
     }
 }
 
