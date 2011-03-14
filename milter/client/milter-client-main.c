@@ -83,7 +83,7 @@ parse_connection_spec (const gchar *option_name,
     GError *spec_error = NULL;
     gboolean success;
 
-    success = milter_client_set_connection_spec(client, value, error);
+    success = milter_client_set_connection_spec(client, value, &spec_error);
     if (!success) {
         g_set_error(error,
                     G_OPTION_ERROR,
