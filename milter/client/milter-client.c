@@ -905,6 +905,13 @@ listen_started (MilterClient *client,
 {
     struct sockaddr_un *address_un;
 
+    if (milter_need_info_log()) {
+        gchar *spec;
+        spec = milter_connection_address_to_spec(address);
+        milter_info("[client][listen][start] <%s>", spec);
+        g_free(spec);
+    }
+
     if (address->sa_family != AF_UNIX)
         return;
 
