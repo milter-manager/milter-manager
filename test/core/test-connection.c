@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -421,22 +421,22 @@ void
 data_address_to_spec (void)
 {
     cut_add_data("inet6",
-                 test_data_new("inet6:9999@::1",
+                 test_data_new("inet6:9999@[::1]",
                                sockaddr_in6_new(9999, "::1"),
                                NULL),
                  test_data_free,
                  "inet6 no host",
-                 test_data_new("inet6:9999@::",
+                 test_data_new("inet6:9999@[::]",
                                sockaddr_in6_new(9999, "::0"),
                                NULL),
                  test_data_free,
                  "inet",
-                 test_data_new("inet:9999@127.0.0.1",
+                 test_data_new("inet:9999@[127.0.0.1]",
                                sockaddr_in_new(9999, "127.0.0.1"),
                                NULL),
                  test_data_free,
                  "inet no host",
-                 test_data_new("inet:9999@0.0.0.0",
+                 test_data_new("inet:9999@[0.0.0.0]",
                                sockaddr_in_new(9999, NULL),
                                NULL),
                  test_data_free,

@@ -1362,7 +1362,7 @@ static void
 option_test_assert_connect_host (void)
 {
     cut_assert_equal_string("test-host", actual_connect_host);
-    cut_assert_equal_string("inet:50443@192.168.123.123",
+    cut_assert_equal_string("inet:50443@[192.168.123.123]",
                             actual_connect_address);
 }
 
@@ -1370,14 +1370,14 @@ static void
 option_test_assert_connect_address (void)
 {
     cut_assert_equal_string("mx.example.net", actual_connect_host);
-    cut_assert_equal_string("inet:12345@192.168.1.1", actual_connect_address);
+    cut_assert_equal_string("inet:12345@[192.168.1.1]", actual_connect_address);
 }
 
 static void
 option_test_assert_connect (void)
 {
     cut_assert_equal_string("test-host", actual_connect_host);
-    cut_assert_equal_string("inet:12345@192.168.1.1", actual_connect_address);
+    cut_assert_equal_string("inet:12345@[192.168.1.1]", actual_connect_address);
 }
 
 static void
