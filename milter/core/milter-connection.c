@@ -64,7 +64,7 @@ milter_connection_address_to_spec (const struct sockaddr *address)
 
         if (inet_ntop(AF_INET, &address_inet->sin_addr,
                       (gchar *)ip_address_string, INET_ADDRSTRLEN)) {
-            spec = g_strdup_printf("inet:%d@%s",
+            spec = g_strdup_printf("inet:%d@[%s]",
                                    g_ntohs(address_inet->sin_port),
                                    ip_address_string);
         }
@@ -77,7 +77,7 @@ milter_connection_address_to_spec (const struct sockaddr *address)
 
         if (inet_ntop(AF_INET6, &address_inet6->sin6_addr,
                       (gchar *)ip_address_string, INET6_ADDRSTRLEN)) {
-            spec = g_strdup_printf("inet6:%d@%s",
+            spec = g_strdup_printf("inet6:%d@[%s]",
                                    g_ntohs(address_inet6->sin6_port),
                                    ip_address_string);
         }
