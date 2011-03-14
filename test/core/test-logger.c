@@ -258,7 +258,8 @@ test_interesting_level (void)
     gcut_assert_equal_flags(MILTER_TYPE_LOG_LEVEL_FLAGS,
                             MILTER_LOG_LEVEL_WARNING |
                             MILTER_LOG_LEVEL_ERROR |
-                            MILTER_LOG_LEVEL_CRITICAL,
+                            MILTER_LOG_LEVEL_CRITICAL |
+                            MILTER_LOG_LEVEL_STATISTICS,
                             milter_logger_get_interesting_level(logger));
 
     milter_logger_set_target_level(logger,
