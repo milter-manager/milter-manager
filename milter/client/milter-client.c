@@ -240,7 +240,7 @@ _milter_client_class_init (MilterClientClass *klass)
                              "Event loop backend",
                              "The event loop backend of the client",
                              MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND,
-                             MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB,
+                             MILTER_CLIENT_EVENT_LOOP_BACKEND_DEFAULT,
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_EVENT_LOOP_BACKEND, spec);
 
@@ -382,6 +382,7 @@ milter_client_create_event_loop (MilterClient *client, gboolean use_default_cont
     MilterEventLoop *loop = NULL;
 
     switch (milter_client_get_event_loop_backend(client)) {
+    case MILTER_CLIENT_EVENT_LOOP_BACKEND_DEFAULT:
     case MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB:
         milter_debug("[cilent][event-loop][glib]");
         if (use_default_context) {
@@ -454,7 +455,7 @@ _milter_client_init (MilterClient *client)
 
     priv->syslog_logger = NULL;
 
-    priv->event_loop_backend = MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
+    priv->event_loop_backend = MILTER_CLIENT_EVENT_LOOP_BACKEND_DEFAULT;
 
     priv->default_packet_buffer_size = 0;
 

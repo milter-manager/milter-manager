@@ -942,7 +942,7 @@ test_event_loop_backend (void)
 {
     gcut_assert_equal_enum(
         MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND,
-        MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB,
+        MILTER_CLIENT_EVENT_LOOP_BACKEND_DEFAULT,
         milter_client_get_event_loop_backend(client));
     milter_client_set_event_loop_backend(client,
                                          MILTER_CLIENT_EVENT_LOOP_BACKEND_LIBEV);

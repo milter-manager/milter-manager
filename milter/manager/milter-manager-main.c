@@ -54,7 +54,7 @@ static gboolean option_show_config = FALSE;
 static gboolean option_verbose = FALSE;
 static gint option_n_workers = -1;
 static MilterClientEventLoopBackend option_event_loop_backend =
-    MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
+    MILTER_CLIENT_EVENT_LOOP_BACKEND_DEFAULT;
 
 static gboolean io_detached = FALSE;
 
