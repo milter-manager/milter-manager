@@ -992,14 +992,13 @@ get_effective_user (MilterClient *client)
     configuration = priv->configuration;
     effective_user =
         milter_manager_configuration_get_effective_user(configuration);
-    if (effective_user) {
-        return effective_user;
-    } else {
+    if (!effective_user) {
         MilterClientClass *klass;
 
         klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
-        return klass->get_effective_user(client);
+        effective_user = klass->get_effective_user(client);
     }
+    return effective_user;
 }
 
 static void
@@ -1033,14 +1032,13 @@ get_effective_group (MilterClient *client)
     configuration = priv->configuration;
     effective_group =
         milter_manager_configuration_get_effective_group(configuration);
-    if (effective_group) {
-        return effective_group;
-    } else {
+    if (!effective_group) {
         MilterClientClass *klass;
 
         klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
-        return klass->get_effective_group(client);
+        effective_group = klass->get_effective_group(client);
     }
+    return effective_group;
 }
 
 static void
@@ -1127,14 +1125,13 @@ get_pid_file (MilterClient *client)
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
     configuration = priv->configuration;
     pid_file = milter_manager_configuration_get_pid_file(configuration);
-    if (pid_file) {
-        return pid_file;
-    } else {
+    if (!pid_file) {
         MilterClientClass *klass;
 
         klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
-        return klass->get_pid_file(MILTER_CLIENT(manager));
+        pid_file = klass->get_pid_file(MILTER_CLIENT(manager));
     }
+    return pid_file;
 }
 
 static void
