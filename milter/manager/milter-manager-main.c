@@ -43,18 +43,8 @@
 
 static gboolean initialized = FALSE;
 static MilterManager *the_manager = NULL;
-static gchar *option_spec = NULL;
 static gchar *option_config_dir = NULL;
-static gchar *option_pid_file = NULL;
-static gchar *option_user_name = NULL;
-static gchar *option_group_name = NULL;
-static gchar *option_socket_group_name = NULL;
-static gboolean option_daemon = FALSE;
 static gboolean option_show_config = FALSE;
-static gboolean option_verbose = FALSE;
-static gint option_n_workers = -1;
-static MilterClientEventLoopBackend option_event_loop_backend =
-    MILTER_CLIENT_EVENT_LOOP_BACKEND_DEFAULT;
 
 static gboolean io_detached = FALSE;
 
@@ -91,93 +81,14 @@ print_version (const gchar *option_name, const gchar *value,
     return TRUE;
 }
 
-static gboolean
-parse_spec_arg (const gchar *option_name,
-                const gchar *value,
-                gpointer data,
-                GError **error)
-{
-    GError *spec_error = NULL;
-    gboolean success;
-
-    success = milter_connection_parse_spec(value, NULL, NULL, NULL, &spec_error);
-    if (success) {
-        if (option_spec)
-            g_free(option_spec);
-        option_spec = g_strdup(value);
-    } else {
-        g_set_error(error,
-                    G_OPTION_ERROR,
-                    G_OPTION_ERROR_BAD_VALUE,
-                    "invalid connection spec: %s",
-                    spec_error->message);
-        g_error_free(spec_error);
-    }
-
-    return success;
-}
-
-static gboolean
-parse_event_loop_backend (const gchar *option_name,
-                          const gchar *value,
-                          gpointer data,
-                          GError **error)
-{
-    GEnumClass *backend_enum;
-    GEnumValue *backend_value;
-
-    backend_enum = g_type_class_ref(MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND);
-    backend_value = g_enum_get_value_by_nick(backend_enum, value);
-    g_type_class_unref(backend_enum);
-
-    if (backend_value) {
-        option_event_loop_backend = backend_value->value;
-        return TRUE;
-    } else {
-        g_set_error(error,
-                    G_OPTION_ERROR,
-                    G_OPTION_ERROR_BAD_VALUE,
-                    _("invalid name: %s"),
-                    value);
-        return FALSE;
-    }
-}
-
 static const GOptionEntry option_entries[] =
 {
-    {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_spec_arg,
-     N_("The spec of socket. (unix:PATH|inet:PORT[@HOST]|inet6:PORT[@HOST])"),
-     "SPEC"},
     {"config-dir", 'c',
      G_OPTION_FLAG_FILENAME, G_OPTION_ARG_STRING, &option_config_dir,
      N_("The configuration directory that has configuration file."),
      "DIRECTORY"},
-    {"pid-file", 0,
-     G_OPTION_FLAG_FILENAME, G_OPTION_ARG_STRING, &option_pid_file,
-     N_("The file name to be saved PID."),
-     "FILE"},
-    {"user-name", 'u', 0, G_OPTION_ARG_STRING, &option_user_name,
-     N_("The user name for running milter-manager."),
-     "NAME"},
-    {"group-name", 'g', 0, G_OPTION_ARG_STRING, &option_group_name,
-     N_("The group name for running milter-manager."),
-     "NAME"},
-    {"socket-group-name", 0, 0, G_OPTION_ARG_STRING, &option_socket_group_name,
-     N_("The group name for UNIX domain socket."),
-     "NAME"},
-    {"daemon", 0, 0, G_OPTION_ARG_NONE, &option_daemon,
-     N_("Run as daemon process."), NULL},
-    {"no-daemon", 0, G_OPTION_FLAG_REVERSE, G_OPTION_ARG_NONE, &option_daemon,
-     N_("Cancel the prior --daemon options."), NULL},
-    {"n-workers", 0, 0, G_OPTION_ARG_INT, &option_n_workers,
-     N_("Run N_WORKERS processes (default: 0)"), "N_WORKERS"},
-    {"event-loop-backend", 0, 0, G_OPTION_ARG_CALLBACK, parse_event_loop_backend,
-     N_("Use BACKEND as event loop backend (glib|libev) (default: glib)"),
-     "BACKEND"},
     {"show-config", 0, 0, G_OPTION_ARG_NONE, &option_show_config,
      N_("Show configuration and exit"), NULL},
-    {"verbose", 0, 0, G_OPTION_ARG_NONE, &option_verbose,
-     N_("Be verbose"), NULL},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
      N_("Show version"), NULL},
     {NULL}
@@ -187,8 +98,10 @@ void
 milter_manager_init (int *argc, char ***argv)
 {
     GOptionContext *option_context;
-    GOptionGroup *main_group;
+    GOptionGroup *milter_group;
     GError *error = NULL;
+    MilterManager *manager;
+    MilterManagerConfiguration *config;
 
     if (initialized)
         return;
@@ -205,16 +118,16 @@ milter_manager_init (int *argc, char ***argv)
     milter_server_init();
     milter_manager_log_handler_id = MILTER_GLIB_LOG_DELEGATE("milter-manager");
 
-    if (milter_get_log_level() == MILTER_LOG_LEVEL_DEFAULT) {
-        milter_set_log_level(MILTER_LOG_LEVEL_CRITICAL |
-                             MILTER_LOG_LEVEL_ERROR |
-                             MILTER_LOG_LEVEL_WARNING |
-                             MILTER_LOG_LEVEL_STATISTICS);
-    }
-
     option_context = g_option_context_new(NULL);
-    g_option_context_add_main_entries(option_context, option_entries, NULL);
-    main_group = g_option_context_get_main_group(option_context);
+    g_option_context_add_main_entries(option_context, option_entries,
+                                      GETTEXT_PACKAGE);
+
+    _milter_manager_configuration_init();
+    config = milter_manager_configuration_new(NULL);
+    manager = milter_manager_new(config);
+    g_object_unref(config);
+    milter_group = milter_client_get_option_group(MILTER_CLIENT(manager));
+    g_option_context_add_group(option_context, milter_group);
 
     if (!g_option_context_parse(option_context, argc, argv, &error)) {
         g_print("%s\n", error->message);
@@ -230,17 +143,14 @@ milter_manager_init (int *argc, char ***argv)
 #endif
 
         g_error_free(error);
-
         g_option_context_free(option_context);
+        g_object_unref(manager);
 
         exit(EXIT_FAILURE);
     }
 
-    if (option_verbose)
-        milter_set_log_level(MILTER_LOG_LEVEL_ALL);
-
-    _milter_manager_configuration_init();
     g_option_context_free(option_context);
+    the_manager = manager;
 }
 
 void
@@ -249,12 +159,12 @@ milter_manager_quit (void)
     if (!initialized)
         return;
 
-    _milter_manager_configuration_quit();
-
-    if (option_spec) {
-        g_free(option_spec);
-        option_spec = NULL;
+    if (the_manager) {
+        g_object_unref(the_manager);
+        the_manager = NULL;
     }
+
+    _milter_manager_configuration_quit();
 
     g_log_remove_handler("milter-manager", milter_manager_log_handler_id);
     milter_server_quit();
@@ -586,35 +496,6 @@ update_max_file_descriptors (MilterManager *manager)
 }
 
 static void
-apply_command_line_options (MilterManager *manager)
-{
-    MilterClient *client;
-    MilterManagerConfiguration *config;
-
-    client = MILTER_CLIENT(manager);
-    config = milter_manager_get_configuration(manager);
-
-    if (option_spec)
-        milter_client_set_connection_spec(client, option_spec, NULL);
-
-    if (option_pid_file)
-        milter_client_set_pid_file(client, option_pid_file);
-
-    if (option_user_name)
-        milter_client_set_effective_user(client, option_user_name);
-    if (option_group_name)
-        milter_client_set_effective_group(client, option_group_name);
-    if (option_socket_group_name)
-        milter_client_set_unix_socket_group(client, option_socket_group_name);
-    if (option_daemon)
-        milter_manager_configuration_set_daemon(config, TRUE);
-    if (option_n_workers >= 0)
-        milter_client_set_n_workers(client, (guint)option_n_workers);
-    if (option_event_loop_backend != MILTER_CLIENT_EVENT_LOOP_BACKEND_DEFAULT)
-        milter_client_set_event_loop_backend(client, option_event_loop_backend);
-}
-
-static void
 append_custom_configuration_directory (MilterManagerConfiguration *config)
 {
     struct passwd *password;
@@ -669,7 +550,6 @@ load_configuration (MilterManager *manager)
                              error->message);
         g_error_free(error);
     }
-    apply_command_line_options(manager);
 }
 
 static gchar report_stack_trace_window[4096];
@@ -745,9 +625,8 @@ milter_manager_main (void)
     struct sigaction shutdown_client_action;
     struct sigaction reload_configuration_request_action;
 
-    config = milter_manager_configuration_new(NULL);
-    manager = milter_manager_new(config);
-    g_object_unref(config);
+    manager = the_manager;
+    config = milter_manager_get_configuration(manager);
 
     if (option_config_dir) {
         milter_manager_configuration_prepend_load_path(config,
@@ -760,7 +639,6 @@ milter_manager_main (void)
             error = NULL;
         }
     }
-    apply_command_line_options(manager);
     if (getuid() != 0)
         milter_manager_configuration_set_privilege_mode(config, FALSE);
 
@@ -781,7 +659,6 @@ milter_manager_main (void)
                 g_print("\n");
             g_free(dumped_config);
         }
-        g_object_unref(manager);
         return TRUE;
     }
 
@@ -789,7 +666,6 @@ milter_manager_main (void)
 
     if (milter_manager_configuration_is_privilege_mode(config) &&
         !start_process_launcher_process(manager)) {
-        g_object_unref(manager);
         return FALSE;
     }
 
@@ -799,14 +675,12 @@ milter_manager_main (void)
     if (!milter_client_listen(client, &error)) {
         milter_manager_error("failed to listen: %s", error->message);
         g_error_free(error);
-        g_object_unref(manager);
         return FALSE;
     }
 
     if (!milter_client_drop_privilege(client, &error)) {
         milter_manager_error("failed to drop privilege: %s", error->message);
         g_error_free(error);
-        g_object_unref(manager);
         return FALSE;
     }
 
@@ -829,7 +703,6 @@ milter_manager_main (void)
             g_error_free(error);
             if (controller)
                 g_object_unref(controller);
-            g_object_unref(manager);
             return FALSE;
         }
     }
@@ -878,11 +751,6 @@ milter_manager_main (void)
 
     if (controller)
         g_object_unref(controller);
-
-    if (the_manager) {
-        g_object_unref(the_manager);
-        the_manager = NULL;
-    }
 
     return TRUE;
 }

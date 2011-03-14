@@ -408,8 +408,7 @@ test_invalid_spec (void)
 
     wait_for_manager_reaping();
 
-    cut_assert_equal_string("invalid connection spec: "
-                            "spec doesn't have colon: <XXXX@localhost>\n",
+    cut_assert_equal_string("-s: spec doesn't have colon: <XXXX@localhost>\n",
                             manager_data->output_string->str);
 }
 
@@ -433,25 +432,17 @@ test_unknown_option (void)
             "\n"
             "Help Options:\n"
 #if GLIB_CHECK_VERSION(2, 21, 0)
-            "  -h, --help                       Show help options\n"
+            "  -h, --help                        Show help options\n"
 #else
-            "  -?, --help                       Show help options\n"
+            "  -?, --help                        Show help options\n"
 #endif
+            "  --help-all                        Show all help options\n"
+            "  --help-milter                     Show milter help options\n"
             "\n"
             "Application Options:\n"
-            "  -s, --connection-spec=SPEC       The spec of socket. (unix:PATH|inet:PORT[@HOST]|inet6:PORT[@HOST])\n"
-            "  -c, --config-dir=DIRECTORY       The configuration directory that has configuration file.\n"
-            "  --pid-file=FILE                  The file name to be saved PID.\n"
-            "  -u, --user-name=NAME             The user name for running milter-manager.\n"
-            "  -g, --group-name=NAME            The group name for running milter-manager.\n"
-            "  --socket-group-name=NAME         The group name for UNIX domain socket.\n"
-            "  --daemon                         Run as daemon process.\n"
-            "  --no-daemon                      Cancel the prior --daemon options.\n"
-            "  --n-workers=N_WORKERS            Run N_WORKERS processes (default: 0)\n"
-            "  --event-loop-backend=BACKEND     Use BACKEND as event loop backend (glib|libev) (default: glib)\n"
-            "  --show-config                    Show configuration and exit\n"
-            "  --verbose                        Be verbose\n"
-            "  --version                        Show version\n"
+            "  -c, --config-dir=DIRECTORY        The configuration directory that has configuration file.\n"
+            "  --show-config                     Show configuration and exit\n"
+            "  --version                         Show version\n"
             "\n",
             milter_manager_program_name),
         manager_data->output_string->str);
