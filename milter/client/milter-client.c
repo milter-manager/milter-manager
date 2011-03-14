@@ -162,6 +162,11 @@ static guint        get_unix_socket_mode
 static void         set_unix_socket_mode
                            (MilterClient    *client,
                             guint            mode);
+static const gchar *get_unix_socket_group
+                           (MilterClient    *client);
+static void         set_unix_socket_group
+                           (MilterClient    *client,
+                            const gchar     *group);
 static const gchar *get_effective_user
                            (MilterClient    *client);
 static void         set_effective_user
@@ -202,18 +207,20 @@ _milter_client_class_init (MilterClientClass *klass)
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
 
-    client_class->get_connection_spec  = get_connection_spec;
-    client_class->set_connection_spec  = set_connection_spec;
-    client_class->get_unix_socket_mode = get_unix_socket_mode;
-    client_class->set_unix_socket_mode = set_unix_socket_mode;
-    client_class->get_effective_user   = get_effective_user;
-    client_class->set_effective_user   = set_effective_user;
-    client_class->get_effective_group  = get_effective_group;
-    client_class->set_effective_group  = set_effective_group;
-    client_class->get_pid_file         = get_pid_file;
-    client_class->set_pid_file         = set_pid_file;
-    client_class->listen_started       = listen_started;
-    client_class->fork                 = default_fork;
+    client_class->get_connection_spec   = get_connection_spec;
+    client_class->set_connection_spec   = set_connection_spec;
+    client_class->get_unix_socket_mode  = get_unix_socket_mode;
+    client_class->set_unix_socket_mode  = set_unix_socket_mode;
+    client_class->get_unix_socket_group = get_unix_socket_group;
+    client_class->set_unix_socket_group = set_unix_socket_group;
+    client_class->get_effective_user    = get_effective_user;
+    client_class->set_effective_user    = set_effective_user;
+    client_class->get_effective_group   = get_effective_group;
+    client_class->set_effective_group   = set_effective_group;
+    client_class->get_pid_file          = get_pid_file;
+    client_class->set_pid_file          = set_pid_file;
+    client_class->listen_started        = listen_started;
+    client_class->fork                  = default_fork;
 
     spec = g_param_spec_string("connection-spec",
                                "Connection Spec",
@@ -2454,24 +2461,38 @@ milter_client_set_default_unix_socket_mode (MilterClient *client, guint mode)
     MILTER_CLIENT_GET_PRIVATE(client)->default_unix_socket_mode = mode;
 }
 
+static const gchar *
+get_unix_socket_group (MilterClient *client)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    return priv->unix_socket_group;
+}
+
 const gchar *
 milter_client_get_unix_socket_group (MilterClient *client)
 {
     MilterClientClass *klass;
+    const gchar *group;
 
     klass = MILTER_CLIENT_GET_CLASS(client);
-    if (klass->get_unix_socket_group) {
-        return klass->get_unix_socket_group(client);
-    } else {
-        MilterClientPrivate *priv;
-
-        priv = MILTER_CLIENT_GET_PRIVATE(client);
-        if (priv->unix_socket_group) {
-            return priv->unix_socket_group;
-        } else {
-            return milter_client_get_default_unix_socket_group(client);
-        }
+    group = klass->get_unix_socket_group(client);
+    if (!group) {
+        group = milter_client_get_default_unix_socket_group(client);
     }
+    return group;
+}
+
+static void
+set_unix_socket_group (MilterClient *client, const gchar *group)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    if (priv->unix_socket_group)
+        g_free(priv->unix_socket_group);
+    priv->unix_socket_group = g_strdup(group);
 }
 
 void
@@ -2480,15 +2501,7 @@ milter_client_set_unix_socket_group (MilterClient *client, const gchar *group)
     MilterClientClass *klass;
 
     klass = MILTER_CLIENT_GET_CLASS(client);
-    if (klass->set_unix_socket_group) {
-        klass->set_unix_socket_group(client, group);
-    } else {
-        MilterClientPrivate *priv;
-
-        priv = MILTER_CLIENT_GET_PRIVATE(client);
-        g_free(priv->unix_socket_group);
-        priv->unix_socket_group = g_strdup(group);
-    }
+    klass->set_unix_socket_group(client, group);
 }
 
 const gchar *

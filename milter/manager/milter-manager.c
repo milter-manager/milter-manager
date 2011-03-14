@@ -82,7 +82,7 @@ static guint  get_unix_socket_mode        (MilterClient *client);
 static void   set_unix_socket_mode        (MilterClient *client,
                                            guint         mode);
 static const gchar *get_unix_socket_group (MilterClient *client);
-static void   set_unix_socket_group       (MilterClient *client,
+static void         set_unix_socket_group (MilterClient *client,
                                            const gchar  *group);
 static gboolean is_remove_unix_socket_on_close (MilterClient *client);
 static guint  get_suspend_time_on_unacceptable
@@ -891,21 +891,33 @@ get_unix_socket_group (MilterClient *client)
     MilterManager *manager;
     MilterManagerPrivate *priv;
     MilterManagerConfiguration *configuration;
+    const gchar *group;
 
     manager = MILTER_MANAGER(client);
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
     configuration = priv->configuration;
-    return milter_manager_configuration_get_manager_unix_socket_group(configuration);
+    group = milter_manager_configuration_get_manager_unix_socket_group(configuration);
+    if (!group) {
+        MilterClientClass *klass;
+
+        klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+        group = klass->get_unix_socket_group(client);
+    }
+    return group;
 }
 
 static void
 set_unix_socket_group (MilterClient *client, const gchar *group)
 {
+    MilterClientClass *klass;
     MilterManager *manager;
     MilterManagerPrivate *priv;
     MilterManagerConfiguration *configuration;
 
     manager = MILTER_MANAGER(client);
+    klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+    klass->set_unix_socket_group(client, group);
+
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
     configuration = priv->configuration;
     return milter_manager_configuration_set_manager_unix_socket_group(configuration,
@@ -1233,6 +1245,7 @@ apply_custom_parameters (MilterManager *manager)
     const gchar *spec;
     const gchar *pid_file;
     const gchar *effective_user;
+    const gchar *unix_socket_group;
 
     client = MILTER_CLIENT(manager);
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
@@ -1260,6 +1273,14 @@ apply_custom_parameters (MilterManager *manager)
                                                         effective_user);
         milter_manager_configuration_reset_location(configuration,
                                                     "security.effective_user");
+    }
+
+    unix_socket_group = klass->get_unix_socket_group(client);
+    if (unix_socket_group) {
+        milter_manager_configuration_set_manager_unix_socket_group(configuration,
+                                                                   unix_socket_group);
+        milter_manager_configuration_reset_location(configuration,
+                                                    "manager.unix_socket_group");
     }
 }
 
