@@ -851,25 +851,38 @@ get_unix_socket_mode (MilterClient *client)
     MilterManager *manager;
     MilterManagerPrivate *priv;
     MilterManagerConfiguration *configuration;
+    guint mode;
 
     manager = MILTER_MANAGER(client);
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
     configuration = priv->configuration;
-    return milter_manager_configuration_get_manager_unix_socket_mode(configuration);
+    mode =
+        milter_manager_configuration_get_manager_unix_socket_mode(configuration);
+    if (mode == 0) {
+        MilterClientClass *klass;
+
+        klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+        mode = klass->get_unix_socket_mode(client);
+    }
+    return mode;
 }
 
 static void
 set_unix_socket_mode (MilterClient *client, guint mode)
 {
+    MilterClientClass *klass;
     MilterManager *manager;
     MilterManagerPrivate *priv;
     MilterManagerConfiguration *configuration;
 
     manager = MILTER_MANAGER(client);
+    klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+    klass->set_unix_socket_mode(client, mode);
+
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
     configuration = priv->configuration;
-    return milter_manager_configuration_set_manager_unix_socket_mode(configuration,
-                                                                     mode);
+    milter_manager_configuration_set_manager_unix_socket_mode(configuration,
+                                                              mode);
 }
 
 static const gchar *
