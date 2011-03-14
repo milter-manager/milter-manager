@@ -601,8 +601,7 @@ apply_command_line_options (MilterManager *manager)
         milter_client_set_pid_file(client, option_pid_file);
 
     if (option_user_name)
-        milter_manager_configuration_set_effective_user(config,
-                                                        option_user_name);
+        milter_client_set_effective_user(client, option_user_name);
     if (option_group_name)
         milter_manager_configuration_set_effective_group(config,
                                                          option_group_name);

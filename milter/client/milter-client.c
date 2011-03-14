@@ -153,13 +153,19 @@ static void get_property   (GObject         *object,
 
 static const gchar *get_connection_spec
                            (MilterClient    *client);
-static gboolean set_connection_spec
+static gboolean     set_connection_spec
                            (MilterClient    *client,
                             const gchar     *spec,
                             GError         **error);
+static const gchar *get_effective_user
+                           (MilterClient    *client);
+static void         set_effective_user
+                           (MilterClient    *client,
+                            const gchar     *effective_user);
 static const gchar *get_pid_file
                            (MilterClient    *client);
-static void   set_pid_file (MilterClient    *client,
+static void         set_pid_file
+                           (MilterClient    *client,
                             const gchar     *pid_file);
 static void   listen_started
                            (MilterClient    *client,
@@ -188,6 +194,8 @@ _milter_client_class_init (MilterClientClass *klass)
 
     client_class->get_connection_spec = get_connection_spec;
     client_class->set_connection_spec = set_connection_spec;
+    client_class->get_effective_user  = get_effective_user;
+    client_class->set_effective_user  = set_effective_user;
     client_class->get_pid_file        = get_pid_file;
     client_class->set_pid_file        = set_pid_file;
     client_class->listen_started      = listen_started;
@@ -2557,16 +2565,29 @@ milter_client_set_max_connections (MilterClient *client, guint max_connections)
         MILTER_CLIENT_GET_PRIVATE(client)->max_connections = max_connections;
 }
 
+static const gchar *
+get_effective_user (MilterClient *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->effective_user;
+}
+
 const gchar *
 milter_client_get_effective_user (MilterClient *client)
 {
     MilterClientClass *klass;
 
     klass = MILTER_CLIENT_GET_CLASS(client);
-    if (klass->get_effective_user)
-        return klass->get_effective_user(client);
-    else
-        return MILTER_CLIENT_GET_PRIVATE(client)->effective_user;
+    return klass->get_effective_user(client);
+}
+
+static void
+set_effective_user (MilterClient *client, const gchar *effective_user)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    g_free(priv->effective_user);
+    priv->effective_user = g_strdup(effective_user);
 }
 
 void
@@ -2576,15 +2597,7 @@ milter_client_set_effective_user (MilterClient *client,
     MilterClientClass *klass;
 
     klass = MILTER_CLIENT_GET_CLASS(client);
-    if (klass->set_effective_user) {
-        klass->set_effective_user(client, effective_user);
-    } else {
-        MilterClientPrivate *priv;
-
-        priv = MILTER_CLIENT_GET_PRIVATE(client);
-        g_free(priv->effective_user);
-        priv->effective_user = g_strdup(effective_user);
-    }
+    klass->set_effective_user(client, effective_user);
 }
 
 const gchar *

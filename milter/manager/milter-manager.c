@@ -972,21 +972,35 @@ get_effective_user (MilterClient *client)
     MilterManager *manager;
     MilterManagerPrivate *priv;
     MilterManagerConfiguration *configuration;
+    const gchar *effective_user;
 
     manager = MILTER_MANAGER(client);
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
     configuration = priv->configuration;
-    return milter_manager_configuration_get_effective_user(configuration);
+    effective_user =
+        milter_manager_configuration_get_effective_user(configuration);
+    if (effective_user) {
+        return effective_user;
+    } else {
+        MilterClientClass *klass;
+
+        klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+        return klass->get_effective_user(MILTER_CLIENT(manager));
+    }
 }
 
 static void
 set_effective_user (MilterClient *client, const gchar *effective_user)
 {
+    MilterClientClass *klass;
     MilterManager *manager;
     MilterManagerPrivate *priv;
     MilterManagerConfiguration *configuration;
 
     manager = MILTER_MANAGER(client);
+    klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+    klass->set_effective_user(client, effective_user);
+
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
     configuration = priv->configuration;
     milter_manager_configuration_set_effective_user(configuration,
@@ -1106,7 +1120,7 @@ set_pid_file (MilterClient *client, const gchar *pid_file)
 
     manager = MILTER_MANAGER(client);
     klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
-    klass->set_pid_file(MILTER_CLIENT(manager), pid_file);
+    klass->set_pid_file(client, pid_file);
 
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
     configuration = priv->configuration;
@@ -1194,6 +1208,7 @@ apply_custom_parameters (MilterManager *manager)
     MilterManagerConfiguration *configuration;
     const gchar *spec;
     const gchar *pid_file;
+    const gchar *effective_user;
 
     client = MILTER_CLIENT(manager);
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
@@ -1213,6 +1228,14 @@ apply_custom_parameters (MilterManager *manager)
         milter_manager_configuration_set_pid_file(configuration, pid_file);
         milter_manager_configuration_reset_location(configuration,
                                                     "manager.pid_file");
+    }
+
+    effective_user = klass->get_effective_user(client);
+    if (effective_user) {
+        milter_manager_configuration_set_effective_user(configuration,
+                                                        effective_user);
+        milter_manager_configuration_reset_location(configuration,
+                                                    "security.effective_user");
     }
 }
 
