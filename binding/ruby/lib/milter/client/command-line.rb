@@ -225,7 +225,7 @@ module Milter
         @option_parser.on("--log-level=LEVEL",
                           "Specify log level as [LEVEL].",
                           "Select from [%s]." % level_names.join(', '),
-                          "(#{ENV['MILTER_LOG_LEVEL'] || 'none'})") do |level|
+                          "(#{ENV['MILTER_LOG_LEVEL'] || 'default'})") do |level|
           if level.empty?
             ENV["MILTER_LOG_LEVEL"] = nil
           else
