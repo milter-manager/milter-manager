@@ -1289,6 +1289,8 @@ apply_custom_parameters (MilterManager *manager)
     const gchar *spec;
     const gchar *pid_file;
     const gchar *effective_user;
+    const gchar *effective_group;
+    guint unix_socket_mode;
     const gchar *unix_socket_group;
     MilterClientEventLoopBackend backend;
 
@@ -1321,12 +1323,37 @@ apply_custom_parameters (MilterManager *manager)
                                                     "security.effective_user");
     }
 
+    effective_group = klass->get_effective_group(client);
+    if (effective_group) {
+        milter_manager_configuration_set_effective_group(configuration,
+                                                         effective_group);
+        milter_manager_configuration_reset_location(configuration,
+                                                    "security.effective_grourp");
+    }
+
+    unix_socket_mode = klass->get_unix_socket_mode(client);
+    if (unix_socket_mode) {
+        milter_manager_configuration_set_manager_unix_socket_mode(configuration,
+                                                                  unix_socket_mode);
+        milter_manager_configuration_reset_location(configuration,
+                                                    "manager.unix_socket_mode");
+    }
+
     unix_socket_group = klass->get_unix_socket_group(client);
     if (unix_socket_group) {
         milter_manager_configuration_set_manager_unix_socket_group(configuration,
                                                                    unix_socket_group);
         milter_manager_configuration_reset_location(configuration,
                                                     "manager.unix_socket_group");
+    }
+
+    if (priv->is_custom_n_workers) {
+        guint n_workers;
+
+        n_workers = klass->get_n_workers(client);
+        milter_manager_configuration_set_n_workers(configuration, n_workers);
+        milter_manager_configuration_reset_location(configuration,
+                                                    "manager.n_workers");
     }
 
     backend = klass->get_event_loop_backend(client);
