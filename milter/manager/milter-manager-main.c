@@ -690,6 +690,7 @@ milter_manager_main (void)
         milter_manager_error("failed to listen controller socket: %s",
                              error->message);
         g_error_free(error);
+        error = NULL;
         g_object_unref(controller);
         controller = NULL;
     }
