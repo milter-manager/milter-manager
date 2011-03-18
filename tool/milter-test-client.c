@@ -46,11 +46,10 @@ print_version (const gchar *option_name,
 
 static const GOptionEntry option_entries[] =
 {
-    {"no-report-request", 0, G_OPTION_FLAG_NO_ARG | G_OPTION_FLAG_REVERSE,
+    {"no-report-request", 0, G_OPTION_FLAG_REVERSE,
      G_OPTION_ARG_NONE, &report_request,
      N_("Don't report request values"), NULL},
-    {"report-memory-profile", 0, G_OPTION_FLAG_NO_ARG,
-     G_OPTION_ARG_NONE, &report_memory_profile,
+    {"report-memory-profile", 0, 0, G_OPTION_ARG_NONE, &report_memory_profile,
      N_("Report memory profile. "
         "Need to set MILTER_MEMORY_PROFILE=yes environment variable."), NULL},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
