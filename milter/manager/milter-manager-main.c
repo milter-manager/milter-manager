@@ -84,7 +84,7 @@ print_version (const gchar *option_name, const gchar *value,
 static const GOptionEntry option_entries[] =
 {
     {"config-dir", 'c',
-     G_OPTION_FLAG_FILENAME, G_OPTION_ARG_STRING, &option_config_dir,
+     0, G_OPTION_ARG_FILENAME, &option_config_dir,
      N_("The configuration directory that has configuration file."),
      "DIRECTORY"},
     {"show-config", 0, 0, G_OPTION_ARG_NONE, &option_show_config,
