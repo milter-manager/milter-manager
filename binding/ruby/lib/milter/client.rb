@@ -224,8 +224,8 @@ module Milter
       @context.event_loop.watch_child(pid, options, &block)
     end
 
-    def add_idle(interval, options=nil, &block)
-      @context.event_loop.add_idle(interval, options, &block)
+    def add_idle(options=nil, &block)
+      @context.event_loop.add_idle(options, &block)
     end
 
     def add_timeout(interval, options=nil, &block)
