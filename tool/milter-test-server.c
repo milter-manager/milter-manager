@@ -1250,22 +1250,29 @@ parse_mail_contents (const gchar *contents, GError **error)
         lines++;
 
     for (; *lines; lines++) {
-        if (*lines[0] == '\0') {
+        gsize line_length;
+        gchar *line = *lines;
+
+        line_length = strlen(line);
+        if (line_length > 0 && line[line_length - 1] == '\r')
+            line[line_length - 1] = '\0';
+
+        if (line[0] == '\0') {
             lines++;
             break;
-        } else if (is_header(*lines)) {
-            if (!parse_header(*lines, &recipient_list, error)) {
+        } else if (is_header(line)) {
+            if (!parse_header(line, &recipient_list, error)) {
                 g_strfreev(first_lines);
                 return FALSE;
             }
-        } else if (g_ascii_isspace(*lines[0])) {
-            append_header_value(*lines);
+        } else if (g_ascii_isspace(line[0])) {
+            append_header_value(line);
         } else {
             g_set_error(error,
                         MILTER_TEST_SERVER_ERROR,
                         MILTER_TEST_SERVER_ERROR_INVALID_HEADER,
                         "invalid header: <%s>",
-                        *lines);
+                        line);
             g_strfreev(first_lines);
             return FALSE;
         }
