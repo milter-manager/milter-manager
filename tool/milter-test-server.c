@@ -2054,10 +2054,19 @@ print_body (Message *message)
                                     &bytes_read,
                                     &bytes_written,
                                     &error);
-        if (!translated_body)
-            g_print("%s\n", body_string);
-        else
+        if (error) {
+            g_print("Error:---------------------------------\n");
+            g_print("%s\n", error->message);
+            g_print("---------------------------------------\n");
+            g_error_free(error);
+        }
+
+        if (translated_body) {
             g_print("%s\n", translated_body);
+            g_free(translated_body);
+        } else {
+            g_print("%s\n", body_string);
+        }
 
         if (charset)
             g_free(charset);
