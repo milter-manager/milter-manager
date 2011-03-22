@@ -2029,7 +2029,7 @@ print_body (Message *message)
     if (message->replaced_body_string->len > 0) {
         body_string = message->replaced_body_string->str;
         body_size = message->replaced_body_string->len;
-    }else {
+    } else {
         body_string = message->body_string->str;
         body_size = message->body_string->len;
     }
