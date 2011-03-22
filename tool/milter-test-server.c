@@ -28,6 +28,10 @@
 #include <glib/gi18n.h>
 #include <fcntl.h>
 
+#ifdef HAVE_LOCALE_H
+#  include <locale.h>
+#endif
+
 #include <glib/gprintf.h>
 
 #include <sys/socket.h>
@@ -2192,6 +2196,10 @@ main (int argc, char *argv[])
     GError *error = NULL;
     GOptionContext *option_context;
     GOptionGroup *main_group;
+
+#ifdef HAVE_LOCALE_H
+    setlocale(LC_ALL, "");
+#endif
 
     milter_init();
     milter_server_init();
