@@ -48,6 +48,11 @@
 #  define RBG_INSPECT(object) (rb_milter_compat_inspect(object))
 #endif
 
+#ifndef G_DEF_CLASS_WITH_GC_FUNC
+#  define G_DEF_CLASS_WITH_GC_FUNC(gtype, name, module, mark, free) \
+    G_DEF_CLASS2(gtype, name, module, mark, free)
+#endif
+
 VALUE rb_milter_compat_glist2array_string (GList *list);
 VALUE rb_milter_compat_gobject2ruby_object_with_unref (gpointer instance);
 

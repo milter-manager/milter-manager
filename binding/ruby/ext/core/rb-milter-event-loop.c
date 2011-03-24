@@ -37,30 +37,47 @@ void rb_thread_blocking_region_end(struct rb_blocking_region_buffer *buffer);
 #endif
 
 #define SELF(self) RVAL2EVENT_LOOP(self)
+#define CALLBACKS_KEY "rb-callback"
 
 typedef struct _CallbackContext CallbackContext;
 struct _CallbackContext
 {
-    VALUE event_loop;
+    MilterEventLoop *event_loop;
     VALUE callback;
 };
 
+static inline GList *
+callbacks_get (MilterEventLoop *event_loop)
+{
+    return g_object_get_data(G_OBJECT(event_loop), CALLBACKS_KEY);
+}
+
+static inline void
+callbacks_set (MilterEventLoop *event_loop, GList *callbacks)
+{
+    GObject *object;
+
+    object = G_OBJECT(event_loop);
+    g_object_steal_data(object, CALLBACKS_KEY);
+    g_object_set_data_full(object,
+			   CALLBACKS_KEY,
+			   callbacks,
+			   (GDestroyNotify)g_list_free);
+}
+
 static CallbackContext *
-callback_context_new (VALUE event_loop, VALUE callback)
+callback_context_new (MilterEventLoop *event_loop, VALUE callback)
 {
     CallbackContext *context;
-    VALUE callbacks;
+    GList *callbacks;
 
     context = g_new(CallbackContext, 1);
     context->event_loop = event_loop;
     context->callback = callback;
 
-    callbacks = rb_iv_get(context->event_loop, "callbacks");
-    if (NIL_P(callbacks)) {
-	callbacks = rb_ary_new();
-	rb_iv_set(context->event_loop, "callbacks", callbacks);
-    }
-    rb_ary_push(callbacks, callback);
+    callbacks = callbacks_get(context->event_loop);
+    callbacks = g_list_prepend(callbacks, (gpointer)callback);
+    callbacks_set(context->event_loop, callbacks);
 
     return context;
 }
@@ -68,20 +85,12 @@ callback_context_new (VALUE event_loop, VALUE callback)
 static void
 callback_context_free (CallbackContext *context)
 {
-    VALUE callback, callbacks;
-    VALUE *callbacks_raw;
-    long i, length;
+    GList *callbacks;
 
-    callback = context->callback;
-    callbacks = rb_iv_get(context->event_loop, "callbacks");
-    callbacks_raw = RARRAY_PTR(callbacks);
-    length = RARRAY_LEN(callbacks);
-    for (i = 0; i < length; i++) {
-	if (rb_equal(callbacks_raw[i], callback)) {
-	    rb_ary_delete_at(callbacks, i);
-	    break;
-	}
-    }
+    callbacks = callbacks_get(context->event_loop);
+    callbacks = g_list_remove(callbacks, (gpointer)(context->callback));
+    callbacks_set(context->event_loop, callbacks);
+
     g_free(context);
 }
 
@@ -106,6 +115,7 @@ static VALUE
 rb_loop_watch_io (int argc, VALUE *argv, VALUE self)
 {
     VALUE rb_channel, rb_condition, rb_priority, rb_options, rb_block;
+    MilterEventLoop *event_loop;
     CallbackContext *context;
     GIOChannel *channel;
     GIOCondition condition;
@@ -128,8 +138,9 @@ rb_loop_watch_io (int argc, VALUE *argv, VALUE self)
     if (NIL_P(rb_block))
 	rb_raise(rb_eArgError, "watch IO block is missing");
 
-    context = callback_context_new(self, rb_block);
-    tag = milter_event_loop_watch_io_full(SELF(self),
+    event_loop = SELF(self);
+    context = callback_context_new(event_loop, rb_block);
+    tag = milter_event_loop_watch_io_full(event_loop,
 					  priority,
 					  channel,
 					  condition,
@@ -169,6 +180,7 @@ static VALUE
 rb_loop_watch_child (int argc, VALUE *argv, VALUE self)
 {
     VALUE rb_pid, rb_priority, rb_options, rb_block;
+    MilterEventLoop *event_loop;
     CallbackContext *context;
     GPid pid;
     gint priority = G_PRIORITY_DEFAULT;
@@ -188,8 +200,9 @@ rb_loop_watch_child (int argc, VALUE *argv, VALUE self)
     if (NIL_P(rb_block))
 	rb_raise(rb_eArgError, "watch child block is missing");
 
-    context = callback_context_new(self, rb_block);
-    tag = milter_event_loop_watch_child_full(SELF(self),
+    event_loop = SELF(self);
+    context = callback_context_new(event_loop, rb_block);
+    tag = milter_event_loop_watch_child_full(event_loop,
 					     priority,
 					     pid,
 					     cb_watch_child,
@@ -211,6 +224,7 @@ static VALUE
 rb_loop_add_timeout (int argc, VALUE *argv, VALUE self)
 {
     VALUE rb_interval, rb_priority, rb_options, rb_block;
+    MilterEventLoop *event_loop;
     CallbackContext *context;
     gdouble interval;
     gint priority = G_PRIORITY_DEFAULT;
@@ -230,8 +244,9 @@ rb_loop_add_timeout (int argc, VALUE *argv, VALUE self)
     if (NIL_P(rb_block))
 	rb_raise(rb_eArgError, "timeout block is missing");
 
-    context = callback_context_new(self, rb_block);
-    tag = milter_event_loop_add_timeout_full(SELF(self),
+    event_loop = SELF(self);
+    context = callback_context_new(event_loop, rb_block);
+    tag = milter_event_loop_add_timeout_full(event_loop,
 					     priority,
 					     interval,
 					     cb_timeout,
@@ -253,6 +268,7 @@ static VALUE
 rb_loop_add_idle (int argc, VALUE *argv, VALUE self)
 {
     VALUE rb_priority, rb_options, rb_block;
+    MilterEventLoop *event_loop;
     CallbackContext *context;
     gint priority = G_PRIORITY_DEFAULT_IDLE;
     guint tag;
@@ -269,8 +285,9 @@ rb_loop_add_idle (int argc, VALUE *argv, VALUE self)
     if (NIL_P(rb_block))
 	rb_raise(rb_eArgError, "idle block is missing");
 
-    context = callback_context_new(self, rb_block);
-    tag = milter_event_loop_add_idle_full(SELF(self),
+    event_loop = SELF(self);
+    context = callback_context_new(event_loop, rb_block);
+    tag = milter_event_loop_add_idle_full(event_loop,
 					  priority,
 					  cb_idle,
 					  context,
@@ -430,13 +447,29 @@ rb_milter_event_loop_setup (MilterEventLoop *loop)
     }
 }
 
+static void
+mark (gpointer data)
+{
+    MilterEventLoop *loop = data;
+    GObject *object;
+    GList *callbacks, *node;
+
+    object = G_OBJECT(loop);
+    callbacks = g_object_get_data(object, CALLBACKS_KEY);
+    for (node = callbacks; node; node = g_list_next(node)) {
+	VALUE callback = (VALUE)(node->data);
+	rb_gc_mark(callback);
+    }
+}
+
 void
 Init_milter_event_loop (void)
 {
     VALUE rb_cMilterEventLoop, rb_cMilterGLibEventLoop, rb_cMilterLibevEventLoop;
 
-    rb_cMilterEventLoop = G_DEF_CLASS(MILTER_TYPE_EVENT_LOOP,
-                                      "EventLoop", rb_mMilter);
+    rb_cMilterEventLoop = G_DEF_CLASS_WITH_GC_FUNC(MILTER_TYPE_EVENT_LOOP,
+						   "EventLoop", rb_mMilter,
+						   mark, NULL);
 
     rb_define_method(rb_cMilterEventLoop, "watch_io",
 		     rb_loop_watch_io, -1);
