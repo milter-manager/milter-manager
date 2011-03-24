@@ -81,7 +81,7 @@ struct _MilterEventLoopClass
                                   gpointer         data,
                                   GDestroyNotify   notify);
     gboolean (*remove)           (MilterEventLoop *loop,
-                                  guint            tag);
+                                  guint            id);
 };
 
 typedef void        (*MilterEventLoopCustomRunFunc)      (MilterEventLoop *loop);
@@ -149,7 +149,7 @@ guint                milter_event_loop_add_idle_full     (MilterEventLoop *loop,
                                                           GDestroyNotify   notify);
 
 gboolean             milter_event_loop_remove            (MilterEventLoop *loop,
-                                                          guint            tag);
+                                                          guint            id);
 
 G_END_DECLS
 

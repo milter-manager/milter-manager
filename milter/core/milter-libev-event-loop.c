@@ -40,7 +40,7 @@ typedef struct _MilterLibevEventLoopPrivate	MilterLibevEventLoopPrivate;
 struct _MilterLibevEventLoopPrivate
 {
     ev_loop *ev_loop;
-    guint tag;
+    guint id;
     GHashTable *watchers;
     guint n_called;
     GFunc release_func;
@@ -104,7 +104,7 @@ static guint    add_idle_full    (MilterEventLoop *loop,
                                   GDestroyNotify   notify);
 
 static gboolean remove           (MilterEventLoop *loop,
-                                  guint            tag);
+                                  guint            id);
 
 static void
 milter_libev_event_loop_class_init (MilterLibevEventLoopClass *klass)
@@ -143,7 +143,7 @@ milter_libev_event_loop_init (MilterLibevEventLoop *loop)
 
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
     priv->ev_loop = NULL;
-    priv->tag = 0;
+    priv->id = 0;
     priv->watchers = g_hash_table_new_full(g_direct_hash, g_direct_equal,
                                            NULL, destroy_watcher);
     priv->n_called = 0;
@@ -297,7 +297,7 @@ typedef struct _WatcherPrivate WatcherPrivate;
 struct _WatcherPrivate
 {
     MilterLibevEventLoop *loop;
-    guint tag;
+    guint id;
     WatcherStopFunc stop_func;
     WatcherDestroyFunc destroy_func;
     GDestroyNotify notify;
@@ -313,19 +313,19 @@ add_watcher (MilterLibevEventLoop *loop, ev_watcher *watcher,
     WatcherPrivate *watcher_priv;
 
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
-    priv->tag++;
+    priv->id++;
 
     watcher_priv = watcher->data;
     watcher_priv->loop = loop;
-    watcher_priv->tag = priv->tag;
+    watcher_priv->id = priv->id;
     watcher_priv->stop_func = stop_func;
     watcher_priv->destroy_func = destroy_func;
     watcher_priv->notify = notify;
     watcher_priv->user_data = user_data;
 
-    g_hash_table_insert(priv->watchers, GUINT_TO_POINTER(priv->tag), watcher);
+    g_hash_table_insert(priv->watchers, GUINT_TO_POINTER(priv->id), watcher);
 
-    return priv->tag;
+    return priv->id;
 }
 
 static void
@@ -349,12 +349,12 @@ destroy_watcher (gpointer data)
 }
 
 static void
-remove_watcher (MilterLibevEventLoop *loop, guint tag)
+remove_watcher (MilterLibevEventLoop *loop, guint id)
 {
     MilterLibevEventLoopPrivate *priv;
 
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
-    g_hash_table_remove(priv->watchers, GUINT_TO_POINTER(tag));
+    g_hash_table_remove(priv->watchers, GUINT_TO_POINTER(id));
 }
 
 static void
@@ -448,18 +448,18 @@ io_func (struct ev_loop *loop, ev_io *watcher, int revents)
     IOWatcherPrivate *io_watcher_priv;
     WatcherPrivate *watcher_priv;
     MilterLibevEventLoop *milter_event_loop;
-    guint tag;
+    guint id;
 
     io_watcher_priv = watcher->data;
     watcher_priv = WATCHER_PRIVATE(io_watcher_priv);
 
     milter_event_loop = watcher_priv->loop;
     MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(milter_event_loop)->n_called++;
-    tag = watcher_priv->tag;
+    id = watcher_priv->id;
     if (!io_watcher_priv->function(io_watcher_priv->channel,
                                    evcond_to_g_io_condition(revents),
                                    watcher_priv->user_data)) {
-        remove_watcher(milter_event_loop, tag);
+        remove_watcher(milter_event_loop, id);
     }
 }
 
@@ -472,7 +472,7 @@ watch_io_full (MilterEventLoop *loop,
                gpointer         user_data,
                GDestroyNotify   notify)
 {
-    guint tag;
+    guint id;
     int fd;
     ev_io *watcher;
     IOWatcherPrivate *watcher_priv;
@@ -491,7 +491,7 @@ watch_io_full (MilterEventLoop *loop,
 
     watcher = g_new0(ev_io, 1);
     watcher->data = watcher_priv;
-    tag = add_watcher(MILTER_LIBEV_EVENT_LOOP(loop),
+    id = add_watcher(MILTER_LIBEV_EVENT_LOOP(loop),
                       (ev_watcher *)watcher,
                       WATCHER_STOP_FUNC(ev_io_stop),
                       io_watcher_destroy,
@@ -500,7 +500,7 @@ watch_io_full (MilterEventLoop *loop,
     ev_io_init(watcher, io_func, fd, evcond_from_g_io_condition(condition));
     ev_io_start(priv->ev_loop, watcher);
 
-    return tag;
+    return id;
 }
 
 typedef struct _ChildWatcherPrivate ChildWatcherPrivate;
@@ -515,18 +515,18 @@ child_func (struct ev_loop *loop, ev_child *watcher, int revents)
     ChildWatcherPrivate *child_watcher_priv;
     WatcherPrivate *watcher_priv;
     MilterLibevEventLoop *milter_event_loop;
-    guint tag;
+    guint id;
 
     child_watcher_priv = watcher->data;
     watcher_priv = WATCHER_PRIVATE(child_watcher_priv);
 
     milter_event_loop = watcher_priv->loop;
     MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(milter_event_loop)->n_called++;
-    tag = watcher_priv->tag;
+    id = watcher_priv->id;
     child_watcher_priv->function((GPid)(watcher->rpid),
                                  watcher->rstatus,
                                  watcher_priv->user_data);
-    remove_watcher(milter_event_loop, tag);
+    remove_watcher(milter_event_loop, id);
 }
 
 static guint
@@ -537,7 +537,7 @@ watch_child_full (MilterEventLoop *loop,
                   gpointer         data,
                   GDestroyNotify   notify)
 {
-    guint tag;
+    guint id;
     ev_child *watcher;
     ChildWatcherPrivate *watcher_priv;
     MilterLibevEventLoopPrivate *priv;
@@ -549,7 +549,7 @@ watch_child_full (MilterEventLoop *loop,
 
     watcher = g_new0(ev_child, 1);
     watcher->data = watcher_priv;
-    tag = add_watcher(MILTER_LIBEV_EVENT_LOOP(loop),
+    id = add_watcher(MILTER_LIBEV_EVENT_LOOP(loop),
                       (ev_watcher *)watcher,
                       WATCHER_STOP_FUNC(ev_child_stop),
                       NULL,
@@ -558,7 +558,7 @@ watch_child_full (MilterEventLoop *loop,
     ev_child_init(watcher, child_func, pid, FALSE);
     ev_child_start(priv->ev_loop, watcher);
 
-    return tag;
+    return id;
 }
 
 typedef struct _TimerWatcherPrivate TimerWatcherPrivate;
@@ -573,16 +573,16 @@ timer_func (struct ev_loop *loop, ev_timer *watcher, int revents)
     TimerWatcherPrivate *timer_watcher_priv;
     WatcherPrivate *watcher_priv;
     MilterLibevEventLoop *milter_event_loop;
-    guint tag;
+    guint id;
 
     timer_watcher_priv = watcher->data;
     watcher_priv = WATCHER_PRIVATE(timer_watcher_priv);
 
     milter_event_loop = watcher_priv->loop;
     MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(milter_event_loop)->n_called++;
-    tag = watcher_priv->tag;
+    id = watcher_priv->id;
     if (!timer_watcher_priv->function(watcher_priv->user_data)) {
-        remove_watcher(milter_event_loop, tag);
+        remove_watcher(milter_event_loop, id);
     }
 }
 
@@ -594,7 +594,7 @@ add_timeout_full (MilterEventLoop *loop,
                   gpointer         data,
                   GDestroyNotify   notify)
 {
-    guint tag;
+    guint id;
     ev_timer *watcher;
     TimerWatcherPrivate *watcher_priv;
     MilterLibevEventLoopPrivate *priv;
@@ -608,7 +608,7 @@ add_timeout_full (MilterEventLoop *loop,
 
     watcher = g_new0(ev_timer, 1);
     watcher->data = watcher_priv;
-    tag = add_watcher(MILTER_LIBEV_EVENT_LOOP(loop),
+    id = add_watcher(MILTER_LIBEV_EVENT_LOOP(loop),
                       (ev_watcher *)watcher,
                       WATCHER_STOP_FUNC(ev_timer_stop),
                       NULL,
@@ -617,7 +617,7 @@ add_timeout_full (MilterEventLoop *loop,
     ev_timer_init(watcher, timer_func, interval_in_seconds, interval_in_seconds);
     ev_timer_start(priv->ev_loop, watcher);
 
-    return tag;
+    return id;
 }
 
 typedef struct _IdleWatcherPrivate IdleWatcherPrivate;
@@ -633,16 +633,16 @@ idle_func (struct ev_loop *loop, ev_idle *watcher, int revents)
     IdleWatcherPrivate *idle_watcher_priv;
     WatcherPrivate *watcher_priv;
     MilterLibevEventLoop *milter_event_loop;
-    guint tag;
+    guint id;
 
     idle_watcher_priv = watcher->data;
     watcher_priv = WATCHER_PRIVATE(idle_watcher_priv);
 
     milter_event_loop = watcher_priv->loop;
     MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(milter_event_loop)->n_called++;
-    tag = watcher_priv->tag;
+    id = watcher_priv->id;
     if (!idle_watcher_priv->function(watcher_priv->user_data)) {
-        remove_watcher(milter_event_loop, tag);
+        remove_watcher(milter_event_loop, id);
     }
 }
 
@@ -653,7 +653,7 @@ add_idle_full (MilterEventLoop *loop,
                gpointer         data,
                GDestroyNotify   notify)
 {
-    guint tag;
+    guint id;
     ev_idle *watcher;
     IdleWatcherPrivate *watcher_priv;
     MilterLibevEventLoopPrivate *priv;
@@ -665,7 +665,7 @@ add_idle_full (MilterEventLoop *loop,
 
     watcher = g_new0(ev_idle, 1);
     watcher->data = watcher_priv;
-    tag = add_watcher(MILTER_LIBEV_EVENT_LOOP(loop),
+    id = add_watcher(MILTER_LIBEV_EVENT_LOOP(loop),
                       (ev_watcher *)watcher,
                       WATCHER_STOP_FUNC(ev_idle_stop),
                       NULL,
@@ -674,18 +674,18 @@ add_idle_full (MilterEventLoop *loop,
     ev_idle_init(watcher, idle_func);
     ev_idle_start(priv->ev_loop, watcher);
 
-    return tag;
+    return id;
 }
 
 static gboolean
 remove (MilterEventLoop *loop,
-        guint            tag)
+        guint            id)
 {
     gboolean success;
     MilterLibevEventLoopPrivate *priv;
 
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
-    success = g_hash_table_remove(priv->watchers, GUINT_TO_POINTER(tag));
+    success = g_hash_table_remove(priv->watchers, GUINT_TO_POINTER(id));
     return success;
 }
 
