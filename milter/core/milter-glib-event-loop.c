@@ -37,6 +37,7 @@ struct _MilterGLibEventLoopPrivate
 {
     GMainContext *context;
     GMainLoop *loop;
+    GHashTable *ids;
 };
 
 enum
@@ -153,6 +154,19 @@ milter_glib_event_loop_init (MilterGLibEventLoop *loop)
     priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
     priv->context = NULL;
     priv->loop = NULL;
+    priv->ids = g_hash_table_new(g_direct_hash, g_direct_equal);
+}
+
+static void
+dispose_unremoved_source (gpointer key, gpointer value, gpointer user_data)
+{
+    guint id = GPOINTER_TO_UINT(key);
+    GMainContext *context = user_data;
+    GSource *source;
+
+    source = g_main_context_find_source_by_id(context, id);
+    if (source)
+        g_source_destroy(source);
 }
 
 static void
@@ -165,6 +179,12 @@ dispose (GObject *object)
     if (priv->loop) {
         g_main_loop_unref(priv->loop);
         priv->loop = NULL;
+    }
+
+    if (priv->ids) {
+        g_hash_table_foreach(priv->ids, dispose_unremoved_source, priv->context);
+        g_hash_table_unref(priv->ids);
+        priv->ids = NULL;
     }
 
     if (priv->context) {
@@ -256,6 +276,17 @@ quit (MilterEventLoop *loop)
 }
 
 static guint
+attach_source (MilterGLibEventLoopPrivate *priv, GSource *source)
+{
+    guint id;
+
+    id = g_source_attach(source, g_main_loop_get_context(priv->loop));
+    g_hash_table_insert(priv->ids, GUINT_TO_POINTER(id), NULL);
+
+    return id;
+}
+
+static guint
 watch_io_full (MilterEventLoop *loop,
                gint             priority,
                GIOChannel      *channel,
@@ -265,7 +296,7 @@ watch_io_full (MilterEventLoop *loop,
                GDestroyNotify   notify)
 {
     MilterGLibEventLoopPrivate *priv;
-    guint watch_id;
+    guint id;
     GSource *source;
 
     priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
@@ -273,10 +304,10 @@ watch_io_full (MilterEventLoop *loop,
     if (priority != G_PRIORITY_DEFAULT)
         g_source_set_priority(source, priority);
     g_source_set_callback(source, (GSourceFunc)function, data, notify);
-    watch_id = g_source_attach(source, g_main_loop_get_context(priv->loop));
+    id = attach_source(priv, source);
     g_source_unref(source);
 
-    return watch_id;
+    return id;
 }
 
 static guint
@@ -296,7 +327,7 @@ watch_child_full (MilterEventLoop *loop,
     if (priority != G_PRIORITY_DEFAULT)
         g_source_set_priority(source, priority);
     g_source_set_callback(source, (GSourceFunc)function, data, notify);
-    id = g_source_attach(source, g_main_loop_get_context(priv->loop));
+    id = attach_source(priv, source);
     g_source_unref(source);
 
     return id;
@@ -319,7 +350,7 @@ add_timeout_full (MilterEventLoop *loop,
     if (priority != G_PRIORITY_DEFAULT)
         g_source_set_priority(source, priority);
     g_source_set_callback(source, function, data, notify);
-    id = g_source_attach(source, g_main_loop_get_context(priv->loop));
+    id = attach_source(priv, source);
     g_source_unref(source);
 
     return id;
@@ -341,7 +372,7 @@ add_idle_full (MilterEventLoop *loop,
     if (priority != G_PRIORITY_DEFAULT_IDLE)
         g_source_set_priority(source, priority);
     g_source_set_callback(source, function, data, notify);
-    id = g_source_attach(source, g_main_loop_get_context(priv->loop));
+    id = attach_source(priv, source);
     g_source_unref(source);
 
     return id;
@@ -359,6 +390,7 @@ remove (MilterEventLoop *loop, guint id)
     source = g_main_context_find_source_by_id(context, id);
     if (source)
         g_source_destroy(source);
+    g_hash_table_remove(priv->ids, GUINT_TO_POINTER(id));
 
     return source != NULL;
 }
