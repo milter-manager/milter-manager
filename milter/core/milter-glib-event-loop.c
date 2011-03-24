@@ -172,8 +172,6 @@ dispose (GObject *object)
         priv->context = NULL;
     }
 
-    g_print("dispose\n");
-
     G_OBJECT_CLASS(milter_glib_event_loop_parent_class)->dispose(object);
 }
 
