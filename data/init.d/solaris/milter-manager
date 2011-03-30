@@ -4,7 +4,7 @@ MILTER_MANAGER_ROOT=/opt/milter-manager
 MILTER_COMMAND=$MILTER_MANAGER_ROOT/sbin/milter-manager
 CONFIG_DIR=$MILTER_MANAGER_ROOT/etc/milter-manager
 
-PID_FILE=/opt/milter-manager/var/run/milter-manager/milter-manager.pid
+PID_FILE=$MILTER_MANAGER_ROOT/var/run/milter-manager/milter-manager.pid
 
 start()
 {
