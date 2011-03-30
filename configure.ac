@@ -814,6 +814,7 @@ AC_CONFIG_FILES([Makefile
 		 binding/ruby/lib/milter/server/Makefile
 		 binding/ruby/lib/milter/manager/Makefile
 		 binding/ruby/ruby-milter/Makefile
+		 binding/ruby/ruby-milter/milter.rb
 		 binding/ruby/ruby-milter/milter/Makefile
 		 binding/ruby/test/Makefile
 		 binding/ruby/test/core/Makefile
