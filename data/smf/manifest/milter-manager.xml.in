@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
+
+<service_bundle type='manifest' name='MMGR:milter-manager'>
+
+  <service
+	 name='network/milter-manager'
+	 type='service'
+	 version='1'>
+
+	<single_instance />
+
+	<dependency name='network'
+		        grouping='require_all'
+		        restart_on='error'
+		        type='service'>
+	  <service_fmri value='svc:/network/smtp'/>
+	</dependency>
+
+    <instance name='milter-manager' enabled='false'>
+
+	  <exec_method
+	     type='method'
+	     name='start'
+	     exec='@prefix@/var/svc/method/milter-manager start'
+	     timeout_seconds='60' />
+
+	  <exec_method
+	     type='method'
+	     name='stop'
+	     exec='@prefix@/var/svc/method/milter-manager stop'
+	     timeout_seconds='60' />
+
+	  <exec_method
+	     type='method'
+	     name='restart'
+	     exec='@prefix@/var/svc/method/milter-manager restart'
+	     timeout_seconds='60' />
+
+      <template>
+	    <common_name>
+		  <loctext xml:lang='C'>
+            Milter Manager.
+		  </loctext>
+	    </common_name>
+	    <documentation>
+		  <manpage title='milter-manager' section='1'
+				   manpath='@prefix@/share/man' />
+		  <doc_link name='milter-manager.sourceforge.net'
+				    uri='http://milter-manager.sourceforge.net/' />
+	    </documentation>
+	  </template>
+    </instance>
+
+	<stability value='Evolving' />
+
+  </service>
+
+</service_bundle>

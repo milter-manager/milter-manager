@@ -843,6 +843,9 @@ AC_CONFIG_FILES([Makefile
 		 data/cron.d/redhat/Makefile
 		 data/cron.d/freebsd/Makefile
 		 data/munin/Makefile
+         data/smf/Makefile
+         data/smf/manifest/Makefile
+         data/smf/manifest/milter-manager.xml
 		 tool/Makefile
 		 admin/Makefile
 		 test/Makefile
