@@ -6,7 +6,8 @@ SUBDIRS =			\
 	rc.d			\
 	init.d			\
 	cron.d			\
-	munin
+	munin			\
+	smf
 
 dist_pkgsysconf_DATA =		\
 	milter-manager.conf
