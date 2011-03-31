@@ -1,4 +1,4 @@
 # This file is generated automatically.
 # This file is just for backward compatibility.
 
-load '$(binding_libdir)/milter/client.rb'
+load '@binding_libdir@/milter/client.rb'
