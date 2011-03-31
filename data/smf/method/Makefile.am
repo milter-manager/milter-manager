@@ -1,7 +1,7 @@
-methoddir = $(prefix)/lib/svc/method
+smf_methoddir = $(prefix)/lib/svc/method
 
-method_script = milter-manager
+smf_method_script = milter-manager
 
 if SOLARIS_PLATFORM
-method_SCRIPTS = $(method_script)
+smf_method_SCRIPTS = $(smf_method_script)
 endif

@@ -1,7 +1,7 @@
-manifestdir = $(prefix)/var/svc/manifest/network
+smf_manifestdir = $(prefix)/var/svc/manifest/network
 
-manifest_xml = milter-manager.xml
+smf_manifest = milter-manager.xml
 
 if SOLARIS_PLATFORM
-manifest_XMLS = $(manifest_xml)
+smf_manifest_DATA = $(smf_manifest)
 endif
