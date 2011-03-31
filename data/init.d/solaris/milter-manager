@@ -1,0 +1,18 @@
+#!/sbin/sh
+
+case "$1" in
+'start')
+        svcadm enable -t svc:/network/milter-manager
+        ;;
+'restart')
+        svcadm refresh svc:/network/milter-manager
+        ;;
+'stop')
+        svcadm disable -t svc:/network/milter-manager
+        ;;
+*)
+        echo "Usage: $0 { start | stop | restart }"
+        exit 1
+        ;;
+esac
+exit 0
