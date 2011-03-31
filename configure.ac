@@ -846,6 +846,8 @@ AC_CONFIG_FILES([Makefile
          data/smf/Makefile
          data/smf/manifest/Makefile
          data/smf/manifest/milter-manager.xml
+         data/smf/method/Makefile
+         data/smf/method/milter-manager
 		 tool/Makefile
 		 admin/Makefile
 		 test/Makefile

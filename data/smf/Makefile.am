@@ -1,1 +1,1 @@
-SUBDIRS = manifest
+SUBDIRS = manifest method

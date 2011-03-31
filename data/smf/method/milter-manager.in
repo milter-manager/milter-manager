@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MILTER_MANAGER_ROOT=$(prefix)
+MILTER_MANAGER_ROOT=@prefix@
 MILTER_COMMAND=$MILTER_MANAGER_ROOT/sbin/milter-manager
 CONFIG_DIR=$MILTER_MANAGER_ROOT/etc/milter-manager
 
@@ -39,3 +39,4 @@ case "$1" in
         exit 1
         ;;
 esac
+exit 0
