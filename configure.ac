@@ -851,11 +851,11 @@ AC_CONFIG_FILES([Makefile
 		 data/cron.d/redhat/Makefile
 		 data/cron.d/freebsd/Makefile
 		 data/munin/Makefile
-         data/smf/Makefile
-         data/smf/manifest/Makefile
-         data/smf/manifest/milter-manager.xml
-         data/smf/method/Makefile
-         data/smf/method/milter-manager
+		 data/smf/Makefile
+		 data/smf/manifest/Makefile
+		 data/smf/manifest/milter-manager.xml
+		 data/smf/method/Makefile
+		 data/smf/method/milter-manager
 		 tool/Makefile
 		 admin/Makefile
 		 test/Makefile
