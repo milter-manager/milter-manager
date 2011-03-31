@@ -83,3 +83,5 @@ Makefile.in
 /binding/ruby/ruby-milter/milter/core.rb
 /binding/ruby/ruby-milter/milter/server.rb
 /configure.lineno
+/data/smf/manifest/milter-manager.xml
+/data/smf/method/milter-manager
