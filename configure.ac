@@ -213,10 +213,12 @@ bindingdir='$(pkglibdir)/binding'
 expanded_bindingdir="${milter_manager_exec_prefix}/lib/${PACKAGE_NAME}/binding"
 binding_extdir='$(bindingdir)/ext'
 binding_libdir='$(bindingdir)/lib'
+expanded_binding_extdir="${expanded_bindingdir}/ext"
 expanded_binding_libdir="${expanded_bindingdir}/lib"
 AC_SUBST(bindingdir)
 AC_SUBST(binding_extdir)
 AC_SUBST(binding_libdir)
+AC_SUBST(expanded_binding_extdir)
 AC_SUBST(expanded_binding_libdir)
 
 tool_libdir='$(pkglibdir)/tool'
@@ -819,6 +821,9 @@ AC_CONFIG_FILES([Makefile
 		 binding/ruby/ruby-milter/Makefile
 		 binding/ruby/ruby-milter/milter.rb
 		 binding/ruby/ruby-milter/milter/Makefile
+		 binding/ruby/ruby-milter/milter/client.rb
+		 binding/ruby/ruby-milter/milter/core.rb
+		 binding/ruby/ruby-milter/milter/server.rb
 		 binding/ruby/test/Makefile
 		 binding/ruby/test/core/Makefile
 		 binding/ruby/test/client/Makefile
