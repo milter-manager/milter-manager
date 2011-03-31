@@ -199,12 +199,25 @@ module_configurationdir='$(moduledir)/configuration'
 AC_SUBST(moduledir)
 AC_SUBST(module_configurationdir)
 
+if test "$exec_prefix" = "NONE"; then
+  if test "$prefix" = "NONE"; then
+    milter_manager_exec_prefix=$ac_default_prefix
+  else
+    milter_manager_exec_prefix=$prefix
+  fi
+else
+  milter_manager_exec_prefix=$exec_prefix
+fi
+
 bindingdir='$(pkglibdir)/binding'
+expanded_bindingdir="${milter_manager_exec_prefix}/lib/${PACKAGE_NAME}/binding"
 binding_extdir='$(bindingdir)/ext'
 binding_libdir='$(bindingdir)/lib'
+expanded_binding_libdir="${expanded_bindingdir}/lib"
 AC_SUBST(bindingdir)
 AC_SUBST(binding_extdir)
 AC_SUBST(binding_libdir)
+AC_SUBST(expanded_binding_libdir)
 
 tool_libdir='$(pkglibdir)/tool'
 AC_SUBST(tool_libdir)
@@ -341,16 +354,6 @@ if test "$ruby_available" = "yes"; then
 
   if test "x$use_bundled_ruby_glib2" != "xno" -a \
           "x$ruby_glib2_available" != "xyes"; then
-    if test "$exec_prefix" = "NONE"; then
-      if test "$prefix" = "NONE"; then
-        ac_ruby_glib2_exec_prefix=$ac_default_prefix
-      else
-        ac_ruby_glib2_exec_prefix=$prefix
-      fi
-    else
-      ac_ruby_glib2_exec_prefix=$exec_prefix
-    fi
-
     if test $ruby_minor_version$ruby_micro_version -gt 85; then
       ac_used_bundled_ruby_glib2_version=0.90.5
     else
@@ -381,7 +384,7 @@ if test "$ruby_available" = "yes"; then
       cat <<EOM >> $ac_ruby_glib2_dir/Makefile
 
 srcdir_prefix = `test "${srcdir}" = . || echo "../../../$srcdir/$ac_ruby_glib2_dir/"`
-exec_prefix = $ac_ruby_glib2_exec_prefix
+exec_prefix = $milter_manager_exec_prefix
 libdir = \$(DESTDIR)$libdir
 pkglibdir = \$(libdir)/$PACKAGE_NAME
 bindingdir = $bindingdir
