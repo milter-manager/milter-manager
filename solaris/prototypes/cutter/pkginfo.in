@@ -7,4 +7,4 @@ VENDOR=http://milter-manager.sourceforge.net/ packaged for milter-manager
 EMAIL=cutter-users-en@lists.sourceforge.net
 CLASSES=none
 HOTLINE=http://cutter.sourceforge.net/
-BASEDIR=/opt/milter-manager
+BASEDIR=@prefix@

@@ -7,4 +7,4 @@ VENDOR=http://www.gnu.org/software/libiconv/ packaged for milter-manager
 EMAIL=milter-manager-users-en@lists.sourceforge.net
 CLASSES=none
 HOTLINE=http://milter-manager.sourceforge.net/
-BASEDIR=/opt/milter-manager
+BASEDIR=@prefix@
