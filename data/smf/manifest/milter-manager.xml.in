@@ -17,6 +17,14 @@
 	  <service_fmri value='svc:/network/smtp'/>
 	</dependency>
 
+    <dependency name='config-file'
+		        grouping='require_all'
+		        restart_on='refresh'
+		        type='path'>
+      <service_fmri
+          value='file://localhost/@prefix@/etc/milter-manager/milter-manager.conf'/>
+    </dependency>
+
     <instance name='milter-manager' enabled='false'>
 
 	  <exec_method
