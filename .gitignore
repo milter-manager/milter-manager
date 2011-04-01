@@ -65,6 +65,7 @@ Makefile.in
 /solaris/sources/
 /solaris/builds/
 /solaris/pkgs/
+/solaris/prototypes/*/pkginfo
 /admin/log/*
 /admin/config/secret
 /yum/*.repo
