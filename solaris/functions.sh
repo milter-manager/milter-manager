@@ -14,6 +14,19 @@ time_stamp()
     date +%Y-%m-%dT%H:%m:%S
 }
 
+create_pkginfo()
+{
+    local base="$1"
+    local build_dir="$2"
+    local package_name="${base%%-[0-9]*}"
+    package_name="${package_name##lib}"
+    local prototype_dir="${PROTOTYPES}/${package_name}"
+    local pkginfo_template="${prototype_dir}/pkginfo.in"
+    local pkginfo="${prototype_dir}/pkginfo"
+
+    sed -e "s,@prefix@,${PREFIX},g" "${pkginfo_template}" > "${pkginfo}"
+}
+
 update_prototype()
 {
     local base="$1"
@@ -130,6 +143,7 @@ install_package()
     run ${MAKE} -C "${build_dir}" install > "${log}"
     echo "$(time_stamp): done."
 
+    create_pkginfo "${base}" "${build_dir}"
     update_prototype "${base}" "${build_dir}"
 }
 
