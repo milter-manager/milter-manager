@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1167,6 +1167,12 @@ EOF
     [sessions, milter_manager_status, milter_manager_report, milters]
   end
 
+  def output
+    output_all_graph
+    output_html
+  end
+
+  private
   def output_graph(range, label, options={})
     output_graph_info = []
     [milter_manager_status, milter_manager_report].each do |generator|
@@ -1191,7 +1197,6 @@ EOF
     end
   end
 
-  private
   def now
     @now ||= Time.now.utc
   end
@@ -1220,8 +1225,7 @@ if __FILE__ == $0
   milter_log_analyzer.parse_options(ARGV)
   milter_log_analyzer.prepare
   milter_log_analyzer.update
-  milter_log_analyzer.output_all_graph
-  milter_log_analyzer.output_html
+  milter_log_analyzer.output
 end
 
 # vi:ts=2:nowrap:ai:expandtab:sw=2
