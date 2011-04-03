@@ -78,6 +78,7 @@ struct _MilterManagerConfigurationPrivate
     MilterClientEventLoopBackend event_loop_backend;
     guint n_workers;
     guint default_packet_buffer_size;
+    gboolean use_syslog;
 };
 
 enum
@@ -111,7 +112,8 @@ enum
     PROP_EVENT_LOOP_BACKEND,
     PROP_N_WORKERS,
     PROP_DEFAULT_PACKET_BUFFER_SIZE,
-    PROP_PREFIX
+    PROP_PREFIX,
+    PROP_USE_SYSLOG
 };
 
 enum
@@ -425,6 +427,12 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                G_PARAM_READABLE);
     g_object_class_install_property(gobject_class, PROP_PREFIX, spec);
 
+    spec = g_param_spec_boolean("use-syslog",
+                                "Use Syslog",
+                                "Whether milter-manager uses syslog",
+                                TRUE,
+                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class, PROP_USE_SYSLOG, spec);
 
     signals[CONNECTED] =
         g_signal_new("connected",
@@ -638,6 +646,10 @@ set_property (GObject      *object,
             config,
             g_value_get_uint(value));
         break;
+    case PROP_USE_SYSLOG:
+        milter_manager_configuration_set_use_syslog(config,
+                                                    g_value_get_boolean(value));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -740,6 +752,9 @@ get_property (GObject    *object,
         break;
     case PROP_PREFIX:
         g_value_set_string(value, PREFIX);
+        break;
+    case PROP_USE_SYSLOG:
+        g_value_set_boolean(value, priv->use_syslog);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -2240,6 +2255,26 @@ milter_manager_configuration_get_prefix (MilterManagerConfiguration *configurati
 {
     return PREFIX;
 }
+
+gboolean
+milter_manager_configuration_get_use_syslog (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->use_syslog;
+}
+
+void
+milter_manager_configuration_set_use_syslog (MilterManagerConfiguration *configuration,
+                                             gboolean                    use_syslog)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->use_syslog = use_syslog;
+}
+
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

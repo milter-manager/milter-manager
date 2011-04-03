@@ -57,6 +57,7 @@ void test_location (void);
 void test_n_workers (void);
 void test_default_packet_buffer_size (void);
 void test_prefix (void);
+void test_use_syslog (void);
 void test_egg (void);
 void test_find_egg (void);
 void test_remove_egg (void);
@@ -580,6 +581,18 @@ test_prefix (void)
 {
     cut_assert_equal_string(PREFIX,
                             milter_manager_configuration_get_prefix(config));
+}
+
+void
+test_use_syslog (void)
+{
+    cut_assert_equal_boolean(
+        TRUE,
+        milter_manager_configuration_get_use_syslog(config));
+    milter_manager_configuration_set_use_syslog(config, FALSE);
+    cut_assert_equal_boolean(
+        FALSE,
+        milter_manager_configuration_get_use_syslog(config));
 }
 
 static void
