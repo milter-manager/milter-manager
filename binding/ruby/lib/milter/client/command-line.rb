@@ -117,7 +117,7 @@ module Milter
         milter_conf = @configuration.milter
         @option_parser.on("-s", "--connection-spec=SPEC",
                           "Specify connection spec as [SPEC].",
-                          "(#{milter_conf})") do |spec|
+                          "(#{milter_conf.connection_spec})") do |spec|
           milter_conf.connection_spec = spec
         end
 
