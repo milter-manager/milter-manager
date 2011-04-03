@@ -669,6 +669,15 @@ dispose_accept_watchers (MilterClientPrivate *priv)
 }
 
 static void
+dispose_syslog_logger (MilterClientPrivate *priv)
+{
+    if (priv->syslog_logger) {
+        g_object_unref(priv->syslog_logger);
+        priv->syslog_logger = NULL;
+    }
+}
+
+static void
 dispose (GObject *object)
 {
     MilterClientPrivate *priv;
@@ -753,10 +762,7 @@ dispose (GObject *object)
         priv->pid_file = NULL;
     }
 
-    if (priv->syslog_logger) {
-        g_object_unref(priv->syslog_logger);
-        priv->syslog_logger = NULL;
-    }
+    dispose_syslog_logger(priv);
 
     if (priv->syslog_identify) {
         g_free(priv->syslog_identify);
@@ -2826,15 +2832,22 @@ milter_client_start_syslog (MilterClient *client)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    if (priv->syslog_logger) {
-        g_object_unref(priv->syslog_logger);
-    }
+    milter_client_stop_syslog(client);
 
     identify = priv->syslog_identify;
     if (!identify)
         identify = g_get_prgname();
     priv->syslog_logger = milter_syslog_logger_new(identify,
                                                    priv->syslog_facility);
+}
+
+void
+milter_client_stop_syslog (MilterClient *client)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    dispose_syslog_logger(priv);
 }
 
 MilterEventLoop *

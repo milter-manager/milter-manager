@@ -816,6 +816,14 @@ void                  milter_client_set_syslog_facility
 void                 milter_client_start_syslog      (MilterClient  *client);
 
 /**
+ * milter_client_stop_syslog:
+ * @client: a %MilterClient.
+ *
+ * Stops logging by syslog.
+ */
+void                 milter_client_stop_syslog       (MilterClient  *client);
+
+/**
  * milter_client_get_event_loop:
  * @client: a %MilterClient.
  *
