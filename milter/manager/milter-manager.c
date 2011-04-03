@@ -40,7 +40,6 @@ typedef struct _MilterManagerPrivate MilterManagerPrivate;
 struct _MilterManagerPrivate
 {
     MilterManagerConfiguration *configuration;
-    MilterSyslogLogger *logger;
     GList *leaders;
     GList *next_connection_checked_leader;
     gboolean connection_checking;
@@ -198,7 +197,6 @@ milter_manager_init (MilterManager *manager)
     priv->leaders = NULL;
     priv->next_connection_checked_leader = NULL;
     priv->connection_checking = FALSE;
-    priv->logger = milter_syslog_logger_new("milter-manager", NULL);
 
     priv->launcher_read_channel = NULL;
     priv->launcher_write_channel = NULL;
@@ -277,11 +275,6 @@ dispose (GObject *object)
     }
     priv->next_connection_checked_leader = NULL;
 
-    if (priv->logger) {
-        g_object_unref(priv->logger);
-        priv->logger = NULL;
-    }
-
     milter_manager_set_launcher_channel(MILTER_MANAGER(object), NULL, NULL);
 
     G_OBJECT_CLASS(milter_manager_parent_class)->dispose(object);
@@ -340,6 +333,9 @@ milter_manager_new (MilterManagerConfiguration *configuration)
 {
     return g_object_new(MILTER_TYPE_MANAGER,
                         "configuration", configuration,
+                        "syslog-identify", "milter-manager",
+                        "syslog-facility", "mail",
+                        "start-syslog", TRUE,
                         NULL);
 }
 
