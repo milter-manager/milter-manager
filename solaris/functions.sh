@@ -9,25 +9,17 @@ run()
     fi
 }
 
+run_sudo()
+{
+    run sudo "$@"
+}
+
 time_stamp()
 {
     date +%Y-%m-%dT%H:%m:%S
 }
 
-create_pkginfo()
-{
-    local base="$1"
-    local build_dir="$2"
-    local package_name="${base%%-[0-9]*}"
-    package_name="${package_name##lib}"
-    local prototype_dir="${PROTOTYPES}/${package_name}"
-    local pkginfo_template="${prototype_dir}/pkginfo.in"
-    local pkginfo="${prototype_dir}/pkginfo"
-
-    sed -e "s,@prefix@,${PREFIX},g" "${pkginfo_template}" > "${pkginfo}"
-}
-
-update_prototype()
+build_pkg()
 {
     local base="$1"
     local build_dir="$2"
@@ -35,6 +27,8 @@ update_prototype()
     package_name="${package_name##lib}"
     local prototype_dir="${PROTOTYPES}/${package_name}"
     local prototype="${prototype_dir}/prototype"
+    local pkginfo_template="${prototype_dir}/pkginfo.in"
+    local pkginfo="${prototype_dir}/pkginfo"
     local preinstall="${prototype_dir}/preinstall"
     local postinstall="${prototype_dir}/postinstall"
     local user="$(/usr/xpg4/bin/id -un)"
@@ -43,11 +37,14 @@ update_prototype()
     shift
     shift
 
+    echo "$(time_stamp): Creating pkginfo of ${base}..."
+    sed -e "s,@prefix@,${PREFIX},g" "${pkginfo_template}" > "${pkginfo}"
+    echo "$(time_stamp): done."
+
     echo "$(time_stamp): Updating prototype of ${base}..."
     run mkdir -p "$prototype_dir"
-    run rm -rf "${PROTOTYPES_DESTDIR}"
-    run ${MAKE} DESTDIR="${PROTOTYPES_DESTDIR}" \
-	-C "${build_dir}" install > "${log}"
+    run rm -rf "${PKG_DESTDIR}"
+    run ${MAKE} DESTDIR="${PKG_DESTDIR}" -C "${build_dir}" install > "${log}"
     for command in "$@"; do
 	run $command > "${log}"
     done
@@ -58,14 +55,22 @@ i copyright
 EOP
     test -f "${preinstall}" && echo "i preinstall" >> "${prototype}"
     test -f "${postinstall}" && echo "i postinstall" >> "${prototype}"
-    find "${PROTOTYPES_DESTDIR}${PREFIX}" -print | \
+    find "${PKG_DESTDIR}${PREFIX}" -print | \
 	pkgproto | \
-	grep -v " ${PROTOTYPES_DESTDIR}${PREFIX} " | \
-	gsed -e "s%${PROTOTYPES_DESTDIR}${PREFIX}/%%" | \
+	grep -v " ${PKG_DESTDIR}${PREFIX} " | \
+	gsed -e "s%${PKG_DESTDIR}${PREFIX}/%%" | \
 	gsed -e "s/$user $group\$/root root/" | \
 	sort >> "${prototype}"
-    run rm -rf "${PROTOTYPES_DESTDIR}"
     echo "$(time_stamp): done."
+
+    echo "$(time_stamp): Building package ${pkg_name}..."
+    (
+        cd $pkg_dir
+        run pkgmk -o -r "${PKG_DESTDIR}${PREFIX}" -d $PKGS
+    ) > "${log}" 2>&1
+    echo "$(time_stamp): done."
+
+    run rm -rf "${PKG_DESTDIR}"
 }
 
 download_package()
@@ -108,12 +113,23 @@ extract_package()
     fi
 }
 
-install_package()
+install_pkg()
+{
+    local pkg_name="${PKG_PREFIX}${1}"
+    local log="${PKGS}/${pkg_name}-install.log"
+
+    echo "$(time_stamp): Installing package ${pkg_name}..."
+    run_sudo pkgadd -d "${PKGS}/${PKG_NAME}.pkg" > "${log}" 2>&1
+    echo "$(time_stamp): done."
+}
+
+build_package()
 {
     local url="$1"
     local tar_ball="${1##*/}"
     local base="${tar_ball%.tar.*}"
     local build_dir="${BUILDS}/${base}"
+    local dest_dir="${DEST}/${base}"
     local log="${BUILDS}/${base}.log"
     shift
 
@@ -138,27 +154,16 @@ install_package()
     echo "$(time_stamp): Building ${base}..."
     run ${MAKE} -C "${build_dir}" > "${log}"
     echo "$(time_stamp): done."
-
-    echo "$(time_stamp): Installing ${base}..."
-    run ${MAKE} -C "${build_dir}" install > "${log}"
-    echo "$(time_stamp): done."
-
-    create_pkginfo "${base}" "${build_dir}"
-    update_prototype "${base}" "${build_dir}"
 }
 
-build_pkg()
+install_package()
 {
-    local pkg_dir="${PROTOTYPES}/${1}"
-    local pkg_name="${PKG_PREFIX}${1}"
-    local archive_name="${pkg_name}.pkg"
-    local log="${PKGS}/${pkg_name}.log"
+    local url="$1"
+    local tar_ball="${1##*/}"
+    local base="${tar_ball%.tar.*}"
+    local build_dir="${BUILDS}/${base}"
 
-    echo "$(time_stamp): Building package ${pkg_name}..."
-    (
-        cd $pkg_dir
-        run pkgmk -o -r $PREFIX -d $PKGS
-    ) > "${log}" 2>&1
-    echo "$(time_stamp): done."
+    build_package "$@"
+    build_pkg "${base}" "${build_dir}"
+    install_pkg "${base}"
 }
-

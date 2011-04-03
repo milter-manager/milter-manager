@@ -3,8 +3,9 @@ SOURCES="${base_dir}/sources"
 PATCHES="${base_dir}/patches"
 BUILDS="${base_dir}/builds"
 PROTOTYPES="${base_dir}/prototypes"
-PROTOTYPES_DESTDIR="${BUILDS}/tmp"
+PKG_DESTDIR="${BUILDS}/tmp"
 PKGS="${base_dir}/pkgs"
+PKG_PREFIX=MMGR
 
 : ${PREFIX:=/opt/milter-manager}
 PATH=$PREFIX/bin:/opt/csw/bin:/usr/ccs/bin:/usr/sfw/bin:$PATH

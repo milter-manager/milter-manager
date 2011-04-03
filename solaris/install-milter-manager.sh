@@ -31,11 +31,8 @@ install_milter_manager()
     run ${MAKE} -C "${build_dir}" > "${log}"
     echo "$(time_stamp): done."
 
-    echo "$(time_stamp): Installing ${base}..."
-    run ${MAKE} -C "${build_dir}" install > "${log}"
-    echo "$(time_stamp): done."
-
-    update_prototype "milter-manager" "${build_dir}"
+    build_pkg "milter-manager" "${build_dir}"
+    install_pkg "milter-manager"
 }
 
 echo "$(time_stamp): Installing milter manager..."

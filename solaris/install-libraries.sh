@@ -31,10 +31,10 @@ CC="$CC -m64" \
 
 ruby_base="ruby-1.9.2-p180"
 CC="$CC -m64" \
-    install_package ${ruby_lang_org}/1.9/${ruby_base}.tar.bz2 \
+    build_package ${ruby_lang_org}/1.9/${ruby_base}.tar.bz2 \
     --disable-install-doc --enable-shared --enable-load-relative
 
-dest_prefix=${PROTOTYPES_DESTDIR}${PREFIX}
+dest_prefix=${PKG_DESTDIR}${PREFIX}
 gem_prefix=${dest_prefix}/lib/ruby/gems/1.9.1
 gem_options="--no-ri --no-rdoc"
 gems="bundler activerecord mail pkg-config"
@@ -42,7 +42,7 @@ gem_install="gem install ${gem_options} ${gems}"
 run $gem_install
 run "gem install ${gem_options} -v 0.2.6 mysql2"
 CC="$CC -m64" \
-    update_prototype "${ruby_base}" "${BUILDS}/${ruby_base}" \
+    build_pkg "${ruby_base}" "${BUILDS}/${ruby_base}" \
     "${gem_install} --install-dir ${gem_prefix} --bindir ${dest_prefix}/bin"
 
 install_package http://downloads.sourceforge.net/cutter/cutter-1.1.7.tar.gz
