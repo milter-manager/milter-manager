@@ -78,7 +78,7 @@ install_pkg()
     local base="$1"
     local package_name="${base%%-[0-9]*}"
     package_name="${package_name##lib}"
-    local pkg_name="${PKG_PREFIX}${pakcage_name}"
+    local pkg_name="${PKG_PREFIX}${package_name}"
     local log="${PKGS}/${pkg_name}-install.log"
 
     echo "$(time_stamp): Installing pkg ${pkg_name}..."
