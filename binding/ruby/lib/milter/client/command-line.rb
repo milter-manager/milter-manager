@@ -30,7 +30,7 @@ module Milter
         setup_option_parser
       end
 
-      def run(argv=nil)
+      def parse(argv=nil)
         begin
           @option_parser.parse!(argv || ARGV)
         rescue OptionParser::ParseError
@@ -41,6 +41,10 @@ module Milter
           puts($@)
           exit(false)
         end
+      end
+
+      def run(argv=nil)
+        parse(argv)
         client = Milter::Client.new
         client.on_error do |_client, error|
           Milter::Logger.error("[client][error] #{error.message}")
