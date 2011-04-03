@@ -63,10 +63,10 @@ EOP
 	sort >> "${prototype}"
     echo "$(time_stamp): done."
 
-    echo "$(time_stamp): Building pkg ${pkg_name}..."
+    echo "$(time_stamp): Building pkg ${package_name}..."
     (
-        cd $pkg_dir
-        run pkgmk -o -r "${PKG_DESTDIR}${PREFIX}" -d $PKGS
+        cd "$prototype_dir"
+        run pkgmk -o -r "${PKG_DESTDIR}${PREFIX}" -d "$PKGS"
     ) > "${log}" 2>&1
     echo "$(time_stamp): done."
 
