@@ -109,10 +109,12 @@ class TestClient < Test::Unit::TestCase
     assert_equal(100, @client.maintenance_interval)
   end
 
+  priority :must
   def test_syslog
-    assert_nothing_raised do
-      @client.start_syslog("test-client")
-      @client.stop_syslog
-    end
+    assert_not_predicate(@client, :syslog_enabled?)
+    @client.start_syslog("test-client")
+    assert_predicate(@client, :syslog_enabled?)
+    @client.stop_syslog
+    assert_not_predicate(@client, :syslog_enabled?)
   end
 end

@@ -119,8 +119,14 @@ client_start_syslog (int argc, VALUE *argv, VALUE self)
 static VALUE
 client_stop_syslog (VALUE self)
 {
-    milter_client_start_syslog(SELF(self));
+    milter_client_stop_syslog(SELF(self));
     return self;
+}
+
+static VALUE
+client_syslog_enabled_p (VALUE self)
+{
+    return CBOOL2RVAL(milter_client_get_syslog_enabled(SELF(self)));
 }
 
 static VALUE
@@ -307,6 +313,8 @@ Init_milter_client (void)
     rb_define_method(rb_cMilterClient, "shutdown", client_shutdown, 0);
     rb_define_method(rb_cMilterClient, "start_syslog", client_start_syslog, -1);
     rb_define_method(rb_cMilterClient, "stop_syslog", client_stop_syslog, 0);
+    rb_define_method(rb_cMilterClient, "syslog_enabled?",
+		     client_syslog_enabled_p, 0);
     rb_define_method(rb_cMilterClient, "listen", client_listen, 0);
     rb_define_method(rb_cMilterClient, "drop_privilege",
 		     client_drop_privilege, 0);
