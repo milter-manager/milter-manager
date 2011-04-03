@@ -27,6 +27,10 @@
 #include <unistd.h>
 #include <glib/gi18n.h>
 
+#ifdef HAVE_LOCALE_H
+#  include <locale.h>
+#endif
+
 #include <milter/client.h>
 
 static gboolean report_request = TRUE;
@@ -398,6 +402,10 @@ main (int argc, char *argv[])
     GError *error = NULL;
     GOptionContext *option_context;
     GOptionGroup *milter_group;
+
+#ifdef HAVE_LOCALE_H
+    setlocale(LC_ALL, "");
+#endif
 
     milter_init();
     milter_client_init();

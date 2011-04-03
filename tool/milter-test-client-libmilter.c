@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2010-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,6 +32,10 @@
 
 #include <glib.h>
 #include <glib/gi18n.h>
+
+#ifdef HAVE_LOCALE_H
+#  include <locale.h>
+#endif
 
 #include <libmilter/mfapi.h>
 
@@ -352,6 +356,10 @@ main (int argc, char *argv[])
     GOptionContext *option_context;
     GOptionGroup *main_group;
     unsigned int major, minor, patch_level;
+
+#ifdef HAVE_LOCALE_H
+    setlocale(LC_ALL, "");
+#endif
 
     /*
      * workaround for memory profiler for GLib memory
