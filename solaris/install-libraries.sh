@@ -33,7 +33,7 @@ CC="$CC -m64" \
 
 ruby_base="ruby-1.9.2-p180"
 CC="$CC -m64" \
-    build_package ${ruby_lang_org}/1.9/${ruby_base}.tar.bz2 \
+    install_package ${ruby_lang_org}/1.9/${ruby_base}.tar.bz2 \
     --disable-install-doc --enable-shared --enable-load-relative
 
 dest_prefix=${PKG_DESTDIR}${PREFIX}
@@ -46,6 +46,8 @@ run "gem install ${gem_options} -v 0.2.6 mysql2"
 CC="$CC -m64" \
     build_pkg "${ruby_base}" "${BUILDS}/${ruby_base}" \
     "${gem_install} --install-dir ${gem_prefix} --bindir ${dest_prefix}/bin"
+yes | run_sudo /usr/sbin/pkgrm "${PKG_PREFIX}ruby" > \
+    "${PKGS}/${PKG_PREFIX}ruby-uninstall.log" 2>&1
 install_pkg "${ruby_base}"
 
 install_package http://downloads.sourceforge.net/cutter/cutter-1.1.7.tar.gz
