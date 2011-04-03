@@ -259,7 +259,7 @@ module Milter
         @option_parser.on("--verbose",
                           "Show messages verbosely.",
                           "Alias of --log-level=all.") do
-          ENV["MILTER_LOG_LEVEL"] = "all"
+          Milter::Logger.default.target_level = "all"
         end
       end
 
