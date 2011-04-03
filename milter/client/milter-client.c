@@ -51,6 +51,7 @@ enum
     PROP_REMOVE_PID_FILE_ON_EXIT,
     PROP_SYSLOG_IDENTIFY,
     PROP_SYSLOG_FACILITIY,
+    PROP_START_SYSLOG,
     PROP_RUN_AS_DAEMON
 };
 
@@ -335,6 +336,13 @@ _milter_client_class_init (MilterClientClass *klass)
                                NULL,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_SYSLOG_FACILITIY, spec);
+
+    spec = g_param_spec_boolean("start-syslog",
+                                "Start Syslog",
+                                "Start syslog for the client",
+                                FALSE,
+                                G_PARAM_WRITABLE);
+    g_object_class_install_property(gobject_class, PROP_START_SYSLOG, spec);
 
     spec = g_param_spec_string("run-as-daemon",
                                "Run As Daemon",
@@ -817,6 +825,13 @@ set_property (GObject      *object,
         break;
     case PROP_SYSLOG_FACILITIY:
         milter_client_set_syslog_facility(client, g_value_get_string(value));
+        break;
+    case PROP_START_SYSLOG:
+        if (g_value_get_boolean(value)) {
+            milter_client_start_syslog(client);
+        } else {
+            milter_client_start_syslog(client);
+        }
         break;
     case PROP_RUN_AS_DAEMON:
         milter_client_set_run_as_daemon(client, g_value_get_boolean(value));
