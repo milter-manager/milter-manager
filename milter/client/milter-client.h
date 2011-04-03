@@ -674,7 +674,7 @@ gboolean             milter_client_run               (MilterClient  *client,
  * Returns: %TRUE if main loop is quitted successfully,
  * %FALSE otherwise.
  *
- * Depracated: 1.6.2: Use milter_client_run() instead.
+ * Deprecated: 1.6.2: Use milter_client_run() instead.
  */
 gboolean             milter_client_main              (MilterClient  *client);
 #endif
