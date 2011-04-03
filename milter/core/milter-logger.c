@@ -37,6 +37,7 @@
     (MILTER_LOG_LEVEL_CRITICAL |                \
      MILTER_LOG_LEVEL_ERROR |                   \
      MILTER_LOG_LEVEL_WARNING |                 \
+     MILTER_LOG_LEVEL_MESSAGE |                 \
      MILTER_LOG_LEVEL_STATISTICS)
 
 #define MILTER_LOGGER_GET_PRIVATE(obj)                  \
