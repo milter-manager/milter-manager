@@ -46,6 +46,7 @@ run "gem install ${gem_options} -v 0.2.6 mysql2"
 CC="$CC -m64" \
     build_pkg "${ruby_base}" "${BUILDS}/${ruby_base}" \
     "${gem_install} --install-dir ${gem_prefix} --bindir ${dest_prefix}/bin"
+install_pkg "${ruby_base}"
 
 install_package http://downloads.sourceforge.net/cutter/cutter-1.1.7.tar.gz
 
