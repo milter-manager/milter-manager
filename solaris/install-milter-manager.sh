@@ -5,7 +5,7 @@ set -e
 source ./environment.sh
 source ./functions.sh
 
-install_milter_manager()
+build_milter_manager()
 {
     local base="milter-manager"
     local log="${BUILDS}/${base}.build.log"
@@ -32,9 +32,8 @@ install_milter_manager()
     echo "$(time_stamp): done."
 
     build_pkg "milter-manager" "${build_dir}"
-    install_pkg "milter-manager"
 }
 
-echo "$(time_stamp): Installing milter manager..."
-install_milter_manager
+echo "$(time_stamp): Building milter manager package..."
+build_milter_manager
 echo "$(time_stamp): done."

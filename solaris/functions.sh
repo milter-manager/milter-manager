@@ -63,7 +63,7 @@ EOP
 	sort >> "${prototype}"
     echo "$(time_stamp): done."
 
-    echo "$(time_stamp): Building package ${pkg_name}..."
+    echo "$(time_stamp): Building pkg ${pkg_name}..."
     (
         cd $pkg_dir
         run pkgmk -o -r "${PKG_DESTDIR}${PREFIX}" -d $PKGS
@@ -118,8 +118,8 @@ install_pkg()
     local pkg_name="${PKG_PREFIX}${1}"
     local log="${PKGS}/${pkg_name}-install.log"
 
-    echo "$(time_stamp): Installing package ${pkg_name}..."
-    run_sudo pkgadd -d "${PKGS}/${PKG_NAME}.pkg" > "${log}" 2>&1
+    echo "$(time_stamp): Installing pkg ${pkg_name}..."
+    yes | run_sudo /usr/sbin/pkgadd -d "${PKGS}" "${PKG_NAME}" > "${log}" 2>&1
     echo "$(time_stamp): done."
 }
 
