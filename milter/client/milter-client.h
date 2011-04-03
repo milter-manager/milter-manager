@@ -824,6 +824,16 @@ void                 milter_client_start_syslog      (MilterClient  *client);
 void                 milter_client_stop_syslog       (MilterClient  *client);
 
 /**
+ * milter_client_get_syslog_enabled:
+ * @client: a %MilterClient.
+ *
+ * Gets whether syslog is enabled.
+ *
+ * Returns: %TRUE if syslog is enabled, %FALSE otherwise.
+ */
+gboolean             milter_client_get_syslog_enabled(MilterClient  *client);
+
+/**
  * milter_client_get_event_loop:
  * @client: a %MilterClient.
  *

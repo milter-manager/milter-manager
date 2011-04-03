@@ -2865,6 +2865,15 @@ milter_client_stop_syslog (MilterClient *client)
     dispose_syslog_logger(priv);
 }
 
+gboolean
+milter_client_get_syslog_enabled (MilterClient *client)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    return priv->syslog_logger != NULL;
+}
+
 MilterEventLoop *
 milter_client_get_event_loop (MilterClient *client)
 {
