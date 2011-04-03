@@ -223,24 +223,20 @@ module Milter
         @option_parser.separator ""
         @option_parser.separator "Logging options"
 
-        milter_conf = @configuration.milter
+        log_conf = @configuration.log
         level_names = Milter::LogLevelFlags.values.collect {|value| value.nick}
         level_names << "all"
         @option_parser.on("--log-level=LEVEL",
                           "Specify log level as LEVEL.",
                           "Select from [%s]." % level_names.join(', '),
                           "(#{ENV['MILTER_LOG_LEVEL'] || 'default'})") do |level|
-          if level.empty? or level == "default"
-            Milter::Logger.default.target_level = nil
-          else
-            Milter::Logger.default.target_level = level
-          end
+          log_conf.level = level
         end
 
         @option_parser.on("--[no-]syslog",
                           "Use syslog",
-                          "(#{milter_conf.use_syslog?})") do |bool|
-          milter_conf.use_syslog = bool
+                          "(#{log_conf.use_syslog?})") do |bool|
+          log_conf.use_syslog = bool
         end
 
         facilities = Syslog.constants.find_all do |name|
@@ -251,15 +247,15 @@ module Milter
         available_values = "available values: [#{facilities.join(', ')}]"
         @option_parser.on("--syslog-facility=FACILITY", facilities,
                           "Use FACILITY as syslog facility.",
-                          "(#{milter_conf.syslog_facility})",
+                          "(#{log_conf.syslog_facility})",
                           available_values) do |facility|
-          milter_conf.syslog_facility = facility
+          log_conf.syslog_facility = facility
         end
 
         @option_parser.on("--verbose",
                           "Show messages verbosely.",
                           "Alias of --log-level=all.") do
-          Milter::Logger.default.target_level = "all"
+          log_conf.level = "all"
         end
       end
 

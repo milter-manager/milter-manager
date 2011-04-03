@@ -19,7 +19,7 @@ module Milter
       include Milter::PathResolver
 
       attr_accessor :environment
-      attr_reader :milter, :database, :load_paths, :prefix
+      attr_reader :milter, :log, :database, :load_paths, :prefix
       def initialize
         clear
       end
@@ -27,6 +27,7 @@ module Milter
       def clear
         @environment = ENV["MILTER_ENV"] || "development"
         @milter = MilterConfiguration.new(self)
+        @log = LogConfiguration.new(self)
         @database = DatabaseConfiguration.new(self)
         @load_paths = []
         @locations = {}
@@ -34,8 +35,9 @@ module Milter
       end
 
       def setup(client)
-        @milter.setup(client)
+        @log.setup(client, @milter)
         @database.setup
+        @milter.setup(client)
       end
 
       def expand_path(path)
@@ -66,8 +68,8 @@ module Milter
         attr_accessor :suspend_time_on_unacceptable, :max_connections
         attr_accessor :max_file_descriptors, :event_loop_backend
         attr_accessor :n_workers, :packet_buffer_size
-        attr_accessor :syslog_facility, :status_on_error
-        attr_writer :daemon, :handle_signal, :run_gc_on_maintain, :use_syslog
+        attr_accessor :status_on_error
+        attr_writer :daemon, :handle_signal, :run_gc_on_maintain
         def initialize(base_configuration)
           @base_configuration = base_configuration
           clear
@@ -83,10 +85,6 @@ module Milter
 
         def run_gc_on_maintain?
           @run_gc_on_maintain
-        end
-
-        def use_syslog?
-          @use_syslog
         end
 
         def clear
@@ -109,14 +107,11 @@ module Milter
           @n_workers = 0
           @packet_buffer_size = 0
           @run_gc_on_maintain = true
-          @use_syslog = false
-          @syslog_facility = "mail"
           @handle_signal = true
           @maintained_hooks = []
         end
 
         def setup(client)
-          client.start_syslog(@name, @syslog_facility) if @use_syslog
           client.status_on_error = @status_on_error
           client.connection_spec = @connection_spec
           client.effective_user = @effective_user
@@ -148,6 +143,48 @@ module Milter
               exit(false)
             end
           end
+        end
+
+        def update_location(key, reset, deep_level)
+          @base_configuration.update_location(key, reset, deep_level + 1)
+        end
+      end
+
+      class LogConfiguration
+        attr_accessor :syslog_facility
+        attr_writer :use_syslog
+        def initialize(base_configuration)
+          @base_configuration = base_configuration
+          clear
+        end
+
+        def use_syslog?
+          @use_syslog
+        end
+
+        def level
+          Milter::Logger.default.target_level
+        end
+
+        def level=(level)
+          level = nil if default_log_level?(level)
+          Milter::Logger.default.target_level = level
+        end
+
+        def default_log_level?(level)
+          return true if level.respond_to?(:empty?) and level.empty?
+          return true if level == "default"
+          return true if level == :default
+          false
+        end
+
+        def clear
+          @use_syslog = false
+          @syslog_facility = "mail"
+        end
+
+        def setup(client, milter)
+          client.start_syslog(milter.name, @syslog_facility) if use_syslog?
         end
 
         def update_location(key, reset, deep_level)
@@ -315,11 +352,12 @@ module Milter
         end
       end
 
-      attr_reader :milter, :database
+      attr_reader :milter, :database, :log
       def initialize(configuration)
         @configuration = configuration
         @milter = MilterConfigurationLoader.new(@configuration.milter)
         @database = DatabaseConfigurationLoader.new(@configuration.database)
+        @log = LogConfigurationLoader.new(@configuration.log)
         @depth = 0
       end
 
@@ -563,6 +601,45 @@ module Milter
         private
         def update_location(key, reset, deep_level=2)
           full_key = "milter.#{key}"
+          @configuration.update_location(full_key, reset, deep_level)
+        end
+      end
+
+      class LogConfigurationLoader
+        def initialize(configuration)
+          @configuration = configuration
+        end
+
+        def use_syslog?
+          @configuration.use_syslog?
+        end
+
+        def use_syslog=(boolean)
+          update_location("use_syslog", !boolean)
+          @configuration.use_syslog = boolean
+        end
+
+        def syslog_facility
+          @configuration.syslog_facility
+        end
+
+        def syslog_facility=(facility)
+          update_location("syslog_facility", facility == "mail")
+          @configuration.syslog_facility = facility
+        end
+
+        def level
+          @configuration.level
+        end
+
+        def level=(level)
+          update_location("level", @configuration.default_log_level?(level))
+          @configuration.level = level
+        end
+
+        private
+        def update_location(key, reset, deep_level=2)
+          full_key = "log.#{key}"
           @configuration.update_location(full_key, reset, deep_level)
         end
       end
