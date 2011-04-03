@@ -1967,6 +1967,12 @@ clear_socket (MilterManagerConfigurationPrivate *priv)
     priv->remove_controller_unix_socket_on_create = TRUE;
 }
 
+static void
+clear_log (MilterManagerConfigurationPrivate *priv)
+{
+    priv->use_syslog = TRUE;
+}
+
 gboolean
 milter_manager_configuration_clear (MilterManagerConfiguration *configuration,
                                     GError **error)
@@ -1986,6 +1992,7 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration,
     clear_process(priv);
     clear_configuration(priv);
     clear_socket(priv);
+    clear_log(priv);
 
     configuration_class = MILTER_MANAGER_CONFIGURATION_GET_CLASS(configuration);
     if (configuration_class->clear) {

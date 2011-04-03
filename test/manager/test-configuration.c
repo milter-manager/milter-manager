@@ -679,6 +679,10 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
         0,
         milter_manager_configuration_get_default_packet_buffer_size(config));
 
+    cut_assert_equal_boolean(
+        TRUE,
+        milter_manager_configuration_get_use_syslog(config));
+
     if (expected_children)
         g_object_unref(expected_children);
     expected_children = milter_manager_children_new(config, loop);
@@ -899,6 +903,7 @@ test_clear (void)
     test_connection_check_interval();
     test_n_workers();
     test_default_packet_buffer_size();
+    test_use_syslog();
 
     handler_id = g_signal_connect(config, "connected",
                                   G_CALLBACK(cb_connected), NULL);
