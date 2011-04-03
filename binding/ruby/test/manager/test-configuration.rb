@@ -249,6 +249,13 @@ security.effective_user = nil
 security.effective_group = nil
 
 # default
+log.level = "none"
+# default
+log.use_syslog = true
+# default
+log.syslog_facility = nil
+
+# default
 manager.connection_spec = #{@configuration.manager_connection_spec.inspect}
 # default
 manager.unix_socket_mode = 0660
@@ -379,6 +386,13 @@ security.privilege_mode = false
 security.effective_user = "nobody"
 # #{__FILE__}:#{effective_group_line}
 security.effective_group = "nogroup"
+
+# default
+log.level = "none"
+# default
+log.use_syslog = true
+# default
+log.syslog_facility = nil
 
 # default
 manager.connection_spec = #{@configuration.manager_connection_spec.inspect}

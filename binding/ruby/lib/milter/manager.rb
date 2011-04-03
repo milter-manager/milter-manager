@@ -118,6 +118,7 @@ module Milter
 
         dump_package_items
         dump_security_items
+        dump_log_items
         dump_manager_items
         dump_controller_items
         dump_database_items
@@ -140,6 +141,22 @@ module Milter
         dump_item("security.privilege_mode", c.privilege_mode?)
         dump_item("security.effective_user", c.effective_user.inspect)
         dump_item("security.effective_group", c.effective_group.inspect)
+        @result << "\n"
+      end
+
+      def dump_log_items
+        c = @configuration
+        level = Milter::Logger.default.target_level
+        level_names = []
+        Milter::LogLevelFlags.values.each do |value|
+          unless (level.to_i & value.to_i).zero?
+            level_names << value.nick
+          end
+        end
+        level_names << "default" if level_names.empty?
+        dump_item("log.level", level_names.join("|").inspect)
+        dump_item("log.use_syslog", c.use_syslog?)
+        dump_item("log.syslog_facility", c.syslog_facility.inspect)
         @result << "\n"
       end
 
@@ -328,7 +345,7 @@ module Milter
         end
       end
 
-      attr_reader :package, :security, :controller, :manager, :database
+      attr_reader :package, :security, :controller, :manager, :database, :log
       attr_reader :configuration
       def initialize(configuration)
         @load_level = 0
@@ -337,9 +354,14 @@ module Milter
         @security = SecurityConfigurationLoader.new(configuration)
         @controller = ControllerConfigurationLoader.new(configuration)
         @manager = ManagerConfigurationLoader.new(configuration)
+        client_config = Client::Configuration
         client_config_loader = Client::ConfigurationLoader
         database_config = configuration.database
-        @database = client_config_loader::DatabaseConfigurationLoader.new(database_config)
+        @database =
+          client_config_loader::DatabaseConfigurationLoader.new(database_config)
+        log_config = client_config::LogConfiguration.new(configuration)
+        log_config.use_syslog = configuration.use_syslog?
+        @log = client_config_loader::LogConfigurationLoader.new(log_config)
         @policy_manager = Manager::PolicyManager.new(self)
       end
 
@@ -349,7 +371,7 @@ module Milter
           content = File.read(file)
           Logger.debug("[configuration][load][start] <#{file}>")
           instance_eval(content, file)
-          apply_policies if @load_level == 1
+          apply_configurations if @load_level == 1
         rescue InvalidValue
           backtrace = $!.backtrace.collect do |info|
             if /\A#{Regexp.escape(file)}:/ =~ info
@@ -432,6 +454,16 @@ module Milter
         resolved_paths = @configuration.resolve_path(path)
         raise NonexistentPath.new(path) if resolved_paths.empty?
         resolved_paths
+      end
+
+      def apply_configurations
+        apply_log
+        apply_policies
+      end
+
+      def apply_log
+        @configuration.use_syslog = @log.use_syslog?
+        @configuration.syslog_facility = @log.syslog_facility
       end
 
       def apply_policies

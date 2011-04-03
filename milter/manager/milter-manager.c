@@ -1322,6 +1322,31 @@ milter_manager_get_leaders (MilterManager *manager)
 }
 
 static void
+apply_syslog_parameters (MilterManager *manager)
+{
+    MilterClient *client;
+    MilterManagerPrivate *priv;
+    MilterManagerConfiguration *configuration;
+
+    client = MILTER_CLIENT(manager);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    configuration = priv->configuration;
+
+    if (milter_manager_configuration_get_use_syslog(configuration)) {
+        if (milter_client_get_syslog_enabled(client)) {
+            const gchar *facility;
+            facility =
+                milter_manager_configuration_get_syslog_facility(configuration);
+            milter_client_set_syslog_facility(client, facility);
+        } else {
+            milter_client_start_syslog(client);
+        }
+    } else {
+        milter_client_stop_syslog(client);
+    }
+}
+
+static void
 apply_custom_parameters (MilterManager *manager)
 {
     MilterClient *client;
@@ -1415,6 +1440,7 @@ milter_manager_reload (MilterManager *manager, GError **error)
 
     priv = MILTER_MANAGER_GET_PRIVATE(manager);
     success = milter_manager_configuration_reload(priv->configuration, error);
+    apply_syslog_parameters(manager);
     apply_custom_parameters(manager);
     return success;
 }
