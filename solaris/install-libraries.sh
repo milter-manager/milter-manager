@@ -39,13 +39,13 @@ CC="$CC -m64" \
 dest_prefix=${PKG_DESTDIR}${PREFIX}
 gem_prefix=${dest_prefix}/lib/ruby/gems/1.9.1
 gem_options="--no-ri --no-rdoc"
+gem_options="${gem_options} --install-dir ${gem_prefix}"
+gem_options="${gem_options} --bindir ${dest_prefix}/bin"
 gems="bundler activerecord mail pkg-config"
-gem_install="gem install ${gem_options} ${gems}"
-run $gem_install
-run "gem install ${gem_options} -v 0.2.6 mysql2"
 CC="$CC -m64" \
     build_pkg "${ruby_base}" "${BUILDS}/${ruby_base}" \
-    "${gem_install} --install-dir ${gem_prefix} --bindir ${dest_prefix}/bin"
+    "gem install ${gem_options} ${gems}" \
+    "gem install ${gem_options} -v 0.2.6 mysql2"
 yes | run_sudo /usr/sbin/pkgrm "${PKG_PREFIX}ruby" > \
     "${PKGS}/${PKG_PREFIX}ruby-uninstall.log" 2>&1
 install_pkg "${ruby_base}"
