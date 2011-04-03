@@ -10,8 +10,8 @@
 
     <dependency
       name='network'
-      grouping='require_all'
-      restart_on='error'
+      grouping='optional_all'
+      restart_on='none'
       type='service'>
       <service_fmri value='svc:/network/smtp'/>
     </dependency>
