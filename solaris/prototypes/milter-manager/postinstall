@@ -8,7 +8,7 @@ chown $TARGET_USER:$TARGET_GROUP $BASEDIR/var/run/milter-manager
 
 MANIFEST=$BASEDIR/var/svc/manifest/network/milter-manager.xml
 
-if $(svccfg validate $MANIFEST); then
+if `svccfg validate $MANIFEST`; then
     svccfg import $MANIFEST
 fi
 exit 0
