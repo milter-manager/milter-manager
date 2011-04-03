@@ -79,6 +79,7 @@ struct _MilterManagerConfigurationPrivate
     guint n_workers;
     guint default_packet_buffer_size;
     gboolean use_syslog;
+    gchar *syslog_facility;
 };
 
 enum
@@ -113,7 +114,8 @@ enum
     PROP_N_WORKERS,
     PROP_DEFAULT_PACKET_BUFFER_SIZE,
     PROP_PREFIX,
-    PROP_USE_SYSLOG
+    PROP_USE_SYSLOG,
+    PROP_SYSLOG_FACILITY
 };
 
 enum
@@ -434,6 +436,13 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                 G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_USE_SYSLOG, spec);
 
+    spec = g_param_spec_string("syslog-facility",
+                               "Syslog Facility",
+                               "The syslog facility of the milter-manager",
+                               NULL,
+                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class, PROP_SYSLOG_FACILITY, spec);
+
     signals[CONNECTED] =
         g_signal_new("connected",
                      G_TYPE_FROM_CLASS(klass),
@@ -485,6 +494,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv->connection_check_interval = DEFAULT_CONNECTION_CHECK_INTERVAL;
     priv->n_workers = 0;
     priv->default_packet_buffer_size = 0;
+    priv->syslog_facility = NULL;
 
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
     if (config_dir_env)
@@ -650,6 +660,10 @@ set_property (GObject      *object,
         milter_manager_configuration_set_use_syslog(config,
                                                     g_value_get_boolean(value));
         break;
+    case PROP_SYSLOG_FACILITY:
+        milter_manager_configuration_set_syslog_facility(
+            config, g_value_get_string(value));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -755,6 +769,9 @@ get_property (GObject    *object,
         break;
     case PROP_USE_SYSLOG:
         g_value_set_boolean(value, priv->use_syslog);
+        break;
+    case PROP_SYSLOG_FACILITY:
+        g_value_set_string(value, priv->syslog_facility);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -1971,6 +1988,10 @@ static void
 clear_log (MilterManagerConfigurationPrivate *priv)
 {
     priv->use_syslog = TRUE;
+    if (priv->syslog_facility) {
+        g_free(priv->syslog_facility);
+        priv->syslog_facility = NULL;
+    }
 }
 
 gboolean
@@ -2282,6 +2303,27 @@ milter_manager_configuration_set_use_syslog (MilterManagerConfiguration *configu
     priv->use_syslog = use_syslog;
 }
 
+const gchar *
+milter_manager_configuration_get_syslog_facility (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->syslog_facility;
+}
+
+void
+milter_manager_configuration_set_syslog_facility (MilterManagerConfiguration *configuration,
+                                                  const gchar                *facility)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    if (priv->syslog_facility) {
+        g_free(priv->syslog_facility);
+    }
+    priv->syslog_facility = g_strdup(facility);
+}
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4

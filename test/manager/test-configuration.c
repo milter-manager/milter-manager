@@ -17,7 +17,6 @@
  *
  */
 
-
 #include <milter/manager/milter-manager-configuration.h>
 #include <milter/manager/milter-manager-children.h>
 
@@ -58,6 +57,7 @@ void test_n_workers (void);
 void test_default_packet_buffer_size (void);
 void test_prefix (void);
 void test_use_syslog (void);
+void test_syslog_facility (void);
 void test_egg (void);
 void test_find_egg (void);
 void test_remove_egg (void);
@@ -595,6 +595,18 @@ test_use_syslog (void)
         milter_manager_configuration_get_use_syslog(config));
 }
 
+void
+test_syslog_facility (void)
+{
+    cut_assert_equal_string(
+        NULL,
+        milter_manager_configuration_get_syslog_facility(config));
+    milter_manager_configuration_set_syslog_facility(config, "local1");
+    cut_assert_equal_string(
+        "local1",
+        milter_manager_configuration_get_syslog_facility(config));
+}
+
 static void
 milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
 {
@@ -682,6 +694,9 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
     cut_assert_equal_boolean(
         TRUE,
         milter_manager_configuration_get_use_syslog(config));
+    cut_assert_equal_string(
+        NULL,
+        milter_manager_configuration_get_syslog_facility(config));
 
     if (expected_children)
         g_object_unref(expected_children);
@@ -904,6 +919,7 @@ test_clear (void)
     test_n_workers();
     test_default_packet_buffer_size();
     test_use_syslog();
+    test_syslog_facility();
 
     handler_id = g_signal_connect(config, "connected",
                                   G_CALLBACK(cb_connected), NULL);

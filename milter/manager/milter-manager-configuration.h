@@ -366,6 +366,12 @@ void          milter_manager_configuration_set_use_syslog
                                      (MilterManagerConfiguration *configuration,
                                       gboolean                    use_syslog);
 
+const gchar  *milter_manager_configuration_get_syslog_facility
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_syslog_facility
+                                     (MilterManagerConfiguration *configuration,
+                                      const gchar                *facility);
+
 G_END_DECLS
 
 #endif /* __MILTER_MANAGER_CONFIGURATION_H__ */
