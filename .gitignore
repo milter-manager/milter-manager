@@ -86,3 +86,5 @@ Makefile.in
 /configure.lineno
 /data/smf/manifest/milter-manager.xml
 /data/smf/method/milter-manager
+/doc/reference/milter-manager.pot
+/doc/reference/milter-manager-decl.txt.bak
