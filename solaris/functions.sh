@@ -73,6 +73,19 @@ EOP
     run rm -rf "${PKG_DESTDIR}"
 }
 
+install_pkg()
+{
+    local base="$1"
+    local package_name="${base%%-[0-9]*}"
+    package_name="${package_name##lib}"
+    local pkg_name="${PKG_PREFIX}${pakcage_name}"
+    local log="${PKGS}/${pkg_name}-install.log"
+
+    echo "$(time_stamp): Installing pkg ${pkg_name}..."
+    yes | run_sudo /usr/sbin/pkgadd -d "${PKGS}" "${pkg_name}" > "${log}" 2>&1
+    echo "$(time_stamp): done."
+}
+
 download_package()
 {
     local url="$1"
@@ -111,16 +124,6 @@ extract_package()
 	    echo "$(time_stamp): done."
 	done
     fi
-}
-
-install_pkg()
-{
-    local pkg_name="${PKG_PREFIX}${1}"
-    local log="${PKGS}/${pkg_name}-install.log"
-
-    echo "$(time_stamp): Installing pkg ${pkg_name}..."
-    yes | run_sudo /usr/sbin/pkgadd -d "${PKGS}" "${PKG_NAME}" > "${log}" 2>&1
-    echo "$(time_stamp): done."
 }
 
 build_package()
