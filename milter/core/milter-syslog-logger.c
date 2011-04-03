@@ -26,7 +26,6 @@
 #include "milter-syslog-logger.h"
 
 #define INTERESTING_LEVEL_KEY "syslog"
-#define DEFAULT_LEVEL MILTER_LOG_LEVEL_STATISTICS
 
 #define MILTER_SYSLOG_LOGGER_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                         \
@@ -141,7 +140,7 @@ cb_log (MilterLogger *logger, const gchar *domain,
 
     target_level = priv->target_level;
     if (target_level == MILTER_LOG_LEVEL_DEFAULT)
-        target_level = DEFAULT_LEVEL;
+        target_level = milter_logger_get_interesting_level(logger);
     if (!(level & target_level))
         return;
 
@@ -385,15 +384,12 @@ milter_syslog_logger_set_target_level (MilterSyslogLogger *logger,
                                        MilterLogLevelFlags level)
 {
     MilterSyslogLoggerPrivate *priv;
-    MilterLogLevelFlags interesting_level = level;
 
     priv = MILTER_SYSLOG_LOGGER_GET_PRIVATE(logger);
     priv->target_level = level;
-    if (interesting_level == MILTER_LOG_LEVEL_DEFAULT)
-        interesting_level = DEFAULT_LEVEL;
     milter_logger_set_interesting_level(priv->logger,
                                         INTERESTING_LEVEL_KEY,
-                                        interesting_level);
+                                        level);
 }
 
 gboolean
