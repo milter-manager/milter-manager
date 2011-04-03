@@ -95,6 +95,7 @@ content_files =					\
 	users.xml				\
 	ruby-milter-tutorial.xml		\
 	ruby-milter-reference.xml		\
+	ruby-milter-configuration.xml		\
 	available-milters.xml
 
 # Extra options to supply to gtkdoc-fixxref
@@ -172,6 +173,8 @@ generated_xml_files =				\
 	ruby-milter-tutorial.xml.ja		\
 	ruby-milter-reference.xml		\
 	ruby-milter-reference.xml.ja		\
+	ruby-milter-configuration.xml		\
+	ruby-milter-configuration.xml.ja	\
 	available-milters.xml			\
 	available-milters.xml.ja
 
@@ -416,6 +419,12 @@ ruby-milter-reference.xml: $(top_srcdir)/doc/ruby-milter-reference.rd $(RD2REFEN
 
 ruby-milter-reference.xml.ja: $(top_srcdir)/doc/ruby-milter-reference.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/ruby-milter-reference.rd.ja > ruby-milter-reference.xml.ja
+
+ruby-milter-configuration.xml: $(top_srcdir)/doc/ruby-milter-configuration.rd $(RD2REFENTRY_LIB) ruby-milter-configuration.xml.ja
+	$(RD2DOCBOOK) $(top_srcdir)/doc/ruby-milter-configuration.rd > ruby-milter-configuration.xml
+
+ruby-milter-configuration.xml.ja: $(top_srcdir)/doc/ruby-milter-configuration.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/ruby-milter-configuration.rd.ja > ruby-milter-configuration.xml.ja
 
 available-milters.xml: $(top_srcdir)/doc/available-milters.rd $(RD2REFENTRY_LIB) available-milters.xml.ja
 	$(RD2DOCBOOK) $(top_srcdir)/doc/available-milters.rd > available-milters.xml

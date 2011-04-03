@@ -81,6 +81,8 @@ EXTRA_DIST =						\
 	ruby-milter-tutorial.rd.ja			\
 	ruby-milter-reference.rd			\
 	ruby-milter-reference.rd.ja			\
+	ruby-milter-configuration.rd			\
+	ruby-milter-configuration.rd.ja			\
 	available-milters.rd				\
 	available-milters.rd.ja
 

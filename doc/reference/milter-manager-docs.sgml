@@ -78,9 +78,10 @@
   </part-->
 
   <part id="ruby">
-    <title>Ruby integration</title>
+    <title>Ruby support</title>
     <xi:include href="ruby-milter-tutorial.xml"/>
     <xi:include href="ruby-milter-reference.xml"/>
+    <xi:include href="ruby-milter-configuration.xml"/>
   </part>
 
   <!--index id="index-all">
