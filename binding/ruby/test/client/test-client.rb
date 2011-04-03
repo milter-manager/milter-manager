@@ -108,4 +108,11 @@ class TestClient < Test::Unit::TestCase
     @client.maintenance_interval = 100
     assert_equal(100, @client.maintenance_interval)
   end
+
+  def test_syslog
+    assert_nothing_raised do
+      @client.start_syslog("test-client")
+      @client.stop_syslog
+    end
+  end
 end
