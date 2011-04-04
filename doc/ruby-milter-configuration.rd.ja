@@ -30,6 +30,7 @@ Rubyで作成したmilterはmilter-managerと同じ書式の設定ファイル
 
 設定項目は以下のように分類されています。
 
+  * セキュリティ関連
   * ログ関連
   * milter関連
   * データベース関連
@@ -38,6 +39,18 @@ Rubyで作成したmilterはmilter-managerと同じ書式の設定ファイル
 
 それでは、それぞれの分類毎に説明します。
 
+== セキュリティ関連
+
+セキュリティの設定はmilter-managerと同じ以下の項目が利用可能
+です。指定方法の説明はmilter-managerの説明ページを参照してく
+ださい。
+
+: security.effective_user
+   ((<security.effective_user|configuration.rd.ja#security.effective_user>))と同じ。
+
+: security.effective_group
+   ((<security.effective_group|configuration.rd.ja#security.effective_group>))と同じ。
+
 == ログ関連
 
 ログの設定はmilter-managerと同じ以下の項目が利用可能です。指
@@ -45,19 +58,70 @@ Rubyで作成したmilterはmilter-managerと同じ書式の設定ファイル
 
 : log.level
 
-   ((<log.level|configuration.rd.ja#log.level>))
+   ((<log.level|configuration.rd.ja#log.level>))と同じ。
 
 : log.use_syslog
 
-   ((<log.use_syslog|configuration.rd.ja#log.use_syslog>))
+   ((<log.use_syslog|configuration.rd.ja#log.use_syslog>))と
+   同じ。
 
 : log.syslog_facility
 
    ((<log.syslog_facility|configuration.rd.ja#log.syslog_facility>))
+   と同じ。
 
 == milter関連
 
-...
+milterの設定もmilter-managerの「manager」グループの設定と同
+様です。
+
+: milter.connection_spec
+   ((<manager.connection_spec|configuration.rd.ja#manager.connection_spec>))と同じ。
+
+: milter.unix_socket_mode
+   ((<manager.unix_socket_mode|configuration.rd.ja#manager.unix_socket_mode>))と同じ。
+
+: milter.unix_socket_group
+   ((<manager.unix_socket_group|configuration.rd.ja#manager.unix_socket_group>))と同じ。
+
+: milter.remove_unix_socket_on_create
+   ((<manager.remove_unix_socket_on_create|configuration.rd.ja#manager.remove_unix_socket_on_create>))と同じ。
+
+: milter.remove_unix_socket_on_close
+   ((<manager.remove_unix_socket_on_close|configuration.rd.ja#manager.remove_unix_socket_on_close>))と同じ。
+
+: milter.daemon
+   ((<manager.daemon|configuration.rd.ja#manager.daemon>))と同じ。
+
+: milter.pid_file
+   ((<manager.pid_file|configuration.rd.ja#manager.pid_file>))と同じ。
+
+: milter.maintenance_interval
+   ((<manager.maintenance_interval|configuration.rd.ja#manager.maintenance_interval>))と同じ。
+
+: milter.suspend_time_on_unacceptable
+   ((<manager.suspend_time_on_unacceptable|configuration.rd.ja#manager.suspend_time_on_unacceptable>))と同じ。
+
+: milter.max_connections
+   ((<manager.max_connections|configuration.rd.ja#manager.max_connections>))と同じ。
+
+: milter.max_file_descriptors
+   ((<manager.max_file_descriptors|configuration.rd.ja#manager.max_file_descriptors>))と同じ。
+
+: milter.connection_check_interval
+   ((<manager.connection_check_interval|configuration.rd.ja#manager.connection_check_interval>))と同じ。
+
+: milter.event_loop_backend
+   ((<manager.event_loop_backend|configuration.rd.ja#manager.event_loop_backend>))と同じ。
+
+: milter.n_workers
+   ((<manager.n_workers|configuration.rd.ja#manager.n_workers>))と同じ。
+
+: milter.packet_buffer_size
+   ((<manager.packet_buffer_size|configuration.rd.ja#manager.packet_buffer_size>))と同じ。
+
+: milter.maintained
+   ((<manager.maintained|configuration.rd.ja#manager.maintained>))と同じ。
 
 == データベース関連
 
