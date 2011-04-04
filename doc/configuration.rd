@@ -217,7 +217,7 @@ Here are descriptions of configuration items.
    can specify log level by combining log levels what you
    need like "info, debug and error levels are needed".
 
-   Here are available log levels in milter-manager:
+   Here are available log levels:
 
      : default
         Logs critical, error, warnings, message and
@@ -269,7 +269,7 @@ Here are descriptions of configuration items.
    Specifies syslog facility.
 
    Here are available facilities and corresponded syslog
-   constants in milter-manager:
+   constants:
 
      : authpriv
         LOG_AUTHPRIV

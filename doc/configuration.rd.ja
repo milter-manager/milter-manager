@@ -219,7 +219,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
    「infoとdebugとerrorレベルのログを出力する」というような
    指定になります
 
-   milter-managerで指定可能なログレベルは以下の通りです。
+   指定可能なログレベルは以下の通りです。
 
      : default
         critical、error、warnings、message、
@@ -270,8 +270,8 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
    syslog出力時に利用するファシリティを指定します。
 
-   milter-managerで指定可能なファシリティと対応するsyslogの
-   定数は以下の通りです。
+   指定可能なファシリティと対応するsyslogの定数は以下の通りで
+   す。
 
      : authpriv
         LOG_AUTHPRIV
