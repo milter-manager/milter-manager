@@ -40,7 +40,20 @@ Rubyで作成したmilterはmilter-managerと同じ書式の設定ファイル
 
 == ログ関連
 
-...
+ログの設定はmilter-managerと同じ以下の項目が利用可能です。指
+定方法の説明はmilter-managerの説明ページを参照してください。
+
+: log.level
+
+   ((<log.level|configuration.rd.ja#log.level>))
+
+: log.use_syslog
+
+   ((<log.use_syslog|configuration.rd.ja#log.use_syslog>))
+
+: log.syslog_facility
+
+   ((<log.syslog_facility|configuration.rd.ja#log.syslog_facility>))
 
 == milter関連
 
