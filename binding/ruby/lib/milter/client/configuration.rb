@@ -571,24 +571,6 @@ module Milter
           @configuration.packet_buffer_size = size
         end
 
-        def use_syslog?
-          @configuration.use_syslog?
-        end
-
-        def use_syslog=(boolean)
-          update_location("use_syslog", !boolean)
-          @configuration.use_syslog = boolean
-        end
-
-        def syslog_facility
-          @configuration.syslog_facility
-        end
-
-        def syslog_facility=(facility)
-          update_location("syslog_facility", facility == "mail")
-          @configuration.syslog_facility = facility
-        end
-
         def maintained(hook=Proc.new)
           guarded_hook = Proc.new do |configuration|
             ConfigurationLoader.guard do
