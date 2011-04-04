@@ -64,6 +64,7 @@ EOP
     echo "$(time_stamp): done."
 
     echo "$(time_stamp): Building pkg ${package_name}..."
+    run mkdir -p "${PKGS}"
     (
         cd "$prototype_dir"
         run pkgmk -o -r "${PKG_DESTDIR}${PREFIX}" -d "$PKGS"
