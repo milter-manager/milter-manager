@@ -31,17 +31,17 @@
       <exec_method
         type='method'
         name='start'
-        exec='@prefix@/var/svc/method/milter-manager start'
+        exec='@prefix@/lib/svc/method/milter-manager start'
         timeout_seconds='60' />
       <exec_method
         type='method'
         name='stop'
-        exec='@prefix@/var/svc/method/milter-manager stop'
+        exec='@prefix@/lib/svc/method/milter-manager stop'
         timeout_seconds='60' />
       <exec_method
         type='method'
         name='restart'
-        exec='@prefix@/var/svc/method/milter-manager restart'
+        exec='@prefix@/lib/svc/method/milter-manager restart'
         timeout_seconds='60' />
       <template>
         <common_name>
