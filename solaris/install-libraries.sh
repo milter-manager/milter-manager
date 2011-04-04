@@ -12,6 +12,8 @@ gnome_org="http://ftp.gnome.org/pub/gnome/sources"
 ruby_lang_org="ftp://ftp.ruby-lang.org/pub/ruby"
 mysql_downloads="http://ftp.jaist.ac.jp/pub/mysql/Downloads"
 
+mkdir -p "${PKGS}"
+
 if test "$USE_OPEN_CSW" != "yes"; then
     CC="$CC -m64" \
 	install_package ${gnu_org}/gettext/gettext-0.18.1.1.tar.gz \
