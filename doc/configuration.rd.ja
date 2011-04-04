@@ -37,6 +37,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
   * パッケージ関連
   * セキュリティ関連
+  * ログ関連
   * milter-manager関連
   * コントローラ関連
   * 子milter関連
@@ -60,6 +61,10 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
   security.privilege_mode = false
   security.effective_user = nil
   security.effective_group = nil
+
+  log.level = "default"
+  log.use_syslog = true
+  log.syslog_facility = "mail"
 
   manager.connection_spec = nil
   manager.unix_socket_mode = 0660
@@ -196,7 +201,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
    プを切り替えるにはmilter-managerコマンドをroot権限で起動
    する必要があります。
 
-   実効グループは「"」で囲んて"nogroup"というように指定します。
+   実効グループは「"」で囲んで"nogroup"というように指定します。
    グループを指定しない場合はnilを指定します。
 
    例:
@@ -204,6 +209,112 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
    既定値:
      security.effective_group = nil
+
+== ログ関連
+
+: log.level
+
+   ログレベルを指定します。ログレベルはすべて独立しているの
+   で、必要なログレベルを組み合わせて指定します。例えば、
+   「infoとdebugとerrorレベルのログを出力する」というような
+   指定になります
+
+   milter-managerで指定可能なログレベルは以下の通りです。
+
+     : default
+        critical、error、warnings、message、
+        statisticsレベルのログを出力。既定値。
+     : all
+        すべてのレベルのログを出力。
+     : critical
+        致命的な問題のログを出力。
+     : error
+        エラー時のログを出力。
+     : warning
+        警告時のログを出力。
+     : message
+        重要なメッセージを出力。
+     : info
+        通常のメッセージを出力。
+     : debug
+        デバッグログを出力。
+     : statistics
+        統計用ログを出力。
+     : profile
+        プロファイル用ログを出力。
+
+   ログレベルは「"」で囲んで"all"というように指定します。
+   複数のログレベルを指定する場合は"critical|error|warning"
+   というように「|」で区切ります。
+
+   例:
+     log.level = "all"        # すべてのログを出力
+
+   既定値:
+     log.level = "default"
+
+: log.use_syslog
+
+   syslogにもログを出力するかどうかを指定します。
+
+   出力する場合はtrueを指定します。出力しない場合はfalseを指
+   定します。
+
+   例:
+     log.use_syslog = false   # syslogに出力しない
+
+   既定値:
+     log.use_syslog = true
+
+: log.syslog_facility
+
+   syslog出力時に利用するファシリティを指定します。
+
+   milter-managerで指定可能なファシリティと対応するsyslogの
+   定数は以下の通りです。
+
+     : authpriv
+        LOG_AUTHPRIV
+     : cron
+        LOG_CRON
+     : daemon
+        LOG_DAEMON
+     : kern
+        LOG_KERN
+     : local0
+        LOG_LOCAL0
+     : local1
+        LOG_LOCAL1
+     : local2
+        LOG_LOCAL2
+     : local3
+        LOG_LOCAL3
+     : local4
+        LOG_LOCAL4
+     : local5
+        LOG_LOCAL5
+     : local6
+        LOG_LOCAL6
+     : local7
+        LOG_LOCAL7
+     : lpr
+        LOG_LPR
+     : mail
+        LOG_MAIL
+     : news
+        LOG_NEWS
+     : user
+        LOG_USER
+     : uucp
+        LOG_UUCP
+
+   ファシリティは「"」で囲んで"mail"というように指定します。
+
+   例:
+     log.syslog_facility = "local4"   # LOG_LOCAL4を使う
+
+   既定値:
+     log.syslog_facility = "mail"
 
 == milter-manager関連
 

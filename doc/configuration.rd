@@ -56,6 +56,10 @@ current configuration is shown.
   security.effective_user = nil
   security.effective_group = nil
 
+  log.level = "default"
+  log.use_syslog = true
+  log.syslog_facility = "mail"
+
   manager.connection_spec = nil
   manager.unix_socket_mode = 0660
   manager.unix_socket_group = nil
@@ -121,7 +125,7 @@ Here are descriptions of configuration items.
      * pkgsrc: for *BSD that use pkgsrc like NetBSD and
        DragonFly BSD.
 
-   Platform name should be surround with '"' (double quote)
+   Platform name should be surrounded with '"' (double quote)
    like "debian".
 
    NOTE: This item should be change ((*before*)) load_default.
@@ -180,7 +184,7 @@ Here are descriptions of configuration items.
    root user.
 
    Effective user is specified like "nobody". User name should
-   be surround with '"' (double quote). If you don't want to
+   be surrounded with '"' (double quote). If you don't want to
    specify user, use nil.
 
    Example:
@@ -196,7 +200,7 @@ Here are descriptions of configuration items.
    root group.
 
    Effective group is specified like "nogroup". Group name should
-   be surround with '"' (double quote). If you don't want to
+   be surrounded with '"' (double quote). If you don't want to
    specify group, use nil.
 
    Example:
@@ -204,6 +208,112 @@ Here are descriptions of configuration items.
 
    Default:
      security.effective_group = nil
+
+== Log
+
+: log.level
+
+   Specifies log level. All log levels are independent. You
+   can specify log level by combining log levels what you
+   need like "info, debug and error levels are needed".
+
+   Here are available log levels in milter-manager:
+
+     : default
+        Logs critical, error, warnings, message and
+        statistics level messages. It's the default.
+     : all
+        Logs all messages.
+     : critical
+        Logs critical messages.
+     : error
+        Logs error messages.
+     : warning
+        Logs warnings messages.
+     : message
+        Logs important messages.
+     : info
+        Logs normal messages.
+     : debug
+        Logs debug messages.
+     : statistics
+        Logs statistics messages.
+     : profile
+        Logs profile messages.
+
+   Log level should be surrounded with '"' (double quote)
+   like "all". To specify some log levels, you need to
+   separate each log level by "|" like
+   "critical|error|warning".
+
+   Example:
+     log.level = "all"        # Logs all messages
+
+   Default:
+     log.level = "default"
+
+: log.use_syslog
+
+   Specifies whether syslog is also used.
+
+   It's set true for using syslog, false otherwise.
+
+   Example:
+     log.use_syslog = false   # Syslog isn't used.
+
+   Default:
+     log.use_syslog = true
+
+: log.syslog_facility
+
+   Specifies syslog facility.
+
+   Here are available facilities and corresponded syslog
+   constants in milter-manager:
+
+     : authpriv
+        LOG_AUTHPRIV
+     : cron
+        LOG_CRON
+     : daemon
+        LOG_DAEMON
+     : kern
+        LOG_KERN
+     : local0
+        LOG_LOCAL0
+     : local1
+        LOG_LOCAL1
+     : local2
+        LOG_LOCAL2
+     : local3
+        LOG_LOCAL3
+     : local4
+        LOG_LOCAL4
+     : local5
+        LOG_LOCAL5
+     : local6
+        LOG_LOCAL6
+     : local7
+        LOG_LOCAL7
+     : lpr
+        LOG_LPR
+     : mail
+        LOG_MAIL
+     : news
+        LOG_NEWS
+     : user
+        LOG_USER
+     : uucp
+        LOG_UUCP
+
+   Facility should be surrounded with '"' (double quote)
+   like "mail".
+
+   Example:
+     log.syslog_facility = "local4"   # LOG_LOCAL4 is used.
+
+   Default:
+     log.syslog_facility = "mail"
 
 == milter-manager
 
@@ -213,7 +323,7 @@ Here are descriptions of configuration items.
    from MTA.
 
    Socket is specified like "inet:10025". Socket should be
-   surround with '"' (double quote). Available socket
+   surrounded with '"' (double quote). Available socket
    formats are the following:
 
      * UNIX domain socket: unix:PATH
@@ -282,7 +392,7 @@ Here are descriptions of configuration items.
    security.effective_user's supplementary groups.
 
    Group is specified like "nogroup". Group name should
-   be surround with '"' (double quote). If you don't want to
+   be surrounded with '"' (double quote). If you don't want to
    specify group, use nil.
 
    Example:
@@ -346,7 +456,7 @@ Here are descriptions of configuration items.
 
    File name is specified like
    "/var/run/milter/milter-manager.pid". File name should be
-   surround with '"' (double quote). If you don't want to
+   surrounded with '"' (double quote). If you don't want to
    specify file name, use nil.
 
    Example:
@@ -446,7 +556,7 @@ Here are descriptions of configuration items.
 
    Directory name is specified like
    "/tmp/milter-manager". Directory name should be
-   surround with '"' (double quote).
+   surrounded with '"' (double quote).
 
    If you specify 'nil', milter-manager creates
    ".milter-manager" directory under effective user's home
@@ -921,7 +1031,7 @@ Required item is just only milter.connection_spec.
    /etc/init.d/ or /usr/local/etc/rc.d/.
 
    Command is specified like
-   "/etc/init.d/milter-greylist". Command should be surround
+   "/etc/init.d/milter-greylist". Command should be surrounded
    with '"' (double quote). If you don't want to run
    automatically, use nil.
 
@@ -936,7 +1046,7 @@ Required item is just only milter.connection_spec.
    Specifies options to be passed to milter.command.
 
    Options are specified like "start". Options should be
-   surround with '"' (double quote).  If some options are
+   surrounded with '"' (double quote).  If some options are
    specified, use "--option1 --option2" or ["--option1",
    "--option2"].
 
@@ -952,7 +1062,7 @@ Required item is just only milter.connection_spec.
    Specifies user name to run milter.command.
 
    User name is specified like "nobody". User name should be
-   surround with '"' (double quote). If you want to run
+   surrounded with '"' (double quote). If you want to run
    milter.command as root, use nil.
 
    Example:
