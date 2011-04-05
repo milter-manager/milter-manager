@@ -119,6 +119,7 @@ module Milter
         @option_parser.separator "milter options"
 
         milter_conf = @configuration.milter
+        security_conf = @configuration.security
         @option_parser.on("-s", "--connection-spec=SPEC",
                           "Specify connection spec as [SPEC].",
                           "(#{milter_conf.connection_spec})") do |spec|
@@ -146,14 +147,14 @@ module Milter
 
         @option_parser.on("--user=USER",
                           "Run as USER's process (need root privilege)",
-                          "(#{milter_conf.effective_user})") do |user|
-          milter_conf.effective_user = user
+                          "(#{security_conf.effective_user})") do |user|
+          security_conf.effective_user = user
         end
 
         @option_parser.on("--group=GROUP",
                           "Run as GROUP's process (need root privilege)",
-                          "(#{milter_conf.effective_group})") do |group|
-          milter_conf.effective_group = group
+                          "(#{security_conf.effective_group})") do |group|
+          security_conf.effective_group = group
         end
 
         @option_parser.on("--unix-socket-group=GROUP",
