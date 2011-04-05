@@ -125,4 +125,32 @@ milterの設定もmilter-managerの「manager」グループの設定と同
 
 == データベース関連
 
-...
+データベースの設定もmilter-managerの「database」グループの設
+定と同様です。
+
+: database.type
+   ((<database.type|configuration.rd.ja#database.type>))と同じ。
+
+: database.name
+   ((<database.name|configuration.rd.ja#database.name>))と同じ。
+
+: database.host
+   ((<database.host|configuration.rd.ja#database.host>))と同じ。
+
+: database.port
+   ((<database.port|configuration.rd.ja#database.port>))と同じ。
+
+: database.path
+   ((<database.path|configuration.rd.ja#database.path>))と同じ。
+
+: database.user
+   ((<database.user|configuration.rd.ja#database.user>))と同じ。
+
+: database.password
+   ((<database.password|configuration.rd.ja#database.password>))と同じ。
+
+: database.setup
+   ((<database.setup|configuration.rd.ja#database.setup>))と同じ。
+
+: database.load_models(path)
+   ((<database.load_models|configuration.rd.ja#database.load_models>))と同じ。

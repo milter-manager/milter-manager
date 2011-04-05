@@ -123,4 +123,33 @@ details.
 
 == Database
 
-...
+You can use configuration items same as milter manager's
+"database" group. Please see milter-manager's document page for
+details.
+
+: database.type
+   See ((<database.type|configuration.rd.ja#database.type>)).
+
+: database.name
+   See ((<database.name|configuration.rd.ja#database.name>)).
+
+: database.host
+   See ((<database.host|configuration.rd.ja#database.host>)).
+
+: database.port
+   See ((<database.port|configuration.rd.ja#database.port>)).
+
+: database.path
+   See ((<database.path|configuration.rd.ja#database.path>)).
+
+: database.user
+   See ((<database.user|configuration.rd.ja#database.user>)).
+
+: database.password
+   See ((<database.password|configuration.rd.ja#database.password>)).
+
+: database.setup
+   See ((<database.setup|configuration.rd.ja#database.setup>)).
+
+: database.load_models(path)
+   See ((<database.load_models|configuration.rd.ja#database.load_models>)).
