@@ -257,6 +257,7 @@ module Milter
           end
           Milter::Logger.info("[configuration][database][setup] " +
                               "<#{options.inspect}>")
+          require 'rubygems' unless defined?(Gem)
           require 'active_record'
           logger = Milter::ActiveRecordLogger.new(Milter::Logger.default)
           ActiveRecord::Base.logger = logger
