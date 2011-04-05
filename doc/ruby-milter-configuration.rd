@@ -123,9 +123,10 @@ details.
 
 == [database] Database
 
-You can use configuration items same as milter manager's
-"database" group. Please see milter-manager's document page for
-details.
+You can use configuration items same as ((<'"database"
+group'|configuration.rd#database>)).  Please see
+milter-manager's document page for details. It includes
+setup document and tutorial.
 
 : database.type
    See ((<database.type|configuration.rd.ja#database.type>)).

@@ -123,8 +123,10 @@ milterの設定もmilter-managerの「manager」グループの設定と同
 
 == [database] データベース関連
 
-データベースの設定もmilter-managerの「database」グループの設
-定と同様です。
+データベースの設定もmilter-managerの((<「database」グループの設
+定|configuration.rd.ja#database>))と同様です。セットアップ方
+法や簡単なチュートリアルはmilter-managerのドキュメントを参照
+してください。
 
 : database.type
    ((<database.type|configuration.rd.ja#database.type>))と同じ。
