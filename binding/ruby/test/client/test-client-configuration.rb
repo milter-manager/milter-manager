@@ -22,6 +22,26 @@ class TestClientConfiguration < Test::Unit::TestCase
     @loader = Milter::Client::ConfigurationLoader.new(@configuration)
   end
 
+  class TestSecurity < TestClientConfiguration
+    setup
+    def setup_config
+      @security_config = @configuration.security
+    end
+
+    setup
+    def setup_loader
+      @security_loader = @loader.security
+    end
+
+    def test_effective_user
+      assert_nil(@security_config.effective_user)
+      assert_nil(@security_loader.effective_user)
+      @security_loader.effective_user = "milter"
+      assert_equal("milter", @security_loader.effective_user)
+      assert_equal("milter", @security_config.effective_user)
+    end
+  end
+
   class TestLog < TestClientConfiguration
     setup
     def setup_config

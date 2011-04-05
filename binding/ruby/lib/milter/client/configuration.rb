@@ -19,7 +19,7 @@ module Milter
       include Milter::PathResolver
 
       attr_accessor :environment
-      attr_reader :milter, :log, :database, :load_paths, :prefix
+      attr_reader :milter, :security, :log, :database, :load_paths, :prefix
       def initialize
         clear
       end
@@ -27,6 +27,7 @@ module Milter
       def clear
         @environment = ENV["MILTER_ENV"] || "development"
         @milter = MilterConfiguration.new(self)
+        @security = SecurityConfiguration.new(self)
         @log = LogConfiguration.new(self)
         @database = DatabaseConfiguration.new(self)
         @load_paths = []
@@ -37,6 +38,7 @@ module Milter
       def setup(client)
         @log.setup(client, @milter)
         @database.setup
+        @security.setup(client)
         @milter.setup(client)
       end
 
@@ -143,6 +145,26 @@ module Milter
               exit(false)
             end
           end
+        end
+
+        def update_location(key, reset, deep_level)
+          @base_configuration.update_location(key, reset, deep_level + 1)
+        end
+      end
+
+      class SecurityConfiguration
+        attr_accessor :effective_user
+        def initialize(base_configuration)
+          @base_configuration = base_configuration
+          clear
+        end
+
+        def clear
+          @effective_user = nil
+        end
+
+        def setup(client)
+          client.effective_user = @effective_user if @effective_user
         end
 
         def update_location(key, reset, deep_level)
@@ -352,12 +374,13 @@ module Milter
         end
       end
 
-      attr_reader :milter, :database, :log
+      attr_reader :milter, :security, :log, :database
       def initialize(configuration)
         @configuration = configuration
         @milter = MilterConfigurationLoader.new(@configuration.milter)
-        @database = DatabaseConfigurationLoader.new(@configuration.database)
+        @security = SecurityConfigurationLoader.new(@configuration.security)
         @log = LogConfigurationLoader.new(@configuration.log)
+        @database = DatabaseConfigurationLoader.new(@configuration.database)
         @depth = 0
       end
 
@@ -422,15 +445,6 @@ module Milter
           Milter::Connection.parse_spec(spec) unless spec.nil?
           update_location("connection_spec", spec.nil?)
           @configuration.connection_spec = spec
-        end
-
-        def effective_user
-          @configuration.effective_user
-        end
-
-        def effective_user=(user)
-          update_location("effective_uesr", user.nil?)
-          @configuration.effective_user = user
         end
 
         def effective_group
@@ -583,6 +597,27 @@ module Milter
         private
         def update_location(key, reset, deep_level=2)
           full_key = "milter.#{key}"
+          @configuration.update_location(full_key, reset, deep_level)
+        end
+      end
+
+      class SecurityConfigurationLoader
+        def initialize(configuration)
+          @configuration = configuration
+        end
+
+        def effective_user
+          @configuration.effective_user
+        end
+
+        def effective_user=(user)
+          update_location("effective_user", user.nil?)
+          @configuration.effective_user = user
+        end
+
+        private
+        def update_location(key, reset, deep_level=2)
+          full_key = "security.#{key}"
           @configuration.update_location(full_key, reset, deep_level)
         end
       end
