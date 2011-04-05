@@ -604,7 +604,7 @@ Since 1.6.6.
    Specifies a status that is replied to the SMTP server when
    milter manager detects the SMTP client disconnects the
    SMTP server connection. This item doesn't used by default
-   because disconnect check is disabled by default. We
+   because disconnect check is disabled by default. You
    can enable disconnect check by
    ((<manager.use_netstat_connection_checker|.#manager.use_netstat_connection-checker>)).
 
@@ -629,8 +629,8 @@ Since 1.6.6.
 
    Specifies a backend for event loop. For non-large
    mail system which processes 100 or less mails per second,
-   we doesn't need to change it. For large mail system which
-   processes 100 or more mails per seconds, we need to
+   you don't need to change it. For large mail system which
+   processes 100 or more mails per seconds, you need to
    change it to "libev".
 
    Here are availble values:
@@ -657,9 +657,9 @@ Since 1.6.6.
    Specifies the number of processes which process mails. For non-large
    mail system which processes 100 or less mails per second, and mail
    system which doesn't use very heavy milter,
-   we doesn't need to change it. For large mail system which
+   you don't need to change it. For large mail system which
    processes 100 or more mails per seconds using very heavy milters,
-   we need to increase it.
+   you need to increase it.
 
    Availble value is between 0 and 1000.
    If it is 0, no worker processes will be used.
@@ -972,7 +972,7 @@ Required item is just only milter.connection_spec.
    because milter manager returns "reject" to MTA. On true
    case, message handling in milter session is continued
    when a child milter returns "reject" because milter
-   manager doesn't return "reject" to MTA. We can use a
+   manager doesn't return "reject" to MTA. You can use a
    condition that "a child milter returns 'reject'" in
    applicable conditions.
 
@@ -1314,7 +1314,7 @@ Example:
   end
 
 Local network means that not private IP
-address. e.g. 192.168.0.0/24. We can customize local network
+address. e.g. 192.168.0.0/24. You can customize local network
 by the following configurations.
 
 : remote_network.add_local_address(address)
@@ -1387,10 +1387,10 @@ This applicable condition will be needless in the near
 feature because milters are fixing to be work with both
 Sendmail and Postfix. It's good things.
 
-We can use this applicable condition with Postfix, it
+You can use this applicable condition with Postfix, it
 doesn't have adverse affect for Postfix.
 
-Here is an example that we use milter-greylist built for
+Here is an example that you use milter-greylist built for
 Sendmail with Postfix.
 
 Example:
@@ -1417,7 +1417,7 @@ concurrent connections.
    With Postfix, number of max smtpd processes are detected
    automatically and 3/4 of it is set.
 
-   With Sendmail, it's not detected automatically. We need
+   With Sendmail, it's not detected automatically. You need
    to set it with
    ((<stress.threshold_n_connections=|.#stress.threshold_n_connections=>))
    by hand.
@@ -1491,7 +1491,7 @@ is a list of macros:
 
    This is set to "yes" when envelope-from domain is trusted.
 
-Here is an example that we receive a SPF passed mail but
+Here is an example that you receive a SPF passed mail but
 apply greylist SPF not-passed mail for trusted domains:
 
 milter-manager.local.conf:
@@ -1506,7 +1506,7 @@ greylist.conf:
   racl whitelist sm_macro "trusted_domain" spf pass
   racl greylist sm_macro "trusted_domain" not spf pass
 
-We can customize how to trust a session by the following
+You can customize how to trust a session by the following
 configurations:
 
 : trust.add_envelope_from_domain(domain)
@@ -1533,14 +1533,14 @@ TODO
 
 == [applicable-condition] Define applicable condition
 
-We need knowledge about Ruby from this section. Some useful
-applicable conditions are provided by default. We can define
-new applicable conditions if we need more conditions. We can
+You need knowledge about Ruby from this section. Some useful
+applicable conditions are provided by default. You can define
+new applicable conditions if you need more conditions. You can
 decide which child milter is applied or not dynamically by
 defining our applicable conditions.
 
-We define an applicable condition with the following
-syntax. We need knowledge about Ruby for defining applicable
+You define an applicable condition with the following
+syntax. You need knowledge about Ruby for defining applicable
 condition.
 
   define_applicable_condition("NAME") do |condition|
@@ -1576,7 +1576,7 @@ S25R:
 
 'host' is "[IP ADDRESS]" not "unknown" when name resolution
 is failed. So, "unknown" is needless. It's sufficient that
-we just use /\A\[.+\]\z/. But it is included just in case. :-)
+you just use /\A\[.+\]\z/. But it is included just in case. :-)
 
 Here are configurable items in 'define_applicable_condition
 do ... end'.
@@ -1602,7 +1602,7 @@ There is no required item.
    host name and IP address of connected SMTP client. The
    available information is same as milter's xxfi_connect.
 
-   It returns true if we stop the child milter, false otherwise.
+   It returns true if you stop the child milter, false otherwise.
 
    : context
       The object that has several information at the
@@ -1618,7 +1618,7 @@ There is no required item.
       The object that describes connected IP
       address. Details are said later.
 
-   Here is an example that we stop the child milter when
+   Here is an example that you stop the child milter when
    SMTP client is connected from resolvable host:
 
      condition.define_connect_stopper do |context, host, socket_address|
@@ -1635,7 +1635,7 @@ There is no required item.
    FQDN on HELO/EHLO command. The available information is
    same as milter's xxfi_helo.
 
-   It returns true if we stop the child milter, false otherwise.
+   It returns true if you stop the child milter, false otherwise.
 
    : context
       The object that has several information at the
@@ -1644,7 +1644,7 @@ There is no required item.
    : fqdn
       The FQDN (string) sent by SMTP client on HELO/EHLO.
 
-   Here is an example that we stop the child milter when
+   Here is an example that you stop the child milter when
    FQDN is "localhost.localdomain".
 
      condition.define_helo_stopper do |context, helo|
@@ -1658,7 +1658,7 @@ There is no required item.
    SMTP. The available information is same as milter's
    xxfi_envfrom.
 
-   It returns true if we stop the child milter, false otherwise.
+   It returns true if you stop the child milter, false otherwise.
 
    : context
       The object that has several information at the
@@ -1668,7 +1668,7 @@ There is no required item.
       The envelope from address passed on MAIL FROM command.
       For example, "<sender@example.com>".
 
-   Here is an example that we stop the child milter when
+   Here is an example that you stop the child milter when
    mails are sent from example.com.
 
      condition.define_envelope_from_stopper do |context, from|
@@ -1687,7 +1687,7 @@ There is no required item.
    xxfi_envrcpt. This callback is called one or more times
    when there are multiple recipients.
 
-   It returns true if we stop the child milter, false otherwise.
+   It returns true if you stop the child milter, false otherwise.
 
    : context
       The object that has several information at the
@@ -1697,7 +1697,7 @@ There is no required item.
       The envelope recipient address passed on RCPT TO command.
       For example, "<receiver@example.com>".
 
-   Here is an example that we stop the child milter when
+   Here is an example that you stop the child milter when
    mails are sent to ml.example.com.
 
      condition.define_envelope_recipient_stopper do |context, recipient|
@@ -1714,17 +1714,17 @@ There is no required item.
    DATA. The available information is same as milter's
    xxfi_data.
 
-   It returns true if we stop the child milter, false otherwise.
+   It returns true if you stop the child milter, false otherwise.
 
    : context
       The object that has several information at the
       time. Details are said later.
 
-   Here is an example that we stop the child milter on DATA.
+   Here is an example that you stop the child milter on DATA.
    milter can only add/delete/modify header and/or body
-   after whole message is processed. If we stop the child
-   milter on DATA, we ensure that milter don't
-   add/delete/modify header and/or body. We can confirm
+   after whole message is processed. If you stop the child
+   milter on DATA, you ensure that milter don't
+   add/delete/modify header and/or body. You can confirm
    the child milter's work if the child milter logs its
    processed result.
 
@@ -1739,7 +1739,7 @@ There is no required item.
    milter's xxfi_header. This callback is called for each
    header.
 
-   It returns true if we stop the child milter, false otherwise.
+   It returns true if you stop the child milter, false otherwise.
 
    : context
       The object that has several information at the
@@ -1751,7 +1751,7 @@ There is no required item.
    : value
       The header value. For example, "sender@example.com".
 
-   Here is an example that we stop the child milter when
+   Here is an example that you stop the child milter when
    mails have a header that name is "X-Spam-Flag" and value
    is "YES".
 
@@ -1769,13 +1769,13 @@ There is no required item.
    all headers are processed. The available information is
    same as milter's xxfi_eoh.
 
-   It returns true if we stop the child milter, false otherwise.
+   It returns true if you stop the child milter, false otherwise.
 
    : context
       The object that has several information at the
       time. Details are said later.
 
-   Here is an example that we stop the child milter after all
+   Here is an example that you stop the child milter after all
    headers are processed.
 
      condition.define_end_of_header_stopper do |context|
@@ -1789,13 +1789,13 @@ There is no required item.
    milter's xxfi_body. This callback may be called multiple
    times for a large body mail.
 
-   It returns true if we stop the child milter, false otherwise.
+   It returns true if you stop the child milter, false otherwise.
 
    : context
       The object that has several information at the
       time. Details are said later.
 
-   Here is an example that we stop the child milter after all
+   Here is an example that you stop the child milter after all
    headers are processed.
 
    : chunk
@@ -1803,7 +1803,7 @@ There is no required item.
       time. It is processed as small chunks. The maximum
       chunk size is 65535 byte.
 
-   Here is an example that we stop the child milter when
+   Here is an example that you stop the child milter when
    chunk contains PGP signature.
 
      condition.define_body_stopper do |context, chunk|
@@ -1820,13 +1820,13 @@ There is no required item.
    a mail is processed. The available information is
    same as  milter's xxfi_eom.
 
-   It returns true if we stop the child milter, false otherwise.
+   It returns true if you stop the child milter, false otherwise.
 
    : context
       The object that has several information at the
       time. Details are said later.
 
-   Here is an example that we stop the child milter after
+   Here is an example that you stop the child milter after
    a mail is processed.
 
      condition.define_end_of_message_stopper do |context|
@@ -1835,7 +1835,7 @@ There is no required item.
 
 === context
 
-The object that has several information when we decide
+The object that has several information when you decide
 whether a child milter is applied or not. (The class of
 context is Milter::Manager::ChildContext.)
 
@@ -1852,7 +1852,7 @@ It has the following information.
 : context[name]
 
    Returns value of available macro in the child milter In
-   libmilter API, we need to surround macro name that has
+   libmilter API, you need to surround macro name that has
    two or more length with "{}" but it isn't
    required. context[name] works well with/without "{}".
 
@@ -1868,7 +1868,7 @@ It has the following information.
    ((<milter.evaluation_mode|.#milter.evaluation_mode>)).
 
    Passed context should be always processing. So,
-   context.reject? never return true. It's usuful when we
+   context.reject? never return true. It's usuful when you
    use the other child milter's result. The other child can
    be retrieved by context.children[].
 
@@ -1884,7 +1884,7 @@ It has the following information.
 
    Passed context should be always processing. So,
    context.temporay_failure? never return true. It's usuful
-   when we use the other child milter's result. The other
+   when you use the other child milter's result. The other
    child can be retrieved by context.children[].
 
    Example:
@@ -1897,7 +1897,7 @@ It has the following information.
 
    Passed context should be always processing. So,
    context.accept? never return true. It's usuful
-   when we use the other child milter's result. The other
+   when you use the other child milter's result. The other
    child can be retrieved by context.children[].
 
    Example:
@@ -1912,7 +1912,7 @@ It has the following information.
 
    Passed context should be always processing. So,
    context.discard? never return true. It's usuful
-   when we use the other child milter's result. The other
+   when you use the other child milter's result. The other
    child can be retrieved by context.children[].
 
    Example:
@@ -1925,7 +1925,7 @@ It has the following information.
 
    Passed context should be always processing. So,
    context.quitted? never return true. It's usuful
-   when we use the other child milter's result. The other
+   when you use the other child milter's result. The other
    child can be retrieved by context.children[].
 
    Example:
@@ -1940,7 +1940,7 @@ It has the following information.
    is used for define_milter. (i.e. the name returned by
    context.name)
 
-   It returns nil if we refer with nonexistent name.
+   It returns nil if you refer with nonexistent name.
 
    Example:
      context.children["milter-greylist"] # -> milter-greylist's context
@@ -1970,8 +1970,8 @@ It has the following information.
    Returns true when sender is authenticated. It is decided by
    "auto_type" macro or "auth_authen" macro is
    available. They are available since MAIL FROM. So, it
-   always returns false before MAIL FROM. We don't forget to
-   add the following configuration to main.cf if we are
+   always returns false before MAIL FROM. You don't forget to
+   add the following configuration to main.cf if you are
    using Postfix.
 
      milter_mail_macros = {auth_author} {auth_type} {auth_authen}
@@ -2117,4 +2117,185 @@ It describes UNIX domain ssocket address. It has the following methods.
 
 Since 1.6.6.
 
-...
+You need knowledge about Ruby for this section. Milter
+manager supports
+((<ActiveRecord|URL:http://api.rubyonrails.org/files/activerecord/README_rdoc.html>))
+as database operation library. You can use many RDB like
+MySQL, SQLite3 and so on because ActiveRecord supports them.
+
+You need to install ActiveRecord to use database. See
+optional ((<install|install-to>)) documents for ActiveRecord
+install.
+
+Let's start small example for using 'users' table in MySQL.
+
+Here is connection information for MySQL server:
+
+: Database name
+   mail-system
+
+: IP address of database server
+   192.168.0.1
+
+: User name
+   milter-manager
+
+: Password
+   secret
+
+First, you write the above connection information to
+milter-manager.local.conf. In this example,
+milter-manager.local.conf is placed at
+/etc/milter-manager/milter-manager.local.conf.
+
+/etc/milter-manager/milter-manager.local.conf:
+  database.type = "mysql2"
+  database.name = "mail-system"
+  database.user = "milter-manager"
+  database.password = "secret"
+
+Next, you define ActiveRecord object to operate 'users'
+table. Definition files are placed at models/
+directory. models/ directory is placed at the same directory
+of milter-manager.local.conf. You create models/user.rb.
+
+/etc/milter-manager/models/user.rb:
+  class User < ActiveRecord::Base
+  end
+
+Last, you connect to database and operate data in
+milter-manager.local.conf:
+
+/etc/milter-manager/milter-manager.local.conf:
+  database.setup
+  database.load_models("models/*.rb")
+  User.all.each do |user|
+    p user.name # => "alice", "bob", ...
+  end
+
+Here are completed files:
+
+/etc/milter-manager/milter-manager.local.conf:
+  # Configure connection information
+  database.type = "mysql2"
+  database.name = "mail-system"
+  database.user = "milter-manager"
+  database.password = "secret"
+
+  # Connect
+  database.setup
+
+  # Load definitions
+  database.load_models("models/*.rb")
+  # Operate data
+  User.all.each do |user|
+    p user.name # => "alice", "bob", ...
+  end
+
+/etc/milter-manager/models/user.rb:
+  class User < ActiveRecord::Base
+  end
+
+Here are configuration items:
+
+: database.type
+   Specifies a database type.
+
+   Here are available types:
+     : "mysql2"
+        Uses MySQL. You need to install mysql2 gem:
+
+          % sudo gem install mysql2
+
+     : "sqlite3"
+        Uses SQLite3. You need to install sqlite3 gem:
+
+          % sudo gem install sqlite3
+
+     : "pg"
+        Uses PostgreSQL. You need to install pg gem:
+
+          % sudo gem install pg
+
+   Example:
+     database.type = "mysql2" # uses MySQL
+
+: database.name
+   Specifies database name.
+
+   For SQLite3, it specifies database path or (({":memory:"})).
+
+   Example:
+     database.name = "configurations" # connects 'configurations' database
+
+: database.host
+   Specifies database server host name.
+
+   In MySQL and so on, "localhost" is used as the default value.
+
+   In SQLite3, it is ignored.
+
+   Example:
+     database.host = "192.168.0.1" # connects to server running at 192.168.0.1
+
+: database.port
+   Specifies database server port number.
+
+   In many cases, you don't need to specify this value
+   explicitly. Because an applicable default value is used.
+
+   In SQLite3, it is ignored.
+
+   Example:
+     database.port = 3306 # connects to server running at3 3306 port.
+
+: database.path
+   Specifies database server UNIX domain socket path.
+
+   In SQLite3, it is used as database path. But
+   ((<.#database.name>)) is prioritize over this. It's
+   recommended that ((<.#database.name>)) is used rather than
+   ((<.#database.path>)).
+
+   Example:
+     database.path = "/var/run/mysqld/mysqld.sock" # connects to MySQL via UNIX domain socket
+
+: database.user
+   Specifies database user on connect.
+
+   In SQLite3, it is ignored.
+
+   Example:
+     database.user = "milter-manager" # connects to server as 'milter-manager' user
+
+: database.password
+   Specifies database password on connect.
+
+   In SQLite3, it is ignored.
+
+   Example:
+     database.password = "secret"
+
+: database.setup
+   Connects to database.
+
+   You connect to database at this time. After this, you can
+   operate data.
+
+   Example:
+     database.setup
+
+: database.load_models(path)
+   Loads Ruby scripts that write class definitions for
+   ActiveRecord. You can use glob for ((|path|)). You can
+   use "models/*.rb" for loading all files under models/
+   directory. If ((|path|)) is relative path, it is resolved
+   from a directory that has milter-manager.conf.
+
+   Example:
+     # Loads
+     #   /etc/milter-manager/models/user.rb
+     #   /etc/milter-manager/models/group.rb
+     #   /etc/milter-manager/models/...
+     # (In /etc/milter-manager/milter-manager.conf case.)
+     database.load_models("models/*.rb")

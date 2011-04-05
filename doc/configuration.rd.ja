@@ -2276,10 +2276,10 @@ models/user.rbを作成します。
 
 : database.load_models(path)
    ActiveRecord用のクラス定義が書かれたRubyスクリプトを読み
-   込みます。pathにはglobが使えるため、"models/*.rb"として複
-   数のファイルを一度に読み込むことができます。pathが相対パ
-   スだった場合は、milter-manager.confがあるディレクトリから
-   の相対パスになります。
+   込みます。((|path|))にはglobが使えるため、"models/*.rb"と
+   して複数のファイルを一度に読み込むことができます。
+   ((|path|))が相対パスだった場合は、milter-manager.confがあ
+   るディレクトリからの相対パスになります。
 
    例:
      # /etc/milter-manager/models/user.rb
