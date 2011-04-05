@@ -35,13 +35,14 @@ same directory of "milter-manager.conf".
 
 Configuration items are categorized as the followings:
 
-  * package
-  * security
-  * milter-manager
-  * controller
-  * applicable condition
-  * child-milter
-  * database
+  * ((<Package|.#package>))
+  * ((<Security|.#security>))
+  * ((<milter-manager|.#milter-manager>))
+  * ((<Controller|.#controller>))
+  * ((<Built-in applicable conditions|.#built-in-applicable-conditions>))
+  * ((<Applicable condition|.#applicable-condition>))
+  * ((<Child milter|.#child-milter>))
+  * ((<Database|.#database>))
 
 There is a convenient feature of milter-manager. It's
 introduced before each items are described the below.
@@ -100,7 +101,7 @@ milter-manager.conf.
 
 Here are descriptions of configuration items.
 
-== Package
+== [package] Package
 
 : package.platform
 
@@ -162,7 +163,7 @@ Here are descriptions of configuration items.
    Default:
      package.options = nil # depend on your environment.
 
-== Security
+== [security] Security
 
 : security.privilege_mode
 
@@ -210,7 +211,7 @@ Here are descriptions of configuration items.
    Default:
      security.effective_group = nil
 
-== Log
+== [log] Log
 
 Since 1.6.6.
 
@@ -318,7 +319,7 @@ Since 1.6.6.
    Default:
      log.syslog_facility = "mail"
 
-== milter-manager
+== [milter-manager] milter-manager
 
 : manager.connection_spec
 
@@ -810,7 +811,7 @@ Since 1.6.6.
        Milter::Logger.info("maintained!")
      end
 
-== Controller
+== [controller] Controller
 
 : controller.connection_spec
 
@@ -870,7 +871,7 @@ Since 1.6.6.
    Default:
      controller.remove_unix_socket_on_close = true
 
-== Child milter
+== [child-milter] Child milter
 
 This section describes about configuration items related
 with child milter.
@@ -1182,7 +1183,7 @@ to all child milters.
      # Removes a milter that is defined as "milter1".
      remove_milter("milter1")
 
-== Built-in applicable conditions
+== [built-in-applicable-conditions] Built-in applicable conditions
 
 Here are descriptions about built-in applicable conditions.
 
@@ -2112,7 +2113,7 @@ It describes UNIX domain ssocket address. It has the following methods.
      socket_address.to_s          # -> "unix:/tmp/local.sock"
      socket_address.to_ip_address # -> nil
 
-== Database
+== [database] Database
 
 Since 1.6.6.
 

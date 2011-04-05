@@ -35,14 +35,15 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
 設定項目は以下のように分類されています。
 
-  * パッケージ関連
-  * セキュリティ関連
-  * ログ関連
-  * milter-manager関連
-  * コントローラ関連
-  * 子milter関連
-  * 適用条件関連
-  * データベース関連
+  * ((<パッケージ関連|.#package>))
+  * ((<セキュリティ関連|.#security>))
+  * ((<ログ関連|.#log>))
+  * ((<milter-manager関連|.#milter-manager>))
+  * ((<コントローラ関連|.#controller>))
+  * ((<子milter関連|.#child-milter>))
+  * ((<組み込み適用条件|.#built-in-applicable-conditions>))
+  * ((<適用条件定義関連|.#applicable-condition>))
+  * ((<データベース関連|.#database>))
 
 このうち、適用条件関連とデータベース関連はRubyの知識が必要に
 なります。((<S25R|URL:http://gabacho.reto.jp/anti-spam/>))な
@@ -106,7 +107,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
 それでは、それぞれの分類毎に説明します。
 
-== パッケージ関連
+== [package] パッケージ関連
 
 : package.platform
 
@@ -165,7 +166,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
    既定値:
      package.options = nil # 環境に依存
 
-== セキュリティ関連
+== [security] セキュリティ関連
 
 : security.privilege_mode
 
@@ -211,7 +212,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
    既定値:
      security.effective_group = nil
 
-== ログ関連
+== [log] ログ関連
 
 1.6.6から使用可能。
 
@@ -319,7 +320,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
    既定値:
      log.syslog_facility = "mail"
 
-== milter-manager関連
+== [milter-manager] milter-manager関連
 
 : manager.connection_spec
 
@@ -802,7 +803,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
        Milter::Logger.info("maintained!")
      end
 
-== コントローラ関連
+== [controller] コントローラ関連
 
 : controller.connection_spec
 
@@ -865,7 +866,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
    既定値:
      controller.remove_unix_socket_on_close = true
 
-== 子milter関連
+== [child-milter] 子milter関連
 
 子milterに関連する設定項目について説明します。
 
@@ -1165,7 +1166,7 @@ define_milter do ... end内で設定できる項目は以下の通りです。
      # "milter1"という名前で定義されたmilterの定義を削除
      remove_milter("milter1")
 
-== 組み込み適用条件
+== [built-in-applicable-conditions] 組み込み適用条件
 
 組み込みの適用条件を説明します。
 
@@ -2086,7 +2087,7 @@ UNIXドメインソケットのアドレスを表現するオブジェクトで�
      socket_address.to_s          # -> "unix:/tmp/local.sock"
      socket_address.to_ip_address # -> nil
 
-== データベース関連
+== [database] データベース関連
 
 1.6.6から使用可能。
 
