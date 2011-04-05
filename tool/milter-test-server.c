@@ -2109,7 +2109,16 @@ print_status (MilterServerContext *context, ProcessData *data)
         g_type_class_unref(enum_class);
     }
 
-    g_print("status: %s\n", status_name);
+    g_print("status: %s", status_name);
+    if (data->reply_code > 0 ||
+        data->reply_extended_code ||
+        data->reply_message) {
+        g_print(" [%d]<%s>(%s)",
+                data->reply_code,
+                MILTER_LOG_NULL_SAFE_STRING(data->reply_extended_code),
+                MILTER_LOG_NULL_SAFE_STRING(data->reply_message));
+    }
+    g_print("\n");
 }
 
 static void
