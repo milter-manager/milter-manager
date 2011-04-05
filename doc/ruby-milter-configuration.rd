@@ -30,14 +30,14 @@ to IPv4 address and 12345 port:
 
 Here are available groups:
 
-  * Security
-  * Log
-  * Milter
-  * Database
+  * ((<Security|.#security>))
+  * ((<Log|.#log>))
+  * ((<Milter|.#milter>))
+  * ((<Database|.#database>))
 
 Here are descriptions of configuration items.
 
-== Security
+== [security] Security
 
 You can use configuration items same as milter manager's
 "log" group. Please see milter-manager's document page for
@@ -49,7 +49,7 @@ details.
 : security.effective_group
    See ((<security.effective_group|configuration.rd.ja#security.effective_group>)).
 
-== Log
+== [log] Log
 
 You can use configuration items same as milter manager's
 "security" group. Please see milter-manager's document page
@@ -67,7 +67,7 @@ for details.
 
    See ((<log.syslog_facility|configuration.rd#log.syslog_facility>)).
 
-== Milter
+== [milter] Milter
 
 You can use configuration items same as milter manager's
 "manager" group. Please see milter-manager's document page for
@@ -121,7 +121,7 @@ details.
 : milter.maintained
    See ((<manager.maintained|configuration.rd.ja#manager.maintained>)).
 
-== Database
+== [database] Database
 
 You can use configuration items same as milter manager's
 "database" group. Please see milter-manager's document page for

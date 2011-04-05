@@ -30,16 +30,14 @@ Rubyで作成したmilterはmilter-managerと同じ書式の設定ファイル
 
 設定項目は以下のように分類されています。
 
-  * セキュリティ関連
-  * ログ関連
-  * milter関連
-  * データベース関連
-
-...
+  * ((<セキュリティ関連|.#security>))
+  * ((<ログ関連|.#log>))
+  * ((<milter関連|.#milter>))
+  * ((<データベース関連|.#database>))
 
 それでは、それぞれの分類毎に説明します。
 
-== セキュリティ関連
+== [security] セキュリティ関連
 
 セキュリティの設定はmilter-managerと同じ以下の項目が利用可能
 です。指定方法の説明はmilter-managerの説明ページを参照してく
@@ -51,7 +49,7 @@ Rubyで作成したmilterはmilter-managerと同じ書式の設定ファイル
 : security.effective_group
    ((<security.effective_group|configuration.rd.ja#security.effective_group>))と同じ。
 
-== ログ関連
+== [log] ログ関連
 
 ログの設定はmilter-managerと同じ以下の項目が利用可能です。指
 定方法の説明はmilter-managerの説明ページを参照してください。
@@ -70,7 +68,7 @@ Rubyで作成したmilterはmilter-managerと同じ書式の設定ファイル
    ((<log.syslog_facility|configuration.rd.ja#log.syslog_facility>))
    と同じ。
 
-== milter関連
+== [milter] milter関連
 
 milterの設定もmilter-managerの「manager」グループの設定と同
 様です。
@@ -123,7 +121,7 @@ milterの設定もmilter-managerの「manager」グループの設定と同
 : milter.maintained
    ((<manager.maintained|configuration.rd.ja#manager.maintained>))と同じ。
 
-== データベース関連
+== [database] データベース関連
 
 データベースの設定もmilter-managerの「database」グループの設
 定と同様です。
