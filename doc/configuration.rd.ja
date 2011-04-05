@@ -40,6 +40,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
   * ログ関連
   * milter-manager関連
   * コントローラ関連
+  * データベース関連
   * 子milter関連
   * 適用条件関連
 
@@ -211,6 +212,8 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
      security.effective_group = nil
 
 == ログ関連
+
+1.6.6から使用可能。
 
 : log.level
 

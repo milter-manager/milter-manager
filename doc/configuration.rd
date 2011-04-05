@@ -211,6 +211,8 @@ Here are descriptions of configuration items.
 
 == Log
 
+Since 1.6.6.
+
 : log.level
 
    Specifies log level. All log levels are independent. You
