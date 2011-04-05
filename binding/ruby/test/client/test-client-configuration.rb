@@ -40,6 +40,14 @@ class TestClientConfiguration < Test::Unit::TestCase
       assert_equal("milter", @security_loader.effective_user)
       assert_equal("milter", @security_config.effective_user)
     end
+
+    def test_effective_group
+      assert_nil(@security_config.effective_group)
+      assert_nil(@security_loader.effective_group)
+      @security_loader.effective_group = "milter"
+      assert_equal("milter", @security_loader.effective_group)
+      assert_equal("milter", @security_config.effective_group)
+    end
   end
 
   class TestLog < TestClientConfiguration
