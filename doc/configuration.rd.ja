@@ -40,16 +40,16 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
   * ログ関連
   * milter-manager関連
   * コントローラ関連
-  * データベース関連
   * 子milter関連
   * 適用条件関連
+  * データベース関連
 
-このうち、適用条件関連はRubyの知識が必要になります。
-((<S25R|URL:http://gabacho.reto.jp/anti-spam/>))などの有用な
-適用条件は標準で提供されているので、必ずしも自分で適用条件を
-定義できる必要はありません。そのため、適用条件の説明は一番最
-後にあります。適用条件を定義する必要がない場合は、適用条件関
-連の部分は読み飛ばしても構いません。
+このうち、適用条件関連とデータベース関連はRubyの知識が必要に
+なります。((<S25R|URL:http://gabacho.reto.jp/anti-spam/>))な
+どの有用な適用条件は標準で提供されているので、必ずしも自分で
+適用条件を定義できる必要はありません。そのため、適用条件の説
+明は一番最後にあります。適用条件を定義する必要がない場合は、
+適用条件関連の部分は読み飛ばしても構いません。
 
 それぞれ順に説明する前に、設定をする上で便利なmilter-manager
 機能を紹介します。milter-managerを--show-configオプションを付
@@ -2085,3 +2085,204 @@ UNIXドメインソケットのアドレスを表現するオブジェクトで�
    例:
      socket_address.to_s          # -> "unix:/tmp/local.sock"
      socket_address.to_ip_address # -> nil
+
+== データベース関連
+
+1.6.6から使用可能。
+
+データベース操作機能を利用する場合はRubyの知識が必要になりま
+す。データベース操作ライブラリとして
+((<ActiveRecord|URL:http://api.rubyonrails.org/files/activerecord/README_rdoc.html>))
+を採用しています。そのため、MySQLやSQLite3など多くのRDBを操
+作することができます。
+
+データベース接続機能を利用する場合はActiveRecordを別途インス
+トールする必要があります。ActiveRecordのインストールにはRuby
+用のパッケージ管理システム
+((<RubyGems|URL:https://rubygems.org/>))を用います。RubyGems
+とActiveRecordのインストール方法は((<インストール
+|install-to>))ページにあるインストールドキュメントのうち、
+「（任意）」の方のインストールドキュメントを参照してください。
+それぞれの環境でのRubyGemsとActiveRecordのインストール方法と
+を説明しています。
+
+ActiveRecordをインストールしたらデータベース操作機能を利用す
+ることができます。
+
+MySQLのusersテーブルの値を操作する場合の例を示します。
+
+MySQLの接続情報は以下の通りとします。
+
+: データベース名
+   mail-system
+
+: データベースサーバのIPアドレス
+   192.168.0.1
+
+: ユーザ名
+   milter-manager
+
+: パスワード
+   secret
+
+まず、この接続情報をmilter-manager.local.confで指定します。こ
+こでは、milter-manager.local.confは
+/etc/milter-manager/milter-manager.local.confにあるとします。
+
+/etc/milter-manager/milter-manager.local.conf:
+  database.type = "mysql2"
+  database.name = "mail-system"
+  database.user = "milter-manager"
+  database.password = "secret"
+
+次に、usersテーブルに接続するためのActiveRecrodオブジェクト
+を定義します。定義ファイルはmilter-manager.local.confが置い
+てあるディレクトリと同じパスにあるmodels/ディレクトリ以下に
+置きます。今回はusersテーブル用の定義ファイルなので
+models/user.rbを作成します。
+
+/etc/milter-manager/models/user.rb:
+  class User < ActiveRecord::Base
+  end
+
+これで準備は整ったので、再び、milter-manager.local.confへ戻
+ります。以下のように書いてデータベースへ接続し、データを操作
+します。
+
+/etc/milter-manager/milter-manager.local.conf:
+  database.setup
+  database.load_models("models/*.rb")
+  User.all.each do |user|
+    p user.name # => "alice", "bob", ...
+  end
+
+まとめると以下のようになります。
+
+/etc/milter-manager/milter-manager.local.conf:
+  # 接続情報設定
+  database.type = "mysql2"
+  database.name = "mail-system"
+  database.user = "milter-manager"
+  database.password = "secret"
+
+  # 接続
+  database.setup
+
+  # 定義を読み込み
+  database.load_models("models/*.rb")
+  # データを操作
+  User.all.each do |user|
+    p user.name # => "alice", "bob", ...
+  end
+
+/etc/milter-manager/models/user.rb:
+  class User < ActiveRecord::Base
+  end
+
+以下は設定項目です。
+
+: database.type
+   データベースの種類を指定します。
+
+   指定可能な種類は以下の通りです。
+     : "mysql2"
+        MySQLを利用します。以下のようにmysql2 gemをインストー
+        ルする必要があります。
+
+          % sudo gem install mysql2
+
+     : "sqlite3"
+        SQLite3を利用します。以下のようにsqlite3 gemをインストー
+        ルする必要があります。
+
+          % sudo gem install sqlite3
+
+     : "pg"
+        PostgreSQLを利用します。以下のようにpg gemをインストー
+        ルする必要があります。
+
+          % sudo gem install pg
+
+   例:
+     database.type = "mysql2" # MySQLを利用
+
+: database.name
+   接続するデータベース名を指定します。
+
+   SQLite3ではデータベースのパスまたは(({":memory:"}))を指定
+   します。
+
+   例:
+     database.name = "configurations" # configurationsデータベースへ接続
+
+: database.host
+   接続するデータベースサーバのホスト名を指定します。
+
+   MySQLなどでは規定値として"localhost"を利用します。
+
+   SQLite3では無視されます。
+
+   例:
+     database.host = "192.168.0.1" # 192.168.0.1で動いているサーバへ接続
+
+: database.port
+   接続するデータベースサーバのポート番号を指定します。
+
+   それぞれのRDBごとに規定値が設定されているため、多くの場合、
+   明示的に指定する必要はありません。
+
+   SQLite3では無視されます。
+
+   例:
+     database.port = 3306 # 3306番ポートで動いているサーバへ接続
+
+: database.path
+   接続するデータベースサーバのUNIXドメインソケットのパスを
+   指定します。
+
+   SQLite3の場合はデータベースのパスになります。ただし、
+   ((<.#database.name>))の設定の方が優先されるため、
+   ((<.#database.path>))ではなく、((<.#database.name>))を使
+   うことを推奨します。
+
+   例:
+     database.path = "/var/run/mysqld/mysqld.sock" # UNIXドメインソケットでMySQLへ接続
+
+: database.user
+   データベース接続ユーザを指定します。
+
+   SQLite3では無視されます。
+
+   例:
+     database.user = "milter-manager" # milter-managerユーザでサーバへ接続
+
+: database.password
+   データベース接続時に使うパスワードを指定します。
+
+   SQLite3では無視されます。
+
+   例:
+     database.password = "secret"
+
+: database.setup
+   データベースへ接続します。
+
+   この時点ではじめてデータベースへ接続します。この後からデー
+   タベースを操作できるようになります。
+
+   例:
+     database.setup
+
+: database.load_models(path)
+   ActiveRecord用のクラス定義が書かれたRubyスクリプトを読み
+   込みます。pathにはglobが使えるため、"models/*.rb"として複
+   数のファイルを一度に読み込むことができます。pathが相対パ
+   スだった場合は、milter-manager.confがあるディレクトリから
+   の相対パスになります。
+
+   例:
+     # /etc/milter-manager/models/user.rb
+     # /etc/milter-manager/models/group.rb
+     # などを読み込む。
+     # （/etc/milter-manager/milter-manager.confを使っている場合）
+     database.load_models("models/*.rb")

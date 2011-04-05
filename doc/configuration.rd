@@ -41,6 +41,7 @@ Configuration items are categorized as the followings:
   * controller
   * applicable condition
   * child-milter
+  * database
 
 There is a convenient feature of milter-manager. It's
 introduced before each items are described the below.
@@ -2110,3 +2111,9 @@ It describes UNIX domain ssocket address. It has the following methods.
    Example:
      socket_address.to_s          # -> "unix:/tmp/local.sock"
      socket_address.to_ip_address # -> nil
+
+== Database
+
+Since 1.6.6.
+
+...
