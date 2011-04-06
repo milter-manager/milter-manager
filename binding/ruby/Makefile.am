@@ -1,12 +1,4 @@
-SUBDIRS =					\
-	ext					\
-	lib					\
-	ruby-milter				\
-	test					\
-	sample
-
-echo-abs-top-builddir:
-	@echo $(abs_top_builddir)
+SUBDIRS =
 
 if WITH_BUNDLED_RUBY_GLIB2_0_16_0
 SUBDIRS += glib-0.16.0
@@ -16,10 +8,20 @@ if WITH_BUNDLED_RUBY_GLIB2_0_90_5
 SUBDIRS += glib-0.90.5
 endif
 
+SUBDIRS +=					\
+	ext					\
+	lib					\
+	ruby-milter				\
+	test					\
+	sample
+
 EXTRA_DIST =					\
 	$(test_unit_files)			\
 	$(ruby_glib2_0_16_0_files)		\
 	$(ruby_glib2_0_90_5_files)
+
+echo-abs-top-builddir:
+	@echo $(abs_top_builddir)
 
 # cat test-unit/Manifest.txt | sed -e 's,^,\ttest-unit/,g'
 test_unit_files =						\
