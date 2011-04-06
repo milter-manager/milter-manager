@@ -394,7 +394,7 @@ binding_extdir = $binding_extdir
 binding_libdir = $binding_libdir
 RUBY = $RUBY
 
-# check:
+check:
 # 	\$(RUBY) \$(srcdir_prefix)test/run-test.rb
 
 distdir:
