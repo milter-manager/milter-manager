@@ -2,6 +2,137 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-1-6-6] 1.6.6: 2011-04-07
+
+1.6.5のバグフィックスリリースです。
+
+=== 全体
+
+==== 改良
+
+  * 必ずバンドルしているRuby/GLib2を使う
+    --with-bundled-ruby-glib2 confgureオプションを追加。
+  * Solaris対応。
+
+=== ドキュメント
+
+==== 修正
+
+  * [Debian] 設定からGROUP=postfixが抜けていたことを修正。
+    [Jordaoさんが報告]
+
+=== パッケージ
+
+==== 改良
+
+  * Solaris対応。
+  * Fedoraのバージョンを13から14へアップ
+
+=== milter-core
+
+==== 改良
+
+  * デフォルトでwarningレベルもログ出力するようにした。
+  * デフォルトでstatisticsレベルもログ出力するようにした。
+  * デフォルトでmessageレベルもログ出力するようにした。
+  * 統計ログをsyslogに出力するときはLOG_INFOレベルではなく、
+    LOG_NOTICEレベルを使うようにした。
+
+==== 修正
+
+  * 読み込みエラー時のメモリリークを修正。
+
+=== milter-manager
+
+==== 改良
+
+  * データベース接続対応。
+  * 接続元がIPv6を利用している場合はデフォルトではS25Rを無効
+    にするようにした。s25r.check_only_ipv4=でカスタマイズ可
+    能。
+  * --n-workersオプションの追加。
+  * --event-loop-backendオプションの追加。
+  * 設定ファイル内でのログ関連の設定に対応。
+
+==== 修正
+
+  * 設定ファイルを再読みするとクラッシュする問題を修正。
+    [Kenji Shionoさんが報告]
+
+=== libmilter-compatible
+
+==== 改良
+
+  * 環境変数でのイベントループバックエンドのカスタマイズに対
+    応。
+    * MILTER_EVENT_LOOP_BACKEND=libev -> libevを使用
+    * MILTER_EVENT_LOOP_BACKEND=glib -> GLibを使用（既定値）
+
+=== milter-test-client
+
+==== 改良
+
+  * --pid-fileオプションの追加。
+  * SIGTERMによる終了に対応。
+
+=== milter-test-server
+
+==== 改良
+
+  * --envelope-fromオプションの追加。
+  * --fromオプションを非推奨にした。
+  * --envelope-recipientオプションの追加。
+  * --recipientオプションを非推奨にした。
+  * --connect-macroオプションの追加。
+  * --helo-macroオプションの追加。
+  * --envelope-from-macroオプションの追加。
+  * --envelope-recipient-macroオプションの追加。
+  * --data-macroオプションの追加。
+  * --end-of-header-macroオプションの追加。
+  * --end-of-message-macroオプションの追加。
+  * 日本語の結果本文出力に対応。
+
+=== milter-report-statistics
+
+==== 改良
+
+  * Solaris対応。
+  * --pidオプションの追加。
+  * --pid-directoryオプションの追加。
+
+=== Ruby milter
+
+==== 改良
+
+  * --maintenance-intervalオプションの追加。
+  * --run-gc-on-maintainオプションの追加。
+  * --environmentオプションの追加。
+  * --max-file-descriptorsオプションの追加。
+  * --pid-fileオプションの追加。
+  * Milter::ClientSession#delete_headerの追加。
+  * Milter::ClientSession#insert_headerの追加。
+  * Milter::ClientSession#replace_bodyの追加。
+  * Milter::ClientSession#change_fromの追加。
+  * Milter::ClientSession#add_recipientの追加。
+  * Milter::ClientSession#delete_recipientの追加。
+  * Milter::ClientSession#delay_responseの追加。
+  * Milter::ClientSession#progressの追加。
+  * Milter::ClientSession#discardの追加。
+  * Milter::EventLoopの追加。
+  * 設定ファイル対応。
+  * Milter::SocketAddress#ipv4?の追加。
+  * Milter::SocketAddress#ipv6?の追加。
+  * Milter::SocketAddress#unix?の追加。
+
+==== 修正
+
+  * 終了時にクラッシュする問題を修正。
+
+=== 感謝
+
+  * Jordaoさん
+  * Kenji Shionoさん
+
 == [release-1-6-5] 1.6.5: 2011-01-26
 
 1.6.4のバグフィックスリリースです。
