@@ -77,6 +77,7 @@ Makefile.in
 /html/upgrade.png
 /html/what-is-milter-manager.png
 /apt/debian/
+/apt/ubuntu/
 /debian/milter-manager.cron.d
 /debian/milter-manager.default
 /debian/milter-manager.init
