@@ -254,6 +254,7 @@ else
                 [AC_MSG_WARN([$RUBY is not found. Disable milter manager.])])
 fi
 
+bundled_latest_ruby_glib2_version=0.90.8
 if test "$ruby_available" = "yes"; then
   rbconfig="$RUBY -rrbconfig -rshellwords -e "
 
@@ -357,7 +358,7 @@ if test "$ruby_available" = "yes"; then
   if test "x$use_bundled_ruby_glib2" != "xno" -a \
           "x$ruby_glib2_available" != "xyes"; then
     if test $ruby_minor_version$ruby_micro_version -gt 85; then
-      ac_used_bundled_ruby_glib2_version=0.90.5
+      ac_used_bundled_ruby_glib2_version=${bundled_latest_ruby_glib2_version}
     else
       ac_used_bundled_ruby_glib2_version=0.16.0
     fi
@@ -367,7 +368,7 @@ if test "$ruby_available" = "yes"; then
        (cd $ac_ruby_glib2_dir && \
         $RUBY ../../../$srcdir/$ac_ruby_glib2_dir/extconf.rb); then
       ruby_glib2_available=yes
-      if test "$ac_used_bundled_ruby_glib2_version" = "0.90.5"; then
+      if test "$ac_used_bundled_ruby_glib2_version" = "${bundled_latest_ruby_glib22_version}"; then
 	ac_ruby_glib2_source_dir="$ac_ruby_glib2_dir/ext/glib2"
       else
         ac_ruby_glib2_source_dir="$ac_ruby_glib2_dir/src"
@@ -415,9 +416,9 @@ distclean:
 uninstall:
 EOM
   fi
-  if test "$ac_used_bundled_ruby_glib2_version" != "0.90.5"; then
-    $RUBY -run -e mkdir -- -p binding/ruby/glib-0.90.5
-    cat <<EOM > binding/ruby/glib-0.90.5/Makefile
+  if test "$ac_used_bundled_ruby_glib2_version" != "${bundled_latest_ruby_glib22_version}"; then
+    $RUBY -run -e mkdir -- -p binding/ruby/glib-${bundled_latest_ruby_glib22_version}
+    cat <<EOM > binding/ruby/glib-${bundled_latest_ruby_glib22_version}/Makefile
 all:
 distdir:
 distclean:
@@ -466,8 +467,8 @@ AC_SUBST(sample_rubydir)
 AM_CONDITIONAL([WITH_RUBY], [test "$ruby_available" = "yes"])
 AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_0_16_0],
                [test "$ac_used_bundled_ruby_glib2_version" = "0.16.0"])
-AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_0_90_5],
-               [test "$ac_used_bundled_ruby_glib2_version" = "0.90.5"])
+AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_LATEST],
+               [test "$ac_used_bundled_ruby_glib2_version" = "${bundled_ruby_glib22_version}"])
 AM_CONDITIONAL([WITH_RUBY_MILTER], [test -n "$ruby_milterdir"])
 
 dnl **************************************************************

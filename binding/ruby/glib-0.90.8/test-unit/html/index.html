@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="test-unit.css" type="text/css" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="icon" href="/favicon.png" />
+    <title>Test::Unit - a Unit Testing Framework for Ruby</title>
+  </head>
+  <body>
+    <div class="header">
+      <div class="title">
+        <a href="./">
+	  <span class="title">a Unit Testing Framework for Ruby</span>
+	  <span class="title-separator">-</span>
+	  <span class="title-project">Test::Unit</span>
+        </a>
+      </div>
+      <ul class="other-languages">
+        <li id="other-language-japanese" lang="ja" xml:lang="ja"><a href="index.html.ja">日本語</a></li>
+      </ul>
+      <ul class="menu">
+	<li id="menu-reference"><a href="test-unit/">Reference manual</a></li>
+	<li id="menu-install"><a href="#test-unit-install">Install</a></li>
+	<li id="menu-developer"><a href="#developer">Developers</a></li>
+      </ul>
+    </div>
+
+    <div class="content">
+      <div class="main">
+	<h1>Test::Unit</h1>
+	<p>
+	  Test::Unit is a unit testing framework for Ruby.
+	</p>
+        <h2 id="backward-compatibility">Backward compatibility</h2>
+        <p>
+          Test::Unit 1.2.3 is the same version as bundled in Ruby 1.8.
+        </p>
+        <p>
+          <a href="classic/test-unit/">test-unit 1.2.3 reference manual</a>
+        </p>
+        <p>
+          Instal:
+          <pre class="command">% sudo gem install test-unit -v 1.2.3</pre>
+        </p>
+        <p>
+          Usage:
+          <pre class="code">require "rubygems"
+gem "test-unit", "1.2.3"
+require "test/unit"</pre>
+        </p>
+
+	<h2 id="feature-split">Feature split</h2>
+        <p>
+	  Test::Unit splits some packages by feature. e.g. GTK+ test runner is a different package.
+        </p>
+        <p>
+          Install:
+          <pre class="command">% sudo gem install test-unit-runner-gtk2</pre>
+        </p>
+        <p>
+          Usage:
+          <pre class="code">require "test/unit/runner/gtk2"</pre>
+        </p>
+        <p>
+	  You can use --runner=gtk2 option to use GTK+ test runner.
+	</p>
+        <p>
+	  Here are test-unit related packages.
+	</p>
+
+	<h2 id="test-unit">test-unit</h2>
+        <p>
+          This package provides core feature.
+        </p>
+	<h3 id="test-unit-latest">test-unit: The latest release</h3>
+	<p>
+	  2.2.0 is the latest release. It had been released at 2011-02-14.
+        </p>
+	<h3 id="test-unit-install">test-unit: Install</h3>
+        <p>
+          Install:
+          <pre class="command">% sudo gem install test-unit</pre>
+        </p>
+        <p>
+          Usage:
+          <pre class="code">gem "test-unit"
+require "test/unit"</pre>
+        </p>
+
+	<h2 id="test-unit-full">test-unit-full</h2>
+        <p>
+          This is a meta package to use all extension packages described in the below.
+        </p>
+	<h3 id="test-unit-full-latest">test-unit-full: The latest release</h3>
+	<p>
+	  0.0.3 is the latest release. It had been released at 2011-02-09.
+        </p>
+	<h3 id="test-unit-full-install">test-unit-full: Install</h3>
+        <p>
+          Install:
+          <pre class="command">% sudo gem install test-unit-full</pre>
+        </p>
+        <p>
+          Usage:
+          <pre class="code">require "test/unit/full"</pre>
+        </p>
+
+	<h2 id="test-unit-notify">test-unit-notify</h2>
+        <p>
+          <div class="eye-catch">
+	    <img alt="notification on GNOME"
+		 src="test-unit-notify/screenshot/notify-on-gnome.png" />
+	    <img alt="notification on Mac OS X"
+		 src="test-unit-notify/screenshot/notify-on-mac-os-x.png" />
+          </div>
+          This package provides a test notifier.
+
+          <dl class="feature-list">
+            <dt>X Window System based eivornment such ad GNOME, Xfce, KDE and so on</dt>
+            <dd>"notify-send" command is used for notifying test result.</dd>
+            <dt>Mac OS X</dt>
+            <dd>"growlnotify" command is used for notifying test result.</dd>
+            <dt>Windows</dt>
+            <dd>How? Growl for Windows? (not implemented)</dd>
+          </dl>
+        </p>
+	<h3 id="test-unit-notify-latest">test-unit-notify: The latest release</h3>
+	<p>
+	  0.2.1 is the latest release. It had been released at 2011-02-10.
+        </p>
+	<h3 id="test-unit-notify-install">test-unit-notify: Install</h3>
+        <p>
+          Install:
+          <pre class="command">% sudo gem install test-unit-notify</pre>
+        </p>
+        <p>
+          Usage:
+          <pre class="code">require "test/unit/notify"</pre>
+        </p>
+        <p>
+          You can use --notify option to notify test result by popup at the end.
+        </p>
+
+	<h2 id="test-unit-rr">test-unit-rr</h2>
+        <p>
+          This package provides a <a href="http://github.com/btakita/rr">RR</a>, a test dobule library, adapter for test-unit 2.
+        </p>
+	<h3 id="test-unit-rr-latest">test-unit-rr: The latest release</h3>
+	<p>
+	  1.0.1 is the latest release. It had been released at 2011-02-10.
+        </p>
+	<h3 id="test-unit-rr-install">test-unit-rr: Install</h3>
+        <p>
+          Install:
+          <pre class="command">% sudo gem install test-unit-rr</pre>
+        </p>
+        <p>
+          Usage:
+          <pre class="code">require "test/unit/rr"</pre>
+        </p>
+
+	<h2 id="test-unit-runner-gtk2">test-unit-runner-gtk2</h2>
+        <p>
+          This package provides a GTK+ based test runner.
+        </p>
+	<h3 id="test-unit-runner-gtk2-latest">test-unit-runner-gtk2: The latest release</h3>
+	<p>
+	  0.0.2 is the latest release. It had been released at 2011-02-09.
+        </p>
+	<h3 id="test-unit-runner-gtk2-install">test-unit-runner-gtk2: Install</h3>
+        <p>
+          Install:
+          <pre class="command">% sudo gem install test-unit-runner-gtk2</pre>
+        </p>
+        <p>
+          Usage:
+          <pre class="code">require "test/unit/runner/gtk2"</pre>
+        </p>
+        <p>
+          You can use --runner=gtk2 to run tests with GTK+ based test runner.
+        </p>
+
+	<h2 id="test-unit-runner-tk">test-unit-runner-tk</h2>
+        <p>
+          This package provides a Tk based test runner.
+        </p>
+	<h3 id="test-unit-runner-tk-latest">test-unit-runner-tk: The latest release</h3>
+	<p>
+	  0.0.1 is the latest release. It had been released at 2008-06-17.
+        </p>
+	<h3 id="test-unit-runner-tk-install">test-unit-runner-tk: Install</h3>
+        <p>
+          Install:
+          <pre class="command">% sudo gem install test-unit-runner-tk</pre>
+        </p>
+        <p>
+          Usage:
+          <pre class="code">require "test/unit/runner/tk"</pre>
+        </p>
+        <p>
+          You can use --runner=tk to run tests with Tk based test runner.
+        </p>
+
+	<h2 id="test-unit-runner-fox">test-unit-runner-fox</h2>
+        <p>
+          This package provides a FOX Toolkit based test runner.
+        </p>
+	<h3 id="test-unit-runner-fox-latest">test-unit-runner-fox: The latest release</h3>
+	<p>
+	  0.0.1 is the latest release. It had been released at 2008-06-17.
+        </p>
+	<h3 id="test-unit-runner-fox-install">test-unit-runner-fox: Install</h3>
+        <p>
+          Install:
+          <pre class="command">% sudo gem install test-unit-runner-fox</pre>
+        </p>
+        <p>
+          Usage:
+          <pre class="code">require "test/unit/runner/fox"</pre>
+        </p>
+        <p>
+          You can use --runner=fox to run tests with Fox toolkit based test runner.
+        </p>
+
+	<h2 id="developer">For developers</h2>
+        <p>
+	  Test::Unit welcome to your contributions.
+        </p>
+
+	<h3 id="repository">Repositories</h3>
+	<p>
+	  Test::Unit uses Subverseion repository on RubyForge. Here are a list to checkout each package.
+        </p>
+        <dl>
+          <dt>test-unit</dt>
+          <dd><pre class="command">% svn co http://test-unit.rubyforge.org/svn/trunk test-unit</pre></dd>
+          <dt>test-unit-full</dt>
+          <dd><pre class="command">% svn co http://test-unit.rubyforge.org/svn/extensions/test-unit-full/trunk test-unit-full</pre></dd>
+          <dt>test-unit-notify</dt>
+          <dd><pre class="command">% svn co http://test-unit.rubyforge.org/svn/extensions/test-unit-notify/trunk test-unit-notify</pre></dd>
+          <dt>test-unit-rr</dt>
+          <dd><pre class="command">% svn co http://test-unit.rubyforge.org/svn/extensions/test-unit-rr/trunk test-unit-rr</pre></dd>
+          <dt>test-unit-runner-gtk2</dt>
+          <dd><pre class="command">% svn co http://test-unit.rubyforge.org/svn/extensions/test-unit-runner-gtk2/trunk test-unit-runner-gtk2</pre></dd>
+          <dt>test-unit-runner-tk</dt>
+          <dd><pre class="command">% svn co http://test-unit.rubyforge.org/svn/extensions/test-unit-runner-tk/trunk test-unit-runner-tk</pre></dd>
+          <dt>test-unit-runner-fox</dt>
+          <dd><pre class="command">% svn co http://test-unit.rubyforge.org/svn/extensions/test-unit-runner-fox/trunk test-unit-runner-fox</pre></dd>
+        </dl>
+      </div>
+
+      <div class="sidebar">
+        <h2>About Project</h2>
+	<ul>
+	  <li><a href="http://rubyforge.org/projects/test-unit/">Project page</a></li>
+	  <li>
+	    <a href="http://rubyforge.org/mailman/listinfo/test-unit-users-en">Mailinglist</a>
+	  </li>
+	</ul>
+      </div>
+    </div>
+
+    <div class="sponsors">
+      <p id="sponsor-rubyforge">
+        <a href="http://rubyforge.org/projects/groonga/">
+          <img src="rubyforge.png" width="120" height="24" border="0" alt="Test::Unit is hosted on RubyForge.org." />
+        </a>
+      </p>
+      <p id="sponsor-tango">
+	<a href="http://tango.freedesktop.org/">
+          <img width="120" height="53" border="0" alt="Tango Desktop Project's icons are used." src="tango-logo.png" />
+        </a>
+      </p>
+      <p id="sponsor-famfamfam">
+	<a href="http://www.famfamfam.com/">
+          <img width="120" height="18" border="0" alt="famfamfam.com's flags are used." src="famfamfam-logo.png" />
+        </a>
+      </p>
+    </div>
+  </body>
+</html>
