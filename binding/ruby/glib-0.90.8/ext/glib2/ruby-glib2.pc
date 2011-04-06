@@ -1,3 +1,0 @@
-Name: Ruby/GLib2
-Description: Ruby bindings for GLib Type, Object, Parameter and Signal Library
-Version: 0.90.8
