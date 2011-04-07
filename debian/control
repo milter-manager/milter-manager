@@ -41,8 +41,8 @@ Description: Documentation of milter manager
 Package: libmilter-manager0
 Section: libs
 Architecture: any
-Replaces: milter-manager (<< 1.6.5-1)
-Breaks: milter-manager (<< 1.6.5-1)
+Replaces: milter-manager (<< 1.6.6-1)
+Breaks: milter-manager (<< 1.6.6-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
@@ -57,8 +57,8 @@ Description: Libraries for extending milter manager by C
 Package: libmilter-manager-dev
 Section: libdevel
 Architecture: any
-Replaces: milter-manager-dev (<< 1.6.5-1)
-Breaks: milter-manager-dev (<< 1.6.5-1)
+Replaces: milter-manager-dev (<< 1.6.6-1)
+Breaks: milter-manager-dev (<< 1.6.6-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
@@ -107,8 +107,8 @@ Description: munin-node plugins for milter manager
 Package: libmilter-core0
 Section: libs
 Architecture: any
-Replaces: libmilter-toolkit (<< 1.6.5-1)
-Breaks: libmilter-toolkit (<< 1.6.5-1)
+Replaces: libmilter-toolkit (<< 1.6.6-1)
+Breaks: libmilter-toolkit (<< 1.6.6-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
@@ -120,8 +120,8 @@ Description: A common library for implementing milter protocol
 Package: libmilter-core-dev
 Section: libdevel
 Architecture: any
-Replaces: libmilter-toolkit-dev (<< 1.6.5-1)
-Breaks: libmilter-toolkit-dev (<< 1.6.5-1)
+Replaces: libmilter-toolkit-dev (<< 1.6.6-1)
+Breaks: libmilter-toolkit-dev (<< 1.6.6-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
@@ -136,8 +136,8 @@ Description: Development files for milter core library
 Package: libmilter-client0
 Section: libs
 Architecture: any
-Replaces: libmilter-toolkit (<< 1.6.5-1)
-Breaks: libmilter-toolkit (<< 1.6.5-1)
+Replaces: libmilter-toolkit (<< 1.6.6-1)
+Breaks: libmilter-toolkit (<< 1.6.6-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
@@ -149,8 +149,8 @@ Description: Libraries and tools for implementing milter protocol
 Package: libmilter-client-dev
 Section: libdevel
 Architecture: any
-Replaces: libmilter-toolkit-dev (<< 1.6.5-1)
-Breaks: libmilter-toolkit-dev (<< 1.6.5-1)
+Replaces: libmilter-toolkit-dev (<< 1.6.6-1)
+Breaks: libmilter-toolkit-dev (<< 1.6.6-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
@@ -165,8 +165,8 @@ Description: Development files for milter client library
 Package: libmilter-server0
 Section: libs
 Architecture: any
-Replaces: libmilter-toolkit (<< 1.6.5-1)
-Breaks: libmilter-toolkit (<< 1.6.5-1)
+Replaces: libmilter-toolkit (<< 1.6.6-1)
+Breaks: libmilter-toolkit (<< 1.6.6-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
@@ -178,8 +178,8 @@ Description: Libraries and tools for implementing milter protocol
 Package: libmilter-server-dev
 Section: libdevel
 Architecture: any
-Replaces: libmilter-toolkit-dev (<< 1.6.5-1)
-Breaks: libmilter-toolkit-dev (<< 1.6.5-1)
+Replaces: libmilter-toolkit-dev (<< 1.6.6-1)
+Breaks: libmilter-toolkit-dev (<< 1.6.6-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
@@ -196,10 +196,10 @@ Section: ruby
 Architecture: any
 Replaces:
 	milter-manager (<< 1.6.1-1),
-	libmilter-toolkit-ruby1.8 (<< 1.6.5-1)
+	libmilter-toolkit-ruby1.8 (<< 1.6.6-1)
 Breaks:
 	milter-manager (<< 1.6.1-1),
-	libmilter-toolkit-ruby1.8 (<< 1.6.5-1)
+	libmilter-toolkit-ruby1.8 (<< 1.6.6-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
@@ -216,10 +216,10 @@ Section: ruby
 Architecture: any
 Replaces:
 	milter-manager (<< 1.6.1-1),
-	libmilter-toolkit-ruby1.8 (<< 1.6.5-1)
+	libmilter-toolkit-ruby1.8 (<< 1.6.6-1)
 Breaks:
 	milter-manager (<< 1.6.1-1),
-	libmilter-toolkit-ruby1.8 (<< 1.6.5-1)
+	libmilter-toolkit-ruby1.8 (<< 1.6.6-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
@@ -237,10 +237,10 @@ Section: ruby
 Architecture: any
 Replaces:
 	milter-manager (<< 1.6.1-1),
-	libmilter-toolkit-ruby1.8 (<< 1.6.5-1)
+	libmilter-toolkit-ruby1.8 (<< 1.6.6-1)
 Breaks:
 	milter-manager (<< 1.6.1-1),
-	libmilter-toolkit-ruby1.8 (<< 1.6.5-1)
+	libmilter-toolkit-ruby1.8 (<< 1.6.6-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
