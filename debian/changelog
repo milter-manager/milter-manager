@@ -1,8 +1,14 @@
+milter-manager (1.6.6-4) unstable; urgency=low
+
+  * Don't use obsoleted options.
+
+ -- Kouhei Sutou <kou@clear-code.com>  Fri, 08 Apr 2011 01:00:00 +0900
+
 milter-manager (1.6.6-3) unstable; urgency=low
 
-  * Fix Breaks/Replaces version.
+  * Add missing dependencies.
 
- -- Kouhei Sutou <kou@clear-code.com>  Fri, 08 Apr 2011 00:00:00 +0900
+ -- Kouhei Sutou <kou@clear-code.com>  Fri, 08 Apr 2011 00:30:00 +0900
 
 milter-manager (1.6.6-2) unstable; urgency=low
 
