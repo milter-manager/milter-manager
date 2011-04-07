@@ -1,7 +1,7 @@
 Summary: A milter to use milters effectively
 Name: milter-manager
 Version: @VERSION@
-Release: 0%{?dist}
+Release: 1%{?dist}
 License: GPLv3+, LGPL3+, AGPL3+, GFDL, Public Domain
 URL: http://milter-manager.sourceforge.net/
 Group: System Environment/Daemons
@@ -28,6 +28,7 @@ administration cost and combine milters flexibly.
 %package -n libmilter-core
 Summary: A common library for milter protocol libraries
 Group: System Environment/Libraries
+Obsoletes: libmilter-toolkit < 1.6.6-0
 Requires: glib2
 
 %description -n libmilter-core
@@ -39,6 +40,7 @@ and libmilter-server.
 %package -n libmilter-core-devel
 Summary: Development files for libmilter-core
 Group: Development/Libraries
+Obsoletes: libmilter-toolkit-devel < 1.6.6-0
 Requires: glib2-devel
 Requires: libmilter-core = %{version}-%{release}
 
@@ -49,6 +51,7 @@ required for developing applications against libmilter-core.
 %package -n libmilter-client
 Summary: A client-side milter protocol library
 Group: System Environment/Libraries
+Obsoletes: libmilter-toolkit < 1.6.6-0
 Requires: libmilter-core = %{version}-%{release}
 
 %description -n libmilter-client
@@ -59,6 +62,7 @@ built using libmilter-client.
 %package -n libmilter-client-devel
 Summary: Development files for libmilter-client
 Group: Development/Libraries
+Obsoletes: libmilter-toolkit-devel < 1.6.6-0
 Requires: libmilter-core-devel = %{version}-%{release}
 Requires: libmilter-client = %{version}-%{release}
 
@@ -69,6 +73,7 @@ required for developing applications against libmilter-client.
 %package -n libmilter-server
 Summary: A server-side milter protocol library
 Group: System Environment/Libraries
+Obsoletes: libmilter-toolkit < 1.6.6-0
 Requires: libmilter-server = %{version}-%{release}
 
 %description -n libmilter-server
@@ -79,6 +84,7 @@ built using libmilter-server.
 %package -n libmilter-server-devel
 Summary: Development files for libmilter-server
 Group: Development/Libraries
+Obsoletes: libmilter-toolkit-devel < 1.6.6-0
 Requires: libmilter-core-devel = %{version}-%{release}
 Requires: libmilter-server = %{version}-%{release}
 
@@ -89,6 +95,7 @@ required for developing applications against libmilter-server.
 %package -n ruby-milter-core
 Summary: Ruby bindings for libmilter-core
 Group: Development/Libraries
+Obsoletes: ruby-milter-toolkit < 1.6.6-0
 Requires: ruby
 Requires: libmilter-core = %{version}-%{release}
 
@@ -98,6 +105,7 @@ This package contains the Ruby bindings for libmilter-core.
 %package -n ruby-milter-client
 Summary: Ruby bindings for libmilter-client
 Group: Development/Libraries
+Obsoletes: ruby-milter-toolkit < 1.6.6-0
 Requires: ruby
 Requires: libmilter-client = %{version}-%{release}
 
@@ -107,6 +115,7 @@ This package contains the Ruby bindings for libmilter-client.
 %package -n ruby-milter-server
 Summary: Ruby bindings for libmilter-server
 Group: Development/Libraries
+Obsoletes: ruby-milter-toolkit < 1.6.6-0
 Requires: ruby
 Requires: libmilter-server = %{version}-%{release}
 
@@ -258,8 +267,8 @@ fi
 %{_mandir}/ja/man1/milter-manager-log-analyzer.*
 %{_initrddir}/milter-manager
 %{_datadir}/milter-manager/admin/
-%{_sysconfdir}/init.d/
-%{_sysconfdir}/cron.d/
+%{_sysconfdir}/init.d/*
+%{_sysconfdir}/cron.d/*
 %config %{_sysconfdir}/sysconfig/milter-manager
 %config %{_sysconfdir}/milter-manager/milter-manager.conf
 %config %{_sysconfdir}/milter-manager/defaults/
@@ -401,6 +410,9 @@ fi
 %config %{_sysconfdir}/munin/plugin-conf.d/
 
 %changelog
+* Fri Apr 08 2011 Kouhei Sutou <kou@clear-code.com> - 1.6.6-1
+- do not include init.d/ and cron.d/.
+
 * Wed Apr 06 2011 Kouhei Sutou <kou@clear-code.com> - 1.6.6-0
 - new upstream release.
 - split toolkit to core, client and server.
