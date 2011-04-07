@@ -4,14 +4,14 @@
 
 == [release-1-6-6] 1.6.6: 2011-04-07
 
-1.6.5のバグフィックスリリースです。
+RubyサポートとSolarisサポートを強化したリリースです。
 
 === 全体
 
 ==== 改良
 
   * 必ずバンドルしているRuby/GLib2を使う
-    --with-bundled-ruby-glib2 confgureオプションを追加。
+    --with-bundled-ruby-glib2 configureオプションを追加。
   * Solaris対応。
 
 === ドキュメント
