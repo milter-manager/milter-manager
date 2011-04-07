@@ -2,6 +2,136 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-6-6] 1.6.6: 2011-04-07
+
+This release improves Ruby support and Solaris support.
+
+=== All
+
+==== Improvements
+
+  * Added --with-bundled-ruby-glib2 configure option for
+    using bundled Ruby/GLib2 anytime.
+  * Supported Solaris.
+
+=== Document
+
+==== Fixes
+
+  * [Debian] add missing GROUP=postfix in configuration.
+    [Reported by Jordao]
+
+=== Package
+
+==== Improvements
+
+  * Supported Solaris.
+  * Fedora 13 -> 14.
+
+=== milter-core
+
+==== Improvements
+
+  * Set 'warning' log level by default.
+  * Set 'statistics' log level by default.
+  * Set 'message' log level by default.
+  * Changed syslog level for statistics log to LOG_NOTICE
+    level from LOG_INFO level .
+
+==== Fixes
+
+  * Fixed a memory leak on read error.
+
+=== milter-manager
+
+==== Improvements
+
+  * Supported database connection.
+  * Disabled S25R applicable condition for IPv6 connection
+    by default. It's customizable by s25r.check_only_ipv4=.
+  * Added --n-workers option.
+  * Added --event-loop-backend option.
+  * Supported log configuration in configuration file.
+
+==== Fixes
+
+  * Fixed a crash bug on reloading.
+    [Reported by Kenji Shiono]
+
+=== libmilter-compatible
+
+==== Improvements
+
+  * Supported event loop backend customize by environment
+    variable:
+    * MILTER_EVENT_LOOP_BACKEND=libev -> libev is used
+    * MILTER_EVENT_LOOP_BACKEND=glib -> GLib is used (default)
+
+=== milter-test-client
+
+==== Improvements
+
+  * Added --pid-file option.
+  * Supported shutdown by SIGTERM.
+
+=== milter-test-server
+
+==== Improvements
+
+  * Added --envelope-from option.
+  * Deprecated --from option.
+  * Added --envelope-recipient option.
+  * Deprecated --recipient option.
+  * Added --connect-macro option.
+  * Added --helo-macro option.
+  * Added --envelope-from-macro option.
+  * Added --envelope-recipient-macro option.
+  * Added --data-macro option.
+  * Added --end-of-header-macro option.
+  * Added --end-of-message-macro option.
+  * Supported result body output in non-ASCII encoding.
+
+=== milter-report-statistics
+
+==== Improvements
+
+  * Supported Solaris.
+  * Added --pid option.
+  * Added --pid-directory option.
+
+=== Ruby milter
+
+==== Improvements
+
+  * Added --maintenance-interval option.
+  * Added --run-gc-on-maintain option.
+  * Added --environment option.
+  * Added --max-file-descriptors option.
+  * Added --pid-file option.
+  * Added Milter::ClientSession#delete_header.
+  * Added Milter::ClientSession#insert_header.
+  * Added Milter::ClientSession#replace_body.
+  * Added Milter::ClientSession#change_from.
+  * Added. Milter::ClientSession#add_recipient.
+  * Added Milter::ClientSession#delete_recipient.
+  * Added Milter::ClientSession#delay_response.
+  * Added Milter::ClientSession#progress.
+  * Added Milter::ClientSession#discard.
+  * Added Milter::EventLoop.
+  * Supported configuration file.
+  * Added Milter::SocketAddress#ipv4?.
+  * Added Milter::SocketAddress#ipv6?.
+  * Added Milter::SocketAddress#unix?.
+
+==== Fixes
+
+  * Fixed a crash bug.
+
+=== Thanks
+
+  * Jordao
+  * Kenji Shiono
+
 == [release-1-6-5] 1.6.5: 2011-01-26
 
 A bug fix release of 1.6.4.
