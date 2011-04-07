@@ -76,7 +76,7 @@ do_setup()
 	    echo "$0: group for socket doesn't exist: ${SOCKET_GROUP}" >&2
 	    exit 1
 	fi
-	DAEMON_ARGS="${DAEMON_ARGS} --socket-group-name ${SOCKET_GROUP}"
+	DAEMON_ARGS="${DAEMON_ARGS} --unix-socket-group-name ${SOCKET_GROUP}"
     fi
     DAEMON_ARGS="${DAEMON_ARGS} ${OPTION_ARGS}"
 }
