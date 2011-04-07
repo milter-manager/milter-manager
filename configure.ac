@@ -331,9 +331,38 @@ if test "$ruby_available" = "yes"; then
   ruby_glib2_available=no
   if test "x$use_bundled_ruby_glib2" != "xyes"; then
     CFLAGS="$CFLAGS $GLIB_CFLAGS"
-    AC_CHECK_HEADERS(rbgobject.h, [],
-		     [ruby_glib2_available="no"],
-		     [$ruby_undef_package_macros])
+    if test "$ruby_glib2_available" = "no"; then
+      RUBY_GLIB2_CFLAGS=$($RUBY -e '
+        begin
+          require "rubygems"
+        rescue LoadError
+          ruby_glib2_gem = nil
+        else
+          ruby_glib2_gem = Gem.source_index.find_name("glib2").first
+        end
+	if ruby_glib2_gem.nil?
+	  begin
+	    require "glib2"
+	    ruby_glib2_path = $".grep(/glib2\.(?!rb\z)\w+\z/).first
+	    exit(false) if ruby_glib2_path.nil?
+	    print("-I ", File.dirname(ruby_glib2_path))
+	    exit(true)
+	  rescue LoadError
+	    exit(false)
+	  end
+	end
+	ruby_glib2_path = ruby_glib2_gem.full_gem_path
+	print("-I ", File.join(ruby_glib2_path, "ext", "glib2"))')
+      if test $? -eq 0; then
+        CFLAGS="$CFLAGS $RUBY_GLIB2_CFLAGS"
+      else
+        RUBY_GLIB2_CFLAGS=""
+      fi
+      AC_CHECK_HEADERS(rbgobject.h,
+         	       [ruby_glib2_available="yes"],
+		       [ruby_glib2_available="no"],
+		       [$ruby_undef_package_macros])
+    fi
     if test "$ruby_glib2_available" = "yes"; then
       AC_TRY_COMPILE([
 		      $ruby_undef_package_macros
