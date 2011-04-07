@@ -1,7 +1,7 @@
 Summary: A milter to use milters effectively
 Name: milter-manager
 Version: @VERSION@
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv3+, LGPL3+, AGPL3+, GFDL, Public Domain
 URL: http://milter-manager.sourceforge.net/
 Group: System Environment/Daemons
@@ -15,6 +15,7 @@ BuildRequires: glib2-devel
 BuildRequires: ruby
 BuildRequires: ruby-devel
 Requires: ruby-milter-client = %{version}-%{release}
+Requires: ruby-milter-server = %{version}-%{release}
 Requires(pre): /usr/bin/getent, /usr/sbin/useradd
 Requires(pre): /usr/bin/id, /usr/sbin/groupadd
 Requires(post): /sbin/chkconfig
@@ -108,6 +109,7 @@ Group: Development/Libraries
 Obsoletes: ruby-milter-toolkit < 1.6.6-0
 Requires: ruby
 Requires: libmilter-client = %{version}-%{release}
+Requires: ruby-milter-core = %{version}-%{release}
 
 %description -n ruby-milter-client
 This package contains the Ruby bindings for libmilter-client.
@@ -126,6 +128,7 @@ This package contains the Ruby bindings for libmilter-server.
 Summary: libmilter API and ABI compatible milter library
 Group: System Environment/Libraries
 Requires: libmilter-client = %{version}-%{release}
+Requires: ruby-milter-core = %{version}-%{release}
 
 %description -n libmilter-compatible
 A libmilter API and ABI compatible library based on libmilter-toolkit.
@@ -410,6 +413,9 @@ fi
 %config %{_sysconfdir}/munin/plugin-conf.d/
 
 %changelog
+* Fri Apr 08 2011 Kouhei Sutou <kou@clear-code.com> - 1.6.6-2
+- add missing dependencies.
+
 * Fri Apr 08 2011 Kouhei Sutou <kou@clear-code.com> - 1.6.6-1
 - fix init.d/ path.
 - add Obsolutes.
