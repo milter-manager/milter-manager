@@ -468,7 +468,7 @@ AM_CONDITIONAL([WITH_RUBY], [test "$ruby_available" = "yes"])
 AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_0_16_0],
                [test "$ac_used_bundled_ruby_glib2_version" = "0.16.0"])
 AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_LATEST],
-               [test "$ac_used_bundled_ruby_glib2_version" = "${bundled_ruby_glib2_version}"])
+               [test "$ac_used_bundled_ruby_glib2_version" = "${bundled_latest_ruby_glib2_version}"])
 AM_CONDITIONAL([WITH_RUBY_MILTER], [test -n "$ruby_milterdir"])
 
 dnl **************************************************************
