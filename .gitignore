@@ -144,5 +144,6 @@ Makefile.in
 /doc/reference/sendmail-and-postfix-and-milter-ja.png
 /doc/reference/sendmail-and-postfix-and-milter.png
 /doc/reference/version.xml
+/doc/reference/tmp/
 /doc/*.man
 /doc/*.jman
