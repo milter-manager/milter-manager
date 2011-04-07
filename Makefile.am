@@ -102,13 +102,7 @@ update-latest-release:
 	  doc/upgrade-on-freebsd.rd.ja
 
 tag:
-	svn ls $(SF_REPOS)/tags/$(VERSION) > /dev/null 2>&1; 	\
-	  if test "$$?" = "0"; then				\
-	    echo "$(VERSION) is already tagged";		\
-	    exit 1;						\
-	  fi
-	svn cp -m "released $(VERSION)!!!" $(SF_USER_OPTION)	\
-	  $(SF_REPOS)/trunk $(SF_REPOS)/tags/$(VERSION)
+	git tag -a "$(VERSION)" -m "released $(VERSION)!!!"
 
 echo-abs-top-srcdir:
 	@echo $(abs_top_srcdir)
