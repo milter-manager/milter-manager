@@ -267,8 +267,8 @@ fi
 %{_mandir}/ja/man1/milter-manager-log-analyzer.*
 %{_initrddir}/milter-manager
 %{_datadir}/milter-manager/admin/
-%{_sysconfdir}/init.d/*
-%{_sysconfdir}/cron.d/*
+%{_sysconfdir}/rc.d/init.d/
+%{_sysconfdir}/cron.d/
 %config %{_sysconfdir}/sysconfig/milter-manager
 %config %{_sysconfdir}/milter-manager/milter-manager.conf
 %config %{_sysconfdir}/milter-manager/defaults/
@@ -411,7 +411,8 @@ fi
 
 %changelog
 * Fri Apr 08 2011 Kouhei Sutou <kou@clear-code.com> - 1.6.6-1
-- do not include init.d/ and cron.d/.
+- fix init.d/ path.
+- add Obsolutes.
 
 * Wed Apr 06 2011 Kouhei Sutou <kou@clear-code.com> - 1.6.6-0
 - new upstream release.
