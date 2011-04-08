@@ -2,6 +2,55 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-6-7] 1.6.7: 2011-04-08
+
+A bug fix release of 1.6.6.
+
+=== All
+
+==== Improvements
+
+  * Don't create needless directories on install.
+    [Reported by OBATA Akio]
+
+==== Fixes
+
+  * Fixed a bug that Ruby/GLib2 in system can't be found.
+    [Reported by OBATA Akio]
+
+=== Package
+
+==== Fixes
+
+  * [RPM] Fixed dependencies.
+  * [Debian] Fixed dependencies.
+  * [Debian] Don't use deprecated option in init script.
+  * [RPM] Don't use deprecated option in init script.
+
+=== milter-manager
+
+==== Fixes
+
+  * [S25R] Fixed a bug that milter is always run.
+
+=== milter-core
+
+==== Improvements
+
+  * Added "+LEVEL1|LEVEL2|..." syntax to add log levels.
+  * Added "-LEVEL1|LEVEL2|..." syntax to remove log levels.
+
+=== milter-client
+
+==== Improvements
+
+  * Added --log-level option.
+  * Added --quiet option.
+
+=== Thanks
+
+  * OBATA Akio
+
 == [release-1-6-6] 1.6.6: 2011-04-07
 
 This release improves Ruby support and Solaris support.
