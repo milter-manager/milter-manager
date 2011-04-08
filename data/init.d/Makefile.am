@@ -1,1 +1,1 @@
-SUBDIRS = debian redhat solaris
+SUBDIRS = redhat solaris
