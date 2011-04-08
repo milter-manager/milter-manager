@@ -5,16 +5,12 @@ i preinstall
 i postinstall
 d none bin 0755 root root
 d none etc 0755 root root
+d none etc/cron.d 0755 root root
 d none etc/init.d 0755 root root
 d none etc/milter-manager 0755 root root
 d none etc/milter-manager/applicable-conditions 0755 root root
-d none etc/milter-manager/cron.d 0755 root root
-d none etc/milter-manager/cron.d/debian 0755 root root
-d none etc/milter-manager/cron.d/freebsd 0755 root root
-d none etc/milter-manager/cron.d/redhat 0755 root root
 d none etc/milter-manager/defaults 0755 root root
 d none etc/milter-manager/models 0755 root root
-d none etc/milter-manager/rc.d 0755 root root
 d none include 0755 root root
 d none include/milter-manager 0755 root root
 d none include/milter-manager/libmilter 0755 root root
@@ -40,6 +36,9 @@ d none lib/pkgconfig 0755 root root
 d none lib/ruby 0755 root root
 d none lib/ruby/vendor_ruby 0755 root root
 d none lib/ruby/vendor_ruby/1.9.1 0755 root root
+d none lib/ruby/vendor_ruby/1.9.1/milter 0755 root root
+d none lib/svc 0755 root root
+d none lib/svc/method 0755 root root
 d none sbin 0755 root root
 d none share 0755 root root
 d none share/man 0755 root root
@@ -108,6 +107,10 @@ d none share/milter-manager/munin 0755 root root
 d none share/milter-manager/munin/plugins 0755 root root
 d none share/milter-manager/sample 0755 root root
 d none share/milter-manager/sample/ruby 0755 root root
+d none var 0755 root root
+d none var/svc 0755 root root
+d none var/svc/manifest 0755 root root
+d none var/svc/manifest/network 0755 root root
 f none bin/milter-manager-log-analyzer 0755 root root
 f none bin/milter-performance-check 0755 root root
 f none bin/milter-report-statistics 0755 root root
@@ -122,16 +125,12 @@ f none etc/milter-manager/applicable-conditions/s25r.conf 0644 root root
 f none etc/milter-manager/applicable-conditions/sendmail-compatible.conf 0644 root root
 f none etc/milter-manager/applicable-conditions/stress.conf 0644 root root
 f none etc/milter-manager/applicable-conditions/trust.conf 0644 root root
-f none etc/milter-manager/cron.d/debian/milter-manager-log 0755 root root
-f none etc/milter-manager/cron.d/freebsd/milter-manager-log 0755 root root
-f none etc/milter-manager/cron.d/redhat/milter-manager-log 0755 root root
 f none etc/milter-manager/defaults/debian.conf 0644 root root
 f none etc/milter-manager/defaults/freebsd.conf 0644 root root
 f none etc/milter-manager/defaults/pkgsrc.conf 0644 root root
 f none etc/milter-manager/defaults/redhat.conf 0644 root root
 f none etc/milter-manager/milter-manager.conf 0644 root root
 f none etc/milter-manager/models/example.rb 0644 root root
-f none etc/milter-manager/rc.d/milter-manager 0755 root root
 f none include/milter-manager/libmilter/libmilter/mfapi.h 0644 root root
 f none include/milter-manager/libmilter/libmilter/mfdef.h 0644 root root
 f none include/milter-manager/milter/client.h 0644 root root
@@ -229,6 +228,7 @@ f none lib/milter-manager/binding/ext/rbgobject.h 0644 root root
 f none lib/milter-manager/binding/ext/rbgutil.h 0644 root root
 f none lib/milter-manager/binding/lib/glib-mkenums.rb 0644 root root
 f none lib/milter-manager/binding/lib/glib2.rb 0644 root root
+f none lib/milter-manager/binding/lib/gnome2-raketask.rb 0644 root root
 f none lib/milter-manager/binding/lib/gnome2-win32-binary-downloader.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter/client.rb 0644 root root
@@ -279,8 +279,15 @@ f none lib/pkgconfig/milter-client.pc 0644 root root
 f none lib/pkgconfig/milter-core.pc 0644 root root
 f none lib/pkgconfig/milter-manager.pc 0644 root root
 f none lib/pkgconfig/milter-server.pc 0644 root root
+f none lib/pkgconfig/ruby-milter-client.pc 0644 root root
+f none lib/pkgconfig/ruby-milter-core.pc 0644 root root
+f none lib/pkgconfig/ruby-milter-server.pc 0644 root root
 f none lib/pkgconfig/ruby-milter.pc 0644 root root
 f none lib/ruby/vendor_ruby/1.9.1/milter.rb 0644 root root
+f none lib/ruby/vendor_ruby/1.9.1/milter/client.rb 0644 root root
+f none lib/ruby/vendor_ruby/1.9.1/milter/core.rb 0644 root root
+f none lib/ruby/vendor_ruby/1.9.1/milter/server.rb 0644 root root
+f none lib/svc/method/milter-manager 0755 root root
 f none sbin/milter-manager 0755 root root
 f none share/man/man1/milter-manager-log-analyzer.1 0644 root root
 f none share/man/man1/milter-manager.1 0644 root root
@@ -477,6 +484,7 @@ f none share/milter-manager/sample/ruby/milter-reject-nil-sender.rb 0644 root ro
 f none share/milter-manager/sample/ruby/milter-tarpit.rb 0644 root root
 f none share/milter-manager/sample/ruby/milter-test-client-composite.rb 0644 root root
 f none share/milter-manager/sample/ruby/milter-test-client.rb 0644 root root
+f none var/svc/manifest/network/milter-manager.xml 0644 root root
 s none lib/libmilter-client.so.0=libmilter-client.so.0.0.0
 s none lib/libmilter-client.so=libmilter-client.so.0.0.0
 s none lib/libmilter-core.so.0=libmilter-core.so.0.0.0
