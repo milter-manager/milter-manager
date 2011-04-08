@@ -52,7 +52,7 @@ module Milter
     private
     def guess_milter_test_server_path
       path = ENV["MILTER_TEST_SERVER"]
-      if defined?(::PKGCOnfig)
+      if defined?(::PKGConfig)
         path ||= PKGConfig.variable("milter-test-server",
                                     "milter_test_server")
       end
