@@ -33,7 +33,7 @@ class TestTestServer < Test::Unit::TestCase
       exec(milter_test_client,
            "--connection-spec", @connection_spec,
            "--no-report-request",
-           "--log-level", "none")
+           "--quiet")
       exit!(false)
     end
     10.times do
