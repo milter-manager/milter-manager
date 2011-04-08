@@ -503,6 +503,7 @@ milter_utils_flags_from_string (GType        flags_type,
     gchar **names, **name;
     GFlagsClass *flags_class;
     guint flags = 0;
+    gboolean append = TRUE;
     GString *unknown_strings = NULL;
 
     if (!flags_string) {
@@ -514,23 +515,40 @@ milter_utils_flags_from_string (GType        flags_type,
         return 0;
     }
 
-    if (flags_string[0] == '+') {
+    switch (flags_string[0]) {
+    case '+':
         flags = base_flags;
         flags_string++;
+        break;
+    case '-':
+        append = FALSE;
+        flags = base_flags;
+        flags_string++;
+        break;
+    default:
+        break;
     }
 
     names = g_strsplit(flags_string, "|", 0);
     flags_class = g_type_class_ref(flags_type);
     for (name = names; *name; name++) {
         if (g_str_equal(*name, "all")) {
-            flags |= flags_class->mask;
+            if (append) {
+                flags |= flags_class->mask;
+            } else {
+                flags = 0;
+            }
             break;
         } else {
             GFlagsValue *value;
 
             value = g_flags_get_value_by_nick(flags_class, *name);
             if (value) {
-                flags |= value->value;
+                if (append) {
+                    flags |= value->value;
+                } else {
+                    flags &= ~(value->value);
+                }
             } else {
                 if (!unknown_strings)
                     unknown_strings = g_string_new(NULL);

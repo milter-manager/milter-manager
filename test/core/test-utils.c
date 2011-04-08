@@ -427,6 +427,24 @@ data_flags_from_string_success (void)
         MILTER_LOG_LEVEL_ERROR,
         "+warning|error",
         MILTER_LOG_LEVEL_CRITICAL);
+    ADD("remove",
+        MILTER_LOG_LEVEL_CRITICAL,
+        "-warning|error",
+        MILTER_LOG_LEVEL_CRITICAL |
+        MILTER_LOG_LEVEL_WARNING |
+        MILTER_LOG_LEVEL_ERROR);
+    ADD("remove - all",
+        0,
+        "-all",
+        MILTER_LOG_LEVEL_CRITICAL |
+        MILTER_LOG_LEVEL_WARNING |
+        MILTER_LOG_LEVEL_ERROR);
+    ADD("remove - multi - all",
+        0,
+        "-warning|all|error",
+        MILTER_LOG_LEVEL_CRITICAL |
+        MILTER_LOG_LEVEL_WARNING |
+        MILTER_LOG_LEVEL_ERROR);
 
 #undef ADD
 }
