@@ -115,7 +115,7 @@ module Milter
           client.connection_spec = @connection_spec
           client.unix_socket_group = @unix_socket_group
           client.unix_socket_mode = @unix_socket_mode if @unix_socket_mode
-          client.event_loop_backend = @event_loop_backend
+          client.event_loop_backend = resolved_event_loop_backend
           client.default_packet_buffer_size = @packet_buffer_size
           client.pid_file = @pid_file
           client.maintenance_interval = @maintenance_interval
@@ -139,6 +139,12 @@ module Milter
               Milter::Logger.error("[configuration][setrlimit][nofile] #{error.message}")
               exit(false)
             end
+          end
+        end
+
+        def resolved_event_loop_backend
+          Milter::ClientEventLoopBackend.values.find do |value|
+            value.nick == @event_loop_backend.to_s
           end
         end
 
