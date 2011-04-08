@@ -142,6 +142,8 @@ module Milter
           end
         end
 
+        # For Ruby 1.8.5 + old Ruby/GLib2. It should be
+        # removed when CentOS 5 support is dropped.
         def resolved_event_loop_backend
           Milter::ClientEventLoopBackend.values.find do |value|
             value.nick == @event_loop_backend.to_s
