@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -72,7 +72,7 @@ class TestDebianInitDetector < Test::Unit::TestCase
                                      "--connection-spec", "",
                                      "--user-name", "",
                                      "--group-name", "",
-                                     "--socket-group-name", "",
+                                     "--unix-socket-group", "",
                                     ].join(" ") + " ",
                    "OPTION_ARGS" => "",
                    "RETVAL" => "$?",
@@ -131,7 +131,7 @@ EOC
                                      "--connection-spec", "",
                                      "--user-name", "",
                                      "--group-name", "",
-                                     "--socket-group-name", "",
+                                     "--unix-socket-group", "",
                                     ].join(" ") + " ",
                    "OPTION_ARGS" => "",
                    "RETVAL" => "$?",
