@@ -32,7 +32,8 @@ class TestTestServer < Test::Unit::TestCase
     @pid = fork do
       exec(milter_test_client,
            "--connection-spec", @connection_spec,
-           "--no-report-request")
+           "--no-report-request",
+           "--log-level", "none")
       exit!(false)
     end
     10.times do
