@@ -39,6 +39,8 @@
      MILTER_LOG_LEVEL_WARNING |                 \
      MILTER_LOG_LEVEL_MESSAGE |                 \
      MILTER_LOG_LEVEL_STATISTICS)
+#define DEFAULT_ITEM                            \
+    (MILTER_LOG_ITEM_TIME)
 
 #define MILTER_LOGGER_GET_PRIVATE(obj)                  \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                 \
@@ -228,22 +230,36 @@ get_property (GObject    *object,
 }
 
 MilterLogLevelFlags
-milter_log_level_flags_from_string (const gchar *level_name, GError **error)
+milter_log_level_flags_from_string (const gchar *level_name,
+                                    MilterLogLevelFlags base_flags,
+                                    GError **error)
 {
     if (g_str_equal(level_name, "all")) {
         return MILTER_LOG_LEVEL_ALL;
     } else {
+        if (base_flags == MILTER_LOG_LEVEL_DEFAULT &&
+            level_name && level_name[0] == '+') {
+            base_flags = DEFAULT_LEVEL;
+        }
         return milter_utils_flags_from_string(MILTER_TYPE_LOG_LEVEL_FLAGS,
                                               level_name,
+                                              base_flags,
                                               error);
     }
 }
 
 MilterLogItemFlags
-milter_log_item_flags_from_string (const gchar *item_name, GError **error)
+milter_log_item_flags_from_string (const gchar *item_name,
+                                   MilterLogItemFlags base_flags,
+                                   GError **error)
 {
+    if (base_flags == MILTER_LOG_ITEM_DEFAULT &&
+        item_name && item_name[0] == '+') {
+        base_flags = DEFAULT_ITEM;
+    }
     return milter_utils_flags_from_string(MILTER_TYPE_LOG_ITEM_FLAGS,
                                           item_name,
+                                          base_flags,
                                           error);
 }
 
@@ -380,7 +396,7 @@ milter_logger_default_log_handler (MilterLogger *logger, const gchar *domain,
 
     target_item = priv->target_item;
     if (target_item == MILTER_LOG_ITEM_DEFAULT)
-        target_item = MILTER_LOG_ITEM_TIME;
+        target_item = DEFAULT_ITEM;
 
     if (target_item & MILTER_LOG_ITEM_LEVEL) {
         GFlagsClass *flags_class;
@@ -544,7 +560,11 @@ milter_logger_set_target_level_by_string (MilterLogger *logger,
 
     if (level_name) {
         GError *local_error = NULL;
-        level = milter_log_level_flags_from_string(level_name, &local_error);
+        MilterLogLevelFlags current_level;
+        current_level = milter_logger_get_target_level(logger);
+        level = milter_log_level_flags_from_string(level_name,
+                                                   current_level,
+                                                   &local_error);
         if (local_error) {
             g_propagate_error(error, local_error);
             return FALSE;
@@ -611,7 +631,11 @@ milter_logger_set_target_item_by_string (MilterLogger *logger,
 
     if (item_name) {
         GError *local_error = NULL;
-        item = milter_log_item_flags_from_string(item_name, &local_error);
+        MilterLogItemFlags current_item;
+        current_item = milter_logger_get_target_item(logger);
+        item = milter_log_item_flags_from_string(item_name,
+                                                 current_item,
+                                                 &local_error);
         if (local_error) {
             g_propagate_error(error, local_error);
             return FALSE;

@@ -114,6 +114,7 @@ void             milter_utils_set_error_with_sub_error
 guint            milter_utils_flags_from_string
                                              (GType        flags_type,
                                               const gchar *flags_string,
+                                              guint        base_flags,
                                               GError     **error);
 gint             milter_utils_enum_from_string
                                              (GType        enum_type,

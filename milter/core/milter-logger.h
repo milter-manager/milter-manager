@@ -168,8 +168,10 @@ GQuark           milter_logger_error_quark    (void);
 GType            milter_logger_get_type       (void) G_GNUC_CONST;
 
 MilterLogLevelFlags milter_log_level_flags_from_string (const gchar *level_name,
+                                                        MilterLogLevelFlags base_flags,
                                                         GError     **error);
 MilterLogItemFlags  milter_log_item_flags_from_string  (const gchar *item_name,
+                                                        MilterLogItemFlags base_flags,
                                                         GError     **error);
 
 MilterLogger    *milter_logger                (void);

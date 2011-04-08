@@ -401,7 +401,11 @@ milter_syslog_logger_set_target_level_by_string (MilterSyslogLogger *logger,
 
     if (level_name) {
         GError *local_error = NULL;
-        level = milter_log_level_flags_from_string(level_name, &local_error);
+        MilterLogLevelFlags current_level;
+        current_level = milter_syslog_logger_get_target_level(logger);
+        level = milter_log_level_flags_from_string(level_name,
+                                                   current_level,
+                                                   &local_error);
         if (local_error) {
             g_propagate_error(error, local_error);
             return FALSE;

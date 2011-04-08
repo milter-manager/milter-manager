@@ -27,12 +27,21 @@
 static VALUE rb_cMilterLogLevelFlags;
 
 static VALUE
-s_from_string (VALUE self, VALUE string)
+s_from_string (int argc, VALUE *argv, VALUE self)
 {
+    VALUE rb_string, rb_base_level;
+    const gchar *string;
+    MilterLogLevelFlags base_level = MILTER_LOG_LEVEL_DEFAULT;
     MilterLogLevelFlags level;
     GError *error = NULL;
 
-    level = milter_log_level_flags_from_string(RVAL2CSTR(string), &error);
+    rb_scan_args(argc, argv, "11", &rb_string, &rb_base_level);
+    string = RVAL2CSTR(rb_string);
+    if (!NIL_P(rb_base_level)) {
+	base_level = RVAL2LOG_LEVEL(rb_base_level);
+    }
+
+    level = milter_log_level_flags_from_string(string, base_level, &error);
     if (error)
 	RAISE_GERROR(error);
     return LOG_LEVEL2RVAL(level);
@@ -117,7 +126,7 @@ Init_milter_logger (void)
 		    LOG_ITEM2RVAL(MILTER_LOG_ITEM_ALL));
 
     rb_define_singleton_method(rb_cMilterLogLevelFlags, "from_string",
-			       s_from_string, 1);
+			       s_from_string, -1);
 
     rb_define_singleton_method(rb_cMilterLogger, "default", s_default, 0);
 

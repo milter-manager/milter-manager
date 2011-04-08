@@ -497,6 +497,7 @@ milter_flags_error_quark (void)
 guint
 milter_utils_flags_from_string (GType        flags_type,
                                 const gchar *flags_string,
+                                guint        base_flags,
                                 GError     **error)
 {
     gchar **names, **name;
@@ -511,6 +512,11 @@ milter_utils_flags_from_string (GType        flags_type,
                     "flags name is NULL (<%s>)",
                     g_type_name(flags_type));
         return 0;
+    }
+
+    if (flags_string[0] == '+') {
+        flags = base_flags;
+        flags_string++;
     }
 
     names = g_strsplit(flags_string, "|", 0);

@@ -112,9 +112,12 @@ teardown (void)
 }
 
 #define milter_assert_equal_log_level(flags, name)                      \
-    gcut_assert_equal_flags(MILTER_TYPE_LOG_LEVEL_FLAGS,                \
-                            flags,                                      \
-                            milter_log_level_flags_from_string(name, NULL))
+    gcut_assert_equal_flags(                                            \
+        MILTER_TYPE_LOG_LEVEL_FLAGS,                                    \
+        flags,                                                          \
+        milter_log_level_flags_from_string(name,                        \
+                                           MILTER_LOG_LEVEL_DEFAULT,    \
+                                           NULL))
 
 void
 test_level_from_string (void)
