@@ -98,6 +98,30 @@ parse_connection_spec (const gchar *option_name,
 }
 
 static gboolean
+parse_log_level (const gchar *option_name,
+                 const gchar *value,
+                 gpointer data,
+                 GError **error)
+{
+    GError *log_level_error = NULL;
+    gboolean success;
+
+    success = milter_logger_set_target_level_by_string(milter_logger(), value,
+                                                       &log_level_error);
+    if (!success) {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    "%s: %s",
+                    option_name,
+                    log_level_error->message);
+        g_error_free(log_level_error);
+    }
+
+    return success;
+}
+
+static gboolean
 parse_verbose (const gchar *option_name,
                const gchar *value,
                gpointer data,
@@ -509,6 +533,10 @@ static const GOptionEntry option_entries[] =
     {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_connection_spec,
      N_("The spec of socket. (unix:PATH|inet:PORT[@HOST]|inet6:PORT[@HOST])"),
      "SPEC"},
+    {"log-level", 0, 0, G_OPTION_ARG_CALLBACK, parse_log_level,
+     N_("Set log level to LEVEL. LEVEL can be combined them with '|': "
+        "(all|default|none|critical|error|warning|message|"
+        "info|debug|statistics|profile): e.g.: error|warning"), "LEVEL"},
     {"verbose", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, parse_verbose,
      N_("Be verbose"), NULL},
     {"syslog", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, parse_syslog,
