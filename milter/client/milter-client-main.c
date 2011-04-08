@@ -132,6 +132,16 @@ parse_verbose (const gchar *option_name,
 }
 
 static gboolean
+parse_quiet (const gchar *option_name,
+             const gchar *value,
+             gpointer data,
+             GError **error)
+{
+    milter_logger_set_target_level(milter_logger(), MILTER_LOG_LEVEL_NONE);
+    return TRUE;
+}
+
+static gboolean
 parse_syslog (const gchar *option_name,
               const gchar *value,
               gpointer data,
@@ -539,6 +549,8 @@ static const GOptionEntry option_entries[] =
         "info|debug|statistics|profile): e.g.: error|warning"), "LEVEL"},
     {"verbose", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, parse_verbose,
      N_("Be verbose"), NULL},
+    {"quiet", 'q', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, parse_quiet,
+     N_("Be quiet"), NULL},
     {"syslog", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, parse_syslog,
      N_("Use Syslog"), NULL},
     {"syslog-facility", 0, 0, G_OPTION_ARG_CALLBACK, parse_syslog_facility,
