@@ -28,7 +28,8 @@
 
 #define MILTER_LOG_DOMAIN "logger-test"
 
-void test_level_from_string (void);
+void data_level_from_string (void);
+void test_level_from_string (gconstpointer data);
 void test_error (void);
 void test_critical (void);
 void test_message (void);
@@ -111,22 +112,54 @@ teardown (void)
     g_string_free(stdout_string, TRUE);
 }
 
-#define milter_assert_equal_log_level(flags, name)                      \
-    gcut_assert_equal_flags(                                            \
-        MILTER_TYPE_LOG_LEVEL_FLAGS,                                    \
-        flags,                                                          \
-        milter_log_level_flags_from_string(name,                        \
-                                           MILTER_LOG_LEVEL_DEFAULT,    \
-                                           NULL))
+void
+data_level_from_string (void)
+{
+#define ADD(label, expected, level_string)                              \
+    gcut_add_datum(label,                                               \
+                   "/expected", MILTER_TYPE_LOG_LEVEL_FLAGS, expected,  \
+                   "/level-string", G_TYPE_STRING, level_string,        \
+                   NULL)
+
+    ADD("all", MILTER_LOG_LEVEL_ALL, "all");
+    ADD("one", MILTER_LOG_LEVEL_INFO, "info");
+    ADD("multi",
+        MILTER_LOG_LEVEL_ERROR | MILTER_LOG_LEVEL_CRITICAL,
+        "error|critical");
+    ADD("append",
+        MILTER_LOG_LEVEL_CRITICAL |
+        MILTER_LOG_LEVEL_ERROR |
+        MILTER_LOG_LEVEL_WARNING |
+        MILTER_LOG_LEVEL_MESSAGE |
+        MILTER_LOG_LEVEL_INFO |
+        MILTER_LOG_LEVEL_DEBUG |
+        MILTER_LOG_LEVEL_STATISTICS,
+        "+info|debug");
+    ADD("remove",
+        MILTER_LOG_LEVEL_CRITICAL |
+        MILTER_LOG_LEVEL_MESSAGE |
+        MILTER_LOG_LEVEL_STATISTICS,
+        "-error|warning");
+
+#undef ADD
+}
 
 void
-test_level_from_string (void)
+test_level_from_string (gconstpointer data)
 {
-    milter_assert_equal_log_level(MILTER_LOG_LEVEL_ALL, "all");
-    milter_assert_equal_log_level(MILTER_LOG_LEVEL_INFO, "info");
-    milter_assert_equal_log_level(MILTER_LOG_LEVEL_ERROR |
-                                  MILTER_LOG_LEVEL_CRITICAL,
-                                  "error|critical");
+    const gchar *level_string;
+    MilterLogLevelFlags expected, actual;
+    GError *error = NULL;
+
+    expected = gcut_data_get_flags(data, "/expected");
+    level_string = gcut_data_get_string(data, "/level-string");
+    actual = milter_log_level_flags_from_string(level_string,
+                                                MILTER_LOG_LEVEL_DEFAULT,
+                                                &error);
+    gcut_assert_error(error);
+    gcut_assert_equal_flags(MILTER_TYPE_LOG_LEVEL_FLAGS,
+                            expected,
+                            actual);
 }
 
 #define milter_assert_equal_log(level, message)                     \

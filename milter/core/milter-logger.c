@@ -238,7 +238,8 @@ milter_log_level_flags_from_string (const gchar *level_name,
         return MILTER_LOG_LEVEL_ALL;
     } else {
         if (base_flags == MILTER_LOG_LEVEL_DEFAULT &&
-            level_name && level_name[0] == '+') {
+            level_name &&
+            (level_name[0] == '+' || level_name[0] == '-')) {
             base_flags = DEFAULT_LEVEL;
         }
         return milter_utils_flags_from_string(MILTER_TYPE_LOG_LEVEL_FLAGS,
@@ -254,7 +255,8 @@ milter_log_item_flags_from_string (const gchar *item_name,
                                    GError **error)
 {
     if (base_flags == MILTER_LOG_ITEM_DEFAULT &&
-        item_name && item_name[0] == '+') {
+        item_name &&
+        (item_name[0] == '+' || item_name[0] == '-')) {
         base_flags = DEFAULT_ITEM;
     }
     return milter_utils_flags_from_string(MILTER_TYPE_LOG_ITEM_FLAGS,
