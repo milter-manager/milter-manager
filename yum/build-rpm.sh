@@ -35,7 +35,9 @@ if test "$USE_RPMFORGE" = "yes"; then
 	architecture=$(cut -d '-' -f 1 /etc/rpm/platform)
 	rpmforge_url=http://packages.sw.be/rpmforge-release
 	rpmforge_rpm_base=rpmforge-release-0.5.2-2.el5.rf.${architecture}.rpm
-	run rpm -Uvh $rpmforge_url/$rpmforge_rpm_base
+	wget $rpmforge_url/$rpmforge_rpm_base
+	run rpm -Uvh $rpmforge_rpm_base
+	rm $rpmforge_rpm_base
 	sed -i'' -e 's/enabled = 1/enabled = 0/g' /etc/yum.repos.d/rpmforge.repo
     fi
     yum_options="$yum_options --enablerepo=rpmforge"
