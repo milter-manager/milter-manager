@@ -81,6 +81,10 @@ static gboolean real_load_custom  (MilterManagerConfiguration *configuration,
                                    GError                    **error);
 static gboolean real_maintain     (MilterManagerConfiguration *configuration,
                                    GError                    **error);
+static gboolean real_event_loop_created
+                                  (MilterManagerConfiguration *configuration,
+                                   MilterEventLoop            *loop,
+                                   GError                    **error);
 static gchar   *real_dump         (MilterManagerConfiguration *configuration);
 static gboolean real_clear        (MilterManagerConfiguration *configuration,
                                    GError                    **error);
@@ -110,6 +114,7 @@ milter_manager_ruby_configuration_class_init (MilterManagerRubyConfigurationClas
     configuration_class->load = real_load;
     configuration_class->load_custom = real_load_custom;
     configuration_class->maintain = real_maintain;
+    configuration_class->event_loop_created = real_event_loop_created;
     configuration_class->dump = real_dump;
     configuration_class->clear = real_clear;
 }
@@ -504,6 +509,33 @@ real_maintain (MilterManagerConfiguration *_configuration, GError **error)
         success = FALSE;
         if (!error) {
             milter_error("[ruby-configuration][error][maintain] %s",
+                         local_error->message);
+        }
+        g_propagate_error(error, local_error);
+    }
+
+    return success;
+}
+
+static gboolean
+real_event_loop_created (MilterManagerConfiguration *_configuration,
+                         MilterEventLoop *loop,
+                         GError **error)
+{
+    MilterManagerRubyConfiguration *configuration;
+    GError *local_error = NULL;
+    gboolean success = TRUE;
+
+    configuration = MILTER_MANAGER_RUBY_CONFIGURATION(_configuration);
+    rb_funcall_protect(&local_error,
+                       GOBJ2RVAL(configuration),
+                       rb_intern("event_loop_created"),
+                       1,
+                       GOBJ2RVAL(loop));
+    if (local_error) {
+        success = FALSE;
+        if (!error) {
+            milter_error("[ruby-configuration][error][event-loop_created] %s",
                          local_error->message);
         }
         g_propagate_error(error, local_error);

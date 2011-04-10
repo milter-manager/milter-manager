@@ -2039,12 +2039,32 @@ milter_manager_configuration_maintain (MilterManagerConfiguration *configuration
     configuration_class = MILTER_MANAGER_CONFIGURATION_GET_CLASS(configuration);
     if (configuration_class->maintain) {
         GError *error = NULL;
-
-        milter_debug("[configuration][maintain]");
+        milter_debug("[configuration][maintain][start]");
         if (!configuration_class->maintain(configuration, &error)) {
             milter_error("[configuration][maintain][error] %s", error->message);
             g_error_free(error);
         }
+        milter_debug("[configuration][maintain][end]");
+    }
+}
+
+void
+milter_manager_configuration_event_loop_created (MilterManagerConfiguration *configuration,
+                                                 MilterEventLoop *loop)
+{
+    MilterManagerConfigurationClass *configuration_class;
+
+    configuration_class = MILTER_MANAGER_CONFIGURATION_GET_CLASS(configuration);
+    if (configuration_class->event_loop_created) {
+        GError *error = NULL;
+        milter_debug("[configuration][event-loop-created][start]");
+        if (!configuration_class->event_loop_created(configuration, loop,
+                                                     &error)) {
+            milter_error("[configuration][event-loop-created][error] %s",
+                         error->message);
+            g_error_free(error);
+        }
+        milter_debug("[configuration][event-loop-created][end]");
     }
 }
 

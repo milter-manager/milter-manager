@@ -811,6 +811,26 @@ Since 1.6.6.
        Milter::Logger.info("maintained!")
      end
 
+: manager.event_loop_created {|loop| ...}
+
+   ((*Normally, this item doesn't need to be used directly.*))
+
+   Since 1.6.8.
+
+   Executes a custom process on an event loop is created. An
+   event loop is created only on initialization.
+
+   Here is an example that registers a callback that logs a
+   message at intervals of 1 second.
+
+   Example:
+     manager.event_loop_created do |loop|
+       loop.add_timeout(1) do
+         Milter::Logger.info("timeout!")
+         true
+       end
+     end
+
 == [controller] Controller
 
 : controller.connection_spec

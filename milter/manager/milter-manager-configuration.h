@@ -64,6 +64,10 @@ struct _MilterManagerConfigurationClass
                                    GError                    **error);
     gboolean     (*maintain)      (MilterManagerConfiguration *configuration,
                                    GError                    **error);
+    gboolean     (*event_loop_created)
+                                  (MilterManagerConfiguration *configuration,
+                                   MilterEventLoop            *loop,
+                                   GError                    **error);
     void         (*connected)     (MilterManagerConfiguration *configuration,
                                    MilterManagerLeader        *leader);
     void         (*to_xml)        (MilterManagerConfiguration *configuration,
@@ -232,6 +236,9 @@ void          milter_manager_configuration_set_maintenance_interval
                                       guint                       n_sessions);
 void          milter_manager_configuration_maintain
                                      (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_event_loop_created
+                                     (MilterManagerConfiguration *configuration,
+                                      MilterEventLoop            *loop);
 
 guint         milter_manager_configuration_get_suspend_time_on_unacceptable
                                      (MilterManagerConfiguration *configuration);

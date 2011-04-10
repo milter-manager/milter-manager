@@ -803,6 +803,27 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
        Milter::Logger.info("maintained!")
      end
 
+: manager.event_loop_created {|loop| ...}
+
+   ((*この項目は通常は直接使用する必要はありません。*))
+
+   1.6.8から使用可能。
+
+   イベントループが作成されたときに指定した処理を実行します。
+   イベントループが作成されるのは初期化時のみです。
+   時のみ指定した実行します。
+
+   以下の例は1秒ごとにログを出力するコールバックを登録する設
+   定です。
+
+   使用例:
+     manager.event_loop_created do |loop|
+       loop.add_timeout(1) do
+         Milter::Logger.info("timeout!")
+         true
+       end
+     end
+
 == [controller] コントローラ関連
 
 : controller.connection_spec

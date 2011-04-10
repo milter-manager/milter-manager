@@ -76,8 +76,15 @@ module Milter
         end
       end
 
+      def event_loop_created(loop)
+        event_loop_created_hooks.each do |hook|
+          hook.call(self, loop)
+        end
+      end
+
       def clear
         @maintained_hooks = nil
+        @event_loop_created_hooks = nil
         @netstat_connection_checker = nil
         @database ||= Client::Configuration::DatabaseConfiguration.new(self)
         @database.clear
@@ -85,6 +92,10 @@ module Milter
 
       def maintained_hooks
         @maintained_hooks ||= []
+      end
+
+      def event_loop_created_hooks
+        @event_loop_created_hooks ||= []
       end
 
       def netstat_connection_checker
@@ -998,6 +1009,15 @@ module Milter
             end
           end
           @configuration.maintained_hooks << guarded_hook
+        end
+
+        def event_loop_created(hook=Proc.new)
+          guarded_hook = Proc.new do |configuration, loop|
+            ConfigurationLoader.guard do
+              hook.call(loop)
+            end
+          end
+          @configuration.event_loop_created_hooks << guarded_hook
         end
 
         def report_memory_statistics

@@ -107,6 +107,8 @@ static void   set_maintenance_interval    (MilterClient *client,
 static void   maintain                    (MilterClient *client);
 static void   sessions_finished           (MilterClient *client,
                                            guint         n_finished_sessions);
+static void   event_loop_created          (MilterClient *client,
+                                           MilterEventLoop *loop);
 static void   cb_leader_finished          (MilterFinishedEmittable *emittable,
                                            gpointer user_data);
 static guint  get_n_workers               (MilterClient *client);
@@ -174,6 +176,7 @@ milter_manager_class_init (MilterManagerClass *klass)
     client_class->set_run_as_daemon = set_run_as_daemon;
     client_class->maintain = maintain;
     client_class->sessions_finished = sessions_finished;
+    client_class->event_loop_created = event_loop_created;
 
     spec = g_param_spec_object("configuration",
                                "Configuration",
@@ -1187,6 +1190,18 @@ sessions_finished (MilterClient *client, guint n_finished_sessions)
 
     priv = MILTER_MANAGER_GET_PRIVATE(client);
     dispose_finished_leaders(priv);
+}
+
+static void
+event_loop_created (MilterClient *client, MilterEventLoop *loop)
+{
+    MilterManagerPrivate *priv;
+
+    milter_debug("[manager][event-loop-created]");
+
+    priv = MILTER_MANAGER_GET_PRIVATE(client);
+    milter_manager_configuration_event_loop_created(priv->configuration,
+                                                    loop);
 }
 
 static guint
