@@ -99,11 +99,21 @@ spamdを起動します。
 
   % sudo /sbin/service spamassassin start
 
-spamass-milterはソケットを変更します。
+spamass-milterは以下のように設定します。
 
-/etc/sysconfig/spamass-milterに以下を追加します。
+  * ソケットを変更する。
+  * 本文変更機能を無効にする。
+  * スコアが15を超えたら拒否する。
 
+/etc/sysconfig/spamass-milterを以下のように変更します。
+
+変更前:
+  #SOCKET=/var/run/spamass.sock
+  #EXTRA_FLAGS="-m -r 15"
+
+変更後:
   SOCKET="inet:11120@[127.0.0.1]"
+  EXTRA_FLAGS="-m -r 15"
 
 システム起動時にspamass-milterを起動するようにします。
 
@@ -124,10 +134,10 @@ clamav-milterのソケットを変更します。
 /etc/clamav-milter.confを以下のように変更します。
 
 変更前:
-  MilterSocket unix:/var/clamav/clmilter.socket
+  #MilterSocketMode 0660
 
 変更後:
-  MilterSocket inet:11121@[127.0.0.1]
+  MilterSocketMode 0660
 
 clamav-milterを起動します。
 
@@ -154,6 +164,13 @@ clamav-milterを起動します。
   のように複数のmilterを組み合わせた迷惑メール対策システムの構
   築を支援します。
 
+# 新しいmilter-greylistを使えるようになったらこうする。
+#  socket "/var/milter-greylist/milter-greylist.sock"
+#  # ...
+#
+#  socket "/var/milter-greylist/milter-greylist.sock" 666
+#  # ...
+
 変更前:
   racl whitelist default
 
@@ -177,6 +194,11 @@ milter-greylistを起動します。
 
 === milter-managerの設定
 
+まず、clamav-milterのソケットにアクセスできるように
+milter-managerをclamavグループに加えます。
+
+  % sudo usermod -G clamav -a milter-manager
+
 milter-managerはシステムにインストールされているmilterを検出
 します。以下のコマンドでspamass-milter、clamav-milter、
 milter-greylistを検出していることを確認してください。
@@ -194,7 +216,7 @@ milter-greylistを検出していることを確認してください。
   end
   ...
   define_milter("clamav-milter") do |milter|
-    milter.connection_spec = "inet:11121@[127.0.0.1]"
+    milter.connection_spec = "unix:/var/clamav/clmilter.socket"
     ...
     milter.enabled = true
     ...

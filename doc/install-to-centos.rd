@@ -100,10 +100,21 @@ We start spamd:
 
   % sudo /sbin/service spamassassin start
 
-We change spamass-milter's socket address. We append the
-following link to /etc/sysconfig/spamass-milter:
+Here are spamass-milter's configuration items:
 
+  * Change socket address.
+  * Disable needless body change feature.
+  * Reject if score is larger than or equal to 15.
+
+We change /etc/sysconfig/spamass-milter:
+
+Before:
+  #SOCKET=/var/run/spamass.sock
+  #EXTRA_FLAGS="-m -r 15"
+
+After:
   SOCKET="inet:11120@[127.0.0.1]"
+  EXTRA_FLAGS="-m -r 15"
 
 We start spamass-milter on startup:
 
@@ -123,10 +134,10 @@ We edit /etc/clamav-milter.conf to change clamav-milter's
 socket address.
 
 Before:
-  MilterSocket unix:/var/clamav/clmilter.socket
+  #MilterSocketMode 0660
 
 After:
-  MilterSocket inet:11121@[127.0.0.1]
+  MilterSocketMode 0660
 
 We start clamav-milter:
 
@@ -155,6 +166,13 @@ configurations:
   such as SpamAssassin. milter manager helps constructing
   mail system that combines some anti-spam techniques.
 
+# For newer milter-greylist:
+#  socket "/var/milter-greylist/milter-greylist.sock"
+#  # ...
+#
+#  socket "/var/milter-greylist/milter-greylist.sock" 666
+#  # ...
+
 Before:
   racl whitelist default
 
@@ -179,6 +197,11 @@ We start milter-greylist:
 
 === Configure milter-manager
 
+We add 'milter-manager' user to 'clamav' group to access
+clamav-milter's socket:
+
+  % sudo usermod -G clamav -a milter-manager
+
 milter-manager detects milters that installed in system.
 We can confirm spamass-milter, clamav-milter and
 milter-greylist are detected:
@@ -196,7 +219,7 @@ The following output shows milters are detected:
   end
   ...
   define_milter("clamav-milter") do |milter|
-    milter.connection_spec = "inet:11121@[127.0.0.1]"
+    milter.connection_spec = "unix:/var/clamav/clmilter.socket"
     ...
     milter.enabled = true
     ...
