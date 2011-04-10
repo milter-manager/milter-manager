@@ -121,6 +121,9 @@ milterの設定もmilter-managerの「manager」グループの設定と同
 : milter.maintained
    ((<manager.maintained|configuration.rd.ja#manager.maintained>))と同じ。
 
+: milter.event_loop_created
+   ((<milter.event_loop_created|configuration.rd.ja#milter.event_loop_created>))と同じ。
+
 == [database] データベース関連
 
 データベースの設定もmilter-managerの((<「database」グループの設

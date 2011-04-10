@@ -334,7 +334,7 @@ module Milter
         @@current_configuration = nil
         def load(configuration, file)
           @@current_configuration = configuration
-          guard do
+          Client::ConfigurationLoader.guard do
             new(configuration).load_configuration(file)
           end
           GC.start
@@ -342,17 +342,10 @@ module Milter
 
         def load_custom(configuration, file)
           @@current_configuration = configuration
-          guard do
+          Client::ConfigurationLoader.guard do
             new(configuration).load_custom_configuration(file)
           end
           GC.start
-        end
-
-        def guard(fallback_value=nil)
-          yield
-        rescue Exception => error
-          Logger.error(error)
-          fallback_value
         end
       end
 
@@ -808,176 +801,181 @@ module Milter
         end
       end
 
-      class ManagerConfigurationLoader
+      class ManagerConfigurationLoader < Client::ConfigurationLoader::MilterConfigurationLoader
+        class ConfigurationWrapper
+          def initialize(configuration)
+            @configuration = configuration
+          end
+
+          def connection_spec
+            @configuration.manager_connection_spec
+          end
+
+          def connection_spec=(spec)
+            @configuration.manager_connection_spec = spec
+          end
+
+          def unix_socket_mode
+            @configuration.manager_unix_socket_mode
+          end
+
+          def unix_socket_mode=(mode)
+            @configuration.manager_unix_socket_mode = mode
+          end
+
+          def unix_socket_group
+            @configuration.manager_unix_socket_group
+          end
+
+          def unix_socket_group=(group)
+            @configuration.manager_unix_socket_group = group
+          end
+
+          def remove_unix_socket_on_create?
+            @configuration.remove_manager_unix_socket_on_create?
+          end
+
+          def remove_unix_socket_on_create=(remove)
+            @configuration.remove_manager_unix_socket_on_create = remove
+          end
+
+          def remove_unix_socket_on_close?
+            @configuration.remove_manager_unix_socket_on_close?
+          end
+
+          def remove_unix_socket_on_close=(remove)
+            @configuration.remove_manager_unix_socket_on_close = remove
+          end
+
+          def daemon?
+            @configuration.daemon?
+          end
+
+          def daemon=(boolean)
+            @configuration.daemon = boolean
+          end
+
+          def pid_file
+            @configuration.pid_file
+          end
+
+          def pid_file=(pid_file)
+            @configuration.pid_file = pid_file
+          end
+
+          def maintenance_interval
+            @configuration.maintenance_interval
+          end
+
+          def maintenance_interval=(n_sessions)
+            @configuration.maintenance_interval = n_sessions
+          end
+
+          def suspend_time_on_unacceptable
+            @configuration.suspend_time_on_unacceptable
+          end
+
+          def suspend_time_on_unacceptable=(seconds)
+            @configuration.suspend_time_on_unacceptable = seconds
+          end
+
+          def max_connections
+            @configuration.max_connections
+          end
+
+          def max_connections=(n_connections)
+            @configuration.max_connections = n_connections
+          end
+
+          def max_file_descriptors
+            @configuration.max_file_descriptors
+          end
+
+          def max_file_descriptors=(n_descriptors)
+            @configuration.max_file_descriptors = n_descriptors
+          end
+
+          def connection_check_interval
+            @configuration.connection_check_interval
+          end
+
+          def connection_check_interval=(interval)
+            @configuration.connection_check_interval = interval
+          end
+
+          def event_loop_backend
+            @configuration.event_loop_backend
+          end
+
+          def event_loop_backend=(backend)
+            @configuration.event_loop_backend = backend
+          end
+
+          def n_workers
+            @configuration.n_workers
+          end
+
+          def n_workers=(n_workers)
+            @configuration.n_workers = n_workers
+          end
+
+          def packet_buffer_size
+            @configuration.default_packet_buffer_size
+          end
+
+          def packet_buffer_size=(size)
+            @configuration.default_packet_buffer_size = size
+          end
+
+          def maintained_hooks
+            @configuration.maintained_hooks
+          end
+
+          def event_loop_created_hooks
+            @configuration.event_loop_created_hooks
+          end
+
+          def update_location(key, reset, deep_level=2)
+            full_key = "manager.#{key}"
+            @configuration.update_location(full_key, reset, deep_level)
+          end
+        end
+
         def initialize(configuration)
-          @configuration = configuration
+          @raw_configuration = configuration
+          super(ConfigurationWrapper.new(@raw_configuration))
           @connection_checker_ids = {}
         end
 
-        def connection_spec=(spec)
-          Connection.parse_spec(spec) unless spec.nil?
-          update_location("connection_spec", spec.nil?)
-          @configuration.manager_connection_spec = spec
-        end
-
-        def unix_socket_mode
-          @configuration.manager_unix_socket_mode
-        end
-
-        def unix_socket_mode=(mode)
-          update_location("unix_socket_mode", false)
-          @configuration.manager_unix_socket_mode = mode
-        end
-
-        def unix_socket_group
-          @configuration.manager_unix_socket_group
-        end
-
-        def unix_socket_group=(group)
-          update_location("unix_socket_group", group.nil?)
-          @configuration.manager_unix_socket_group = group
-        end
-
-        def remove_unix_socket_on_create?
-          @configuration.remove_manager_unix_socket_on_create?
-        end
-
-        def remove_unix_socket_on_create=(remove)
-          update_location("remove_unix_socket_on_create", false)
-          @configuration.remove_manager_unix_socket_on_create = remove
-        end
-
-        def remove_unix_socket_on_close?
-          @configuration.remove_manager_unix_socket_on_close?
-        end
-
-        def remove_unix_socket_on_close=(remove)
-          update_location("remove_unix_socket_on_close", false)
-          @configuration.remove_manager_unix_socket_on_close = remove
-        end
-
-        def daemon=(boolean)
-          update_location("daemon", false)
-          @configuration.daemon = boolean
-        end
-
-        def daemon?
-          @configuration.daemon?
-        end
-
-        def pid_file=(pid_file)
-          update_location("pid_file", pid_file.nil?)
-          @configuration.pid_file = pid_file
-        end
-
-        def pid_file
-          @configuration.pid_file
-        end
-
-        def maintenance_interval=(n_sessions)
-          update_location("maintenance_interval", n_sessions.nil?)
-          n_sessions ||= 0
-          @configuration.maintenance_interval = n_sessions
-        end
-
-        def maintenance_interval
-          @configuration.maintenance_interval
-        end
-
-        def suspend_time_on_unacceptable=(seconds)
-          update_location("suspend_time_on_unacceptable", seconds.nil?)
-          seconds ||= Client::DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE
-          @configuration.suspend_time_on_unacceptable = seconds
-        end
-
-        def suspend_time_on_unacceptable
-          @configuration.suspend_time_on_unacceptable
-        end
-
-        def max_connections=(n_connections)
-          update_location("max_connections", n_connections.nil?)
-          n_connections ||= Client::DEFAULT_MAX_CONNECTIONS
-          @configuration.max_connections = n_connections
-        end
-
-        def max_connections
-          @configuration.max_connections
-        end
-
-        def max_file_descriptors=(n_descriptors)
-          update_location("max_file_descriptors", n_descriptors.nil?)
-          n_descriptors ||= 0
-          @configuration.max_file_descriptors = n_descriptors
-        end
-
-        def max_file_descriptors
-          @configuration.max_file_descriptors
+        def custom_configuration_directory
+          @raw_configuration.custom_configuration_directory
         end
 
         def custom_configuration_directory=(directory)
           update_location("custom_configuration_directory", directory.nil?)
-          @configuration.custom_configuration_directory = directory
-        end
-
-        def custom_configuration_directory
-          @configuration.custom_configuration_directory
-        end
-
-        def connection_check_interval=(interval)
-          update_location("connection_check_interval", interval.nil?)
-          interval ||= 0
-          @configuration.connection_check_interval = interval
-        end
-
-        def event_loop_backend
-          @configuration.event_loop_backend
-        end
-
-        def event_loop_backend=(backend)
-          update_location("event_loop_backend", backend.nil?)
-          @configuration.event_loop_backend = backend
-        end
-
-        def n_workers
-          @configuration.n_workers
-        end
-
-        def n_workers=(n_workers)
-          update_location("n_workers", n_workers.nil?)
-          n_workers ||= 0
-          @configuration.n_workers = n_workers
-        end
-
-        def packet_buffer_size
-          @configuration.default_packet_buffer_size
-        end
-
-        def packet_buffer_size=(size)
-          update_location("size", size.nil?)
-          size ||= 0
-          @configuration.default_packet_buffer_size = size
+          @raw_configuration.custom_configuration_directory = directory
         end
 
         def fallback_status
-          @configuration.fallback_status
+          @raw_configuration.fallback_status
         end
 
         def fallback_status=(status)
           update_location("fallback_status", status.nil?)
-          @configuration.fallback_status = status
+          @raw_configuration.fallback_status = status
         end
 
         def fallback_status_at_disconnect
-          @configuration.fallback_status_at_disconnect
+          @raw_configuration.fallback_status_at_disconnect
         end
 
         def fallback_status_at_disconnect=(status)
           update_location("fallback_status_at_disconnect", status.nil?)
-          @configuration.fallback_status_at_disconnect = status
+          @raw_configuration.fallback_status_at_disconnect = status
         end
 
         def netstat_connection_checker
-          @configuration.netstat_connection_checker
+          @raw_configuration.netstat_connection_checker
         end
 
         def define_connection_checker(name, &block)
@@ -985,7 +983,7 @@ module Milter
           @configuration.signal_handler_disconnect(old_id) if old_id
           id = @configuration.signal_connect('connected') do |_config, leader|
             leader.signal_connect('connection-check') do |_leader|
-              ConfigurationLoader.guard(true) do
+              Client::ConfigurationLoader.guard(true) do
                 block.call(ConnectionCheckContext.new(leader))
               end
             end
@@ -1000,24 +998,6 @@ module Milter
           define_connection_checker("netstat") do |context|
             checker.connected?(context)
           end
-        end
-
-        def maintained(hook=Proc.new)
-          guarded_hook = Proc.new do |configuration|
-            ConfigurationLoader.guard do
-              hook.call
-            end
-          end
-          @configuration.maintained_hooks << guarded_hook
-        end
-
-        def event_loop_created(hook=Proc.new)
-          guarded_hook = Proc.new do |configuration, loop|
-            ConfigurationLoader.guard do
-              hook.call(loop)
-            end
-          end
-          @configuration.event_loop_created_hooks << guarded_hook
         end
 
         def report_memory_statistics
@@ -1035,8 +1015,7 @@ module Milter
 
         private
         def update_location(key, reset, deep_level=2)
-          full_key = "manager.#{key}"
-          @configuration.update_location(full_key, reset, deep_level)
+          @configuration.update_location(key, reset, deep_level + 1)
         end
 
         class MemoryReporter
@@ -1282,7 +1261,7 @@ module Milter
               child.signal_connect("stop-on-connect") do |_child, host, address|
                 child_context = ChildContext.new(child, children, context)
                 @connect_stoppers.any? do |stopper|
-                  ConfigurationLoader.guard(false) do
+                  Client::ConfigurationLoader.guard(false) do
                     stopper.call(child_context, host, address)
                   end
                 end
@@ -1293,7 +1272,7 @@ module Milter
               child.signal_connect("stop-on-helo") do |_child, fqdn|
                 child_context = ChildContext.new(child, children, context)
                 @helo_stoppers.any? do |stopper|
-                  ConfigurationLoader.guard(false) do
+                  Client::ConfigurationLoader.guard(false) do
                     stopper.call(child_context, fqdn)
                   end
                 end
@@ -1304,7 +1283,7 @@ module Milter
               child.signal_connect("stop-on-envelope-from") do |_child, from|
                 child_context = ChildContext.new(child, children, context)
                 @envelope_from_stoppers.any? do |stopper|
-                  ConfigurationLoader.guard(false) do
+                  Client::ConfigurationLoader.guard(false) do
                     stopper.call(child_context, from)
                   end
                 end
@@ -1315,7 +1294,7 @@ module Milter
               child.signal_connect("stop-on-envelope-recipient") do |_child, recipient|
                 child_context = ChildContext.new(child, children, context)
                 @envelope_recipient_stoppers.any? do |stopper|
-                  ConfigurationLoader.guard(false) do
+                  Client::ConfigurationLoader.guard(false) do
                     stopper.call(child_context, recipient)
                   end
                 end
@@ -1326,7 +1305,7 @@ module Milter
               child.signal_connect("stop-on-data") do |_child|
                 child_context = ChildContext.new(child, children, context)
                 @data_stoppers.any? do |stopper|
-                  ConfigurationLoader.guard(false) do
+                  Client::ConfigurationLoader.guard(false) do
                     stopper.call(child_context)
                   end
                 end
@@ -1337,7 +1316,7 @@ module Milter
               child.signal_connect("stop-on-header") do |_child, name, value|
                 child_context = ChildContext.new(child, children, context)
                 @header_stoppers.any? do |stopper|
-                  ConfigurationLoader.guard(false) do
+                  Client::ConfigurationLoader.guard(false) do
                     stopper.call(child_context, name, value)
                   end
                 end
@@ -1348,7 +1327,7 @@ module Milter
               child.signal_connect("stop-on-end-of-header") do |_child|
                 child_context = ChildContext.new(child, children, context)
                 @end_of_header_stoppers.any? do |stopper|
-                  ConfigurationLoader.guard(false) do
+                  Client::ConfigurationLoader.guard(false) do
                     stopper.call(child_context)
                   end
                 end
@@ -1359,7 +1338,7 @@ module Milter
               child.signal_connect("stop-on-body") do |_child, chunk|
                 child_context = ChildContext.new(child, children, context)
                 @body_stoppers.any? do |stopper|
-                  ConfigurationLoader.guard(false) do
+                  Client::ConfigurationLoader.guard(false) do
                     stopper.call(child_context, name, chunk)
                   end
                 end
@@ -1370,7 +1349,7 @@ module Milter
               child.signal_connect("stop-on-end-of-message") do |_child, chunk|
                 child_context = ChildContext.new(child, children, context)
                 @end_of_message_stoppers.any? do |stopper|
-                  ConfigurationLoader.guard(false) do
+                  Client::ConfigurationLoader.guard(false) do
                     stopper.call(child_context)
                   end
                 end

@@ -48,6 +48,12 @@ module Milter
       end
     end
 
+    def on_event_loop_created
+      signal_connect("event-loop-created") do |_client|
+        yield(_client)
+      end
+    end
+
     def reload
       reload_callbacks.each do |callback|
         callback.call(self)

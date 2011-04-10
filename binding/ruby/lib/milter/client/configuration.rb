@@ -108,6 +108,7 @@ module Milter
           @run_gc_on_maintain = true
           @handle_signal = true
           @maintained_hooks = []
+          @event_loop_created_hooks = []
         end
 
         def setup(client)
@@ -129,6 +130,13 @@ module Milter
             client.on_maintain do
               @maintained_hooks.each do |hook|
                 hook.call
+              end
+            end
+          end
+          unless @event_loop_created_hooks.empty?
+            client.on_event_loop_created do |_client, loop|
+              @event_loop_created_hooks.each do |hook|
+                hook.call(loop)
               end
             end
           end
@@ -380,6 +388,15 @@ module Milter
         end
       end
 
+      class << self
+        def guard(fallback_value=nil)
+          yield
+        rescue Exception => error
+          Milter::Logger.error(error)
+          fallback_value
+        end
+      end
+
       attr_reader :milter, :security, :log, :database
       def initialize(configuration)
         @configuration = configuration
@@ -404,13 +421,6 @@ module Milter
         raise unless e.path == path
         Milter::Logger.debug("[configuration][load][nonexistent][ignore] " +
                              "<#{path}>")
-      end
-
-      def guard(fallback_value=nil)
-        yield
-      rescue Exception => error
-        Milter::Logger.error(error)
-        fallback_value
       end
 
       def environment
@@ -489,13 +499,17 @@ module Milter
           @configuration.remove_unix_socket_on_close = remove
         end
 
+        def daemon?
+          @configuration.daemon?
+        end
+
         def daemon=(boolean)
           update_location("daemon", false)
           @configuration.daemon = boolean
         end
 
-        def daemon?
-          @configuration.daemon?
+        def pid_file
+          @configuration.pid_file
         end
 
         def pid_file=(pid_file)
@@ -503,8 +517,8 @@ module Milter
           @configuration.pid_file = pid_file
         end
 
-        def pid_file
-          @configuration.pid_file
+        def maintenance_interval
+          @configuration.maintenance_interval
         end
 
         def maintenance_interval=(n_sessions)
@@ -513,8 +527,8 @@ module Milter
           @configuration.maintenance_interval = n_sessions
         end
 
-        def maintenance_interval
-          @configuration.maintenance_interval
+        def suspend_time_on_unacceptable
+          @configuration.suspend_time_on_unacceptable
         end
 
         def suspend_time_on_unacceptable=(seconds)
@@ -523,8 +537,8 @@ module Milter
           @configuration.suspend_time_on_unacceptable = seconds
         end
 
-        def suspend_time_on_unacceptable
-          @configuration.suspend_time_on_unacceptable
+        def max_connections
+          @configuration.max_connections
         end
 
         def max_connections=(n_connections)
@@ -533,8 +547,8 @@ module Milter
           @configuration.max_connections = n_connections
         end
 
-        def max_connections
-          @configuration.max_connections
+        def max_file_descriptors
+          @configuration.max_file_descriptors
         end
 
         def max_file_descriptors=(n_descriptors)
@@ -543,8 +557,8 @@ module Milter
           @configuration.max_file_descriptors = n_descriptors
         end
 
-        def max_file_descriptors
-          @configuration.max_file_descriptors
+        def connection_check_interval
+          @configuration.connection_check_interval
         end
 
         def connection_check_interval=(interval)
@@ -589,6 +603,15 @@ module Milter
             end
           end
           @configuration.maintained_hooks << guarded_hook
+        end
+
+        def event_loop_created(hook=Proc.new)
+          guarded_hook = Proc.new do |configuration, loop|
+            ConfigurationLoader.guard do
+              hook.call(loop)
+            end
+          end
+          @configuration.event_loop_created_hooks << guarded_hook
         end
 
         private

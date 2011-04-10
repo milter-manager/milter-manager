@@ -121,6 +121,9 @@ details.
 : milter.maintained
    See ((<manager.maintained|configuration.rd.ja#manager.maintained>)).
 
+: milter.event_loop_created
+   See ((<milter.event_loop_created|configuration.rd.ja#milter.event_loop_created>)).
+
 == [database] Database
 
 You can use configuration items same as ((<'"database"
