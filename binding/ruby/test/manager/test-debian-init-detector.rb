@@ -597,7 +597,7 @@ EOC
 
   def milter_manager_init_script
     top = Pathname(File.dirname(__FILE__)) + ".." + ".." + ".." + ".."
-    (top + "data" + "init.d" + "debian" + "milter-manager").read
+    (top + "debian" + "milter-manager.init").read
   end
 
   def clamav_milter_since_0_95_init_header(clamav_milter_conf)
