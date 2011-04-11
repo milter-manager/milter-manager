@@ -44,10 +44,10 @@ You can use configuration items same as milter manager's
 details.
 
 : security.effective_user
-   See ((<security.effective_user|configuration.rd.ja#security.effective_user>)).
+   See ((<security.effective_user|configuration.rd#security.effective_user>)).
 
 : security.effective_group
-   See ((<security.effective_group|configuration.rd.ja#security.effective_group>)).
+   See ((<security.effective_group|configuration.rd#security.effective_group>)).
 
 == [log] Log
 
@@ -74,55 +74,55 @@ You can use configuration items same as milter manager's
 details.
 
 : milter.connection_spec
-   See ((<manager.connection_spec|configuration.rd.ja#manager.connection_spec>)).
+   See ((<manager.connection_spec|configuration.rd#manager.connection_spec>)).
 
 : milter.unix_socket_mode
-   See ((<manager.unix_socket_mode|configuration.rd.ja#manager.unix_socket_mode>)).
+   See ((<manager.unix_socket_mode|configuration.rd#manager.unix_socket_mode>)).
 
 : milter.unix_socket_group
-   See ((<manager.unix_socket_group|configuration.rd.ja#manager.unix_socket_group>)).
+   See ((<manager.unix_socket_group|configuration.rd#manager.unix_socket_group>)).
 
 : milter.remove_unix_socket_on_create
-   See ((<manager.remove_unix_socket_on_create|configuration.rd.ja#manager.remove_unix_socket_on_create>)).
+   See ((<manager.remove_unix_socket_on_create|configuration.rd#manager.remove_unix_socket_on_create>)).
 
 : milter.remove_unix_socket_on_close
-   See ((<manager.remove_unix_socket_on_close|configuration.rd.ja#manager.remove_unix_socket_on_close>)).
+   See ((<manager.remove_unix_socket_on_close|configuration.rd#manager.remove_unix_socket_on_close>)).
 
 : milter.daemon
-   See ((<manager.daemon|configuration.rd.ja#manager.daemon>)).
+   See ((<manager.daemon|configuration.rd#manager.daemon>)).
 
 : milter.pid_file
-   See ((<manager.pid_file|configuration.rd.ja#manager.pid_file>)).
+   See ((<manager.pid_file|configuration.rd#manager.pid_file>)).
 
 : milter.maintenance_interval
-   See ((<manager.maintenance_interval|configuration.rd.ja#manager.maintenance_interval>)).
+   See ((<manager.maintenance_interval|configuration.rd#manager.maintenance_interval>)).
 
 : milter.suspend_time_on_unacceptable
-   See ((<manager.suspend_time_on_unacceptable|configuration.rd.ja#manager.suspend_time_on_unacceptable>)).
+   See ((<manager.suspend_time_on_unacceptable|configuration.rd#manager.suspend_time_on_unacceptable>)).
 
 : milter.max_connections
-   See ((<manager.max_connections|configuration.rd.ja#manager.max_connections>)).
+   See ((<manager.max_connections|configuration.rd#manager.max_connections>)).
 
 : milter.max_file_descriptors
-   See ((<manager.max_file_descriptors|configuration.rd.ja#manager.max_file_descriptors>)).
+   See ((<manager.max_file_descriptors|configuration.rd#manager.max_file_descriptors>)).
 
 : milter.connection_check_interval
-   See ((<manager.connection_check_interval|configuration.rd.ja#manager.connection_check_interval>)).
+   See ((<manager.connection_check_interval|configuration.rd#manager.connection_check_interval>)).
 
 : milter.event_loop_backend
-   See ((<manager.event_loop_backend|configuration.rd.ja#manager.event_loop_backend>)).
+   See ((<manager.event_loop_backend|configuration.rd#manager.event_loop_backend>)).
 
 : milter.n_workers
-   See ((<manager.n_workers|configuration.rd.ja#manager.n_workers>)).
+   See ((<manager.n_workers|configuration.rd#manager.n_workers>)).
 
 : milter.packet_buffer_size
-   See ((<manager.packet_buffer_size|configuration.rd.ja#manager.packet_buffer_size>)).
+   See ((<manager.packet_buffer_size|configuration.rd#manager.packet_buffer_size>)).
 
 : milter.maintained
-   See ((<manager.maintained|configuration.rd.ja#manager.maintained>)).
+   See ((<manager.maintained|configuration.rd#manager.maintained>)).
 
 : milter.event_loop_created
-   See ((<milter.event_loop_created|configuration.rd.ja#milter.event_loop_created>)).
+   See ((<milter.event_loop_created|configuration.rd#milter.event_loop_created>)).
 
 == [database] Database
 
@@ -132,28 +132,28 @@ milter-manager's document page for details. It includes
 setup document and tutorial.
 
 : database.type
-   See ((<database.type|configuration.rd.ja#database.type>)).
+   See ((<database.type|configuration.rd#database.type>)).
 
 : database.name
-   See ((<database.name|configuration.rd.ja#database.name>)).
+   See ((<database.name|configuration.rd#database.name>)).
 
 : database.host
-   See ((<database.host|configuration.rd.ja#database.host>)).
+   See ((<database.host|configuration.rd#database.host>)).
 
 : database.port
-   See ((<database.port|configuration.rd.ja#database.port>)).
+   See ((<database.port|configuration.rd#database.port>)).
 
 : database.path
-   See ((<database.path|configuration.rd.ja#database.path>)).
+   See ((<database.path|configuration.rd#database.path>)).
 
 : database.user
-   See ((<database.user|configuration.rd.ja#database.user>)).
+   See ((<database.user|configuration.rd#database.user>)).
 
 : database.password
-   See ((<database.password|configuration.rd.ja#database.password>)).
+   See ((<database.password|configuration.rd#database.password>)).
 
 : database.setup
-   See ((<database.setup|configuration.rd.ja#database.setup>)).
+   See ((<database.setup|configuration.rd#database.setup>)).
 
 : database.load_models(path)
-   See ((<database.load_models|configuration.rd.ja#database.load_models>)).
+   See ((<database.load_models|configuration.rd#database.load_models>)).
