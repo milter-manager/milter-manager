@@ -17,4 +17,6 @@ require 'milter/core'
 
 require 'milter_server.so'
 
-require 'milter/server/testing'
+module Milter
+  autoload :TestServer 'milter/server/testing'
+end
