@@ -8,7 +8,7 @@ This document describes how to install milter manager to
 CentOS. See ((<Install|install.rd>)) for general install
 information.
 
-We assume that CentOS version is 5.5. We also assume that we
+We assume that CentOS version is 5.6. We also assume that we
 use sudo to run a command with root authority. If you don't
 use sudo, use su instead.
 
