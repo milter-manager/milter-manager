@@ -2,6 +2,47 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-6-8] 1.6.8: 2011-04-11
+
+A bug fix release of 1.6.7.
+
+=== All
+
+==== Improvements
+
+  * Don't create needless directories on install.
+    [Reported by OBATA Akio]
+
+=== milter-manager
+
+==== Improvements
+
+  * Added
+    ((<manager.event_loop_created|configuration.rd#manager.event_loop_created>))
+    configuration item.
+
+=== Ruby milter
+
+==== Improvements
+
+  * Added
+    ((<milter.event_loop_created|ruby-milter-configuration.rd#milter.event_loop_created>))
+    configuration item.
+
+=== milter-server
+
+==== Improvements
+
+  * Don't require Ruby's header files until they are needed.
+
+==== Fixes
+
+  * Fixed a bug that milter-test-server can't be detected.
+
+=== Thanks
+
+  * OBATA Akio
+
 == [release-1-6-7] 1.6.7: 2011-04-08
 
 A bug fix release of 1.6.6.
