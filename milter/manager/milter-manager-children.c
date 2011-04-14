@@ -3540,7 +3540,7 @@ milter_manager_children_header (MilterManagerChildren *children,
     priv->processing_state = priv->state;
     if (!priv->headers)
         priv->headers = milter_headers_new();
-    milter_headers_add_header(priv->headers, name, value);
+    milter_headers_append_header(priv->headers, name, value);
     init_command_waiting_child_queue(children, MILTER_COMMAND_HEADER);
 
     return MILTER_STATUS_PROGRESS ==
