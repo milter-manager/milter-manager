@@ -1840,7 +1840,9 @@ cb_add_header (MilterServerContext *context,
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     if (!is_end_of_message_state(children, context, "add-header",
-                                 "<%s>=<%s>", name, value ? value : "(null)"))
+                                 "<%s>=<%s>",
+                                 name,
+                                 MILTER_LOG_NULL_SAFE_STRING(value)))
         return;
 
     if (value) {
@@ -1852,7 +1854,9 @@ cb_add_header (MilterServerContext *context,
     }
 
     if (is_evaluation_mode(children, context, "add-header",
-                           "<%s>=<%s>", name, value ? value : "(null)"))
+                           "<%s>=<%s>",
+                           name,
+                           MILTER_LOG_NULL_SAFE_STRING(value)))
         return;
 
     normalized_value = normalize_header_value(children, context, value);
@@ -1876,7 +1880,9 @@ cb_insert_header (MilterServerContext *context,
 
     if (!is_end_of_message_state(children, context, "insert-header",
                                  "[%u]<%s>=<%s>",
-                                 index, name, value ? value : "(null)"))
+                                 index,
+                                 name,
+                                 MILTER_LOG_NULL_SAFE_STRING(value)))
         return;
 
     if (value) {
@@ -1889,7 +1895,9 @@ cb_insert_header (MilterServerContext *context,
 
     if (is_evaluation_mode(children, context, "insert-header",
                            "[%u]<%s>=<%s>",
-                           index, name, value ? value : "(null)"))
+                           index,
+                           name,
+                           MILTER_LOG_NULL_SAFE_STRING(value)))
         return;
 
     normalized_value = normalize_header_value(children, context, value);
@@ -1913,7 +1921,9 @@ cb_change_header (MilterServerContext *context,
 
     if (!is_end_of_message_state(children, context, "change-header",
                                  "<%s>[%u]=<%s>",
-                                 name, index, value ? value : "(null)"))
+                                 name,
+                                 index,
+                                 MILTER_LOG_NULL_SAFE_STRING(value)))
         return;
 
     if (value) {
@@ -1926,7 +1936,9 @@ cb_change_header (MilterServerContext *context,
 
     if (is_evaluation_mode(children, context, "change-header",
                            "<%s>[%u]=<%s>",
-                           name, index, value ? value : "(null)"))
+                           name,
+                           index,
+                           MILTER_LOG_NULL_SAFE_STRING(value)))
         return;
 
     normalized_value = normalize_header_value(children, context, value);
@@ -1971,12 +1983,14 @@ cb_change_from (MilterServerContext *context,
 
     if (!is_end_of_message_state(children, context, "change-from",
                                  "<<%s> <%s>>",
-                                 from, parameters ? parameters : "(null)"))
+                                 from,
+                                 MILTER_LOG_NULL_SAFE_STRING(parameters)))
         return;
 
     if (is_evaluation_mode(children, context, "change-from",
                            "<<%s> <%s>>",
-                           from, parameters ? parameters : "(null)"))
+                           from,
+                           MILTER_LOG_NULL_SAFE_STRING(parameters)))
         return;
 
     if (priv->change_from)
@@ -1996,12 +2010,14 @@ cb_add_recipient (MilterServerContext *context,
 
     if (!is_end_of_message_state(children, context, "add-recipient",
                                  "<<%s> <%s>>",
-                                 recipient, parameters ? parameters : "(null)"))
+                                 recipient,
+                                 MILTER_LOG_NULL_SAFE_STRING(parameters)))
         return;
 
     if (is_evaluation_mode(children, context, "add-recipient",
                            "<<%s> <%s>>",
-                           recipient, parameters ? parameters : "(null)"))
+                           recipient,
+                           MILTER_LOG_NULL_SAFE_STRING(parameters)))
         return;
 
     g_signal_emit_by_name(children, "add-recipient", recipient, parameters);
