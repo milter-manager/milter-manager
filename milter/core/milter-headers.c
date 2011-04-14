@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -278,11 +278,26 @@ milter_headers_add_header(MilterHeaders *headers,
                           const gchar *value)
 {
     MilterHeadersPrivate *priv;
+    GList *node, *same_name_header = NULL;
 
     priv = MILTER_HEADERS_GET_PRIVATE(headers);
 
-    priv->header_list = g_list_append(priv->header_list,
-                                      milter_header_new(name, value));
+    for (node = priv->header_list; node; node = g_list_next(node)) {
+        MilterHeader *header = node->data;
+        if (g_strcasecmp(header->name, name) == 0) {
+            same_name_header = node;
+            break;
+        }
+    }
+
+    if (same_name_header) {
+        priv->header_list = g_list_insert_before(priv->header_list,
+                                                 same_name_header,
+                                                 milter_header_new(name, value));
+    } else {
+        priv->header_list = g_list_append(priv->header_list,
+                                          milter_header_new(name, value));
+    }
 
     return TRUE;
 }

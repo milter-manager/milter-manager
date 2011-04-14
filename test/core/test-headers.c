@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -32,6 +32,7 @@ void test_index_in_same_header_name (void);
 void test_copy (void);
 void test_remove (void);
 void test_add_header (void);
+void test_add_header_same_name (void);
 void test_insert_header (void);
 void test_change_header (void);
 void test_delete_header_with_change_header (void);
@@ -290,13 +291,13 @@ test_remove (void)
 void
 test_add_header (void)
 {
-    expected_list = g_list_append(expected_list, 
+    expected_list = g_list_append(expected_list,
                                   milter_header_new("First header",
                                                     "First header value"));
-    expected_list = g_list_append(expected_list, 
+    expected_list = g_list_append(expected_list,
                                   milter_header_new("Second header",
                                                     "Second header value"));
-    expected_list = g_list_append(expected_list, 
+    expected_list = g_list_append(expected_list,
                                   milter_header_new("Third header",
                                                     "Third header value"));
 
@@ -309,6 +310,36 @@ test_add_header (void)
     cut_assert_true(milter_headers_add_header(headers,
                                               "Third header",
                                               "Third header value"));
+    gcut_assert_equal_list(
+            expected_list,
+            milter_headers_get_list(headers),
+            milter_header_equal,
+            (GCutInspectFunction)milter_header_inspect,
+            NULL);
+}
+
+void
+test_add_header_same_name (void)
+{
+    expected_list = g_list_append(expected_list,
+                                  milter_header_new("X-Different",
+                                                    "Different header value"));
+    expected_list = g_list_append(expected_list,
+                                  milter_header_new("X-Same",
+                                                    "Same header value2"));
+    expected_list = g_list_append(expected_list,
+                                  milter_header_new("X-Same",
+                                                    "Same header value1"));
+
+    cut_assert_true(milter_headers_add_header(headers,
+                                              "X-Different",
+                                              "Different header value"));
+    cut_assert_true(milter_headers_add_header(headers,
+                                              "X-Same",
+                                              "Same header value1"));
+    cut_assert_true(milter_headers_add_header(headers,
+                                              "X-Same",
+                                              "Same header value2"));
     gcut_assert_equal_list(
             expected_list,
             milter_headers_get_list(headers),
