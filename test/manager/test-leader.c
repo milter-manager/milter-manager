@@ -1026,7 +1026,8 @@ do_header (MilterManagerTestScenario *scenario, const gchar *group)
         expected_headers, actual_headers,
         milter_manager_test_pair_equal,
         (GCutInspectFunction)milter_manager_test_pair_inspect,
-        NULL);
+        NULL,
+        cut_message("[%s] <%s>:<%s>", group, name, value));
 }
 
 static void
