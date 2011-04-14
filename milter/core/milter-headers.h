@@ -72,6 +72,10 @@ const GList   *milter_headers_get_list    (MilterHeaders *headers);
 gboolean       milter_headers_add_header  (MilterHeaders *headers,
                                            const gchar *name,
                                            const gchar *value);
+gboolean       milter_headers_append_header
+                                          (MilterHeaders *headers,
+                                           const gchar *name,
+                                           const gchar *value);
 gboolean       milter_headers_insert_header
                                           (MilterHeaders *headers,
                                            guint position,

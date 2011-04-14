@@ -273,9 +273,9 @@ milter_headers_remove (MilterHeaders *headers,
 }
 
 gboolean
-milter_headers_add_header(MilterHeaders *headers,
-                          const gchar *name,
-                          const gchar *value)
+milter_headers_add_header (MilterHeaders *headers,
+                           const gchar *name,
+                           const gchar *value)
 {
     MilterHeadersPrivate *priv;
     GList *node, *same_name_header = NULL;
@@ -298,6 +298,20 @@ milter_headers_add_header(MilterHeaders *headers,
         priv->header_list = g_list_append(priv->header_list,
                                           milter_header_new(name, value));
     }
+
+    return TRUE;
+}
+
+gboolean
+milter_headers_append_header (MilterHeaders *headers,
+                              const gchar *name,
+                              const gchar *value)
+{
+    MilterHeadersPrivate *priv;
+
+    priv = MILTER_HEADERS_GET_PRIVATE(headers);
+    priv->header_list = g_list_append(priv->header_list,
+                                      milter_header_new(name, value));
 
     return TRUE;
 }

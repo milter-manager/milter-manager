@@ -33,6 +33,7 @@ void test_copy (void);
 void test_remove (void);
 void test_add_header (void);
 void test_add_header_same_name (void);
+void test_append_header (void);
 void test_insert_header (void);
 void test_change_header (void);
 void test_delete_header_with_change_header (void);
@@ -180,18 +181,18 @@ test_index_in_same_header_name (void)
 {
     MilterHeader *header;
 
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Test header",
-                                              "First test header value"));
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Test header",
-                                              "Second test header value"));
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Unique header",
-                                              "Unique header value"));
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Test header",
-                                              "Third test header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Test header",
+                                                 "First test header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Test header",
+                                                 "Second test header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Unique header",
+                                                 "Unique header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Test header",
+                                                 "Third test header value"));
 
     header = milter_header_new("Test header", "First test header value");
     expected_list = g_list_append(expected_list, header);
@@ -219,25 +220,25 @@ test_copy (void)
 {
     MilterHeaders *copied_headers;
 
-    expected_list = g_list_append(expected_list, 
+    expected_list = g_list_append(expected_list,
                                   milter_header_new("First header",
                                                     "First header value"));
-    expected_list = g_list_append(expected_list, 
+    expected_list = g_list_append(expected_list,
                                   milter_header_new("Second header",
                                                     "Second header value"));
-    expected_list = g_list_append(expected_list, 
+    expected_list = g_list_append(expected_list,
                                   milter_header_new("Third header",
                                                     "Third header value"));
 
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "First header",
-                                              "First header value"));
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Second header",
-                                              "Second header value"));
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Third header",
-                                              "Third header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "First header",
+                                                 "First header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Second header",
+                                                 "Second header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Third header",
+                                                 "Third header value"));
     copied_headers = milter_headers_copy(headers);
     gcut_take_object(G_OBJECT(copied_headers));
     gcut_assert_equal_list(
@@ -253,15 +254,15 @@ test_remove (void)
 {
     MilterHeader *header;
 
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "First header",
-                                              "First header value"));
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Second header",
-                                              "Second header value"));
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Third header",
-                                              "Third header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "First header",
+                                                 "First header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Second header",
+                                                 "Second header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Third header",
+                                                 "Third header value"));
 
     header = milter_header_new("First header", "First header value");
     expected_list = g_list_append(expected_list, header);
@@ -349,30 +350,60 @@ test_add_header_same_name (void)
 }
 
 void
+test_append_header (void)
+{
+    expected_list = g_list_append(expected_list,
+                                  milter_header_new("X-Different",
+                                                    "Different header value"));
+    expected_list = g_list_append(expected_list,
+                                  milter_header_new("X-Same",
+                                                    "Same header value1"));
+    expected_list = g_list_append(expected_list,
+                                  milter_header_new("X-Same",
+                                                    "Same header value2"));
+
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "X-Different",
+                                                 "Different header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "X-Same",
+                                                 "Same header value1"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "X-Same",
+                                                 "Same header value2"));
+    gcut_assert_equal_list(
+            expected_list,
+            milter_headers_get_list(headers),
+            milter_header_equal,
+            (GCutInspectFunction)milter_header_inspect,
+            NULL);
+}
+
+void
 test_insert_header (void)
 {
-    expected_list = g_list_append(expected_list, 
+    expected_list = g_list_append(expected_list,
                                   milter_header_new("First header",
                                                     "First header value"));
-    expected_list = g_list_append(expected_list, 
+    expected_list = g_list_append(expected_list,
                                   milter_header_new("Second header",
                                                     "Second header value"));
-    expected_list = g_list_append(expected_list, 
+    expected_list = g_list_append(expected_list,
                                   milter_header_new("Third header",
                                                     "Third header value"));
-    expected_list = g_list_append(expected_list, 
+    expected_list = g_list_append(expected_list,
                                   milter_header_new("Forth header",
                                                     "Forth header value"));
 
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "First header",
-                                              "First header value"));
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Third header",
-                                              "Third header value"));
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Forth header",
-                                              "Forth header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "First header",
+                                                 "First header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Third header",
+                                                 "Third header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Forth header",
+                                                 "Forth header value"));
     cut_assert_true(milter_headers_insert_header(headers,
                                                  1,
                                                  "Second header",
@@ -388,34 +419,34 @@ test_insert_header (void)
 void
 test_change_header (void)
 {
-    expected_list = g_list_append(expected_list, 
-                                  milter_header_new("Test header",
-                                                    "Test header value"));
-    expected_list = g_list_append(expected_list, 
-                                  milter_header_new("Test header",
-                                                    "Test header value"));
-    expected_list = g_list_append(expected_list, 
-                                  milter_header_new("Unique header",
-                                                    "Unique header value"));
-    expected_list = g_list_append(expected_list, 
-                                  milter_header_new("Test header",
-                                                    "Replaced header value"));
-    expected_list = g_list_append(expected_list, 
+    expected_list = g_list_append(expected_list,
                                   milter_header_new("Test header",
                                                     "Added header value"));
+    expected_list = g_list_append(expected_list,
+                                  milter_header_new("Test header",
+                                                    "Test header value"));
+    expected_list = g_list_append(expected_list,
+                                  milter_header_new("Test header",
+                                                    "Test header value"));
+    expected_list = g_list_append(expected_list,
+                                  milter_header_new("Unique header",
+                                                    "Unique header value"));
+    expected_list = g_list_append(expected_list,
+                                  milter_header_new("Test header",
+                                                    "Replaced header value"));
 
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Test header",
-                                              "Test header value"));
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Test header",
-                                              "Test header value"));
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Unique header",
-                                              "Unique header value"));
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Test header",
-                                              "Test header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Test header",
+                                                 "Test header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Test header",
+                                                 "Test header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Unique header",
+                                                 "Unique header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Test header",
+                                                 "Test header value"));
     cut_assert_true(milter_headers_change_header(headers,
                                                  "Test header",
                                                  3,
@@ -435,28 +466,28 @@ test_change_header (void)
 void
 test_delete_header_with_change_header (void)
 {
-    expected_list = g_list_append(expected_list, 
+    expected_list = g_list_append(expected_list,
                                   milter_header_new("Test header",
                                                     "First test header value"));
-    expected_list = g_list_append(expected_list, 
+    expected_list = g_list_append(expected_list,
                                   milter_header_new("Unique header",
                                                     "Unique header value"));
-    expected_list = g_list_append(expected_list, 
+    expected_list = g_list_append(expected_list,
                                   milter_header_new("Test header",
                                                     "Third test header value"));
 
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Test header",
-                                              "First test header value"));
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Test header",
-                                              "Second test header value"));
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Unique header",
-                                              "Unique header value"));
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Test header",
-                                              "Third test header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Test header",
+                                                 "First test header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Test header",
+                                                 "Second test header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Unique header",
+                                                 "Unique header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Test header",
+                                                 "Third test header value"));
     cut_assert_true(milter_headers_change_header(headers,
                                                  "Test header",
                                                  2,
@@ -473,28 +504,28 @@ test_delete_header_with_change_header (void)
 void
 test_delete_header (void)
 {
-    expected_list = g_list_append(expected_list, 
+    expected_list = g_list_append(expected_list,
                                   milter_header_new("Test header",
                                                     "First test header value"));
-    expected_list = g_list_append(expected_list, 
+    expected_list = g_list_append(expected_list,
                                   milter_header_new("Unique header",
                                                     "Unique header value"));
-    expected_list = g_list_append(expected_list, 
+    expected_list = g_list_append(expected_list,
                                   milter_header_new("Test header",
                                                     "Third test header value"));
 
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Test header",
-                                              "First test header value"));
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Test header",
-                                              "Second test header value"));
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Unique header",
-                                              "Unique header value"));
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "Test header",
-                                              "Third test header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Test header",
+                                                 "First test header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Test header",
+                                                 "Second test header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Unique header",
+                                                 "Unique header value"));
+    cut_assert_true(milter_headers_append_header(headers,
+                                                 "Test header",
+                                                 "Third test header value"));
     cut_assert_true(milter_headers_delete_header(headers,
                                                  "Test header",
                                                  2));
