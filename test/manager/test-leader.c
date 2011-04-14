@@ -1013,7 +1013,7 @@ do_header (MilterManagerTestScenario *scenario, const gchar *group)
     milter_server_context_header(MILTER_SERVER_CONTEXT(server), name, value);
     milter_manager_leader_header(leader, name, value);
 
-    milter_manager_test_server_add_header(server, name, value);
+    milter_manager_test_server_append_header(server, name, value);
 
     assert_response(scenario, group);
     assert_alive(scenario, group);

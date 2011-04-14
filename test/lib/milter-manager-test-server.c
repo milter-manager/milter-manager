@@ -550,16 +550,16 @@ milter_manager_test_server_get_received_reply_codes (MilterManagerTestServer *se
 }
 
 void
-milter_manager_test_server_add_header (MilterManagerTestServer *server,
-                                       const gchar *name,
-                                       const gchar *value)
+milter_manager_test_server_append_header (MilterManagerTestServer *server,
+                                          const gchar *name,
+                                          const gchar *value)
 {
 
     MilterManagerTestServerPrivate *priv;
 
     priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(server);
 
-    milter_headers_add_header(priv->headers, name, value);
+    milter_headers_append_header(priv->headers, name, value);
 }
 
 const gchar *

@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -57,7 +57,8 @@ GType                 milter_manager_test_server_get_type    (void) G_GNUC_CONST
 
 MilterManagerTestServer *milter_manager_test_server_new      (void);
 
-void                  milter_manager_test_server_add_header (MilterManagerTestServer *server,
+void                  milter_manager_test_server_append_header
+                                                             (MilterManagerTestServer *server,
                                                              const gchar *name,
                                                              const gchar *value);
 

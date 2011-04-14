@@ -49,7 +49,7 @@ response=end-of-message
 n_received=2
 status=continue
 
-headers=X-Test-Header1:Test-Header1-Value1;X-Test-Header1:Test-Header1-Value2
+headers=X-Test-Header1:Test-Header1-Value2;X-Test-Header1:Test-Header1-Value1
 
 chunks=;Hi,;
 end_of_message_chunks=;;
