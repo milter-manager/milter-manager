@@ -184,7 +184,7 @@ milter_headers_find (MilterHeaders *headers,
                                     (GCompareFunc)milter_header_compare);
     if (!found_node)
         return NULL;
-    return (MilterHeader*)found_node->data;
+    return (MilterHeader *)(found_node->data);
 }
 
 static gint
