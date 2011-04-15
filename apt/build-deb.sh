@@ -21,9 +21,13 @@ fi
 run aptitude update -V -D
 run aptitude safe-upgrade -V -D -y
 
-if ! dpkg -l | grep 'ii  locales' > /dev/null 2>&1; then
-    run aptitude install -V -D -y locales
-    run dpkg-reconfigure locales
+if test "$(lsb_release --id --short)" = "Ubuntu"; then
+    run aptitude install -V -D -y language-pack-ja
+else
+    if ! dpkg -l | grep 'ii  locales' > /dev/null 2>&1; then
+	run aptitude install -V -D -y locales
+	run dpkg-reconfigure locales
+    fi
 fi
 
 run aptitude install -V -D -y devscripts ${DEPENDED_PACKAGES}
