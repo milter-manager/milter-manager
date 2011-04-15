@@ -1248,7 +1248,9 @@ emit_header_signals (MilterManagerChildren *children)
     if (milter_headers_length(processing_headers) > 0) {
         header_list = milter_headers_get_list(processing_headers);
 
-        for (node = header_list; node; node = g_list_next(node)) {
+        for (node = g_list_last((GList *)header_list);
+             node;
+             node = g_list_previous(node)) {
             MilterHeader *header = node->data;
             gint index;
 

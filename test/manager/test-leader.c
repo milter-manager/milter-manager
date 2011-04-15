@@ -1484,6 +1484,8 @@ data_scenario_end_of_message_action (void)
                  g_strdup("delete-header.txt"), g_free,
                  "delete-header - evaluation",
                  g_strdup("delete-header-evaluation.txt"), g_free,
+                 "delete-header - many",
+                 g_strdup("delete-header-many.txt"), g_free,
                  NULL);
 
     cut_add_data("change-from",
