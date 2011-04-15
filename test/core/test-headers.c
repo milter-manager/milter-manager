@@ -221,24 +221,18 @@ test_copy (void)
     MilterHeaders *copied_headers;
 
     expected_list = g_list_append(expected_list,
-                                  milter_header_new("First header",
-                                                    "First header value"));
+                                  milter_header_new("X-Header1", "Value1"));
     expected_list = g_list_append(expected_list,
-                                  milter_header_new("Second header",
-                                                    "Second header value"));
+                                  milter_header_new("X-Header1", "Value2"));
     expected_list = g_list_append(expected_list,
-                                  milter_header_new("Third header",
-                                                    "Third header value"));
+                                  milter_header_new("X-Header2", "Value1"));
 
     cut_assert_true(milter_headers_append_header(headers,
-                                                 "First header",
-                                                 "First header value"));
+                                                 "X-Header1", "Value1"));
     cut_assert_true(milter_headers_append_header(headers,
-                                                 "Second header",
-                                                 "Second header value"));
+                                                 "X-Header1", "Value2"));
     cut_assert_true(milter_headers_append_header(headers,
-                                                 "Third header",
-                                                 "Third header value"));
+                                                 "X-Header2", "Value1"));
     copied_headers = milter_headers_copy(headers);
     gcut_take_object(G_OBJECT(copied_headers));
     gcut_assert_equal_list(

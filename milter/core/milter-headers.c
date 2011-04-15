@@ -147,7 +147,7 @@ milter_headers_copy (MilterHeaders *headers)
     for (node = priv->header_list; node; node = g_list_next(node)) {
         MilterHeader *header = node->data;
 
-        milter_headers_add_header(copied_headers, header->name, header->value);
+        milter_headers_append_header(copied_headers, header->name, header->value);
     }
 
     return copied_headers;
