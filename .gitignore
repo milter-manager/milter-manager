@@ -147,3 +147,4 @@ Makefile.in
 /doc/reference/tmp/
 /doc/*.man
 /doc/*.jman
+/dist/
