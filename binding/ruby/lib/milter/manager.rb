@@ -77,6 +77,7 @@ module Milter
       end
 
       def event_loop_created(loop)
+        @event_loop = loop
         event_loop_created_hooks.each do |hook|
           hook.call(self, loop)
         end

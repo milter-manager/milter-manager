@@ -135,6 +135,7 @@ module Milter
           end
           unless @event_loop_created_hooks.empty?
             client.on_event_loop_created do |_client, loop|
+              @event_loop = loop
               @event_loop_created_hooks.each do |hook|
                 hook.call(loop)
               end
