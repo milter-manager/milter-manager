@@ -317,21 +317,21 @@ void
 test_add_header_same_name (void)
 {
     expected_list = g_list_append(expected_list,
-                                  milter_header_new("X-Different",
-                                                    "Different header value"));
-    expected_list = g_list_append(expected_list,
                                   milter_header_new("X-Same",
                                                     "Same header value2"));
     expected_list = g_list_append(expected_list,
                                   milter_header_new("X-Same",
                                                     "Same header value1"));
+    expected_list = g_list_append(expected_list,
+                                  milter_header_new("X-Different",
+                                                    "Different header value"));
 
-    cut_assert_true(milter_headers_add_header(headers,
-                                              "X-Different",
-                                              "Different header value"));
     cut_assert_true(milter_headers_add_header(headers,
                                               "X-Same",
                                               "Same header value1"));
+    cut_assert_true(milter_headers_add_header(headers,
+                                              "X-Different",
+                                              "Different header value"));
     cut_assert_true(milter_headers_add_header(headers,
                                               "X-Same",
                                               "Same header value2"));
