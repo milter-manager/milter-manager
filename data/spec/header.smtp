@@ -1,0 +1,17 @@
+EHLO localhost
+MAIL FROM:<root@localhost>
+RCPT TO:<root@localhost>
+DATA
+Subject: Hello
+From: <root@localhost>
+To: <root@localhost>
+X-Header1: Value1
+X-Header1: Value2
+X-Header1: Value3
+X-Header2: Value1
+X-Header2: Value2
+X-Header2: Value3
+
+World!
+.
+QUIT
