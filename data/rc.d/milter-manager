@@ -44,7 +44,7 @@ if test -n "${milter_manager_group_name}"; then
     command_args="${command_args} --group-name ${milter_manager_group_name}"
 fi
 if test -n "${milter_manager_socket_group_name}"; then
-    command_args="${command_args} --socket-group-name ${milter_manager_socket_group_name}"
+    command_args="${command_args} --unix-socket-group ${milter_manager_socket_group_name}"
 fi
 if test -n "${milter_manager_connection_spec}"; then
     command_args="${command_args} --spec ${milter_manager_connection_spec}"
