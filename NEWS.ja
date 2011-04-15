@@ -2,7 +2,7 @@
 
 = お知らせ --- milter managerの歴史
 
-== [release-1-6-8] 1.6.8: 2011-04-11
+== [release-1-6-8] 1.6.8: 2011-04-15
 
 1.6.7のバグフィックスリリースです。
 
@@ -14,10 +14,20 @@
     した。
     [OBATA Akioさんが報告]
 
+=== ドキュメント
+
+==== 改良
+
+  * CentOS 5.6向けの記述にした。
+
+==== 修正
+
+  * 内部リンクを修正した。
+
 === milter-manager
 
 ==== 改良
- 
+
   * ((<manager.event_loop_created|configuration.rd.ja#manager.event_loop_created>))
     設定項目を追加。
 
@@ -27,6 +37,15 @@
 
   * ((<milter.event_loop_created|ruby-milter-configuration.rd.ja#milter.event_loop_created>))
     設定項目を追加。
+  * Milter::ClientSession#worker_idを追加。
+  * Milter::ClientSession#[]を追加。
+
+=== milter-core
+
+==== 改良
+
+  * ヘッダー追加時の挙動をPostfixではなくSendmailと同様の挙
+    動になるようにした。
 
 === milter-server
 

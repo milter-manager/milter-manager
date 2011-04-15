@@ -2,7 +2,7 @@
 
 = NEWS --- The history of milter manager
 
-== [release-1-6-8] 1.6.8: 2011-04-11
+== [release-1-6-8] 1.6.8: 2011-04-15
 
 A bug fix release of 1.6.7.
 
@@ -12,6 +12,16 @@ A bug fix release of 1.6.7.
 
   * Don't create needless directories on install.
     [Reported by OBATA Akio]
+
+=== Document
+
+==== Improvements
+
+  * Changed target CentOS version to 5.6.
+
+==== Fixes
+
+  * Fixed wrong internal links.
 
 === milter-manager
 
@@ -28,6 +38,15 @@ A bug fix release of 1.6.7.
   * Added
     ((<milter.event_loop_created|ruby-milter-configuration.rd#milter.event_loop_created>))
     configuration item.
+  * Added Milter::ClientSession#worker_id.
+  * Added Milter::ClientSession#[].
+
+=== milter-core
+
+==== Improvements
+
+  * Followed the Sendmail behavior rather than Postfix
+    behavior on adding a header.
 
 === milter-server
 
