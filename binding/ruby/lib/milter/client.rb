@@ -241,6 +241,14 @@ module Milter
     def remove_event(tag)
       @context.event_loop.remove(tag)
     end
+
+    def [](name)
+      @context[name]
+    end
+
+    def worker_id
+      @context.client.worker_id
+    end
   end
 
   class ClientSessionContext

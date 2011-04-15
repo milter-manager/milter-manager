@@ -17,7 +17,8 @@ class TestClientSession < Test::Unit::TestCase
   include MilterTestUtils
 
   def setup
-    @context = Milter::ClientContext.new
+    @client = Milter::Client.new
+    @context = Milter::ClientContext.new(@client)
     @context.event_loop = Milter::GLibEventLoop.new
     @session_context = Milter::ClientSessionContext.new(@context)
     @session = Milter::ClientSession.new(@session_context)
@@ -144,5 +145,14 @@ class TestClientSession < Test::Unit::TestCase
     assert_nothing_raised do
       @session.send(:progress)
     end
+  end
+
+  def test_worker_id
+    assert_equal(0, @session.send(:worker_id))
+  end
+
+  def test_macro
+    @context.set_macro(Milter::Command::CONNECT, "client_addr", "192.168.1.1")
+    assert_equal("192.168.1.1", @session.send(:[], "client_addr"))
   end
 end

@@ -22,6 +22,20 @@
 #define SELF(self) (MILTER_CLIENT_CONTEXT(RVAL2GOBJ(self)))
 
 static VALUE
+initialize (int argc, VALUE *argv, VALUE self)
+{
+    VALUE client;
+    MilterClientContext *context;
+
+    rb_scan_args(argc, argv, "01", &client);
+
+    context = milter_client_context_new(RVAL2GOBJ(client));
+    G_INITIALIZE(self, context);
+
+    return Qnil;
+}
+
+static VALUE
 feed (VALUE self, VALUE chunk)
 {
     GError *error = NULL;
@@ -259,6 +273,7 @@ Init_milter_client_context (void)
     G_DEF_CONSTANTS(rb_cMilterClientContext, MILTER_TYPE_CLIENT_CONTEXT_STATE,
                     "MILTER_CLIENT_CONTEXT_");
 
+    rb_define_method(rb_cMilterClientContext, "initialize", initialize, -1);
     rb_define_method(rb_cMilterClientContext, "feed", feed, 1);
     rb_define_method(rb_cMilterClientContext, "progress", progress, 0);
     rb_define_method(rb_cMilterClientContext, "quarantine", quarantine, 1);
