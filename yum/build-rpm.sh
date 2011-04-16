@@ -8,6 +8,8 @@ SOURCE_BASE_NAME=$(cat /tmp/build-source-base-name)
 USER_NAME=$(cat /tmp/build-user)
 DEPENDED_PACKAGES=$(cat /tmp/depended-packages)
 USE_RPMFORGE=$(cat /tmp/build-use-rpmforge)
+USE_ATRPMS=$(cat /tmp/build-use-atrpms)
+BUILD_OPTIONS=$(cat /tmp/build-options)
 BUILD_SCRIPT=/tmp/build-${PACKAGE}.sh
 
 run()
@@ -41,6 +43,28 @@ if test "$USE_RPMFORGE" = "yes"; then
 	sed -i'' -e 's/enabled = 1/enabled = 0/g' /etc/yum.repos.d/rpmforge.repo
     fi
     yum_options="$yum_options --enablerepo=rpmforge"
+fi
+
+if test "$USE_ATRPMS" = "yes"; then
+    case "$(cat /etc/redhat-release)" in
+	CentOS*)
+	    repository_label=CentOS
+	    repository_prefix=el
+	    ;;
+	*)
+	    repository_label=Fedora
+	    repository_prefix=f
+	    ;;
+    esac
+    cat <<EOF > /etc/yum.repos.d/atrpms.repo
+[atrpms]
+name=${repository_label} \$releasever - \$basearch - ATrpms
+baseurl=http://dl.atrpms.net/${repository_prefix}\$releasever-\$basearch/atrpms/stable
+gpgkey=http://ATrpms.net/RPM-GPG-KEY.atrpms
+gpgcheck=1
+enabled=0
+EOF
+    yum_options="$yum_options --enablerepo=atrpms"
 fi
 
 run yum update ${yum_options} -y
@@ -87,7 +111,7 @@ fi
 
 chmod o+rx . rpm rpm/RPMS rpm/SRPMS
 
-rpmbuild -ba rpm/SPECS/${PACKAGE}.spec
+rpmbuild -ba rpm/SPECS/${PACKAGE}.spec ${BUILD_OPTIONS}
 EOF
 
 run chmod +x $BUILD_SCRIPT

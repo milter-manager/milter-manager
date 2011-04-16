@@ -6,6 +6,7 @@ CHROOT_BASE = /var/lib/chroot
 BASE_URL_PREFIX = http://$(PACKAGE).sourceforge.net
 HAVE_DEVELOPMENT_BRANCH = yes
 USE_RPMFORGE = no
+USE_ATRPMS = no
 
 release: remove-existing-packages build sign update upload
 
@@ -48,7 +49,9 @@ build-in-chroot:
 	  $(CHROOT_BASE)			\
 	  '$(ARCHITECTURES)'			\
 	  '$(DISTRIBUTIONS)'			\
-	  '$(USE_RPMFORGE)'
+	  '$(HAVE_DEVELOPMENT_BRANCH)'		\
+	  '$(USE_RPMFORGE)'			\
+	  '$(USE_ATRPMS)'
 
 build-repository-rpm: RPM-GPG-KEY-milter-manager
 	./build-repository-rpm.sh		\
