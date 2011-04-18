@@ -13,12 +13,13 @@ run()
 
 svn_update()
 {
-    local repo="$1" dir="${2-`basename \"$1\"`}"
+    local repository="$1"
+    local dir="${2-`basename $repository`}"
     if [ $update != yes ]; then return; fi
     if test -d "$dir/.svn"; then
 	svn update "$dir"
     else
-	svn export --force "$repo" "$dir"
+	svn export --force "$repository" "$dir"
     fi
 }
 
