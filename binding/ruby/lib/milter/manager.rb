@@ -981,8 +981,8 @@ module Milter
 
         def define_connection_checker(name, &block)
           old_id = @connection_checker_ids[name]
-          @configuration.signal_handler_disconnect(old_id) if old_id
-          id = @configuration.signal_connect('connected') do |_config, leader|
+          @raw_configuration.signal_handler_disconnect(old_id) if old_id
+          id = @raw_configuration.signal_connect('connected') do |config, leader|
             leader.signal_connect('connection-check') do |_leader|
               Client::ConfigurationLoader.guard(true) do
                 block.call(ConnectionCheckContext.new(leader))
