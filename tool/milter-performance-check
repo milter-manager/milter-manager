@@ -346,181 +346,199 @@ class MilterPerformanceChecker
         exit(0)
       end
 
-      opts.separator ""
-      opts.separator "Application options:"
+      opts.separator("")
+      add_smtp_options(opts)
 
-      opts.on("--smtp-server=SERVER",
+      opts.separator("")
+      add_load_options(opts)
+
+      opts.separator("")
+      add_report_options(opts)
+    end
+    @mails = opts.parse!(argv)
+    @recipients = @default_recipients if @recipients.empty?
+  end
+
+  def add_smtp_options(parser)
+    parser.separator("SMTP options:")
+
+    parser.on("--smtp-server=SERVER",
               "Use SERVER as SMTP server",
               "(#{@smtp_server})") do |smtp_server|
-        @smtp_server = smtp_server
-      end
+      @smtp_server = smtp_server
+    end
 
-      opts.on("--smtp-port=PORT", Integer,
+    parser.on("--smtp-port=PORT", Integer,
               "Use PORT as SMTP port",
               "(#{@smtp_port})") do |smtp_port|
-        @smtp_port = smtp_port
-      end
+      @smtp_port = smtp_port
+    end
 
-      opts.on("--connect-host=HOST",
+    parser.on("--connect-host=HOST",
               "Use HOST for XCLIENT NAME value.",
               "See smtpd_authorized_xclient_hosts parameter for Postfix.",
               "(none)") do |connect_host|
-        @connect_host = connect_host
-      end
+      @connect_host = connect_host
+    end
 
-      opts.on("--connect-address=ADDRESS",
+    parser.on("--connect-address=ADDRESS",
               "Use ADDRESS for XCLIENT ADDR value.",
               "See smtpd_authorized_xclient_hosts parameter for Postfix.",
               "(none)") do |connect_address|
-        @connect_address = connect_address
-      end
+      @connect_address = connect_address
+    end
 
-      opts.on("--helo-fqdn=FQDN",
+    parser.on("--helo-fqdn=FQDN",
               "Use FQDN for SMTP HELO command as default value.",
               "(#{@helo_fqdn})") do |helo_fqdn|
-        @helo_fqdn = helo_fqdn
-      end
+      @helo_fqdn = helo_fqdn
+    end
 
-      opts.on("--from=FROM",
+    parser.on("--from=FROM",
               "Use FROM as envelope from address",
               "on SMTP MAIL command as default value.",
               "(#{@from})") do |from|
-        @from = from
-      end
+      @from = from
+    end
 
-      opts.on("--recipient=RECIPIENT",
+    parser.on("--recipient=RECIPIENT",
               "Use RECIPIENT as envelope recipient address",
               "on SMTP RCPT command as default value.",
               "This option can be used n-times to set multi recipients.",
               "(#{@default_recipients.inspect})") do |recipient|
-        @recipients << recipient
-      end
+      @recipients << recipient
+    end
 
-      opts.on("--force-from=FROM",
+    parser.on("--force-from=FROM",
               "Ensure using FROM as envelope from address on SMTP MAIL command.",
               "(#{@force_from})") do |from|
-        @force_from = from
-      end
+      @force_from = from
+    end
 
-      opts.on("--recipient=RECIPIENT",
+    parser.on("--recipient=RECIPIENT",
               "Use RECIPIENT as envelope recipient address",
               "on SMTP RCPT command as default value.",
               "This option can be used n-times to set multi recipients.",
               "(#{@default_recipients.inspect})") do |recipient|
-        @recipients << recipient
-      end
+      @recipients << recipient
+    end
 
-      opts.on("--force-recipient=RECIPIENT",
+    parser.on("--force-recipient=RECIPIENT",
               "Ensure using RECIPIENT as envelope recipient address",
               "on SMTP RCPT command as default value.",
               "This option can be used n-times to set multi recipients.",
               "(#{@force_recipients.inspect})") do |recipient|
-        @force_recipients ||= []
-        @force_recipients << recipient
-      end
+      @force_recipients ||= []
+      @force_recipients << recipient
+    end
 
-      opts.on("--n-mails=N", Integer,
+    parser.on("--reading-timeout=SECONDS", Integer,
+              "Timeout after SECONDS seconds on reading a command.",
+              "(#{@reading_timeout})") do |timeout|
+      @reading_timeout = timeout
+    end
+  end
+
+  def add_load_options(parser)
+    parser.separator("Load options:")
+
+    parser.on("--n-mails=N", Integer,
               "Send a test mail N times",
               "This option is ignored when mail files are specified",
               "(#{@n_mails})") do |n_mails|
-        @n_mails = n_mails
-      end
+      @n_mails = n_mails
+    end
 
-      opts.on("--n-additional-lines=N", Integer,
+    parser.on("--n-additional-lines=N", Integer,
               "Append N lines to test mails",
               "This option is ignored when mail files are specified",
               "(#{@n_additional_lines})") do |n_additional_lines|
-        @n_additional_lines = n_additional_lines
-      end
+      @n_additional_lines = n_additional_lines
+    end
 
-      opts.on("--n-concurrent-connections=N", Integer,
+    parser.on("--n-concurrent-connections=N", Integer,
               "Send test mails with N concurrent connections",
               "This option is ignored when mail files are specified",
               "(#{@n_concurrent_connections})") do |n_concurrent_connections|
-        @n_concurrent_connections = n_concurrent_connections
-      end
+      @n_concurrent_connections = n_concurrent_connections
+    end
 
-      opts.on("--n-workers=N", Integer,
+    parser.on("--n-workers=N", Integer,
               "Send test mails with N worker processes",
               "(#{@n_workers})") do |n_workers|
-        if n_workers < 0
-          raise OptionParser::InvalidOption, "must be positive number."
-        end
-        @n_workers = n_workers
+      if n_workers < 0
+        raise OptionParser::InvalidOption, "must be positive number."
       end
+      @n_workers = n_workers
+    end
 
-      opts.on("--period=PERIOD",
+    parser.on("--period=PERIOD",
               "Send mail files on average in PERIOD seconds/minutes/hours",
               "e.g.: 5s, 5m, 1.5h and so on. Default is seconds",
               "conflict option: --interval",
               "(#{@period})") do |period|
-        if @interval
-          raise OptionParser::InvalidOption, "can't use with --interval"
-        end
-        @period = parse_period(period)
+      if @interval
+        raise OptionParser::InvalidOption, "can't use with --interval"
       end
+      @period = parse_period(period)
+    end
 
-      opts.on("--interval=INTERVAL",
+    parser.on("--interval=INTERVAL",
               "Send mail files at intervals of INTERVAL seconds/minutes/hours",
               "e.g.: 5s, 5m, 1.5h and so on. Default is seconds",
               "conflict option: --period",
               "(#{@interval})") do |interval|
-        if @period
-          raise OptionParser::InvalidOption, "can't use with --period"
-        end
-        @interval = parse_period(interval)
+      if @period
+        raise OptionParser::InvalidOption, "can't use with --period"
       end
+      @interval = parse_period(interval)
+    end
 
-      opts.on('--flood[=PERIOD]',
+    parser.on('--flood[=PERIOD]',
               "Flood of mails are sent for PERIOD seconds/minutes/hours.",
               "Endless if PERIOD is not specified.",
               "conflict option: --period, --interval") do |period|
-        if @period
-          raise OptionParser::InvalidOption, "can't use with --period"
-        end
-        if @interval
-          raise OptionParser::InvalidOption, "can't use with --interval"
-        end
-        if period.nil?
-          @flood = :endless
-        else
-          @flood = parse_period(period)
-        end
+      if @period
+        raise OptionParser::InvalidOption, "can't use with --period"
       end
-
-      opts.on('--report-statistics-data=FILE',
-              "Write performance reports of each mail to FILE.",
-              "No report is written if not specified.") do |file|
-        @report_statistics_data.path = file
+      if @interval
+        raise OptionParser::InvalidOption, "can't use with --interval"
       end
-
-      opts.on("--[no-]shuffle",
-              "Shuffle target mails",
-              "(#{@shuffle})") do |shuffle|
-        @shuffle = shuffle
-      end
-
-      opts.on("--[no-]report-failure-responses",
-              "Report failure messages from SMTP server at the last",
-              "(#{@report_failure_responses})") do |boolean|
-        @report_failure_responses = boolean
-      end
-
-      opts.on('--report-periodically[=INTERVAL]',
-              "Report statistics at intervals of INTERVAL seconds/minutes/hours.",
-              "If INTERVAL isn't specified, report each 1 second.") do |interval|
-        interval ||= "1s"
-        @periodical_statistics_reporter.interval = parse_period(interval)
-      end
-
-      opts.on("--reading-timeout=SECONDS", Integer,
-              "Timeout after SECONDS seconds on reading a command.",
-              "(#{@reading_timeout})") do |timeout|
-        @reading_timeout = timeout
+      if period.nil?
+        @flood = :endless
+      else
+        @flood = parse_period(period)
       end
     end
-    @mails = opts.parse!(argv)
-    @recipients = @default_recipients if @recipients.empty?
+
+    parser.on("--[no-]shuffle",
+              "Shuffle target mails",
+              "(#{@shuffle})") do |shuffle|
+      @shuffle = shuffle
+    end
+  end
+
+  def add_report_options(parser)
+    parser.separator("Report options:")
+
+    parser.on('--report-statistics-data=FILE',
+              "Write performance reports of each mail to FILE.",
+              "No report is written if not specified.") do |file|
+      @report_statistics_data.path = file
+    end
+
+    parser.on("--[no-]report-failure-responses",
+              "Report failure messages from SMTP server at the last",
+              "(#{@report_failure_responses})") do |boolean|
+      @report_failure_responses = boolean
+    end
+
+    parser.on('--report-periodically[=INTERVAL]',
+              "Report statistics at intervals of INTERVAL seconds/minutes/hours.",
+              "If INTERVAL isn't specified, report each 1 second.") do |interval|
+      interval ||= "1s"
+      @periodical_statistics_reporter.interval = parse_period(interval)
+    end
   end
 
   def run
