@@ -776,7 +776,7 @@ class MilterPerformanceChecker
     error_message = nil
     start_time = Time.now
     begin
-      smtp = Net::SMTP.new(@smtp_server, @port)
+      smtp = Net::SMTP.new(@smtp_server, @smtp_port)
       smtp.read_timeout = @reading_timeout
       smtp.start(helo_fqdn) do |_smtp|
         xclient_parameters = []
