@@ -317,6 +317,7 @@ class MilterPerformanceChecker
     @auth_user = nil
     @auth_password = nil
     @auth_mechanism = nil
+    @auth_map = {}
     @from = "from@example.com"
     @recipients = []
     @force_from = nil
@@ -361,6 +362,33 @@ class MilterPerformanceChecker
     end
     @mails = opts.parse!(argv)
     @recipients = @default_recipients if @recipients.empty?
+  end
+
+  def parse_auth_map_file(path)
+    map = {}
+    File.open(path) do |file|
+      file.each_line do |line|
+        case line.strip
+        when /\A\#/
+          # comment
+        when /\A(.+):([a-z\d]+)\s+([^:]+):(.+)\z/
+          server = $1
+          port = $2
+          user = $3
+          password = $4
+          begin
+            port = Integer(port)
+          rescue ArgumentError
+            port = Socket.getservbyname(port)
+          end
+          map[[server, port]] = [user, password]
+        else
+          message = "invalid format: #{path}:#{file.lineno}: <#{line}>"
+          raise ArgumentError, message
+        end
+      end
+    end
+    map
   end
 
   def add_smtp_options(parser)
@@ -428,6 +456,17 @@ class MilterPerformanceChecker
               available_mechanisms,
               "(#{@auth_mechanism})") do |mechanism|
       @auth_mechanism = mechanism.gsub(/-/, '_')
+    end
+
+    parser.on("--auth-map=FILE",
+              "Read authentication map from FILE.",
+              "format is",
+              "  SERVER1:PORT USER1:PASSWORD1",
+              "  SERVER2:PORT USER2:PASSWORD2",
+              "  SERVER3:PORT USER3:PASSWORD3",
+              "  ...",
+              "(none)") do |file|
+      @auth_map.merge!(parse_auth_map_file(file))
     end
 
     parser.on("--from=FROM",
@@ -809,6 +848,9 @@ class MilterPerformanceChecker
       user = @auth_user
       password = @auth_password
       mechanism = @auth_mechanism
+    else
+      user, password = @auth_map[[smtp.address, smtp.port]]
+      mechanism = nil
     end
     if user
       mechanism ||= default_auth_mechanism(smtp)
