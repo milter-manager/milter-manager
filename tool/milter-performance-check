@@ -314,6 +314,9 @@ class MilterPerformanceChecker
     @connect_address = nil
     @helo_fqdn = "localhost.localdomain"
     @starttls = "auto"
+    @auth_user = nil
+    @auth_password = nil
+    @auth_mechanism = nil
     @from = "from@example.com"
     @recipients = []
     @force_from = nil
@@ -404,6 +407,27 @@ class MilterPerformanceChecker
               "[#{available_starttls_values.join(' ')}]",
               "(#{@starttls})") do |starttls|
       @starttls = starttls
+    end
+
+    parser.on("--auth-user=USER",
+              "Use USER for authentication.",
+              "(#{@auth_user})") do |user|
+      @auth_user = user
+    end
+
+    parser.on("--auth-password=PASSWORD",
+              "Use PASSWORD for authentication.",
+              "(#{@auth_password})") do |password|
+      @auth_password = password
+    end
+
+    available_mechanisms = ["plain", "login", "cram_md5", "cram-md5"]
+    parser.on("--auth-mechanism=MECHANISM",
+              "Use MECHANISM for authentication.",
+              "[#{available_mechanisms.join(' ')}]",
+              available_mechanisms,
+              "(#{@auth_mechanism})") do |mechanism|
+      @auth_mechanism = mechanism.gsub(/-/, '_')
     end
 
     parser.on("--from=FROM",
@@ -780,6 +804,49 @@ class MilterPerformanceChecker
     [helo_fqdn, from, recipients, mail_source]
   end
 
+  def authenticate(smtp)
+    if @auth_user
+      user = @auth_user
+      password = @auth_password
+      mechanism = @auth_mechanism
+    end
+    if user
+      mechanism ||= default_auth_mechanism(smtp)
+      validate_auth_mechanism(smtp, mechanism)
+      smtp.authenticate(user, password, mechanism)
+    end
+  end
+
+  def default_auth_mechanism(smtp)
+    if smtp.capable_cram_md5_auth?
+      "cram_md5"
+    elsif smtp.capable_plain_auth?
+      "plain"
+    elsif smtp.capable_login_auth?
+      "login"
+    elsif smtp.capable_auth_types.empty?
+      raise ArgumentError, "authentication isn't capable"
+    else
+      message = "all capable authentication mechanisms are not supported: "
+      message << smtp.capable_auth_types.inspect
+      raise ArgumentError, message
+    end
+  end
+
+  def validate_auth_mechanism(smtp, mechanism)
+    case mechanism
+    when "cram_md5"
+      return if smtp.capable_cram_md5_auth?
+    when "plain"
+      return if smtp.capable_plain_auth?
+    when "login"
+      return if smtp.capable_login_auth?
+    end
+    message = "specified mechanism isn't supported: #{mechanism.inspect}"
+    message << ": #{smtp.capable_auth_types.inspect}"
+    raise ArgumentError, message
+  end
+
   def send_mail(mail_source_file=nil)
     helo_fqdn, from, recipients, source = prepare_send_mail(mail_source_file)
 
@@ -810,6 +877,7 @@ class MilterPerformanceChecker
           _smtp.send(:getok, "XCLIENT #{xclient_parameters.join(' ')}")
           _smtp.send(:do_helo, helo_fqdn)
         end
+        authenticate(_smtp)
         _smtp.send_mail(source, from, *recipients)
       end
     rescue Net::SMTPServerBusy
