@@ -313,6 +313,7 @@ class MilterPerformanceChecker
     @connect_host = nil
     @connect_address = nil
     @helo_fqdn = "localhost.localdomain"
+    @starttls = "auto"
     @from = "from@example.com"
     @recipients = []
     @force_from = nil
@@ -392,6 +393,17 @@ class MilterPerformanceChecker
               "Use FQDN for SMTP HELO command as default value.",
               "(#{@helo_fqdn})") do |helo_fqdn|
       @helo_fqdn = helo_fqdn
+    end
+
+    available_starttls_values = ["auto", "always", "disable"]
+    parser.on("--starttls=HOW",
+              "Use STARTTLS.",
+              "HOW == 'auto': STARTTLS is used if server supports it.",
+              "HOW == 'always': STARTTLS is always used.",
+              "HOW == 'disable': STARTTLS is never used.",
+              "[#{available_starttls_values.join(' ')}]",
+              "(#{@starttls})") do |starttls|
+      @starttls = starttls
     end
 
     parser.on("--from=FROM",
@@ -778,6 +790,14 @@ class MilterPerformanceChecker
     begin
       smtp = Net::SMTP.new(@smtp_server, @smtp_port)
       smtp.read_timeout = @reading_timeout
+      case @starttls
+      when "always"
+        smtp.enable_starttls
+      when "auto"
+        smtp.enable_starttls_auto
+      when "disable"
+        smtp.disable_starttls
+      end
       smtp.start(helo_fqdn) do |_smtp|
         xclient_parameters = []
         xclient_parameters << "NAME=#{@connect_host}" if @connect_host
