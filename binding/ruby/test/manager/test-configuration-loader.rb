@@ -507,6 +507,8 @@ EOX
   end
 
   class TestCallback < TestConfigurationLoader
+    include MilterEventLoopTestUtils
+
     def test_maintained
       n_called = {
         :before => 0,
@@ -519,6 +521,22 @@ EOX
       end
       assert_nothing_raised do
         @configuration.maintained
+      end
+      assert_equal({:before => 1, :after => 0}, n_called)
+    end
+
+    def test_event_loop_created
+      n_called = {
+        :before => 0,
+        :after => 0,
+      }
+      @loader.manager.event_loop_created do |loop|
+        n_called[:before] += 1
+        raise "failed"
+        n_called[:after] += 1
+      end
+      assert_nothing_raised do
+        @configuration.event_loop_created(create_event_loop)
       end
       assert_equal({:before => 1, :after => 0}, n_called)
     end
