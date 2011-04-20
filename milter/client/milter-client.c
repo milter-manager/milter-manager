@@ -928,26 +928,40 @@ change_unix_socket_group (MilterClient *client, struct sockaddr_un *address_un)
     errno = 0;
     group = getgrnam(socket_group);
     if (!group) {
+        GError *error;
         if (errno == 0) {
-            milter_error(
-                "[client][error][unix] "
-                "failed to find group entry for UNIX socket group: <%s>: <%s>",
-                address_un->sun_path, socket_group);
+            error = g_error_new(MILTER_CLIENT_ERROR,
+                                MILTER_CLIENT_ERROR_UNIX_SOCKET,
+                                "failed to find group entry "
+                                "for UNIX socket group: <%s>: <%s>",
+                                address_un->sun_path, socket_group);
+            milter_error("[client][error][unix] %s", error->message);
         } else {
-            milter_error(
-                "[client][error][unix] "
-                "failed to get group entry for UNIX socket group: "
-                "<%s>: <%s>: %s",
-                address_un->sun_path, socket_group, g_strerror(errno));
+            error = g_error_new(MILTER_CLIENT_ERROR,
+                                MILTER_CLIENT_ERROR_UNIX_SOCKET,
+                                "failed to get group entry "
+                                "for UNIX socket group: <%s>: <%s>: %s",
+                                address_un->sun_path,
+                                socket_group,
+                                g_strerror(errno));
+            milter_error("[client][error][unix] %s", error->message);
         }
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), error);
+        g_error_free(error);
         return;
     }
 
     if (chown(address_un->sun_path, -1, group->gr_gid) == -1) {
-        milter_error(
-            "[client][error][unix] "
-            "failed to change UNIX socket group: <%s>: <%s>: %s",
-            address_un->sun_path, socket_group, g_strerror(errno));
+        GError *error;
+        error = g_error_new(MILTER_CLIENT_ERROR,
+                            MILTER_CLIENT_ERROR_UNIX_SOCKET,
+                            "failed to change UNIX socket group: <%s>: <%s>: %s",
+                            address_un->sun_path,
+                            socket_group,
+                            g_strerror(errno));
+        milter_error("[client][error][unix] %s", error->message);
+        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(client), error);
+        g_error_free(error);
     } else {
         milter_info("[client][socket][unix][group][change] <%s>(<%d>): <%s>",
                     group->gr_name, group->gr_gid,
