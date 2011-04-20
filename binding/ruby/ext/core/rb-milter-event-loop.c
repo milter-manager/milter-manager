@@ -36,6 +36,58 @@ void rb_thread_blocking_region_end(struct rb_blocking_region_buffer *buffer);
 #  include <rubysig.h>
 #endif
 
+#ifndef HAVE_RB_ERRINFO
+#define rb_errinfo() ruby_errinfo
+#endif
+
+typedef struct {
+    VALUE receiver;
+    ID name;
+    int argc;
+    const VALUE *argv;
+} funcall_arguments;
+
+static VALUE
+invoke_rb_funcall2(VALUE data)
+{
+    funcall_arguments *arguments = (funcall_arguments *)data;
+    return rb_funcall2(arguments->receiver, arguments->name,
+		       arguments->argc, arguments->argv);
+}
+
+static VALUE
+default_logger(VALUE unused)
+{
+    return rb_const_get(rb_mMilter, rb_intern("Logger"));
+}
+
+static gboolean
+protect_proccall(VALUE receiver, int argc, const VALUE *argv)
+{
+    funcall_arguments call_args;
+    VALUE result;
+    int state = 0;
+
+    call_args.receiver = receiver;
+    call_args.name = rb_intern("call");
+    call_args.argc = argc;
+    call_args.argv = argv;
+    result = rb_protect(invoke_rb_funcall2, (VALUE)&call_args, &state);
+    if (state) {
+	VALUE errinfo = rb_errinfo();
+	VALUE logger = rb_protect(default_logger, Qfalse, &state);
+	if (state == 0 && !NIL_P(logger)) {
+	    call_args.receiver = logger;
+	    call_args.name = rb_intern("error");
+	    call_args.argc = 1;
+	    call_args.argv = &errinfo;
+	    rb_protect(invoke_rb_funcall2, (VALUE)&call_args, &state);
+	}
+	return FALSE;
+    }
+    return RVAL2CBOOL(result);
+}
+
 #define SELF(self) RVAL2EVENT_LOOP(self)
 #define CALLBACKS_KEY "rb-callback"
 
@@ -105,10 +157,12 @@ static gboolean
 cb_watch_io (GIOChannel *channel, GIOCondition condition, gpointer user_data)
 {
     CallbackContext *context = user_data;
+    VALUE args[2];
 
-    return RVAL2CBOOL(rb_funcall(context->callback, rb_intern("call"), 2,
-				 BOXED2RVAL(channel, G_TYPE_IO_CHANNEL),
-				 UINT2NUM(condition)));
+    args[0] = BOXED2RVAL(channel, G_TYPE_IO_CHANNEL);
+    args[1] = UINT2NUM(condition);
+
+    return protect_proccall(context->callback, 2, args);
 }
 
 static VALUE
@@ -171,9 +225,10 @@ static void
 cb_watch_child (GPid pid, gint status, gpointer user_data)
 {
     CallbackContext *context = user_data;
+    VALUE args[1];
 
-    rb_funcall(context->callback, rb_intern("call"), 1,
-	       last_status_set(status, pid));
+    args[0] = last_status_set(status, pid);
+    protect_proccall(context->callback, 1, args);
 }
 
 static VALUE
@@ -217,7 +272,7 @@ cb_timeout (gpointer user_data)
 {
     CallbackContext *context = user_data;
 
-    return RVAL2CBOOL(rb_funcall(context->callback, rb_intern("call"), 0));
+    return protect_proccall(context->callback, 0, NULL);
 }
 
 static VALUE
@@ -261,7 +316,7 @@ cb_idle (gpointer user_data)
 {
     CallbackContext *context = user_data;
 
-    return RVAL2CBOOL(rb_funcall(context->callback, rb_intern("call"), 0));
+    return protect_proccall(context->callback, 0, NULL);
 }
 
 static VALUE

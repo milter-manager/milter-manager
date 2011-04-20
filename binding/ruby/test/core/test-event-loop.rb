@@ -57,6 +57,22 @@ class TestEventLoop < Test::Unit::TestCase
     end
   end
 
+  def test_timeout_exception
+    n_called_before = n_called_after = 0
+    interval = 0.001
+    @tags << @loop.add_timeout(interval) do
+      n_called_before += 1
+      raise "should be rescued"
+      n_called_after += 1
+    end
+    sleep(interval)
+    assert_nothing_raised {@loop.iterate(:may_block => false)}
+    assert_equal([1, 0], [n_called_before, n_called_after])
+    sleep(interval)
+    assert_nothing_raised {@loop.iterate(:may_block => false)}
+    assert_equal([1, 0], [n_called_before, n_called_after])
+  end
+
   def test_idle
     idled = false
     @tags << @loop.add_idle do
@@ -84,6 +100,19 @@ class TestEventLoop < Test::Unit::TestCase
     assert_raise(ArgumentError.new("idle block is missing")) do
       @tags << @loop.add_idle
     end
+  end
+
+  def test_idle_exception
+    n_called_before = n_called_after = 0
+    @tags << @loop.add_idle do
+      n_called_before += 1
+      raise "should be rescued"
+      n_called_after += 1
+    end
+    assert_nothing_raised {@loop.iterate(:may_block => false)}
+    assert_equal([1, 0], [n_called_before, n_called_after])
+    assert_nothing_raised {@loop.iterate(:may_block => false)}
+    assert_equal([1, 0], [n_called_before, n_called_after])
   end
 
   def test_watch_child
@@ -128,6 +157,21 @@ class TestEventLoop < Test::Unit::TestCase
     Process.wait(pid)
   end
 
+  def test_watch_child_exception
+    n_called_before = n_called_after = 0
+    pid = fork do
+      exit!(true)
+    end
+    @tags << @loop.watch_child(pid) do |*args|
+      n_called_before += 1
+      raise "should be rescued"
+      n_called_after += 1
+    end
+    sleep(0.01)
+    assert_nothing_raised {@loop.iterate(:may_block => false)}
+    assert_equal([1, 0], [n_called_before, n_called_after])
+  end
+
   def test_watch_io
     callback_arguments = nil
     read_data = nil
@@ -158,6 +202,27 @@ class TestEventLoop < Test::Unit::TestCase
     assert_raise(ArgumentError.new("watch IO block is missing")) do
       @tags << @loop.watch_io(input, GLib::IOChannel::IN)
     end
+  end
+
+  def test_watch_io_exception
+    n_called_before = n_called_after = 0
+    parent_read, child_write = IO.pipe
+    pid = fork do
+      child_write.puts("child")
+      sleep(0.1)
+      child_write.puts("child")
+      exit!(true)
+    end
+    input = GLib::IOChannel.new(parent_read)
+    @tags << @loop.watch_io(input, GLib::IOChannel::IN) do |channel, condition|
+      n_called_before += 1
+      raise "should be rescued"
+      n_called_after += 1
+    end
+    assert_nothing_raised {@loop.iterate(:may_block => false)}
+    assert_equal([1, 0], [n_called_before, n_called_after])
+    assert_nothing_raised {@loop.iterate(:may_block => false)}
+    assert_equal([1, 0], [n_called_before, n_called_after])
   end
 
   def test_run
