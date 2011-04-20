@@ -53,8 +53,10 @@ module Milter
     end
 
     def on_event_loop_created
-      signal_connect("event-loop-created") do |_client|
-        yield(_client)
+      signal_connect("event-loop-created") do |_client, event_loop|
+        Milter::Callback.guard do
+          yield(_client, event_loop)
+        end
       end
     end
 

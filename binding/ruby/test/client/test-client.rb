@@ -144,6 +144,28 @@ class TestClient < Test::Unit::TestCase
     assert_equal({:before => 1, :after => 0}, n_called)
   end
 
+  def test_on_event_loop_created
+    n_called = {
+      :before => 0,
+      :after => 0,
+    }
+    @client.on_event_loop_created do |_client, event_loop|
+      event_loop.add_idle do
+        event_loop.quit
+        false
+      end
+      n_called[:before] += 1
+      raise "failed"
+      n_called[:after] += 1
+    end
+    socket = Tempfile.new("test-client-on-error")
+    @client.connection_spec = "unix:///#{socket.path}"
+    assert_nothing_raised do
+      @client.run
+    end
+    assert_equal({:before => 1, :after => 0}, n_called)
+  end
+
   priority :must
   def test_syslog
     assert_not_predicate(@client, :syslog_enabled?)
