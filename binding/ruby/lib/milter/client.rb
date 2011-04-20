@@ -46,7 +46,9 @@ module Milter
 
     def on_maintain
       signal_connect("maintain") do |_client|
-        yield(_client)
+        Milter::Callback.guard do
+          yield(_client)
+        end
       end
     end
 

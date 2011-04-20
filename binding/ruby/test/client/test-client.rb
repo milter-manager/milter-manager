@@ -122,7 +122,25 @@ class TestClient < Test::Unit::TestCase
     socket = Tempfile.new("test-client-on-error")
     @client.connection_spec = "unix:///#{socket.path}"
     @client.unix_socket_group = "nonexistent"
-    @client.listen
+    assert_nothing_raised do
+      @client.listen
+    end
+    assert_equal({:before => 1, :after => 0}, n_called)
+  end
+
+  def test_on_maintain
+    n_called = {
+      :before => 0,
+      :after => 0,
+    }
+    @client.on_maintain do |_client|
+      n_called[:before] += 1
+      raise "failed"
+      n_called[:after] += 1
+    end
+    assert_nothing_raised do
+      @client.signal_emit("maintain")
+    end
     assert_equal({:before => 1, :after => 0}, n_called)
   end
 
