@@ -158,10 +158,26 @@ class TestClient < Test::Unit::TestCase
       raise "failed"
       n_called[:after] += 1
     end
-    socket = Tempfile.new("test-client-on-error")
+    socket = Tempfile.new("test-client-on-event-loop-created")
     @client.connection_spec = "unix:///#{socket.path}"
     assert_nothing_raised do
       @client.run
+    end
+    assert_equal({:before => 1, :after => 0}, n_called)
+  end
+
+  def test_on_reload
+    n_called = {
+      :before => 0,
+      :after => 0,
+    }
+    @client.on_reload do |_client|
+      n_called[:before] += 1
+      raise "failed"
+      n_called[:after] += 1
+    end
+    assert_nothing_raised do
+      @client.reload
     end
     assert_equal({:before => 1, :after => 0}, n_called)
   end

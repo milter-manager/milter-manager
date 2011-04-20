@@ -62,7 +62,9 @@ module Milter
 
     def reload
       reload_callbacks.each do |callback|
-        callback.call(self)
+        Milter::Callback.guard do
+          callback.call(self)
+        end
       end
     end
 
