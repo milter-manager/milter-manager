@@ -505,4 +505,22 @@ EOX
                    [condition.name, condition.description]
                  end)
   end
+
+  class TestCallback < TestConfigurationLoader
+    def test_maintained
+      n_called = {
+        :before => 0,
+        :after => 0,
+      }
+      @loader.manager.maintained do
+        n_called[:before] += 1
+        raise "failed"
+        n_called[:after] += 1
+      end
+      assert_nothing_raised do
+        @configuration.maintained
+      end
+      assert_equal({:before => 1, :after => 0}, n_called)
+    end
+  end
 end
