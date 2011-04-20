@@ -4,4 +4,5 @@ dist_binding_lib_milter_core_DATA =		\
 	logger.rb				\
 	socket-address.rb			\
 	macro.rb				\
-	path.rb
+	path.rb 				\
+	callback.rb
