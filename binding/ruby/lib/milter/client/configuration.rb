@@ -389,15 +389,6 @@ module Milter
         end
       end
 
-      class << self
-        def guard(fallback_value=nil)
-          yield
-        rescue Exception => error
-          Milter::Logger.error(error)
-          fallback_value
-        end
-      end
-
       attr_reader :milter, :security, :log, :database
       def initialize(configuration)
         @configuration = configuration
@@ -599,7 +590,7 @@ module Milter
 
         def maintained(hook=Proc.new)
           guarded_hook = Proc.new do |configuration|
-            ConfigurationLoader.guard do
+            Milter::Callback.guard do
               hook.call
             end
           end
@@ -608,7 +599,7 @@ module Milter
 
         def event_loop_created(hook=Proc.new)
           guarded_hook = Proc.new do |configuration, loop|
-            ConfigurationLoader.guard do
+            Milter::Callback.guard do
               hook.call(loop)
             end
           end

@@ -335,7 +335,7 @@ module Milter
         @@current_configuration = nil
         def load(configuration, file)
           @@current_configuration = configuration
-          Client::ConfigurationLoader.guard do
+          Milter::Callback.guard do
             new(configuration).load_configuration(file)
           end
           GC.start
@@ -343,7 +343,7 @@ module Milter
 
         def load_custom(configuration, file)
           @@current_configuration = configuration
-          Client::ConfigurationLoader.guard do
+          Milter::Callback.guard do
             new(configuration).load_custom_configuration(file)
           end
           GC.start
@@ -984,7 +984,7 @@ module Milter
           @raw_configuration.signal_handler_disconnect(old_id) if old_id
           id = @raw_configuration.signal_connect('connected') do |config, leader|
             leader.signal_connect('connection-check') do |_leader|
-              Client::ConfigurationLoader.guard(true) do
+              Milter::Callback.guard(true) do
                 block.call(ConnectionCheckContext.new(leader))
               end
             end
@@ -1262,7 +1262,7 @@ module Milter
               child.signal_connect("stop-on-connect") do |_child, host, address|
                 child_context = ChildContext.new(child, children, context)
                 @connect_stoppers.any? do |stopper|
-                  Client::ConfigurationLoader.guard(false) do
+                  Milter::Callback.guard(false) do
                     stopper.call(child_context, host, address)
                   end
                 end
@@ -1273,7 +1273,7 @@ module Milter
               child.signal_connect("stop-on-helo") do |_child, fqdn|
                 child_context = ChildContext.new(child, children, context)
                 @helo_stoppers.any? do |stopper|
-                  Client::ConfigurationLoader.guard(false) do
+                  Milter::Callback.guard(false) do
                     stopper.call(child_context, fqdn)
                   end
                 end
@@ -1284,7 +1284,7 @@ module Milter
               child.signal_connect("stop-on-envelope-from") do |_child, from|
                 child_context = ChildContext.new(child, children, context)
                 @envelope_from_stoppers.any? do |stopper|
-                  Client::ConfigurationLoader.guard(false) do
+                  Milter::Callback.guard(false) do
                     stopper.call(child_context, from)
                   end
                 end
@@ -1295,7 +1295,7 @@ module Milter
               child.signal_connect("stop-on-envelope-recipient") do |_child, recipient|
                 child_context = ChildContext.new(child, children, context)
                 @envelope_recipient_stoppers.any? do |stopper|
-                  Client::ConfigurationLoader.guard(false) do
+                  Milter::Callback.guard(false) do
                     stopper.call(child_context, recipient)
                   end
                 end
@@ -1306,7 +1306,7 @@ module Milter
               child.signal_connect("stop-on-data") do |_child|
                 child_context = ChildContext.new(child, children, context)
                 @data_stoppers.any? do |stopper|
-                  Client::ConfigurationLoader.guard(false) do
+                  Milter::Callback.guard(false) do
                     stopper.call(child_context)
                   end
                 end
@@ -1317,7 +1317,7 @@ module Milter
               child.signal_connect("stop-on-header") do |_child, name, value|
                 child_context = ChildContext.new(child, children, context)
                 @header_stoppers.any? do |stopper|
-                  Client::ConfigurationLoader.guard(false) do
+                  Milter::Callback.guard(false) do
                     stopper.call(child_context, name, value)
                   end
                 end
@@ -1328,7 +1328,7 @@ module Milter
               child.signal_connect("stop-on-end-of-header") do |_child|
                 child_context = ChildContext.new(child, children, context)
                 @end_of_header_stoppers.any? do |stopper|
-                  Client::ConfigurationLoader.guard(false) do
+                  Milter::Callback.guard(false) do
                     stopper.call(child_context)
                   end
                 end
@@ -1339,7 +1339,7 @@ module Milter
               child.signal_connect("stop-on-body") do |_child, chunk|
                 child_context = ChildContext.new(child, children, context)
                 @body_stoppers.any? do |stopper|
-                  Client::ConfigurationLoader.guard(false) do
+                  Milter::Callback.guard(false) do
                     stopper.call(child_context, name, chunk)
                   end
                 end
@@ -1350,7 +1350,7 @@ module Milter
               child.signal_connect("stop-on-end-of-message") do |_child, chunk|
                 child_context = ChildContext.new(child, children, context)
                 @end_of_message_stoppers.any? do |stopper|
-                  Client::ConfigurationLoader.guard(false) do
+                  Milter::Callback.guard(false) do
                     stopper.call(child_context)
                   end
                 end
