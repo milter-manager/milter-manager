@@ -38,7 +38,9 @@ module Milter
 
     def on_error
       signal_connect("error") do |_client, error|
-        yield(_client, error)
+        Milter::Callback.guard do
+          yield(_client, error)
+        end
       end
     end
 

@@ -109,6 +109,23 @@ class TestClient < Test::Unit::TestCase
     assert_equal(100, @client.maintenance_interval)
   end
 
+  def test_on_error
+    n_called = {
+      :before => 0,
+      :after => 0,
+    }
+    @client.on_error do |_client, error|
+      n_called[:before] += 1
+      raise "failed"
+      n_called[:after] += 1
+    end
+    socket = Tempfile.new("test-client-on-error")
+    @client.connection_spec = "unix:///#{socket.path}"
+    @client.unix_socket_group = "nonexistent"
+    @client.listen
+    assert_equal({:before => 1, :after => 0}, n_called)
+  end
+
   priority :must
   def test_syslog
     assert_not_predicate(@client, :syslog_enabled?)
