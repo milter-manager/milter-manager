@@ -37,7 +37,7 @@ configureに--enable-ruby-milterオプションを指定してください。
 
 Rubyで開発したmilterは以下のようになります。
 
-  require 'milter'
+  require 'milter/client'
 
   class Session < Milter::ClientSession
     def initialize(context)
@@ -176,7 +176,7 @@ Rubyで開発したmilterは以下のようになります。
 び出されるheaderとメッセージ本文毎に呼び出されるbodyです。雛
 形は以下のようになります。
 
-  require 'milter'
+  require 'milter/client'
 
   class MilterRegexp < Milter::ClientSession
     def initialize(context, regexp)
@@ -226,7 +226,7 @@ Rubyで開発したmilterは以下のようになります。
 
 現在は、以下のようになっているはずです。
 
-  require 'milter'
+  require 'milter/client'
 
   class MilterRegexp < Milter::ClientSession
     def initialize(context, regexp)
