@@ -264,7 +264,7 @@ Rubyで開発したmilterは以下のようになります。
 milterはデフォルトではフォアグラウンドで動作します。別の端末
 からアクセスして動作を確認しましょう。
 
-milterのテストには((<milter-test-client>))が便利です。Rubyで
+milterのテストには((<milter-test-server>))が便利です。Rubyで
 実装されたmilterはデフォルトで「inet:20025@localhost」で起動
 するので、そのアドレスに接続します。
 
