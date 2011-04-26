@@ -2286,6 +2286,21 @@ models/user.rbを作成します。
    例:
      database.password = "secret"
 
+: database.extra_options
+   1.6.9から使用可能。
+
+   追加のオプションを指定します。例えば、ActiveRecordの
+   MySQL2アダプタにある(({:reconnect}))オプションを指定する
+   場合は以下のようになります。
+
+     database.type = "mysql2"
+     database.extra_options[:reconnect] = true
+
+   指定できるオプションはデータベース毎に異なります。
+
+   例:
+     database.extra_options[:reconnect] = true
+
 : database.setup
    データベースへ接続します。
 

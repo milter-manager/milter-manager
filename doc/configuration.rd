@@ -2296,6 +2296,21 @@ Here are configuration items:
    Example:
      database.password = "secret"
 
+
+: database.extra_options
+   Since 1.6.9.
+
+   Specifies extra options. Here is an example to specify
+   (({:reconnect})) option to ActiveRecord's MySQL2 adapter:
+
+     database.type = "mysql2"
+     database.extra_options[:reconnect] = true
+
+   Available extra options are different for each database.
+
+   Example:
+     database.extra_options[:reconnect] = true
+
 : database.setup
    Connects to database.
 
