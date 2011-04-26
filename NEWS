@@ -2,6 +2,65 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-6-9] 1.6.9: 2011-04-26
+
+A bug fix release of 1.6.8.
+
+=== All
+
+==== Improvements
+
+  * autogen.sh supports bash.
+    [Reported by Kenji Shiono]
+
+=== Document
+
+==== Improvements
+
+  * Followed Ruby milter's change.
+    [Reported by akira yamada]
+
+=== milter manager
+
+==== Improvements
+
+  * Added
+    ((<database.extra_options|configuration.rd#database.extra_options>))
+    configuration item.
+  * Supported exception handling in callback.
+
+==== Fixes
+
+  * Fixed a bug that define_connection_checker raises an
+    exception.
+    [Reported by Kenji Shiono]
+
+=== milter-client
+
+==== Improvements
+
+  * Supported error report when UNIX domain socket mode
+    change is failed.
+
+=== milter-performance-check
+
+==== Improvements
+
+  * Added --starttls option.
+  * Added --auth-user option.
+  * Added --auth-password option.
+  * Added --auth-mechanism option.
+  * Added --auth-map option.
+
+==== Fixes
+
+  * Fixed a bug that --smtp-port is ignored.
+
+=== Thanks
+
+  * Kenji Shiono
+  * akira yamada
+
 == [release-1-6-8] 1.6.8: 2011-04-15
 
 A bug fix release of 1.6.7.
