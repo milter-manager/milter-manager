@@ -316,7 +316,7 @@ class MilterPerformanceChecker
     @starttls = "auto"
     @auth_user = nil
     @auth_password = nil
-    @auth_mechanism = nil
+    @auth_mechanism = "auth"
     @auth_map = {}
     @from = "from@example.com"
     @recipients = []
@@ -449,7 +449,7 @@ class MilterPerformanceChecker
       @auth_password = password
     end
 
-    available_mechanisms = ["plain", "login", "cram_md5", "cram-md5"]
+    available_mechanisms = ["auto", "plain", "login", "cram_md5", "cram-md5"]
     parser.on("--auth-mechanism=MECHANISM",
               "Use MECHANISM for authentication.",
               "[#{available_mechanisms.join(' ')}]",
@@ -853,6 +853,7 @@ class MilterPerformanceChecker
       mechanism = nil
     end
     if user
+      mechanism = nil if mechanism == "auto"
       mechanism ||= default_auth_mechanism(smtp)
       validate_auth_mechanism(smtp, mechanism)
       smtp.authenticate(user, password, mechanism)
