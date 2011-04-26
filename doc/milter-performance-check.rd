@@ -73,6 +73,83 @@ smtp-source is more better tool for you.
 
    The default localhost.localdomain.
 
+: --starttls=HOW
+
+   Since 1.6.9.
+
+   Specifies whether STARTTLS is used or not. Here are
+   available ((|HOW|)) values:
+
+     : ((%auto%))
+        It uses STARTTLS when MTA supports STARTTLS. (default)
+
+     : ((%always%))
+        It always uses STARTTLS.
+
+     : ((%disable%))
+        It never use STARTTLS.
+
+   The default is ((%auto%)).
+
+: --auth-user=USER
+
+   Since 1.6.9.
+
+   Uses ((|USER|)) as SMTP Authentication user.
+
+   The default is none.
+
+: --auth-password=PASSWORD
+
+   Since 1.6.9.
+
+   Uses ((|PASSWORD|)) as SMTP Authentication password.
+
+   The default is none.
+
+: --auth-mechanism=MECHANISM
+
+   Since 1.6.9.
+
+   Uses ((|MECHANISM|)) as SMTP Authentication
+   mechanism. Here are available ((|MECHANISM|)) values:
+
+     : ((%auto%))
+        It uses a detected available mechanism by MTA.
+        (default)
+
+     : ((%plain%))
+        It always uses PLAIN.
+
+     : ((%login%))
+        It always uses LOGIN.
+
+     : ((%cram_md5%)) or ((%cram-md5%))
+        It always uses CRAM-MD5.
+
+   The default is ((%auto%)).
+
+: --auth-map=FILE
+
+   Since 1.6.9.
+
+   Loads SMTP Authentication configurations for MTA address
+   and port number pairs from ((|FILE|)). Here is ((|FILE|))
+   format that is also used by ((<Postfix's 
+   smtp_sasl_password_maps|URL:http://www.postfix.org/postconf.5.html#smtp_sasl_password_maps>)):
+
+     SERVER1:PORT USER1:PASSWORD1
+     SERVER2:PORT USER2:PASSWORD2
+     ...
+
+   Here is an example configuration that "send-user" user and
+   "secret" password account is used for "smtp.example.com"
+   address and "submission port" (587 port) MTA:
+
+     smtp.example.com:587 send-user:secret
+
+   The default is none.
+
 : --from=FROM
 
    Uses FROM as MAIL SMTP command.

@@ -76,6 +76,85 @@ smtp-sourceを利用するとよいでしょう。
 
    既定値はlocalhost.localdomainです。
 
+: --starttls=HOW
+
+   1.6.9から使用可能。
+
+   STARTTLSを使うかどうかを指定します。指定可能な((|HOW|))は
+   以下の通りです。
+
+     : ((%auto%))
+         MTAがSTARTTLSをサポートしている場合はSTARTTLSを使い
+         ます。（既定値）
+
+     : ((%always%))
+        常にSTARTTLSを使います。
+
+     : ((%disable%))
+        STARTTLSを使いません。
+
+   既定値は((%auto%))です。
+
+: --auth-user=USER
+
+   1.6.9から使用可能。
+
+   SMTP認証のユーザ名として((|USER|))を使います。
+
+   既定値はありません。
+
+: --auth-password=PASSWORD
+
+   1.6.9から使用可能。
+
+   SMTP認証のパスワードとして((|PASSWORD|))を使います。
+
+   既定値はありません。
+
+: --auth-mechanism=MECHANISM
+
+   1.6.9から使用可能。
+
+   SMTP認証の方法として((|MECHANISM|))を使います。指定可能な
+   ((|MECHANISM|))は以下の通りです。
+
+     : ((%auto%))
+        MTAがサポートしている認証方式を検出してそれを使い
+        ます。（既定値）
+
+     : ((%plain%))
+        常にPLAINを使用します。
+
+     : ((%login%))
+        常にLOGINを使用します。
+
+     : ((%cram_md5%))または((%cram-md5%))
+        常にCRAM-MD5を使用します。
+
+   既定値は((%auto%))です。
+
+: --auth-map=FILE
+
+   1.6.9から使用可能。
+
+   接続するMTAのアドレス・ポート番号ごとにSMTP認証の設定を
+   ((|FILE|))から読み込みます。((|FILE|))の書式は以下のよう
+   になっており、((<Postfixの
+   smtp_sasl_password_maps|URL:http://www.postfix.org/postconf.5.html#smtp_sasl_password_maps>))
+   でも使えます。
+
+     SERVER1:PORT USER1:PASSWORD1
+     SERVER2:PORT USER2:PASSWORD2
+     ...
+
+   「smtp.example.com」の「submissionポート」（587番ポート）
+   宛てのメールは「send-user」ユーザ・「secret」パスワード
+   を使うという設定は以下の通りです。
+
+     smtp.example.com:587 send-user:secret
+
+   既定値はありません。
+
 : --from=FROM
 
    MAILコマンドのアドレスにFROMを使います。
