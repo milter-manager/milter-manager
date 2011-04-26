@@ -107,7 +107,7 @@ build()
     pool_base_dir=${distribution}/${distribution_version}
     if test "${HAVE_DEVELOPMENT_BRANCH}" = "yes"; then
 	minor_version=$(echo $VERSION | ruby -pe '$_.gsub!(/\A\d+\.(\d+)\..*/, "\\1")')
-	if $(expr ${minor_version} % 2) -eq 0; then
+	if test $(expr ${minor_version} % 2) -eq 0; then
 	    branch_name=stable
 	else
 	    branch_name=development
