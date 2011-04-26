@@ -1,3 +1,9 @@
+milter-manager (1.6.9-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Kouhei Sutou <kou@clear-code.com>  Tue, 26 Apr 2011 00:00:00 +0900
+
 milter-manager (1.6.8-1) unstable; urgency=low
 
   * New upstream release.
