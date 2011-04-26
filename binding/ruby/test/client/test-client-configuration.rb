@@ -13,16 +13,18 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-class TestClientConfiguration < Test::Unit::TestCase
-  include MilterTestUtils
+class TestClientConfiguration
+  class Base < Test::Unit::TestCase
+    include MilterTestUtils
 
-  def setup
-    @client = Milter::Client.new
-    @configuration = Milter::Client::Configuration.new
-    @loader = Milter::Client::ConfigurationLoader.new(@configuration)
+    def setup
+      @client = Milter::Client.new
+      @configuration = Milter::Client::Configuration.new
+      @loader = Milter::Client::ConfigurationLoader.new(@configuration)
+    end
   end
 
-  class TestSecurity < TestClientConfiguration
+  class Security < Base
     setup
     def setup_config
       @security_config = @configuration.security
@@ -50,7 +52,7 @@ class TestClientConfiguration < Test::Unit::TestCase
     end
   end
 
-  class TestLog < TestClientConfiguration
+  class Log < Base
     setup
     def setup_config
       @log_config = @configuration.log
@@ -62,6 +64,33 @@ class TestClientConfiguration < Test::Unit::TestCase
       @loader.log.use_syslog = true
       assert_predicate(@loader.log, :use_syslog?)
       assert_predicate(@log_config, :use_syslog?)
+    end
+  end
+
+  class Database < Base
+    setup
+    def setup_config
+      @database_config = @configuration.database
+    end
+
+    setup
+    def setup_loader
+      @database_loader = @loader.database
+    end
+
+    def test_extra_options
+      @database_loader.extra_options[:reconnect] = true
+      assert_equal({
+                     :type => nil,
+                     :name => nil,
+                     :host => nil,
+                     :port => nil,
+                     :path => nil,
+                     :user => nil,
+                     :password => nil,
+                     :reconnect => true,
+                   },
+                   @database_config.to_hash)
     end
   end
 end

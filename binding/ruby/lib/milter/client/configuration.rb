@@ -230,7 +230,7 @@ module Milter
 
       class DatabaseConfiguration
         attr_accessor :type, :name, :host, :port, :path
-        attr_accessor :user, :password
+        attr_accessor :user, :password, :extra_options
         def initialize(base_configuration)
           @base_configuration = base_configuration
           @loaded_model_files = []
@@ -246,6 +246,7 @@ module Milter
           @path = nil
           @user = nil
           @password = nil
+          @extra_options = {}
           unless @loaded_model_files.empty?
             $LOADED_FEATURES.reject! do |required_path|
               @loaded_model_files.include?(required_path)
@@ -291,7 +292,7 @@ module Milter
             :path => path,
             :user => user,
             :password => password,
-          }
+          }.merge(extra_options)
         end
 
         def update_location(key, reset, deep_level)
@@ -310,12 +311,13 @@ module Milter
         def active_record_options
           case @type
           when "mysql", "mysql2"
-            mysql_options
+            options = mysql_options
           when "sqlite3"
-            sqlite3_options
+            options = sqlite3_options
           else
-            default_options
+            options = default_options
           end
+          options.merge(extra_options)
         end
 
         def mysql_options
@@ -347,11 +349,15 @@ module Milter
         end
 
         def default_options
-          options = to_hash
-          options[:adapter] = options.delete(:type)
-          options[:database] = options.delete(:name)
-          options[:username] = options.delete(:user)
-          options
+          {
+            :adapter => type,
+            :database => name,
+            :host => host,
+            :port => port,
+            :path => path,
+            :username => user,
+            :password => password,
+          }
         end
 
         def expand_path(path)
@@ -748,6 +754,16 @@ module Milter
         def password=(password)
           update_location("password", password.nil?)
           @configuration.password = password
+        end
+
+        def extra_options
+          @configuration.extra_options
+        end
+
+        def extra_options=(options)
+          options ||= {}
+          update_location("extra_options", options.empty?)
+          @configuration.extra_options = options
         end
 
         def setup
