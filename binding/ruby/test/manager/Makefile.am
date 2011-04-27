@@ -1,3 +1,6 @@
+SUBDIRS =					\
+	applicable-conditions
+
 test_files =					\
 	test-applicable-condition.rb		\
 	test-detector.rb			\

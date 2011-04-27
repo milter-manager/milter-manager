@@ -859,6 +859,7 @@ AC_CONFIG_FILES([Makefile
 		 binding/ruby/test/client/Makefile
 		 binding/ruby/test/server/Makefile
 		 binding/ruby/test/manager/Makefile
+		 binding/ruby/test/manager/applicable-conditions/Makefile
 		 binding/ruby/sample/Makefile
 		 module/Makefile
 		 module/configuration/Makefile

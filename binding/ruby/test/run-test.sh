@@ -28,9 +28,10 @@ if test -z "$abs_top_builddir"; then
     abs_top_builddir="$(${MAKE} -s echo-abs-top-builddir)"
 fi
 
-if test -z "$abs_top_srcdir"; then
-    abs_top_srcdir="$(${MAKE} -s -C "$abs_top_builddir" echo-abs-top-srcdir)"
+if test -z "$TOP_SRCDIR"; then
+    TOP_SRCDIR="$(${MAKE} -s -C "$abs_top_builddir" echo-abs-top-srcdir)"
 fi
+export TOP_SRCDIR
 
 if test x"$NO_MAKE" != x"yes"; then
     $MAKE -C "$abs_top_builddir" > /dev/null || exit 1
@@ -61,7 +62,7 @@ if test x"$RUBY_DEBUG" = x"yes"; then
 fi
 
 ruby_build_dir=$abs_top_builddir/binding/ruby
-ruby_source_dir=$abs_top_srcdir/binding/ruby
+ruby_source_dir=$TOP_SRCDIR/binding/ruby
 MILTER_MANAGER_RUBYLIB=$ruby_source_dir/lib
 MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_build_dir/ext/core/.libs
 MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_build_dir/ext/client/.libs
