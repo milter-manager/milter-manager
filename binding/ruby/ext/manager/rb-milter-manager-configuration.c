@@ -276,6 +276,18 @@ get_locations (VALUE self)
     return rb_locations;
 }
 
+static VALUE
+reload (VALUE self)
+{
+    GError *error = NULL;
+
+    if (!milter_manager_configuration_reload(SELF(self), &error)) {
+	RAISE_GERROR(error);
+    }
+
+    return self;
+}
+
 static void
 mark (gpointer data)
 {
@@ -366,4 +378,7 @@ Init_milter_manager_configuration (void)
 		     "get_location", get_location, 1);
     rb_define_method(rb_cMilterManagerConfiguration,
 		     "locations", get_locations, 0);
+
+    rb_define_method(rb_cMilterManagerConfiguration,
+		     "reload", reload, 0);
 }
