@@ -884,6 +884,22 @@ AC_CONFIG_FILES([Makefile
 		 data/smf/manifest/milter-manager.xml
 		 data/smf/method/Makefile
 		 data/smf/method/milter-manager
+		 solaris/Makefile
+		 solaris/prototypes/Makefile
+		 solaris/prototypes/milter-manager/Makefile
+		 solaris/prototypes/milter-manager/pkginfo
+		 solaris/prototypes/cutter/Makefile
+		 solaris/prototypes/cutter/pkginfo
+		 solaris/prototypes/gettext/Makefile
+		 solaris/prototypes/gettext/pkginfo
+		 solaris/prototypes/glib/Makefile
+		 solaris/prototypes/glib/pkginfo
+		 solaris/prototypes/iconv/Makefile
+		 solaris/prototypes/iconv/pkginfo
+		 solaris/prototypes/mysql/Makefile
+		 solaris/prototypes/mysql/pkginfo
+		 solaris/prototypes/ruby/Makefile
+		 solaris/prototypes/ruby/pkginfo
 		 tool/Makefile
 		 admin/Makefile
 		 test/Makefile

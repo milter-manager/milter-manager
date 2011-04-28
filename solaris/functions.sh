@@ -27,8 +27,6 @@ build_pkg()
     package_name="${package_name##lib}"
     local prototype_dir="${PROTOTYPES}/${package_name}"
     local prototype="${prototype_dir}/prototype"
-    local pkginfo_template="${prototype_dir}/pkginfo.in"
-    local pkginfo="${prototype_dir}/pkginfo"
     local preinstall="${prototype_dir}/preinstall"
     local postinstall="${prototype_dir}/postinstall"
     local user="$(/usr/xpg4/bin/id -un)"
@@ -36,10 +34,6 @@ build_pkg()
     local log="${BUILDS}/${base}.log"
     shift
     shift
-
-    echo "$(time_stamp): Creating pkginfo of ${base}..."
-    sed -e "s,@prefix@,${PREFIX},g" "${pkginfo_template}" > "${pkginfo}"
-    echo "$(time_stamp): done."
 
     echo "$(time_stamp): Updating prototype of ${base}..."
     run mkdir -p "$prototype_dir"

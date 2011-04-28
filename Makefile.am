@@ -19,7 +19,8 @@ SUBDIRS =					\
 	license					\
 	apt					\
 	rpm					\
-	yum
+	yum					\
+	solaris
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA =				\
