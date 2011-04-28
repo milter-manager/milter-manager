@@ -1,5 +1,7 @@
 #! /bin/bash
 
+test -f /lib/svc/share/smf_include.sh && . /lib/svc/share/smf_include.sh
+
 TARGET_USER=mmanager
 TARGET_GROUP=mmanager
 
@@ -8,7 +10,7 @@ chown $TARGET_USER:$TARGET_GROUP $BASEDIR/var/run/milter-manager
 
 MANIFEST=$BASEDIR/var/svc/manifest/network/milter-manager.xml
 
-if `svccfg validate $MANIFEST`; then
+if smf_present && `svccfg validate $MANIFEST`; then
     svccfg import $MANIFEST
 fi
 exit 0
