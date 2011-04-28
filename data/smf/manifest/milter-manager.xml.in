@@ -22,7 +22,7 @@
       restart_on='refresh'
       type='path'>
       <service_fmri
-        value='file://localhost/@prefix@/etc/milter-manager/milter-manager.conf'/>
+        value='file://localhost@prefix@/etc/milter-manager/milter-manager.conf'/>
     </dependency>
 
     <instance
