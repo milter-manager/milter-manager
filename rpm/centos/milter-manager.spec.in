@@ -427,7 +427,7 @@ fi
 
 * Fri Apr 08 2011 Kouhei Sutou <kou@clear-code.com> - 1.6.6-1
 - fix init.d/ path.
-- add Obsolutes.
+- add Obsoletes.
 
 * Wed Apr 06 2011 Kouhei Sutou <kou@clear-code.com> - 1.6.6-0
 - new upstream release.
