@@ -28,8 +28,8 @@ configureに--enable-ruby-milterオプションを指定してください。
 
 インストールが成功しているかは以下のコマンドで確認できます。
 
-  % ruby -r milter -e 'p Milter::TOOLKIT_VERSION'
-  [1, 5, 0]
+  % ruby -r milter -e 'p Milter::VERSION'
+  [1, 8, 0]
 
 バージョン情報が出力されればインストールは成功しています。
 
