@@ -225,6 +225,8 @@ install/libmilter-server-dev::
 install/libmilter-core-ruby1.8::
 	cp -ar debian/tmp/usr/lib/pkgconfig/ruby-milter-core.pc \
 		debian/libmilter-core-ruby1.8/usr/lib/pkgconfig/
+	cp -ar debian/tmp/usr/lib/ruby/1.8/milter.rb \
+		debian/libmilter-core-ruby1.8/usr/lib/ruby/1.8/
 	cp -ar debian/tmp/usr/lib/ruby/1.8/milter/core.rb \
 		debian/libmilter-core-ruby1.8/usr/lib/ruby/1.8/milter/
 	cp -ar debian/tmp/usr/lib/milter-manager/binding/ext/glib* \
