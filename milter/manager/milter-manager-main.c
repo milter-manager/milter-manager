@@ -315,6 +315,16 @@ prepare_process_launcher_pipes_for_manager (gint *command_pipe,
     *read_channel = create_read_io_channel(reply_pipe[MILTER_UTILS_READ_PIPE]);
 }
 
+static void
+cb_launcher_finished (MilterFinishedEmittable *emittable,
+                      gpointer user_data)
+{
+    MilterManagerProcessLauncher *launcher;
+
+    launcher = MILTER_MANAGER_PROCESS_LAUNCHER(emittable);
+    milter_manager_process_launcher_shutdown(launcher);
+}
+
 static gboolean
 start_process_launcher (GIOChannel *read_channel, GIOChannel *write_channel,
                         gboolean daemon)
@@ -360,8 +370,11 @@ start_process_launcher (GIOChannel *read_channel, GIOChannel *write_channel,
         success = FALSE;
     }
 
-    if (success)
+    if (success) {
+        g_signal_connect(launcher, "finished",
+                         G_CALLBACK(cb_launcher_finished), NULL);
         milter_manager_process_launcher_run(launcher);
+    }
 
     g_object_unref(launcher);
 
