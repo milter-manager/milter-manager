@@ -28,6 +28,7 @@ SOCKET_GROUP=
 PIDFILE=
 CONNECTION_SPEC=
 OPTION_ARGS=""
+default_pidfile=/var/run/milter-manager/milter-manager.pid
 
 if [ -f /etc/sysconfig/milter-manager ]; then
 	. /etc/sysconfig/milter-manager
@@ -67,6 +68,13 @@ if [ -n "${SOCKET_GROUP}" ]; then
 fi
 DAEMON_ARGS="${DAEMON_ARGS} ${OPTION_ARGS}"
 
+killproc_options=
+if [ -n "${PIDFILE}" ]; then
+    killproc_options="-p ${PIDFILE}"
+else
+    killproc_options="-p ${default_pidfile}"
+fi
+
 RETVAL=0
 
 
@@ -81,7 +89,7 @@ start() {
 
 stop() {
 	echo -n "Shutting down $name: "
-	killproc $prog
+	killproc ${killproc_options} $prog
 	RETVAL=$?
 	echo
 	[ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$prog
@@ -104,7 +112,7 @@ case "$1" in
     	restart
 	;;
     reload)
-	killproc $milter_manager -HUP
+	killproc ${killproc_options} $prog -HUP
 	;;
     condrestart)
 	[ -f /var/lock/subsys/$prog ] && restart || :
