@@ -16,7 +16,7 @@ AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_SRCDIR([milter/manager.h])
 AM_CONFIG_HEADER([config.h])
 
-AM_INIT_AUTOMAKE($PACKAGE_NAME, $PACKAGE_VERSION)
+AM_INIT_AUTOMAKE(tar-pax)
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 if test "`expr milter_manager_version_minor % 2`" = "1"; then
