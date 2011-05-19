@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -88,13 +88,12 @@ remove_step (VALUE self, VALUE step)
 void
 Init_milter_option (void)
 {
-    VALUE rb_cMilterActionFlags, rb_cMilterStepFlags;
+    VALUE rb_cMilterStepFlags;
     VALUE rb_cMilterOption;
 
     rb_cMilterOption = G_DEF_CLASS(MILTER_TYPE_OPTION, "Option", rb_mMilter);
 
-    rb_cMilterActionFlags =
-	G_DEF_CLASS(MILTER_TYPE_ACTION_FLAGS, "ActionFlags", rb_mMilter);
+    G_DEF_CLASS(MILTER_TYPE_ACTION_FLAGS, "ActionFlags", rb_mMilter);
     rb_cMilterStepFlags =
 	G_DEF_CLASS(MILTER_TYPE_STEP_FLAGS, "StepFlags", rb_mMilter);
 
