@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -81,11 +81,9 @@ static void
 milter_protocol_agent_class_init (MilterProtocolAgentClass *klass)
 {
     GObjectClass *gobject_class;
-    MilterAgentClass *agent_class;
     GParamSpec *spec;
 
     gobject_class = G_OBJECT_CLASS(klass);
-    agent_class = MILTER_AGENT_CLASS(klass);
 
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
