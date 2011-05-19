@@ -633,6 +633,13 @@ get_hash_table (MilterManagerTestScenario *scenario,
     return gcut_take_hash_table(hash_table);
 }
 
+#define return_on_error() do {                  \
+    if (expected_error && actual_error) {       \
+        return;                                 \
+    }                                           \
+} while (0)
+
+
 static void
 assert_response_error (MilterManagerTestScenario *scenario, const gchar *group)
 {
@@ -659,8 +666,6 @@ assert_response_error (MilterManagerTestScenario *scenario, const gchar *group)
     }
 
     gcut_assert_equal_error(expected_error, actual_error);
-    if (expected_error && actual_error)
-        cut_return();
 }
 
 #define assert_n_received(scenario, group, n_received_key, response_name) \
@@ -766,15 +771,18 @@ assert_response_reply_code (MilterManagerTestScenario *scenario, const gchar *gr
         milter_manager_test_server_get_received_reply_codes(server));
 }
 
-#define assert_response(scenario, group)                \
+#define assert_response(scenario, group) do {           \
     cut_trace_with_info_expression(                     \
         assert_response_helper(scenario, group),        \
-        assert_response(scenario, group))
+        assert_response(scenario, group));              \
+    return_on_error();                                  \
+} while (0)
 
 static void
 assert_response_helper (MilterManagerTestScenario *scenario, const gchar *group)
 {
     cut_trace(assert_response_error(scenario, group));
+    return_on_error();
     cut_trace(assert_response_common(scenario, group));
     cut_trace(assert_response_reply_code(scenario, group));
 }
