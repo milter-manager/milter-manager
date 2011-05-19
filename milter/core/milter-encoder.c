@@ -119,9 +119,6 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
-    MilterEncoderPrivate *priv;
-
-    priv = MILTER_ENCODER_GET_PRIVATE(object);
     switch (prop_id) {
     case PROP_TAG:
         milter_encoder_set_tag(MILTER_ENCODER(object), g_value_get_uint(value));
