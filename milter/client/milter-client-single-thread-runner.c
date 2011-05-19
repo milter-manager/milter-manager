@@ -74,12 +74,6 @@ milter_client_single_thread_runner_init (MilterClientSingleThreadRunner *runner)
 static void
 dispose (GObject *object)
 {
-    MilterClientSingleThreadRunner *runner;
-    MilterClientSingleThreadRunnerPrivate *priv;
-
-    runner = MILTER_CLIENT_SINGLE_THREAD_RUNNER(object);
-    priv = MILTER_CLIENT_SINGLE_THREAD_RUNNER_GET_PRIVATE(runner);
-
     G_OBJECT_CLASS(milter_client_single_thread_runner_parent_class)->dispose(object);
 }
 
@@ -94,19 +88,12 @@ milter_client_single_thread_runner_new (MilterClient *client)
 static gboolean
 run (MilterClientRunner *runner, GError **error)
 {
-    MilterClientSingleThreadRunnerPrivate *priv;
-
-    priv = MILTER_CLIENT_SINGLE_THREAD_RUNNER_GET_PRIVATE(runner);
-
     return TRUE;
 }
 
 static void
 quit (MilterClientRunner *runner)
 {
-    MilterClientSingleThreadRunnerPrivate *priv;
-
-    priv = MILTER_CLIENT_SINGLE_THREAD_RUNNER_GET_PRIVATE(runner);
 }
 
 /*
