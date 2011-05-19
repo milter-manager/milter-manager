@@ -148,10 +148,8 @@ dispose_spec (MilterManagerControllerPrivate *priv)
 static void
 dispose (GObject *object)
 {
-    MilterManagerController *controller;
     MilterManagerControllerPrivate *priv;
 
-    controller = MILTER_MANAGER_CONTROLLER(object);
     priv = MILTER_MANAGER_CONTROLLER_GET_PRIVATE(object);
 
     if (priv->watch_id > 0) {
