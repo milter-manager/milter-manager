@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -242,11 +242,8 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
-    MilterManagerTestServerPrivate *priv;
-
-    priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(object);
     switch (prop_id) {
-      default:
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -258,11 +255,8 @@ get_property (GObject    *object,
               GValue     *value,
               GParamSpec *pspec)
 {
-    MilterManagerTestServerPrivate *priv;
-
-    priv = MILTER_MANAGER_TEST_SERVER_GET_PRIVATE(object);
     switch (prop_id) {
-      default:
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
