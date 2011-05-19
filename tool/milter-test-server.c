@@ -409,9 +409,6 @@ static void
 cb_continue (MilterServerContext *context, gpointer user_data)
 {
     ProcessData *data = user_data;
-    MilterProtocolAgent *agent;
-
-    agent = MILTER_PROTOCOL_AGENT(context);
 
     switch (milter_server_context_get_state(context)) {
     case MILTER_SERVER_CONTEXT_STATE_NEGOTIATE:
