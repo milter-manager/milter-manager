@@ -397,15 +397,12 @@ cb_decoder_launch (MilterManagerLaunchCommandDecoder *decoder,
                    gpointer user_data)
 {
     MilterManagerProcessLauncher *launcher = user_data;
-    MilterManagerProcessLauncherPrivate *priv;
     GError *error = NULL;
     MilterAgent *agent;
     MilterEncoder *base_encoder;
     MilterManagerReplyEncoder *encoder;
     const gchar *packet;
     gsize packet_size;
-
-    priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
 
     agent = MILTER_AGENT(launcher);
     base_encoder = milter_agent_get_encoder(agent);
@@ -492,11 +489,8 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
-    MilterManagerProcessLauncherPrivate *priv;
-
-    priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(object);
     switch (prop_id) {
-      default:
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -508,11 +502,8 @@ get_property (GObject    *object,
               GValue     *value,
               GParamSpec *pspec)
 {
-    MilterManagerProcessLauncherPrivate *priv;
-
-    priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(object);
     switch (prop_id) {
-      default:
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -521,12 +512,6 @@ get_property (GObject    *object,
 static void
 finished (MilterFinishedEmittable *emittable)
 {
-    MilterManagerProcessLauncher *launcher;
-    MilterManagerProcessLauncherPrivate *priv;
-
-    launcher = MILTER_MANAGER_PROCESS_LAUNCHER(emittable);
-    priv = MILTER_MANAGER_PROCESS_LAUNCHER_GET_PRIVATE(launcher);
-
     if (finished_emittable_parent->finished)
         finished_emittable_parent->finished(emittable);
 }
