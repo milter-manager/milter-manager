@@ -222,7 +222,6 @@ cb_decoder_get_status (MilterManagerControlCommandDecoder *decoder,
                        gpointer user_data)
 {
     MilterManagerControllerContext *context = user_data;
-    MilterManagerControllerContextPrivate *priv;
     GString *status;
     GError *error = NULL;
     MilterAgent *agent;
@@ -230,8 +229,6 @@ cb_decoder_get_status (MilterManagerControlCommandDecoder *decoder,
     MilterManagerControlReplyEncoder *encoder;
     const gchar *packet;
     gsize packet_size;
-
-    priv = MILTER_MANAGER_CONTROLLER_CONTEXT_GET_PRIVATE(context);
 
     status = g_string_new(NULL);
     collect_status(context, status);
@@ -290,10 +287,8 @@ milter_manager_controller_context_init (MilterManagerControllerContext *context)
 static void
 dispose (GObject *object)
 {
-    MilterManagerControllerContext *context;
     MilterManagerControllerContextPrivate *priv;
 
-    context = MILTER_MANAGER_CONTROLLER_CONTEXT(object);
     priv = MILTER_MANAGER_CONTROLLER_CONTEXT_GET_PRIVATE(object);
 
     if (priv->manager) {
