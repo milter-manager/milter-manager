@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2009-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -279,10 +279,8 @@ set_property (GObject      *object,
               GParamSpec   *pspec)
 {
     MilterMessageResult *result;
-    MilterMessageResultPrivate *priv;
 
     result = MILTER_MESSAGE_RESULT(object);
-    priv = MILTER_MESSAGE_RESULT_GET_PRIVATE(result);
     switch (prop_id) {
     case PROP_FROM:
         milter_message_result_set_from(result, g_value_get_string(value));
