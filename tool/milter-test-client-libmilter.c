@@ -354,7 +354,6 @@ main (int argc, char *argv[])
     gint status = MI_SUCCESS;
     GError *error = NULL;
     GOptionContext *option_context;
-    GOptionGroup *main_group;
     unsigned int major, minor, patch_level;
 
 #ifdef HAVE_LOCALE_H
@@ -371,7 +370,6 @@ main (int argc, char *argv[])
 
     option_context = g_option_context_new(NULL);
     g_option_context_add_main_entries(option_context, option_entries, NULL);
-    main_group = g_option_context_get_main_group(option_context);
 
     if (!g_option_context_parse(option_context, &argc, &argv, &error)) {
         g_print("%s\n", error->message);
