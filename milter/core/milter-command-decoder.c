@@ -370,14 +370,12 @@ decode_define_macro (MilterDecoder *decoder, GError **error)
 {
     GHashTable *macros;
     MilterCommand context;
-    gsize i;
     const gchar *buffer;
     gint32 command_length;
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
 
-    i = 1;
     if (!milter_decoder_check_command_length(buffer + 1,
                                              strlen(buffer) - 1,
                                              1,
