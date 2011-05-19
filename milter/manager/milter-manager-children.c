@@ -903,10 +903,6 @@ expire_child (MilterManagerChildren *children,
 static void
 expire_all_children (MilterManagerChildren *children)
 {
-    MilterManagerChildrenPrivate *priv;
-
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
-
     milter_manager_children_abort(children);
     milter_manager_children_quit(children);
 }
@@ -2897,9 +2893,6 @@ send_next_command (MilterManagerChildren *children,
                    MilterServerContextState processing_state)
 {
     MilterCommand next_command;
-    MilterManagerChildrenPrivate *priv;
-
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     next_command = get_next_command(children, context, processing_state);
     if (next_command == -1)
@@ -4058,10 +4051,7 @@ milter_manager_children_is_important_status (MilterManagerChildren *children,
                                              MilterServerContextState state,
                                              MilterStatus status)
 {
-    MilterManagerChildrenPrivate *priv;
     MilterStatus current_status;
-
-    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
     current_status = get_reply_status_for_state(children, state);
     return milter_status_compare(current_status, status) < 0;
