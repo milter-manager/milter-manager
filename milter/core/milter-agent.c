@@ -272,10 +272,8 @@ set_property (GObject      *object,
               GParamSpec   *pspec)
 {
     MilterAgent *agent;
-    MilterAgentPrivate *priv;
 
     agent = MILTER_AGENT(object);
-    priv = MILTER_AGENT_GET_PRIVATE(object);
     switch (prop_id) {
     case PROP_READER:
         milter_agent_set_reader(agent, g_value_get_object(value));
