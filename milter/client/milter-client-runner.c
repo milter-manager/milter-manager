@@ -107,10 +107,8 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
-    MilterClientRunner *agent;
     MilterClientRunnerPrivate *priv;
 
-    agent = MILTER_CLIENT_RUNNER(object);
     priv = MILTER_CLIENT_RUNNER_GET_PRIVATE(object);
     switch (prop_id) {
     case PROP_CLIENT:
@@ -131,10 +129,8 @@ get_property (GObject    *object,
               GParamSpec *pspec)
 {
     MilterClientRunner *runner;
-    MilterClientRunnerPrivate *priv;
 
     runner = MILTER_CLIENT_RUNNER(object);
-    priv = MILTER_CLIENT_RUNNER_GET_PRIVATE(runner);
     switch (prop_id) {
     case PROP_CLIENT:
         g_value_set_object(value, milter_client_runner_get_client(runner));
