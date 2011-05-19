@@ -102,11 +102,8 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
-    MilterHeadersPrivate *priv;
-
-    priv = MILTER_HEADERS_GET_PRIVATE(object);
     switch (prop_id) {
-      default:
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
@@ -118,11 +115,8 @@ get_property (GObject    *object,
               GValue     *value,
               GParamSpec *pspec)
 {
-    MilterHeadersPrivate *priv;
-
-    priv = MILTER_HEADERS_GET_PRIVATE(object);
     switch (prop_id) {
-      default:
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
     }
