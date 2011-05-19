@@ -3551,11 +3551,9 @@ static void
 cb_decoder_quit (MilterDecoder *decoder, gpointer user_data)
 {
     MilterClientContext *context;
-    MilterClientContextPrivate *priv;
 
     context = MILTER_CLIENT_CONTEXT(user_data);
 
-    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     /* FIXME: should check the previous state */
     milter_client_context_set_state(
         context, MILTER_CLIENT_CONTEXT_STATE_QUIT);
