@@ -97,12 +97,7 @@ milter_event_loop_init (MilterEventLoop *loop)
 static void
 dispose (GObject *object)
 {
-    MilterEventLoopPrivate *priv;
-
-    priv = MILTER_EVENT_LOOP_GET_PRIVATE(object);
-
     milter_debug("[event-loop][dispose]");
-
     G_OBJECT_CLASS(milter_event_loop_parent_class)->dispose(object);
 }
 
@@ -175,13 +170,11 @@ milter_event_loop_run (MilterEventLoop *loop)
 gboolean
 milter_event_loop_is_running (MilterEventLoop *loop)
 {
-    MilterEventLoopClass *loop_class;
     MilterEventLoopPrivate *priv;
 
     g_return_val_if_fail(loop != NULL, FALSE);
 
     priv = MILTER_EVENT_LOOP_GET_PRIVATE(loop);
-    loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
     return priv->depth > 0;
 }
 
