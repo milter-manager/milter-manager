@@ -1516,13 +1516,11 @@ multi_thread_process_client_channel (MilterClient *client, GIOChannel *channel,
 static gboolean
 multi_thread_accept_connection (MilterClient *client, gint server_fd)
 {
-    MilterClientPrivate *priv;
     gboolean accepted;
     GIOChannel *client_channel;
     MilterGenericSocketAddress address;
     socklen_t address_size;
 
-    priv = MILTER_CLIENT_GET_PRIVATE(client);
     accepted = accept_connection(client, server_fd, &client_channel,
                                  &address, &address_size);
     if (accepted) {
@@ -1894,11 +1892,8 @@ accept_error_watch_func (GIOChannel *channel, GIOCondition condition,
                          gpointer user_data)
 {
     MilterClient *client = user_data;
-    MilterClientPrivate *priv;
     gchar *message;
     GError *error = NULL;
-
-    priv = MILTER_CLIENT_GET_PRIVATE(client);
 
     message = milter_utils_inspect_io_condition_error(condition);
     error = g_error_new(MILTER_CLIENT_ERROR,
@@ -2340,10 +2335,7 @@ worker_accept_watch_func (GIOChannel *channel, GIOCondition condition,
     gint server_fd, client_fd;
     MilterGenericSocketAddress address;
     socklen_t address_size;
-    MilterClientPrivate *priv;
     gboolean keep_callback = TRUE;
-
-    priv = MILTER_CLIENT_GET_PRIVATE(client);
 
     server_fd = g_io_channel_unix_get_fd(channel);
     client_fd = accept_connection_fd(client, server_fd, &address, &address_size);
