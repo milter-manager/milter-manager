@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-201   Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -140,7 +140,6 @@ milter_manager_ruby_configuration_class_intern_init (gpointer klass)
 static void
 milter_manager_ruby_configuration_register_type (GTypeModule *type_module)
 {
-    GType g_define_type_id;
     const GTypeInfo g_define_type_info = {
         sizeof (MilterManagerRubyConfigurationClass),
         (GBaseInitFunc) NULL,
@@ -160,7 +159,6 @@ milter_manager_ruby_configuration_register_type (GTypeModule *type_module)
                                     "MilterManagerRubyConfiguration",
                                     &g_define_type_info,
                                     (GTypeFlags) 0);
-    g_define_type_id = milter_manager_ruby_configuration_type_id;
 }
 
 static void
@@ -424,9 +422,6 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
-    MilterManagerRubyConfiguration *configuration;
-
-    configuration = MILTER_MANAGER_RUBY_CONFIGURATION(object);
     switch (prop_id) {
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -440,9 +435,6 @@ get_property (GObject    *object,
               GValue     *value,
               GParamSpec *pspec)
 {
-    MilterManagerRubyConfiguration *configuration;
-
-    configuration = MILTER_MANAGER_RUBY_CONFIGURATION(object);
     switch (prop_id) {
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
