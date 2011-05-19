@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2010-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -139,10 +139,8 @@ set_property (GObject      *object,
               GParamSpec   *pspec)
 {
     MilterSessionResult *result;
-    MilterSessionResultPrivate *priv;
 
     result = MILTER_SESSION_RESULT(object);
-    priv = MILTER_SESSION_RESULT_GET_PRIVATE(result);
     switch (prop_id) {
     case PROP_ELAPSED_TIME:
         milter_session_result_set_elapsed_time(result,
@@ -165,10 +163,8 @@ get_property (GObject    *object,
               GParamSpec *pspec)
 {
     MilterSessionResult *result;
-    MilterSessionResultPrivate *priv;
 
     result = MILTER_SESSION_RESULT(object);
-    priv = MILTER_SESSION_RESULT_GET_PRIVATE(result);
     switch (prop_id) {
     case PROP_ELAPSED_TIME:
         g_value_set_double(value,
@@ -193,10 +189,7 @@ milter_session_result_new (void)
 void
 milter_session_result_start (MilterSessionResult *result)
 {
-    MilterSessionResultPrivate *priv;
     GTimeVal current_time;
-
-    priv = MILTER_SESSION_RESULT_GET_PRIVATE(result);
 
     g_get_current_time(&current_time);
     milter_session_result_set_start_time(result, &current_time);
