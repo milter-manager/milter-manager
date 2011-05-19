@@ -1016,9 +1016,7 @@ prepend_macro (MilterServerContext *context, GString *packed_packet,
     MilterAgent *agent;
     MilterProtocolAgent *protocol_agent;
     MilterMacrosRequests *macros_requests;
-    MilterServerContextPrivate *priv;
 
-    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
     agent = MILTER_AGENT(context);
     protocol_agent = MILTER_PROTOCOL_AGENT(context);
 
@@ -2292,12 +2290,9 @@ milter_server_context_quit (MilterServerContext *context)
 gboolean
 milter_server_context_abort (MilterServerContext *context)
 {
-    MilterServerContextPrivate *priv;
     const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
-
-    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
     milter_debug("[%u] [server][send][abort] [%s]",
                  milter_agent_get_tag(MILTER_AGENT(context)),
