@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -190,10 +190,8 @@ set_property (GObject      *object,
               const GValue *value,
               GParamSpec   *pspec)
 {
-    MilterManagerChild *milter;
     MilterManagerChildPrivate *priv;
 
-    milter = MILTER_MANAGER_CHILD(object);
     priv = MILTER_MANAGER_CHILD_GET_PRIVATE(object);
     switch (prop_id) {
     case PROP_USER_NAME:
