@@ -354,15 +354,14 @@ write_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
                      priv->tag, priv->write_watch_id);
     } else {
         gsize written_size = 0;
-        GIOStatus status;
         GError *channel_error = NULL;
 
         priv->writing = TRUE;
-        status = g_io_channel_write_chars(priv->io_channel,
-                                          priv->buffer->str,
-                                          priv->buffer->len,
-                                          &written_size,
-                                          &channel_error);
+        g_io_channel_write_chars(priv->io_channel,
+                                 priv->buffer->str,
+                                 priv->buffer->len,
+                                 &written_size,
+                                 &channel_error);
         priv->writing = FALSE;
 
         if (written_size == 0) {
@@ -598,7 +597,6 @@ flush_buffer_on_shutdown (MilterWriter *writer)
 {
     MilterWriterPrivate *priv;
     gsize written_size = 0;
-    GIOStatus status;
     GError *channel_error = NULL;
 
     priv = MILTER_WRITER_GET_PRIVATE(writer);
@@ -620,11 +618,11 @@ flush_buffer_on_shutdown (MilterWriter *writer)
         return;
     }
 
-    status = g_io_channel_write_chars(priv->io_channel,
-                                      priv->buffer->str,
-                                      priv->buffer->len,
-                                      &written_size,
-                                      &channel_error);
+    g_io_channel_write_chars(priv->io_channel,
+                             priv->buffer->str,
+                             priv->buffer->len,
+                             &written_size,
+                             &channel_error);
 
     if (written_size == 0) {
         milter_debug("[%u] [writer][shutdown][flush-buffer][unwritten] "
@@ -655,7 +653,7 @@ flush_buffer_on_shutdown (MilterWriter *writer)
         milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(writer), error);
         g_error_free(error);
     } else {
-        status = g_io_channel_flush(priv->io_channel, &channel_error);
+        g_io_channel_flush(priv->io_channel, &channel_error);
         if (channel_error) {
             GError *error = NULL;
 
