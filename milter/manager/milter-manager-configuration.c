@@ -1562,12 +1562,9 @@ cb_connected_dummy (MilterManagerConfiguration *configuration,
 void
 milter_manager_configuration_clear_signal_handlers (MilterManagerConfiguration *configuration)
 {
-    MilterManagerConfigurationPrivate *priv;
     gulong i, max_id;
     gboolean handler_id_overflowed;
     static gulong previous_max_id = 0;
-
-    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
 
     max_id = g_signal_connect(configuration, "connected",
                               G_CALLBACK(cb_connected_dummy), NULL);
