@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -542,17 +542,15 @@ decode_reply_change_from (MilterDecoder *decoder, GError **error)
 static gboolean
 decode_reply_add_recipient (MilterDecoder *decoder, GError **error)
 {
-    gint null_character_point;
     const gchar *buffer;
     gint32 command_length;
 
     command_length = milter_decoder_get_command_length(decoder);
     buffer = milter_decoder_get_buffer(decoder);
 
-    null_character_point =
-        milter_decoder_decode_null_terminated_value(
-            buffer + 1, command_length - 1, error,
-            "Recipient isn't terminated by NULL on ADD RECIPIENT reply");
+    milter_decoder_decode_null_terminated_value(
+        buffer + 1, command_length - 1, error,
+        "Recipient isn't terminated by NULL on ADD RECIPIENT reply");
 
     milter_debug("[%u] [reply-decoder][add-recipient] <%s>",
                  milter_decoder_get_tag(decoder),
@@ -773,7 +771,6 @@ decode_macros_requests (const gchar *buffer, gsize length,
     while (i < length) {
         guint32 stage, normalized_stage;
         MilterCommand command;
-        MilterMacroStage macro_stage;
         gchar **symbol_names;
 
         if (!milter_decoder_check_command_length(
@@ -786,7 +783,6 @@ decode_macros_requests (const gchar *buffer, gsize length,
 
         memcpy(&normalized_stage, buffer + i, sizeof(guint32));
         stage = g_ntohl(normalized_stage);
-        macro_stage = stage;
         i += sizeof(guint32);
 
         null_character_point =
