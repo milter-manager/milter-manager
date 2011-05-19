@@ -1579,6 +1579,8 @@ data_scenario_envelope_from (void)
                  g_strdup("envelope-from-reject-and-discard.txt"), g_free,
                  "envelope-from - reject & accept",
                  g_strdup("envelope-from-reject-and-accept.txt"), g_free,
+                 "envelope-from - reject - again",
+                 g_strdup("envelope-from-reject-again.txt"), g_free,
                  "envelope-from - accept",
                  g_strdup("envelope-from-accept.txt"), g_free,
                  "envelope-from - accept all",

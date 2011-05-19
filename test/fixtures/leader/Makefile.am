@@ -62,6 +62,7 @@ EXTRA_DIST =								\
 	envelope-from-discard.txt					\
 	envelope-from-discard-evaluation.txt				\
 	envelope-from-discard-evaluation.conf				\
+	envelope-from-reject-again.txt					\
 	envelope-from-reject-and-accept.txt				\
 	envelope-from-reject-and-discard.txt				\
 	envelope-from-reject.txt					\
