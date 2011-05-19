@@ -76,10 +76,8 @@ milter_manager_test_scenario_init (MilterManagerTestScenario *scenario)
 static void
 dispose (GObject *object)
 {
-    MilterManagerTestScenario *scenario;
     MilterManagerTestScenarioPrivate *priv;
 
-    scenario = MILTER_MANAGER_TEST_SCENARIO(object);
     priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(object);
 
     if (priv->key_file) {
@@ -129,12 +127,10 @@ import_scenario (MilterManagerTestScenario *scenario,
 static void
 import_scenarios (MilterManagerTestScenario *scenario, const gchar *base_dir)
 {
-    MilterManagerTestScenarioPrivate *priv;
     const gchar key[] = "import";
     const gchar **scenario_names;
     gsize length, i;
 
-    priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
     if (!milter_manager_test_scenario_has_key(
             scenario, MILTER_MANAGER_TEST_SCENARIO_GROUP_NAME, key))
         return;
@@ -182,9 +178,6 @@ milter_manager_test_scenario_load (MilterManagerTestScenario *scenario,
                                    const gchar *base_dir,
                                    const gchar *scenario_name)
 {
-    MilterManagerTestScenarioPrivate *priv;
-
-    priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
     cut_trace(load_scenario(scenario, base_dir, scenario_name));
 }
 
@@ -454,12 +447,10 @@ milter_manager_test_scenario_get_string_g_list (MilterManagerTestScenario *scena
                                                 const gchar *group,
                                                 const gchar *key)
 {
-    MilterManagerTestScenarioPrivate *priv;
     GList *list = NULL;
     const gchar **strings;
     gsize length, i;
 
-    priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
     if (milter_manager_test_scenario_has_key(scenario, group, key)) {
         strings = milter_manager_test_scenario_get_string_list(scenario,
                                                                group, key,
@@ -526,10 +517,8 @@ milter_manager_test_scenario_get_pair_list_without_sort (MilterManagerTestScenar
                                                          const gchar *group,
                                                          const gchar *key)
 {
-    MilterManagerTestScenarioPrivate *priv;
     GList *pairs = NULL;
 
-    priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
     if (milter_manager_test_scenario_has_key(scenario, group, key)) {
         const gchar **pair_strings;
         gsize length, i;
@@ -561,10 +550,8 @@ milter_manager_test_scenario_get_option_list (MilterManagerTestScenario *scenari
                                               const gchar *group,
                                               const gchar *key)
 {
-    MilterManagerTestScenarioPrivate *priv;
     const GList *option_list = NULL;
 
-    priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
     if (milter_manager_test_scenario_has_key(scenario, group, key)) {
         const gchar **option_strings;
         GList *options = NULL;
@@ -611,10 +598,8 @@ milter_manager_test_scenario_get_header_list (MilterManagerTestScenario *scenari
                                               const gchar *group,
                                               const gchar *key)
 {
-    MilterManagerTestScenarioPrivate *priv;
     GList *headers = NULL;
 
-    priv = MILTER_MANAGER_TEST_SCENARIO_GET_PRIVATE(scenario);
     if (milter_manager_test_scenario_has_key(scenario, group, key)) {
         const gchar **header_strings;
         gsize length;
