@@ -56,10 +56,13 @@ class TestRedHatInitDetector < Test::Unit::TestCase
     end
     detector = redhat_init_detector("milter-manager")
     detector.detect
+    default_pidfile = "/var/run/milter-manager/milter-manager.pid"
     assert_equal({
                    "name" => "milter manager",
                    "prog" => "milter-manager",
                    "milter_manager" => "/usr/sbin/milter-manager",
+                   "default_pidfile" => default_pidfile,
+                   "killproc_options" => "-p #{default_pidfile}",
                    "USER" => "",
                    "GROUP" => "",
                    "SOCKET_GROUP" => "",
@@ -116,10 +119,13 @@ EOC
 
     detector = redhat_init_detector("milter-manager")
     detector.detect
+    default_pidfile = "/var/run/milter-manager/milter-manager.pid"
     assert_equal({
                    "name" => "milter manager",
                    "prog" => "milter-manager",
                    "milter_manager" => "/usr/sbin/milter-manager",
+                   "default_pidfile" => default_pidfile,
+                   "killproc_options" => "-p #{default_pidfile}",
                    "USER" => "",
                    "GROUP" => "",
                    "SOCKET_GROUP" => "",
