@@ -53,7 +53,7 @@ G_BEGIN_DECLS
 #define milter_debug(format, ...)                               \
     milter_log(MILTER_LOG_LEVEL_DEBUG, format, ## __VA_ARGS__)
 #define milter_trace(format, ...)                               \
-    milter_log(MILTER_LOG_LEVEL_ALL, format, ## __VA_ARGS__)
+    milter_log(MILTER_LOG_LEVEL_TRACE, format, ## __VA_ARGS__)
 #define milter_statistics(format, ...)                                  \
     milter_log(MILTER_LOG_LEVEL_STATISTICS, format, ## __VA_ARGS__)
 #define milter_profile(format, ...)                                  \
