@@ -324,6 +324,20 @@ cut_setup (void)
     expected_error = NULL;
 }
 
+static void
+teardown_error (void)
+{
+    if (actual_error) {
+        g_error_free(actual_error);
+        actual_error = NULL;
+    }
+
+    if (expected_error) {
+        g_error_free(expected_error);
+        expected_error = NULL;
+    }
+}
+
 void
 cut_teardown (void)
 {
@@ -345,10 +359,7 @@ cut_teardown (void)
     if (main_scenario)
         g_object_unref(main_scenario);
 
-    if (actual_error)
-        g_error_free(actual_error);
-    if (expected_error)
-        g_error_free(expected_error);
+    teardown_error();
 }
 
 #define pump_all_events_without_error_check()           \
@@ -639,7 +650,6 @@ get_hash_table (MilterManagerTestScenario *scenario,
     }                                           \
 } while (0)
 
-
 static void
 assert_response_error (MilterManagerTestScenario *scenario, const gchar *group)
 {
@@ -659,6 +669,8 @@ assert_response_error (MilterManagerTestScenario *scenario, const gchar *group)
         code = get_enum(scenario, group, "error_code", type);
 
         message = get_string(scenario, group, "error_message");
+        if (expected_error)
+            g_error_free(expected_error);
         expected_error = g_error_new(domain, code, "%s", message);
         wait_leader_error();
     } else {
@@ -1384,6 +1396,7 @@ do_action (MilterManagerTestScenario *scenario, const gchar *group)
     g_list_foreach((GList *)started_clients,
                    (GFunc)milter_manager_test_client_clear_data,
                    NULL);
+    teardown_error();
 }
 
 static void
