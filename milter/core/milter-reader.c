@@ -148,7 +148,7 @@ read_from_channel (MilterReader *reader, GIOChannel *channel)
     status = g_io_channel_read_chars(channel, stream, BUFFER_SIZE,
                                      &length, &io_error);
     if (status == G_IO_STATUS_EOF) {
-        milter_debug("[%u] [reader][eof]", priv->tag);
+        milter_trace("[%u] [reader][eof]", priv->tag);
         eof = TRUE;
     }
     if (io_error) {
@@ -170,7 +170,7 @@ read_from_channel (MilterReader *reader, GIOChannel *channel)
     }
 
     if (length > 0) {
-        milter_debug("[%d] [reader][read] <%" G_GSIZE_FORMAT ">",
+        milter_trace("[%d] [reader][read] <%" G_GSIZE_FORMAT ">",
                      priv->tag, length);
         g_signal_emit(reader, signals[FLOW], 0, stream, length);
     }
@@ -217,27 +217,27 @@ read_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 
     priv = MILTER_READER_GET_PRIVATE(reader);
     priv->processing = TRUE;
-    milter_debug("[%d] [reader][callback][read][process][start]", priv->tag);
+    milter_trace("[%d] [reader][callback][read][process][start]", priv->tag);
 
     if (!priv->shutdown_requested) {
-        milter_debug("[%d] [reader][callback][read][reading] ...", priv->tag);
+        milter_trace("[%d] [reader][callback][read][reading] ...", priv->tag);
         keep_callback = read_from_channel(reader, channel);
     }
 
     if (priv->shutdown_requested) {
-        milter_debug("[%u] [reader][callback][read][shutdown-requested]",
+        milter_trace("[%u] [reader][callback][read][shutdown-requested]",
                      priv->tag);
         keep_callback = FALSE;
     }
 
     if (!keep_callback) {
-        milter_debug("[%u] [reader][callback][read][removing] ...", priv->tag);
+        milter_trace("[%u] [reader][callback][read][removing] ...", priv->tag);
         priv->read_watch_id = 0;
         clear_watch_id(priv);
         finish(reader);
     }
 
-    milter_debug("[%d] [reader][callback][read][process][done]", priv->tag);
+    milter_trace("[%d] [reader][callback][read][process][done]", priv->tag);
     priv->processing = FALSE;
 
     return keep_callback;
@@ -252,10 +252,10 @@ error_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     gboolean error_occurred = FALSE;
 
     priv = MILTER_READER_GET_PRIVATE(reader);
-    milter_debug("[%d] [reader][callback][error][start]", priv->tag);
+    milter_trace("[%d] [reader][callback][error][start]", priv->tag);
 
     if (!priv->shutdown_requested && (condition & G_IO_HUP)) {
-        milter_debug("[%d] [reader][callback][error][closed]", priv->tag);
+        milter_trace("[%d] [reader][callback][error][closed]", priv->tag);
         priv->shutdown_requested = TRUE;
     }
 
@@ -283,11 +283,11 @@ error_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     }
 
     if (priv->shutdown_requested) {
-        milter_debug("[%u] [reader][callback][error][shutdown-requested]",
+        milter_trace("[%u] [reader][callback][error][shutdown-requested]",
                      priv->tag);
     }
 
-    milter_debug("[%u] [reader][callback][error][removing] ...", priv->tag);
+    milter_trace("[%u] [reader][callback][error][removing] ...", priv->tag);
     priv->error_watch_id = 0;
     clear_watch_id(priv);
     finish(reader);
@@ -329,7 +329,7 @@ watch_io_channel (MilterReader *reader, MilterEventLoop *loop)
         }
     }
 
-    milter_debug("[%u] [reader][watch] <%u>:<%u>",
+    milter_trace("[%u] [reader][watch] <%u>:<%u>",
                  priv->tag, priv->read_watch_id, priv->error_watch_id);
 }
 
@@ -340,7 +340,7 @@ dispose (GObject *object)
 
     priv = MILTER_READER_GET_PRIVATE(object);
 
-    milter_debug("[%u] [reader][dispose]", priv->tag);
+    milter_trace("[%u] [reader][dispose]", priv->tag);
 
     clear_watch_id(priv);
 
@@ -446,7 +446,7 @@ milter_reader_shutdown (MilterReader *reader)
     if (priv->processing)
         return;
 
-    milter_debug("[%u] [reader][shutdown]", priv->tag);
+    milter_trace("[%u] [reader][shutdown]", priv->tag);
     g_io_channel_shutdown(priv->io_channel, TRUE, &channel_error);
     if (channel_error) {
         GError *error = NULL;

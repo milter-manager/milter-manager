@@ -184,7 +184,7 @@ dispose (GObject *object)
 
     priv = MILTER_WRITER_GET_PRIVATE(object);
 
-    milter_debug("[%u] [writer][dispose]", priv->tag);
+    milter_trace("[%u] [writer][dispose]", priv->tag);
 
     clear_watch_id(priv);
 
@@ -277,7 +277,7 @@ flush_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 
     priv = MILTER_WRITER_GET_PRIVATE(writer);
 
-    milter_debug("[%u] [writer][flush-callback] [%u]",
+    milter_trace("[%u] [writer][flush-callback] [%u]",
                  priv->tag, priv->flush_watch_id);
 
     status = g_io_channel_flush(priv->io_channel, &channel_error);
@@ -306,7 +306,7 @@ flush_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     }
 
     if (!keep_callback) {
-        milter_debug("[%u] [writer][flush-callback][finish] [%u]",
+        milter_trace("[%u] [writer][flush-callback][finish] [%u]",
                      priv->tag, priv->flush_watch_id);
         priv->flush_watch_id = 0;
     }
@@ -326,10 +326,10 @@ request_flush (MilterWriter *writer)
                                        priv->io_channel,
                                        G_IO_OUT,
                                        flush_watch_func, writer);
-        milter_debug("[%u] [writer][flush-callback][registered] <%u>",
+        milter_trace("[%u] [writer][flush-callback][registered] <%u>",
                      priv->tag, priv->flush_watch_id);
     } else {
-        milter_debug("[%u] [writer][flush-callback][register][reuse] [%u]",
+        milter_trace("[%u] [writer][flush-callback][register][reuse] [%u]",
                      priv->tag, priv->flush_watch_id);
     }
 }
@@ -343,13 +343,13 @@ write_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
 
     priv = MILTER_WRITER_GET_PRIVATE(writer);
 
-    milter_debug("[%u] [writer][write-callback] [%u] "
+    milter_trace("[%u] [writer][write-callback] [%u] "
                  "buffered: <%" G_GSIZE_FORMAT ">",
                  priv->tag, priv->write_watch_id, priv->buffer->len);
 
     if (priv->buffer->len == 0) {
         keep_callback = FALSE;
-        milter_debug("[%u] [writer][write-callback][empty] [%u] "
+        milter_trace("[%u] [writer][write-callback][empty] [%u] "
                      "stop write watch because buffer is empty",
                      priv->tag, priv->write_watch_id);
     } else {
@@ -365,7 +365,7 @@ write_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
         priv->writing = FALSE;
 
         if (written_size == 0) {
-            milter_debug("[%u] [writer][write-callback][unwritten] [%u] "
+            milter_trace("[%u] [writer][write-callback][unwritten] [%u] "
                          "no buffered chunks are written: "
                          "rest: <%" G_GSIZE_FORMAT ">",
                          priv->tag, priv->write_watch_id, priv->buffer->len);
@@ -381,7 +381,7 @@ write_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
                 }
             }
             g_string_erase(priv->buffer, 0, written_size);
-            milter_debug("[%u] [writer][write-callback][wrote] [%u] "
+            milter_trace("[%u] [writer][write-callback][wrote] [%u] "
                          "written: <%" G_GSIZE_FORMAT "> "
                          "rest: <%" G_GSIZE_FORMAT "> "
                          "need-flush: <%s>",
@@ -415,7 +415,7 @@ write_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     }
 
     if (!keep_callback) {
-        milter_debug("[%u] [writer][write-callback][finish] [%u]",
+        milter_trace("[%u] [writer][write-callback][finish] [%u]",
                      priv->tag, priv->write_watch_id);
         priv->write_watch_id = 0;
     }
@@ -465,10 +465,10 @@ milter_writer_write (MilterWriter *writer, const gchar *chunk, gsize chunk_size,
                                        priv->io_channel,
                                        G_IO_OUT,
                                        write_watch_func, writer);
-        milter_debug("[%u] [writer][write-callback][registered] [%u]",
+        milter_trace("[%u] [writer][write-callback][registered] [%u]",
                      priv->tag, priv->write_watch_id);
     } else {
-        milter_debug("[%u] [writer][write-callback][register][reuse] [%u]",
+        milter_trace("[%u] [writer][write-callback][register][reuse] [%u]",
                      priv->tag, priv->write_watch_id);
     }
 
@@ -504,7 +504,7 @@ milter_writer_flush (MilterWriter *writer, GError **error)
 
     if (priv->write_watch_id > 0) {
         priv->flush_point = priv->buffer->len;
-        milter_debug("[%u] [writer][flush][flush-point][set] [%u] "
+        milter_trace("[%u] [writer][flush][flush-point][set] [%u] "
                      "<%" G_GSIZE_FORMAT ">",
                      priv->tag,
                      priv->write_watch_id,
@@ -539,7 +539,7 @@ error_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     keep_callback = FALSE;
 
     if (!keep_callback) {
-        milter_debug("[%u] [writer][error-callback][finish]", priv->tag);
+        milter_trace("[%u] [writer][error-callback][finish]", priv->tag);
         priv->error_watch_id = 0;
         clear_write_watch_id(priv);
         clear_flush_watch_id(priv);
@@ -572,7 +572,7 @@ watch_io_channel (MilterWriter *writer, MilterEventLoop *loop)
                      priv->tag);
     }
 
-    milter_debug("[%u] [writer][watch] %u", priv->tag, priv->error_watch_id);
+    milter_trace("[%u] [writer][watch] %u", priv->tag, priv->error_watch_id);
 }
 
 void
@@ -601,19 +601,19 @@ flush_buffer_on_shutdown (MilterWriter *writer)
 
     priv = MILTER_WRITER_GET_PRIVATE(writer);
 
-    milter_debug("[%u] [writer][shutdown][flush-buffer] "
+    milter_trace("[%u] [writer][shutdown][flush-buffer] "
                  "<%" G_GSIZE_FORMAT ">",
                  priv->tag, priv->buffer->len);
 
     if (priv->buffer->len == 0) {
-        milter_debug("[%u] [writer][shutdown][flush-buffer][skip] "
+        milter_trace("[%u] [writer][shutdown][flush-buffer][skip] "
                      "no buffered data",
                      priv->tag);
         return;
     }
 
     if (priv->writing) {
-        milter_debug("[%u] [writer][shutdown][flush-buffer][skip] writing",
+        milter_trace("[%u] [writer][shutdown][flush-buffer][skip] writing",
                      priv->tag);
         return;
     }
@@ -625,13 +625,13 @@ flush_buffer_on_shutdown (MilterWriter *writer)
                              &channel_error);
 
     if (written_size == 0) {
-        milter_debug("[%u] [writer][shutdown][flush-buffer][unwritten] "
+        milter_trace("[%u] [writer][shutdown][flush-buffer][unwritten] "
                      "no buffered chunks are written: "
                      "rest: <%" G_GSIZE_FORMAT ">",
                      priv->tag, priv->buffer->len);
     } else {
         g_string_erase(priv->buffer, 0, written_size);
-        milter_debug("[%u] [writer][shutdown][flush-buffer][wrote] "
+        milter_trace("[%u] [writer][shutdown][flush-buffer][wrote] "
                      "written: <%" G_GSIZE_FORMAT "> "
                      "rest: <%" G_GSIZE_FORMAT ">",
                      priv->tag,
@@ -681,7 +681,7 @@ milter_writer_shutdown (MilterWriter *writer)
 
     priv = MILTER_WRITER_GET_PRIVATE(writer);
 
-    milter_debug("[%u] [writer][shutdown]", priv->tag);
+    milter_trace("[%u] [writer][shutdown]", priv->tag);
 
     if (priv->error_watch_id == 0) {
         milter_debug("[%u] [writer][shutdown][not-started]", priv->tag);

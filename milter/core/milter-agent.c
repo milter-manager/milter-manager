@@ -467,11 +467,11 @@ cb_writer_flushed (MilterWriter *writer, gpointer user_data)
 {
     MilterAgent *agent = user_data;
 
-    if (milter_need_debug_log()) {
+    if (milter_need_trace_log()) {
         MilterAgentPrivate *priv;
 
         priv = MILTER_AGENT_GET_PRIVATE(agent);
-        milter_debug("[%u] [agent][writer] flushed", priv->tag);
+        milter_trace("[%u] [agent][writer] flushed", priv->tag);
     }
     g_signal_emit(agent, signals[FLUSHED], 0);
 }
@@ -631,7 +631,7 @@ milter_agent_shutdown (MilterAgent *agent)
 
     priv = MILTER_AGENT_GET_PRIVATE(agent);
 
-    milter_debug("[%u] [agent][shutdown]", priv->tag);
+    milter_trace("[%u] [agent][shutdown]", priv->tag);
 
     if (priv->shutting_down)
         return;
@@ -640,12 +640,12 @@ milter_agent_shutdown (MilterAgent *agent)
 
     if (priv->reader) {
         have_reader = TRUE;
-        milter_debug("[%u] [agent][shutdown][reader]", priv->tag);
+        milter_trace("[%u] [agent][shutdown][reader]", priv->tag);
         milter_reader_shutdown(priv->reader);
     }
 
     if (priv->writer) {
-        milter_debug("[%u] [agent][shutdown][writer]", priv->tag);
+        milter_trace("[%u] [agent][shutdown][writer]", priv->tag);
         milter_writer_shutdown(priv->writer);
     }
 
