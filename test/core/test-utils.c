@@ -445,6 +445,16 @@ data_flags_from_string_success (void)
         MILTER_LOG_LEVEL_CRITICAL |
         MILTER_LOG_LEVEL_WARNING |
         MILTER_LOG_LEVEL_ERROR);
+    ADD("local append",
+        MILTER_LOG_LEVEL_CRITICAL | MILTER_LOG_LEVEL_DEBUG,
+        "-warning|error|+debug",
+        MILTER_LOG_LEVEL_CRITICAL |
+        MILTER_LOG_LEVEL_WARNING |
+        MILTER_LOG_LEVEL_ERROR);
+    ADD("local remove",
+        (MILTER_LOG_LEVEL_ALL | MILTER_LOG_LEVEL_NONE) & ~MILTER_LOG_LEVEL_TRACE,
+        "all|-trace",
+        0);
 
 #undef ADD
 }

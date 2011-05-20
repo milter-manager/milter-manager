@@ -500,7 +500,7 @@ milter_utils_flags_from_string (GType        flags_type,
                                 guint        base_flags,
                                 GError     **error)
 {
-    gchar **names, **name;
+    gchar **split_names, **names;
     GFlagsClass *flags_class;
     guint flags = 0;
     gboolean append = TRUE;
@@ -529,22 +529,37 @@ milter_utils_flags_from_string (GType        flags_type,
         break;
     }
 
-    names = g_strsplit(flags_string, "|", 0);
+    split_names = g_strsplit(flags_string, "|", 0);
     flags_class = g_type_class_ref(flags_type);
-    for (name = names; *name; name++) {
-        if (g_str_equal(*name, "all")) {
-            if (append) {
+    for (names = split_names; *names; names++) {
+        gchar *name = *names;
+        gboolean local_append = append;
+
+        switch (name[0]) {
+        case '+':
+            local_append = TRUE;
+            name++;
+            break;
+        case '-':
+            local_append = FALSE;
+            name++;
+            break;
+        default:
+            break;
+        }
+
+        if (g_str_equal(name, "all")) {
+            if (local_append) {
                 flags |= flags_class->mask;
             } else {
                 flags = 0;
             }
-            break;
         } else {
             GFlagsValue *value;
 
-            value = g_flags_get_value_by_nick(flags_class, *name);
+            value = g_flags_get_value_by_nick(flags_class, name);
             if (value) {
-                if (append) {
+                if (local_append) {
                     flags |= value->value;
                 } else {
                     flags &= ~(value->value);
@@ -555,12 +570,12 @@ milter_utils_flags_from_string (GType        flags_type,
                 g_string_append_printf(unknown_strings,
                                        "%s<%s>",
                                        unknown_strings->len > 0 ? "|" : "",
-                                       *name);
+                                       name);
             }
         }
     }
     g_type_class_unref(flags_class);
-    g_strfreev(names);
+    g_strfreev(split_names);
 
     if (unknown_strings) {
         g_set_error(error,
