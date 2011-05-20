@@ -2290,9 +2290,13 @@ milter_server_context_quit (MilterServerContext *context)
 gboolean
 milter_server_context_abort (MilterServerContext *context)
 {
+    MilterServerContextPrivate *priv;
     const gchar *packet = NULL;
     gsize packet_size;
     MilterEncoder *encoder;
+    gboolean success;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
 
     milter_debug("[%u] [server][send][abort] [%s]",
                  milter_agent_get_tag(MILTER_AGENT(context)),
@@ -2301,8 +2305,10 @@ milter_server_context_abort (MilterServerContext *context)
     milter_command_encoder_encode_abort(MILTER_COMMAND_ENCODER(encoder),
                                         &packet, &packet_size);
 
-    return write_packet(context, packet, packet_size,
-                        MILTER_SERVER_CONTEXT_STATE_ABORT);
+    success = write_packet(context, packet, packet_size,
+                           MILTER_SERVER_CONTEXT_STATE_ABORT);
+    priv->processing_message = FALSE;
+    return success;
 }
 
 static gboolean
