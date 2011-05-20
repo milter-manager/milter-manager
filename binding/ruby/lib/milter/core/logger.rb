@@ -49,6 +49,10 @@ module Milter
         default.log(:info, message, 1)
       end
 
+      def trace(message)
+        default.log(:trace, message, 1)
+      end
+
       def statistics(message)
         default.log(:statistics, message, 1)
       end

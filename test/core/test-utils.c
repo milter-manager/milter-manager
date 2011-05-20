@@ -600,9 +600,9 @@ data_flags_names (void)
     ADD("multi", MILTER_LOG_LEVEL_CRITICAL | MILTER_LOG_LEVEL_INFO,
         "critical|info");
     ADD("all", MILTER_LOG_LEVEL_ALL,
-        "critical|error|warning|message|info|debug|statistics|profile");
+        "critical|error|warning|message|info|debug|trace|statistics|profile");
     ADD("unknown", MILTER_LOG_LEVEL_PROFILE << 1,
-        "(unknown flags: MilterLogLevelFlags:0x200)");
+        "(unknown flags: MilterLogLevelFlags:0x400)");
 
 #undef ADD
 }
