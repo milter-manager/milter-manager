@@ -309,6 +309,9 @@ log_message_colorize_console (GString *log,
       case MILTER_LOG_LEVEL_DEBUG:
         color = WHITE_COLOR BLUE_BACK_COLOR;
         break;
+      case MILTER_LOG_LEVEL_TRACE:
+        color = WHITE_COLOR MAGENTA_BACK_COLOR;
+        break;
       case MILTER_LOG_LEVEL_STATISTICS:
         color = BLUE_COLOR WHITE_BACK_COLOR;
         break;
