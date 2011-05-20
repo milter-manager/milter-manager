@@ -901,10 +901,9 @@ expire_child (MilterManagerChildren *children,
 }
 
 static void
-expire_all_children (MilterManagerChildren *children)
+abort_all_children (MilterManagerChildren *children)
 {
     milter_manager_children_abort(children);
-    milter_manager_children_quit(children);
 }
 
 static void
@@ -1064,11 +1063,11 @@ remove_child_from_queue (MilterManagerChildren *children,
     case MILTER_STATUS_TEMPORARY_FAILURE:
         if (priv->processing_state !=
             MILTER_SERVER_CONTEXT_STATE_ENVELOPE_RECIPIENT) {
-            expire_all_children(children);
+            abort_all_children(children);
         }
         break;
     case MILTER_STATUS_DISCARD:
-        expire_all_children(children);
+        abort_all_children(children);
         break;
     default:
         break;
@@ -4024,12 +4023,15 @@ milter_manager_children_abort (MilterManagerChildren *children)
     set_state(children, MILTER_SERVER_CONTEXT_STATE_ABORT);
     for (child = priv->milters; child; child = g_list_next(child)) {
         MilterServerContext *context = MILTER_SERVER_CONTEXT(child->data);
+        MilterServerContextState state;
 
-        if (!milter_server_context_is_processing_message(context))
-            continue;
-
-        if (!milter_server_context_abort(context))
-            success = FALSE;
+        state = milter_server_context_get_state(context);
+        if (milter_server_context_is_processing_message(context) ||
+            state == MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM) {
+            if (!milter_server_context_abort(context)) {
+                success = FALSE;
+            }
+        }
     }
 
     /* FIXME: should emit some signal for logging? */

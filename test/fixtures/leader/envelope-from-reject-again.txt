@@ -1,7 +1,7 @@
 [scenario]
 clients=client10026;client10027
 import=envelope-from-reject.txt
-actions=envelope-from-reject-again
+actions=envelope-from-reject-again;envelope-recipient-again
 
 [client10026]
 port=10026
@@ -20,7 +20,7 @@ response=envelope-from
 n_received=2
 status=reject
 
-froms=kou+sender2@example.com;kou+sender2@example.com
+froms=reject@example.com;reject@example.com
 
 [envelope-recipient-again]
 command=envelope-recipient
