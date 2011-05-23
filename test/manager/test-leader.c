@@ -919,6 +919,7 @@ do_connect (MilterManagerTestScenario *scenario, const gchar *group)
     socklen_t address_size;
     const GList *expected_connect_infos;
     const GList *actual_connect_infos;
+    MilterStatus status;
 
     host = get_string(scenario, group, "host");
     address_spec = get_string(scenario, group, "address");
@@ -931,8 +932,11 @@ do_connect (MilterManagerTestScenario *scenario, const gchar *group)
     milter_server_context_connect(MILTER_SERVER_CONTEXT(server),
                                   host, address, address_size);
     define_macro(scenario, group, MILTER_COMMAND_CONNECT);
-    milter_manager_leader_connect(leader, host, address, address_size);
+    status = milter_manager_leader_connect(leader, host, address, address_size);
     g_free(address);
+    if (status != MILTER_STATUS_PROGRESS) {
+        response_status = status;
+    }
 
     assert_response(scenario, group);
     assert_alive(scenario, group);
@@ -954,10 +958,14 @@ do_helo (MilterManagerTestScenario *scenario, const gchar *group)
 {
     const gchar *fqdn;
     const GList *expected_fqdns;
+    MilterStatus status;
 
     fqdn = get_string(scenario, group, "fqdn");
     milter_server_context_helo(MILTER_SERVER_CONTEXT(server), fqdn);
-    milter_manager_leader_helo(leader, fqdn);
+    status = milter_manager_leader_helo(leader, fqdn);
+    if (status != MILTER_STATUS_PROGRESS) {
+        response_status = status;
+    }
 
     assert_response(scenario, group);
     assert_alive(scenario, group);
@@ -973,11 +981,15 @@ do_envelope_from (MilterManagerTestScenario *scenario, const gchar *group)
 {
     const gchar *from;
     const GList *expected_froms;
+    MilterStatus status;
 
     from = get_string(scenario, group, "from");
     milter_server_context_envelope_from(MILTER_SERVER_CONTEXT(server), from);
     define_macro(scenario, group, MILTER_COMMAND_ENVELOPE_FROM);
-    milter_manager_leader_envelope_from(leader, from);
+    status = milter_manager_leader_envelope_from(leader, from);
+    if (status != MILTER_STATUS_PROGRESS) {
+        response_status = status;
+    }
 
     assert_response(scenario, group);
     assert_alive(scenario, group);
@@ -995,12 +1007,16 @@ do_envelope_recipient (MilterManagerTestScenario *scenario, const gchar *group)
 {
     const gchar *recipient;
     const GList *expected_recipients;
+    MilterStatus status;
 
     recipient = get_string(scenario, group, "recipient");
     n_envelope_recipient_responses = 0;
     milter_server_context_envelope_recipient(MILTER_SERVER_CONTEXT(server),
                                              recipient);
-    milter_manager_leader_envelope_recipient(leader, recipient);
+    status = milter_manager_leader_envelope_recipient(leader, recipient);
+    if (status != MILTER_STATUS_PROGRESS) {
+        response_status = status;
+    }
 
     assert_response(scenario, group);
     assert_alive(scenario, group);
@@ -1014,8 +1030,13 @@ do_envelope_recipient (MilterManagerTestScenario *scenario, const gchar *group)
 static void
 do_data (MilterManagerTestScenario *scenario, const gchar *group)
 {
+    MilterStatus status;
+
     milter_server_context_data(MILTER_SERVER_CONTEXT(server));
-    milter_manager_leader_data(leader);
+    status = milter_manager_leader_data(leader);
+    if (status != MILTER_STATUS_PROGRESS) {
+        response_status = status;
+    }
 
     assert_response(scenario, group);
 }
@@ -1026,12 +1047,16 @@ do_header (MilterManagerTestScenario *scenario, const gchar *group)
     const GList *expected_headers;
     const GList *actual_headers;
     const gchar *name, *value;
+    MilterStatus status;
 
     name = get_string(scenario, group, "name");
     value = get_string(scenario, group, "value");
     n_header_responses = 0;
     milter_server_context_header(MILTER_SERVER_CONTEXT(server), name, value);
-    milter_manager_leader_header(leader, name, value);
+    status = milter_manager_leader_header(leader, name, value);
+    if (status != MILTER_STATUS_PROGRESS) {
+        response_status = status;
+    }
 
     milter_manager_test_server_append_header(server, name, value);
 
@@ -1053,8 +1078,13 @@ do_header (MilterManagerTestScenario *scenario, const gchar *group)
 static void
 do_end_of_header (MilterManagerTestScenario *scenario, const gchar *group)
 {
+    MilterStatus status;
+
     milter_server_context_end_of_header(MILTER_SERVER_CONTEXT(server));
-    milter_manager_leader_end_of_header(leader);
+    status = milter_manager_leader_end_of_header(leader);
+    if (status != MILTER_STATUS_PROGRESS) {
+        response_status = status;
+    }
 
     assert_response(scenario, group);
     assert_alive(scenario, group);
@@ -1128,12 +1158,16 @@ do_body (MilterManagerTestScenario *scenario, const gchar *group)
     const gchar *chunk = NULL;
     gsize chunk_size = 0;
     const GList *expected_chunks, *actual_chunks;
+    MilterStatus status;
 
     get_chunk(scenario, group, &chunk, &chunk_size);
     milter_server_context_body(MILTER_SERVER_CONTEXT(server),
                                chunk, chunk_size);
     n_body_responses = 0;
-    milter_manager_leader_body(leader, chunk, chunk_size);
+    status = milter_manager_leader_body(leader, chunk, chunk_size);
+    if (status != MILTER_STATUS_PROGRESS) {
+        response_status = status;
+    }
 
     assert_response(scenario, group);
     assert_alive(scenario, group);
@@ -1150,6 +1184,7 @@ do_end_of_message (MilterManagerTestScenario *scenario, const gchar *group)
     const gchar *chunk = NULL;
     gsize chunk_size = 0;
     const GList *expected_chunks, *actual_chunks;
+    MilterStatus status;
 
     get_chunk(scenario, group, &chunk, &chunk_size);
 
@@ -1157,7 +1192,10 @@ do_end_of_message (MilterManagerTestScenario *scenario, const gchar *group)
                                          chunk, chunk_size);
     milter_client_context_set_state(client_context,
                                     MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE);
-    milter_manager_leader_end_of_message(leader, chunk, chunk_size);
+    status = milter_manager_leader_end_of_message(leader, chunk, chunk_size);
+    if (status != MILTER_STATUS_PROGRESS) {
+        response_status = status;
+    }
 
     assert_response(scenario, group);
     assert_alive(scenario, group);
@@ -1331,10 +1369,14 @@ static void
 do_unknown (MilterManagerTestScenario *scenario, const gchar *group)
 {
     const gchar *command;
+    MilterStatus status;
 
     command = get_string(scenario, group, "unknown_command");
 
-    milter_manager_leader_unknown(leader, command);
+    status = milter_manager_leader_unknown(leader, command);
+    if (status != MILTER_STATUS_PROGRESS) {
+        response_status = status;
+    }
     assert_response(scenario, group);
 
     gcut_assert_equal_list_string(get_string_g_list(scenario, group,
@@ -1825,12 +1867,16 @@ void
 test_large_body (gconstpointer data)
 {
     const gchar *chunk = data;
+    MilterStatus status;
 
     cut_trace(test_scenario("end-of-header.txt"));
 
     milter_server_context_set_state(MILTER_SERVER_CONTEXT(server),
                                     MILTER_SERVER_CONTEXT_STATE_BODY);
-    milter_manager_leader_body(leader, chunk, LARGE_DATA_SIZE);
+    status = milter_manager_leader_body(leader, chunk, LARGE_DATA_SIZE);
+    if (status != MILTER_STATUS_PROGRESS) {
+        response_status = status;
+    }
 
     /*
     cut_assert_equal_memory(chunk, LARGE_DATA_SIZE,
