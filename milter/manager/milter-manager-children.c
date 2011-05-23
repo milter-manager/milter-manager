@@ -72,6 +72,7 @@ struct _MilterManagerChildrenPrivate
     MilterStepFlags initial_yes_steps;
     MilterStepFlags requested_yes_steps;
     gboolean negotiated;
+    gboolean all_expired_as_fallback_on_negotiated;
     MilterServerContextState state;
     MilterServerContextState processing_state;
     GHashTable *reply_statuses;
@@ -271,6 +272,7 @@ milter_manager_children_init (MilterManagerChildren *milter)
     priv->initial_yes_steps = MILTER_STEP_NONE;
     priv->requested_yes_steps = MILTER_STEP_NONE;
     priv->negotiated = FALSE;
+    priv->all_expired_as_fallback_on_negotiated = FALSE;
     priv->reply_statuses = g_hash_table_new(g_direct_hash, g_direct_equal);
 
     priv->smtp_client_address = NULL;
@@ -2588,6 +2590,71 @@ milter_manager_children_start_child (MilterManagerChildren *children,
 }
 
 static void
+check_fallback_status_on_negotiate (MilterManagerChildren *children)
+{
+    MilterManagerChildrenPrivate *priv;
+    GList *node;
+    gboolean status = MILTER_STATUS_CONTINUE;
+    gchar *status_name = NULL;
+
+    priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+    for (node = priv->milters; node; node = g_list_next(node)) {
+        MilterManagerChild *child;
+        MilterServerContext *context;
+        MilterStatus fallback_status;
+
+        child = MILTER_MANAGER_CHILD(node->data);
+        context = MILTER_SERVER_CONTEXT(child);
+        if (milter_server_context_is_negotiated(context))
+            continue;
+
+        fallback_status = milter_manager_child_get_fallback_status(child);
+        if (milter_status_compare(status, fallback_status) < 0) {
+            status = fallback_status;
+        }
+    }
+
+    switch (status) {
+    case MILTER_STATUS_REJECT:
+    case MILTER_STATUS_TEMPORARY_FAILURE:
+    case MILTER_STATUS_DISCARD:
+        if (milter_need_log(MILTER_LOG_LEVEL_DEBUG)) {
+            status_name = milter_utils_get_enum_nick_name(MILTER_TYPE_STATUS,
+                                                          status);
+            milter_debug("[%u] [children][negotiate][fallback][all-expire][%s]",
+                         priv->tag, status_name);
+        }
+        for (node = priv->milters; node; node = g_list_next(node)) {
+            MilterServerContext *context;
+
+            context = MILTER_SERVER_CONTEXT(node->data);
+            if (!milter_server_context_is_negotiated(context))
+                continue;
+
+            if (milter_need_log(MILTER_LOG_LEVEL_DEBUG)) {
+                guint child_tag;
+                const gchar *child_name;
+
+                child_tag = milter_agent_get_tag(MILTER_AGENT(context));
+                child_name = milter_server_context_get_name(context);
+                milter_debug("[%u] [children][negotiate][fallback][expire][%s] "
+                             "[%u] %s",
+                             priv->tag, status_name,
+                             child_tag, MILTER_LOG_NULL_SAFE_STRING(child_name));
+            }
+            priv->all_expired_as_fallback_on_negotiated = TRUE;
+            expire_child(children, context);
+        }
+        break;
+    default:
+        break;
+    }
+
+    if (status_name)
+        g_free(status_name);
+}
+
+static void
 reply_negotiate (MilterManagerChildren *children)
 {
     MilterManagerChildrenPrivate *priv;
@@ -2613,6 +2680,8 @@ reply_negotiate (MilterManagerChildren *children)
                                  priv->requested_yes_steps)));
     g_signal_emit_by_name(children, "negotiate-reply",
                           priv->option, priv->macros_requests);
+
+    check_fallback_status_on_negotiate(children);
 }
 
 static void
@@ -3123,6 +3192,13 @@ milter_manager_children_check_alive (MilterManagerChildren *children)
     GError *error = NULL;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
+
+    if (priv->all_expired_as_fallback_on_negotiated) {
+        milter_debug("[%u] [children][alive][check][expired-on-negotiate]",
+                     priv->tag);
+        return FALSE;
+    }
+
     for (node = priv->milters; node; node = g_list_next(node)) {
         MilterServerContext *context;
 
@@ -3136,7 +3212,7 @@ milter_manager_children_check_alive (MilterManagerChildren *children)
                 MILTER_MANAGER_CHILDREN_ERROR_NO_ALIVE_MILTER,
                 "All milters are no longer alive.");
     milter_error("[%u] [children][error][alive] %s",
-                 priv->tag, error->message);
+                     priv->tag, error->message);
     milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(children),
                                 error);
     g_error_free(error);

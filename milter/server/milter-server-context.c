@@ -2436,10 +2436,10 @@ cb_decoder_negotiate_reply (MilterDecoder *decoder,
         if (check_reply_after_quit(context, state, "negotiate-reply")) {
             MilterProtocolAgent *agent;
             agent = MILTER_PROTOCOL_AGENT(context);
+            priv->negotiated = TRUE;
+            milter_protocol_agent_set_macros_requests(agent, macros_requests);
             g_signal_emit_by_name(context, "negotiate-reply",
                                   option, macros_requests);
-            milter_protocol_agent_set_macros_requests(agent, macros_requests);
-            priv->negotiated = TRUE;
         }
     } else {
         invalid_state(context, state, "negotiate-reply", "negotiate");

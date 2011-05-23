@@ -1550,6 +1550,8 @@ data_scenario_negotiate (void)
                  g_strdup("negotiate-no-available-child.txt"), g_free,
                  "negotiate - no bind",
                  g_strdup("negotiate-no-bind.txt"), g_free,
+                 "negotiate - fallback - reject",
+                 g_strdup("negotiate-fallback-reject.txt"), g_free,
                  NULL);
 }
 
