@@ -117,8 +117,12 @@ EXTRA_DIST =								\
 	negotiate-no-available-child.txt				\
 	negotiate-no-bind.txt						\
 	negotiate-no-bind.conf						\
+	negotiate-fallback-discard.txt					\
+	negotiate-fallback-discard.conf					\
 	negotiate-fallback-reject.txt					\
 	negotiate-fallback-reject.conf					\
+	negotiate-fallback-temporary-failure.txt			\
+	negotiate-fallback-temporary-failure.conf			\
 	no-body-flag-on-both-client.txt					\
 	no-body-flag-on-second-client.txt				\
 	no-body-flag.txt						\
