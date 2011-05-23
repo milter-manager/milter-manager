@@ -77,7 +77,7 @@ install_pkg()
     local log="${PKGS}/${pkg_name}-install.log"
 
     echo "$(time_stamp): Installing pkg ${pkg_name}..."
-    yes | run_sudo /usr/sbin/pkgadd -d "${PKGS}" "${pkg_name}" > "${log}" 2>&1
+    yes | run_sudo /usr/sbin/pkgadd -G -d "${PKGS}" "${pkg_name}" > "${log}" 2>&1
     echo "$(time_stamp): done."
 }
 
