@@ -80,7 +80,7 @@ struct _MilterManagerConfigurationPrivate
     guint default_packet_buffer_size;
     gboolean use_syslog;
     gchar *syslog_facility;
-    gsize chunk_size;
+    guint chunk_size;
 };
 
 enum
