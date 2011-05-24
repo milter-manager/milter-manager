@@ -120,6 +120,8 @@ milter_log_level_to_syslog_level (MilterLogLevelFlags milter_log_level)
         return LOG_INFO;
     else if (milter_log_level & MILTER_LOG_LEVEL_DEBUG)
         return LOG_DEBUG;
+    else if (milter_log_level & MILTER_LOG_LEVEL_TRACE)
+        return LOG_DEBUG;
     else if (milter_log_level & MILTER_LOG_LEVEL_STATISTICS)
         return LOG_NOTICE;
     else if (milter_log_level & MILTER_LOG_LEVEL_PROFILE)
