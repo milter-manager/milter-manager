@@ -896,12 +896,12 @@ module Milter
             @configuration.max_file_descriptors = n_descriptors
           end
 
-          def connection_check_interval
-            @configuration.connection_check_interval
+          def fallback_status
+            @raw_configuration.fallback_status
           end
 
-          def connection_check_interval=(interval)
-            @configuration.connection_check_interval = interval
+          def fallback_status=(status)
+            @configuration.fallback_status = status
           end
 
           def event_loop_backend
@@ -937,8 +937,7 @@ module Milter
           end
 
           def update_location(key, reset, deep_level=2)
-            full_key = "manager.#{key}"
-            @configuration.update_location(full_key, reset, deep_level)
+            @configuration.update_location(key, reset, deep_level)
           end
         end
 
@@ -957,13 +956,14 @@ module Milter
           @raw_configuration.custom_configuration_directory = directory
         end
 
-        def fallback_status
-          @raw_configuration.fallback_status
+        def connection_check_interval
+          @raw_configuration.connection_check_interval
         end
 
-        def fallback_status=(status)
-          update_location("fallback_status", status.nil?)
-          @raw_configuration.fallback_status = status
+        def connection_check_interval=(interval)
+          update_location("connection_check_interval", interval.nil?)
+          interval ||= 0
+          @raw_configuration.connection_check_interval = interval
         end
 
         def fallback_status_at_disconnect
@@ -1026,7 +1026,11 @@ module Milter
 
         private
         def update_location(key, reset, deep_level=2)
-          @configuration.update_location(key, reset, deep_level + 1)
+          super(key, reset, deep_level + 2)
+        end
+
+        def full_key(key)
+          "manager.#{key}"
         end
 
         class MemoryReporter

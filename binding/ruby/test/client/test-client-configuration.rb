@@ -35,27 +35,27 @@ class TestClientConfiguration
       @milter_loader = @loader.milter
     end
 
-    def test_status_on_error
-      assert_equal("accept", @milter_config.status_on_error)
-      assert_equal("accept", @milter_loader.status_on_error)
-      @milter_loader.status_on_error = "reject"
-      assert_equal("reject", @milter_loader.status_on_error)
-      assert_equal("reject", @milter_config.status_on_error)
+    def test_fallback_status
+      assert_equal("accept", @milter_config.fallback_status)
+      assert_equal("accept", @milter_loader.fallback_status)
+      @milter_loader.fallback_status = "reject"
+      assert_equal("reject", @milter_loader.fallback_status)
+      assert_equal("reject", @milter_config.fallback_status)
     end
 
-    def test_status_on_error_normalize
-      @milter_loader.status_on_error = "Temporary_Failure"
-      assert_equal("temporary-failure", @milter_loader.status_on_error)
+    def test_fallback_status_normalize
+      @milter_loader.fallback_status = "Temporary_Failure"
+      assert_equal("temporary-failure", @milter_loader.fallback_status)
     end
 
-    def test_status_on_error_invalid
+    def test_fallback_status_invalid
       invalid_value_class = ::Milter::Client::ConfigurationLoader::InvalidValue
       available_values = ["accept", "reject", "temporary-failure", "discard"]
-      invalid_value = invalid_value_class.new("milter.status_on_error",
+      invalid_value = invalid_value_class.new("milter.fallback_status",
                                               available_values,
                                               "unknown")
       assert_raise(invalid_value) do
-        @milter_loader.status_on_error = "unknown"
+        @milter_loader.fallback_status = "unknown"
       end
     end
   end

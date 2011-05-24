@@ -137,14 +137,21 @@ module Milter
           milter_conf.pid_file = pid_file
         end
 
-        available_statues = milter_conf.available_status_on_error_list
+        loader = MilterConfigurationLoader.new(loader)
+        available_statues = loader.available_fallback_statuses
         available_values = "available values: [#{available_statues.join(', ')}]"
-        @option_parser.on("--status-on-error=STATUS",
+        @option_parser.on("--fallback-status=STATUS",
                           available_statues,
                           "Specify status on error.",
                           available_values,
                           "(#{milter_conf.status_on_error})") do |status|
-          milter_conf.status_on_error = status
+          milter_conf.fallback_status = status
+        end
+
+        @option_parser.on("--status-on-error=STATUS",
+                          "Deprecated option.",
+                          "Use --fallback-status instead.") do |status|
+          milter_conf.fallback_status = status
         end
 
         @option_parser.on("--user=USER",

@@ -106,8 +106,8 @@ details.
 : milter.max_file_descriptors
    See ((<manager.max_file_descriptors|configuration.rd#manager.max_file_descriptors>)).
 
-: milter.connection_check_interval
-   See ((<manager.connection_check_interval|configuration.rd#manager.connection_check_interval>)).
+: milter.event_loop_backend
+   See ((<manager.event_loop_backend|configuration.rd#manager.event_loop_backend>)).
 
 : milter.event_loop_backend
    See ((<manager.event_loop_backend|configuration.rd#manager.event_loop_backend>)).

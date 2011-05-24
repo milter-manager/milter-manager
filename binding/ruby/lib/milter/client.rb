@@ -22,13 +22,17 @@ require 'milter/client/composite-session'
 
 module Milter
   class Client
-    def status_on_error
-      @status_on_error ||= :accept
+    def fallback_status
+      @fallback_status ||= :accept
     end
 
-    def status_on_error=(status)
-      @status_on_error = status
+    def fallback_status=(status)
+      @fallback_status = status
     end
+
+    # just for backward compatibility.
+    alias_method :status_on_error, :fallback_status
+    alias_method :status_on_error=, :fallback_status=
 
     def register(session_class, *new_arguments)
       signal_connect("connection-established") do |_client, context|
@@ -91,7 +95,7 @@ module Milter
             end
           rescue Exception
             Milter::Logger.error($!)
-            session_context.status = status_on_error
+            session_context.status = fallback_status
           end
           status = session_context.status
           session_context.clear

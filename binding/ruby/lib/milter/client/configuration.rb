@@ -69,13 +69,10 @@ module Milter
         attr_accessor :suspend_time_on_unacceptable, :max_connections
         attr_accessor :max_file_descriptors, :event_loop_backend
         attr_accessor :n_workers, :packet_buffer_size
-        attr_accessor :status_on_error
+        attr_accessor :fallback_status
         attr_writer :daemon, :handle_signal, :run_gc_on_maintain
-        attr_reader :available_status_on_error_list
         def initialize(base_configuration)
           @base_configuration = base_configuration
-          @available_status_on_error_list = ["accept", "reject",
-                                             "temporary-failure", "discard"]
           clear
         end
 
@@ -93,7 +90,6 @@ module Milter
 
         def clear
           @name = File.basename($PROGRAM_NAME, ".*"),
-          @status_on_error = "accept"
           @connection_spec = "inet:20025"
           @unix_socket_mode = 0770
           @unix_socket_group = nil
@@ -106,6 +102,7 @@ module Milter
             Milter::Client::DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE
           @max_connections = Milter::Client::DEFAULT_MAX_CONNECTIONS
           @max_file_descriptors = 0
+          @fallback_status = "accept"
           @event_loop_backend = Milter::Client::EVENT_LOOP_BACKEND_GLIB.nick
           @n_workers = 0
           @packet_buffer_size = 0
@@ -116,10 +113,10 @@ module Milter
         end
 
         def setup(client)
-          client.status_on_error = @status_on_error
           client.connection_spec = @connection_spec
           client.unix_socket_group = @unix_socket_group
           client.unix_socket_mode = @unix_socket_mode if @unix_socket_mode
+          client.fallback_status = @fallback_status
           client.event_loop_backend = resolved_event_loop_backend
           client.default_packet_buffer_size = @packet_buffer_size
           client.pid_file = @pid_file
@@ -451,26 +448,11 @@ module Milter
       end
 
       class MilterConfigurationLoader
+        attr_reader :available_fallback_statuses
         def initialize(configuration)
           @configuration = configuration
-        end
-
-        def status_on_error
-          @configuration.status_on_error
-        end
-
-        def status_on_error=(status)
-          available_values = @configuration.available_status_on_error_list
-          normalized_status = status
-          unless status.nil?
-            normalized_status = status.to_s.downcase.gsub(/_/, '-')
-            unless available_values.include?(normalized_status)
-              raise InvalidValue.new(full_key("status_on_error"),
-                                     available_values, status)
-            end
-          end
-          update_location("status_on_error", status.nil?)
-          @configuration.status_on_error = normalized_status
+          @available_fallback_statuses = ["accept", "reject",
+                                          "temporary-failure", "discard"]
         end
 
         def connection_spec
@@ -575,6 +557,24 @@ module Milter
           update_location("max_file_descriptors", n_descriptors.nil?)
           n_descriptors ||= 0
           @configuration.max_file_descriptors = n_descriptors
+        end
+
+        def fallback_status
+          @configuration.fallback_status
+        end
+
+        def fallback_status=(status)
+          available_values = @available_fallback_statuses
+          normalized_status = status
+          unless status.nil?
+            normalized_status = status.to_s.downcase.gsub(/_/, '-')
+            unless available_values.include?(normalized_status)
+              raise InvalidValue.new(full_key("fallback_status"),
+                                     available_values, status)
+            end
+          end
+          update_location("fallback_status", status.nil?)
+          @configuration.fallback_status = normalized_status
         end
 
         def event_loop_backend

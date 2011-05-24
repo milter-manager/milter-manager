@@ -106,6 +106,9 @@ milterの設定もmilter-managerの「manager」グループの設定と同
 : milter.max_file_descriptors
    ((<manager.max_file_descriptors|configuration.rd.ja#manager.max_file_descriptors>))と同じ。
 
+: milter.fallback_status
+   ((<manager.fallback_status|configuration.rd.ja#manager.fallback_status>))と同じ。
+
 : milter.event_loop_backend
    ((<manager.event_loop_backend|configuration.rd.ja#manager.event_loop_backend>))と同じ。
 
