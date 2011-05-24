@@ -1127,14 +1127,15 @@ static gboolean
 emit_replace_body_signal_string (MilterManagerChildren *children)
 {
     MilterManagerChildrenPrivate *priv;
-    gsize offset;
+    gsize offset, write_size;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
-    for (offset = 0; offset < priv->body->len; offset += MILTER_CHUNK_SIZE) {
+    for (offset = 0; offset < priv->body->len; offset += write_size) {
+        write_size = MIN(priv->body->len - offset, MILTER_CHUNK_SIZE);
         g_signal_emit_by_name(children, "replace-body",
                               priv->body->str + offset,
-                              MIN(priv->body->len - offset, MILTER_CHUNK_SIZE));
+                              write_size);
     }
 
     return TRUE;
@@ -3952,16 +3953,18 @@ send_body_to_child_string (MilterManagerChildren *children,
 {
     MilterStatus status = MILTER_STATUS_PROGRESS;
     MilterManagerChildrenPrivate *priv;
+    gsize write_size;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     if (priv->sent_body_offset >= priv->body->len)
         return MILTER_STATUS_NOT_CHANGE;
 
+    write_size = MIN(priv->body->len - priv->sent_body_offset,
+                     MILTER_CHUNK_SIZE);
     if (milter_server_context_body(context,
                                    priv->body->str + priv->sent_body_offset,
-                                   MIN(priv->body->len - priv->sent_body_offset,
-                                       MILTER_CHUNK_SIZE))) {
-        priv->sent_body_offset += MILTER_CHUNK_SIZE;
+                                   write_size)) {
+        priv->sent_body_offset += write_size;
         init_command_waiting_child_queue(children, MILTER_COMMAND_BODY);
     } else {
         MilterManagerChild *child;
