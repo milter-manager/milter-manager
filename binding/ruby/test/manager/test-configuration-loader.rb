@@ -232,6 +232,19 @@ class TestConfigurationLoader < Test::Unit::TestCase
     assert_equal(0, @configuration.default_packet_buffer_size)
   end
 
+  def test_manager_chunk_size
+    assert_equal(65535, @configuration.chunk_size)
+    @loader.manager.chunk_size = 4096
+    assert_equal(4096, @configuration.chunk_size)
+    @loader.manager.chunk_size = nil
+    assert_equal(65535, @configuration.chunk_size)
+  end
+
+  def test_manager_chunk_size_over
+    @loader.manager.chunk_size = 65536
+    assert_equal(65535, @configuration.chunk_size)
+  end
+
   def test_database_type
     assert_equal(nil, @configuration.database.type)
     @loader.database.type = "mysql"

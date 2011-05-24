@@ -956,16 +956,6 @@ module Milter
           @raw_configuration.custom_configuration_directory = directory
         end
 
-        def connection_check_interval
-          @raw_configuration.connection_check_interval
-        end
-
-        def connection_check_interval=(interval)
-          update_location("connection_check_interval", interval.nil?)
-          interval ||= 0
-          @raw_configuration.connection_check_interval = interval
-        end
-
         def fallback_status_at_disconnect
           @raw_configuration.fallback_status_at_disconnect
         end
@@ -973,6 +963,16 @@ module Milter
         def fallback_status_at_disconnect=(status)
           update_location("fallback_status_at_disconnect", status.nil?)
           @raw_configuration.fallback_status_at_disconnect = status
+        end
+
+        def chunk_size
+          @raw_configuration.chunk_size
+        end
+
+        def chunk_size=(size)
+          update_location("chunk_size", size.nil?)
+          size ||= Milter::CHUNK_SIZE
+          @raw_configuration.chunk_size = size
         end
 
         def connection_check_interval

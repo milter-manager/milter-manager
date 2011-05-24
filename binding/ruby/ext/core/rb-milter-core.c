@@ -48,6 +48,8 @@ Init_milter_core (void)
     rb_obj_freeze(version);
     rb_define_const(rb_mMilter, "VERSION", version);
 
+    rb_define_const(rb_mMilter, "CHUNK_SIZE", UINT2NUM(MILTER_CHUNK_SIZE));
+
     milter_init();
 
     Init_milter_logger();
