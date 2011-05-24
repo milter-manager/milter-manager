@@ -291,6 +291,8 @@ manager.n_workers = 0
 manager.packet_buffer_size = 0
 # default
 manager.connection_check_interval = 0
+# default
+manager.chunk_size = 65535
 
 # default
 controller.connection_spec = nil
@@ -430,6 +432,8 @@ manager.n_workers = 0
 manager.packet_buffer_size = 0
 # default
 manager.connection_check_interval = 0
+# default
+manager.chunk_size = 65535
 
 # #{__FILE__}:#{controller_connection_spec}
 controller.connection_spec = "inet:10025"

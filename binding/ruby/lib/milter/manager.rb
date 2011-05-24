@@ -202,6 +202,7 @@ module Milter
         dump_item("manager.packet_buffer_size", c.default_packet_buffer_size)
         dump_item("manager.connection_check_interval",
                   c.connection_check_interval.inspect)
+        dump_item("manager.chunk_size", c.chunk_size)
         @result << "\n"
       end
 
