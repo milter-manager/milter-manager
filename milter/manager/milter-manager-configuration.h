@@ -379,6 +379,12 @@ void          milter_manager_configuration_set_syslog_facility
                                      (MilterManagerConfiguration *configuration,
                                       const gchar                *facility);
 
+guint         milter_manager_configuration_get_chunk_size
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_chunk_size
+                                     (MilterManagerConfiguration *configuration,
+                                      guint                       size);
+
 G_END_DECLS
 
 #endif /* __MILTER_MANAGER_CONFIGURATION_H__ */

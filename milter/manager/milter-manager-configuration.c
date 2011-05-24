@@ -80,6 +80,7 @@ struct _MilterManagerConfigurationPrivate
     guint default_packet_buffer_size;
     gboolean use_syslog;
     gchar *syslog_facility;
+    gsize chunk_size;
 };
 
 enum
@@ -115,7 +116,8 @@ enum
     PROP_DEFAULT_PACKET_BUFFER_SIZE,
     PROP_PREFIX,
     PROP_USE_SYSLOG,
-    PROP_SYSLOG_FACILITY
+    PROP_SYSLOG_FACILITY,
+    PROP_CHUNK_SIZE
 };
 
 enum
@@ -443,6 +445,15 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_SYSLOG_FACILITY, spec);
 
+    spec = g_param_spec_uint("chunk-size",
+                             "Chunk Size",
+                             "The chunk size of the milter-manager",
+                             1,
+                             MILTER_CHUNK_SIZE,
+                             MILTER_CHUNK_SIZE,
+                             G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+    g_object_class_install_property(gobject_class, PROP_CHUNK_SIZE, spec);
+
     signals[CONNECTED] =
         g_signal_new("connected",
                      G_TYPE_FROM_CLASS(klass),
@@ -495,6 +506,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv->n_workers = 0;
     priv->default_packet_buffer_size = 0;
     priv->syslog_facility = NULL;
+    priv->chunk_size = MILTER_CHUNK_SIZE;
 
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
     if (config_dir_env)
@@ -664,6 +676,10 @@ set_property (GObject      *object,
         milter_manager_configuration_set_syslog_facility(
             config, g_value_get_string(value));
         break;
+    case PROP_CHUNK_SIZE:
+        milter_manager_configuration_set_chunk_size(
+            config, g_value_get_uint(value));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -772,6 +788,9 @@ get_property (GObject    *object,
         break;
     case PROP_SYSLOG_FACILITY:
         g_value_set_string(value, priv->syslog_facility);
+        break;
+    case PROP_CHUNK_SIZE:
+        g_value_set_uint(value, priv->chunk_size);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -2340,6 +2359,25 @@ milter_manager_configuration_set_syslog_facility (MilterManagerConfiguration *co
         g_free(priv->syslog_facility);
     }
     priv->syslog_facility = g_strdup(facility);
+}
+
+guint
+milter_manager_configuration_get_chunk_size (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->chunk_size;
+}
+
+void
+milter_manager_configuration_set_chunk_size (MilterManagerConfiguration *configuration,
+                                             guint size)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->chunk_size = MIN(size, MILTER_CHUNK_SIZE);
 }
 
 /*

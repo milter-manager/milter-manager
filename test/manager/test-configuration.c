@@ -58,6 +58,8 @@ void test_default_packet_buffer_size (void);
 void test_prefix (void);
 void test_use_syslog (void);
 void test_syslog_facility (void);
+void test_chunk_size (void);
+void test_chunk_size_over (void);
 void test_egg (void);
 void test_find_egg (void);
 void test_remove_egg (void);
@@ -605,6 +607,27 @@ test_syslog_facility (void)
     cut_assert_equal_string(
         "local1",
         milter_manager_configuration_get_syslog_facility(config));
+}
+
+void
+test_chunk_size (void)
+{
+    cut_assert_equal_uint(
+        MILTER_CHUNK_SIZE,
+        milter_manager_configuration_get_chunk_size(config));
+    milter_manager_configuration_set_chunk_size(config, 29);
+    cut_assert_equal_uint(
+        29,
+        milter_manager_configuration_get_chunk_size(config));
+}
+
+void
+test_chunk_size_over (void)
+{
+    milter_manager_configuration_set_chunk_size(config, MILTER_CHUNK_SIZE + 1);
+    cut_assert_equal_uint(
+        MILTER_CHUNK_SIZE,
+        milter_manager_configuration_get_chunk_size(config));
 }
 
 static void
