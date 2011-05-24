@@ -90,6 +90,7 @@ module Milter
 
         def clear
           @name = File.basename($PROGRAM_NAME, ".*"),
+          @status_on_error = "accept"
           @connection_spec = "inet:20025"
           @unix_socket_mode = 0770
           @unix_socket_group = nil
