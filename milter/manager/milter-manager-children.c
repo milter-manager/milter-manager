@@ -1084,6 +1084,7 @@ emit_replace_body_signal_file (MilterManagerChildren *children)
     MilterManagerChildrenPrivate *priv;
     GError *error = NULL;
     GIOStatus status = G_IO_STATUS_NORMAL;
+    gsize chunk_size;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
@@ -1098,12 +1099,14 @@ emit_replace_body_signal_file (MilterManagerChildren *children)
         return FALSE;
     }
 
+    chunk_size =
+        milter_manager_configuration_get_chunk_size(priv->configuration);
     while (status == G_IO_STATUS_NORMAL) {
         gchar buffer[MILTER_CHUNK_SIZE + 1];
         gsize read_size;
 
         status = g_io_channel_read_chars(priv->body_file,
-                                         buffer, MILTER_CHUNK_SIZE,
+                                         buffer, chunk_size,
                                          &read_size, &error);
 
         if (status == G_IO_STATUS_NORMAL)
@@ -1127,12 +1130,14 @@ static gboolean
 emit_replace_body_signal_string (MilterManagerChildren *children)
 {
     MilterManagerChildrenPrivate *priv;
-    gsize offset, write_size;
+    gsize offset, chunk_size, write_size;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
 
+    chunk_size =
+        milter_manager_configuration_get_chunk_size(priv->configuration);
     for (offset = 0; offset < priv->body->len; offset += write_size) {
-        write_size = MIN(priv->body->len - offset, MILTER_CHUNK_SIZE);
+        write_size = MIN(priv->body->len - offset, chunk_size);
         g_signal_emit_by_name(children, "replace-body",
                               priv->body->str + offset,
                               write_size);
@@ -3898,15 +3903,17 @@ send_body_to_child_file (MilterManagerChildren *children,
     GIOStatus io_status = G_IO_STATUS_NORMAL;
     MilterManagerChildrenPrivate *priv;
     gchar buffer[MILTER_CHUNK_SIZE + 1];
-    gsize read_size;
+    gsize read_size, chunk_size;
     MilterManagerChild *child;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     if (!priv->body_file)
         return MILTER_STATUS_NOT_CHANGE;
 
+    chunk_size =
+        milter_manager_configuration_get_chunk_size(priv->configuration);
     io_status = g_io_channel_read_chars(priv->body_file,
-                                        buffer, MILTER_CHUNK_SIZE,
+                                        buffer, chunk_size,
                                         &read_size, &error);
 
     child = MILTER_MANAGER_CHILD(context);
@@ -3953,14 +3960,15 @@ send_body_to_child_string (MilterManagerChildren *children,
 {
     MilterStatus status = MILTER_STATUS_PROGRESS;
     MilterManagerChildrenPrivate *priv;
-    gsize write_size;
+    gsize chunk_size, write_size;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
     if (priv->sent_body_offset >= priv->body->len)
         return MILTER_STATUS_NOT_CHANGE;
 
-    write_size = MIN(priv->body->len - priv->sent_body_offset,
-                     MILTER_CHUNK_SIZE);
+    chunk_size =
+        milter_manager_configuration_get_chunk_size(priv->configuration);
+    write_size = MIN(priv->body->len - priv->sent_body_offset, chunk_size);
     if (milter_server_context_body(context,
                                    priv->body->str + priv->sent_body_offset,
                                    write_size)) {
