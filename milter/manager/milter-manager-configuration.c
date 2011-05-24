@@ -1928,6 +1928,7 @@ clear_manager (MilterManagerConfigurationPrivate *priv)
     priv->event_loop_backend = MILTER_CLIENT_EVENT_LOOP_BACKEND_GLIB;
     priv->n_workers = 0;
     priv->default_packet_buffer_size = 0;
+    priv->chunk_size = MILTER_CHUNK_SIZE;
 }
 
 static void
