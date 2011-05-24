@@ -6,9 +6,21 @@ CONFIG_DIR=$MILTER_MANAGER_ROOT/etc/milter-manager
 
 PID_FILE=$MILTER_MANAGER_ROOT/var/run/milter-manager/milter-manager.pid
 
+TARGET_USER=mmanager
+TARGET_GROUP=mmanager
+
+mkpath()
+{
+    local owner="$1" dir="$2"
+    mkdir -p "${dir%/*}/"
+    mkdir -p "$dir/"
+    chown "$owner" "$dir"
+}
+
 start()
 {
     echo Starting milter-manager ...
+    mkpath $TARGET_USER:$TARGET_GROUP "${PID_FILE%/*}"
     $MILTER_COMMAND \
         --pid-file=$PID_FILE \
         --config-dir=$CONFIG_DIR \
