@@ -948,6 +948,9 @@ module Milter
           @connection_checker_ids = {}
         end
 
+        undef_method :status_on_error
+        undef_method :status_on_error=
+
         def custom_configuration_directory
           @raw_configuration.custom_configuration_directory
         end
