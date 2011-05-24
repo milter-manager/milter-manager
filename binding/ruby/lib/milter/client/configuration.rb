@@ -75,7 +75,7 @@ module Milter
         def initialize(base_configuration)
           @base_configuration = base_configuration
           @available_status_on_error_list = ["accept", "reject",
-                                             "temporary_failure"]
+                                             "temporary-failure", "discard"]
           clear
         end
 
@@ -461,12 +461,16 @@ module Milter
 
         def status_on_error=(status)
           available_values = @configuration.available_status_on_error_list
-          if status and !available_values.include?(status.to_s)
-            raise InvalidValue.new(full_key("status_on_error"),
-                                   available_values, status)
+          normalized_status = status
+          unless status.nil?
+            normalized_status = status.to_s.downcase.gsub(/_/, '-')
+            unless available_values.include?(normalized_status)
+              raise InvalidValue.new(full_key("status_on_error"),
+                                     available_values, status)
+            end
           end
           update_location("status_on_error", status.nil?)
-          @configuration.status_on_error = status
+          @configuration.status_on_error = normalized_status
         end
 
         def connection_spec

@@ -43,10 +43,14 @@ class TestClientConfiguration
       assert_equal("reject", @milter_config.status_on_error)
     end
 
+    def test_status_on_error_normalize
+      @milter_loader.status_on_error = "Temporary_Failure"
+      assert_equal("temporary-failure", @milter_loader.status_on_error)
+    end
 
     def test_status_on_error_invalid
       invalid_value_class = ::Milter::Client::ConfigurationLoader::InvalidValue
-      available_values = ["accept", "reject", "temporary_failure"]
+      available_values = ["accept", "reject", "temporary-failure", "discard"]
       invalid_value = invalid_value_class.new("milter.status_on_error",
                                               available_values,
                                               "unknown")
