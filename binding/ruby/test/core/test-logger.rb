@@ -27,6 +27,7 @@ class TestLogger < Test::Unit::TestCase
                  Milter::LogLevelFlags::MESSAGE |
                  Milter::LogLevelFlags::INFO |
                  Milter::LogLevelFlags::DEBUG |
+                 Milter::LogLevelFlags::TRACE |
                  Milter::LogLevelFlags::STATISTICS |
                  Milter::LogLevelFlags::PROFILE,
                  Milter::LogLevelFlags::ALL)
