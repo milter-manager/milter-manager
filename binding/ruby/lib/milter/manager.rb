@@ -948,9 +948,6 @@ module Milter
           @connection_checker_ids = {}
         end
 
-        undef_method :status_on_error
-        undef_method :status_on_error=
-
         def custom_configuration_directory
           @raw_configuration.custom_configuration_directory
         end
@@ -976,6 +973,16 @@ module Milter
         def fallback_status_at_disconnect=(status)
           update_location("fallback_status_at_disconnect", status.nil?)
           @raw_configuration.fallback_status_at_disconnect = status
+        end
+
+        def connection_check_interval
+          @raw_configuration.connection_check_interval
+        end
+
+        def connection_check_interval=(interval)
+          update_location("connection_check_interval", interval.nil?)
+          interval ||= 0
+          @raw_configuration.connection_check_interval = interval
         end
 
         def netstat_connection_checker

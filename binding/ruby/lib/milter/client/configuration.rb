@@ -573,16 +573,6 @@ module Milter
           @configuration.max_file_descriptors = n_descriptors
         end
 
-        def connection_check_interval
-          @configuration.connection_check_interval
-        end
-
-        def connection_check_interval=(interval)
-          update_location("connection_check_interval", interval.nil?)
-          interval ||= 0
-          @configuration.connection_check_interval = interval
-        end
-
         def event_loop_backend
           @configuration.event_loop_backend
         end
