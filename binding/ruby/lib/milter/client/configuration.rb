@@ -71,8 +71,11 @@ module Milter
         attr_accessor :n_workers, :packet_buffer_size
         attr_accessor :status_on_error
         attr_writer :daemon, :handle_signal, :run_gc_on_maintain
+        attr_reader :available_status_on_error_list
         def initialize(base_configuration)
           @base_configuration = base_configuration
+          @available_status_on_error_list = ["accept", "reject",
+                                             "temporary_failure"]
           clear
         end
 
@@ -452,6 +455,20 @@ module Milter
           @configuration = configuration
         end
 
+        def status_on_error
+          @configuration.status_on_error
+        end
+
+        def status_on_error=(status)
+          available_values = @configuration.available_status_on_error_list
+          if status and !available_values.include?(status.to_s)
+            raise InvalidValue.new(full_key("status_on_error"),
+                                   available_values, status)
+          end
+          update_location("status_on_error", status.nil?)
+          @configuration.status_on_error = status
+        end
+
         def connection_spec
           @configuration.connection_spec
         end
@@ -615,8 +632,11 @@ module Milter
 
         private
         def update_location(key, reset, deep_level=2)
-          full_key = "milter.#{key}"
-          @configuration.update_location(full_key, reset, deep_level)
+          @configuration.update_location(full_key(key), reset, deep_level)
+        end
+
+        def full_key(key)
+          "milter.#{key}"
         end
       end
 

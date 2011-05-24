@@ -18,9 +18,41 @@ class TestClientConfiguration
     include MilterTestUtils
 
     def setup
-      @client = Milter::Client.new
-      @configuration = Milter::Client::Configuration.new
-      @loader = Milter::Client::ConfigurationLoader.new(@configuration)
+      @client = ::Milter::Client.new
+      @configuration = ::Milter::Client::Configuration.new
+      @loader = ::Milter::Client::ConfigurationLoader.new(@configuration)
+    end
+  end
+
+  class Milter < Base
+    setup
+    def setup_config
+      @milter_config = @configuration.milter
+    end
+
+    setup
+    def setup_loader
+      @milter_loader = @loader.milter
+    end
+
+    def test_status_on_error
+      assert_equal("accept", @milter_config.status_on_error)
+      assert_equal("accept", @milter_loader.status_on_error)
+      @milter_loader.status_on_error = "reject"
+      assert_equal("reject", @milter_loader.status_on_error)
+      assert_equal("reject", @milter_config.status_on_error)
+    end
+
+
+    def test_status_on_error_invalid
+      invalid_value_class = ::Milter::Client::ConfigurationLoader::InvalidValue
+      available_values = ["accept", "reject", "temporary_failure"]
+      invalid_value = invalid_value_class.new("milter.status_on_error",
+                                              available_values,
+                                              "unknown")
+      assert_raise(invalid_value) do
+        @milter_loader.status_on_error = "unknown"
+      end
     end
   end
 
