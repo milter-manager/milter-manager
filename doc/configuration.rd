@@ -696,6 +696,24 @@ Since 1.6.6.
    Default:
      manager.packet_buffer_size = 0 # Disables buffering.
 
+: manager.chunk_size
+
+   ((*Normally, this item doesn't need to be used.*))
+
+   Since 1.8.0.
+
+   Specifies chunk size on body data for 2..n child milters.
+   The maximum size is 65535 bytes and it is the default. If
+   chunk size is decreased, communication overhead is
+   incrased. You should use it only if you want to decrease
+   each data size.
+
+   Example:
+     manager.chunk_size = 4096 # Sends body data as 4KB chunks.
+
+   Default:
+     manager.chunk_size = 65535 # Sends body data as 64KB chunks.
+
 : manager.use_netstat_connection_checker
 
    Since 1.5.0.

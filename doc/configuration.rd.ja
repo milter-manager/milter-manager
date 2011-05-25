@@ -689,6 +689,24 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
    既定値:
      manager.packet_buffer_size = 0 # バッファリングを無効にする。
 
+: manager.chunk_size
+
+   ((*この項目は通常は使用する必要はありません。*))
+
+   1.8.0から使用可能。
+
+   2番目以降の子milterにbodyパケットを送るときのデータサイズ
+   を指定します。最大値は65535バイトで、これが既定値です。デー
+   タサイズを小さくすることにより通信のオーバーヘッドが少し増
+   えますが、それでも1回あたりのデータサイズを小さくしたい場
+   合のみ使ってください。
+
+   例:
+     manager.chunk_size = 4096 # 本文データを4KBずつ送る
+
+   既定値:
+     manager.chunk_size = 65535 # 本文データを64KBずつ送る
+
 : manager.use_netstat_connection_checker
 
    1.5.0から使用可能。
