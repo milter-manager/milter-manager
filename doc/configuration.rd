@@ -79,6 +79,7 @@ current configuration is shown.
   manager.n_workers = 0
   manager.packet_buffer_size = 0
   manager.connection_check_interval = 0
+  manager.chunk_size = 65535
 
   controller.connection_spec = nil
   controller.unix_socket_mode = 0660
