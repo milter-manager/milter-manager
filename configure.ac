@@ -881,14 +881,11 @@ AC_CONFIG_FILES([Makefile
 		 data/munin/Makefile
 		 data/smf/Makefile
 		 data/smf/manifest/Makefile
-		 data/smf/manifest/milter-manager.xml
 		 data/smf/method/Makefile
-		 data/smf/method/milter-manager
 		 solaris/Makefile
 		 solaris/prototypes/Makefile
 		 solaris/prototypes/milter-manager/Makefile
 		 solaris/prototypes/milter-manager/pkginfo
-		 solaris/prototypes/milter-manager/postinstall
 		 solaris/prototypes/cutter/Makefile
 		 solaris/prototypes/cutter/pkginfo
 		 solaris/prototypes/gettext/Makefile
