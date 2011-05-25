@@ -22,6 +22,7 @@ class TestFreeBSDRCDetector < Test::Unit::TestCase
     @tmp_dir = Pathname(File.dirname(__FILE__)) + ".." + "tmp"
     @rc_d = @tmp_dir + "rc.d"
     @rc_conf = @tmp_dir + "rc.conf"
+    @rc_conf_local = @tmp_dir + "rc.conf.local"
     @rc_conf_d = @tmp_dir + "rc.conf.d"
     @rc_d.mkpath
     @rc_conf_d.mkpath
@@ -462,6 +463,7 @@ EOC
 
     _rc_d = @rc_d
     _rc_conf = @rc_conf
+    _rc_conf_local = @rc_conf_local
     _rc_conf_d = @rc_conf_d
     _candidate_service_commands = options[:candidate_service_commands] || []
     singleton_object = class << detector; self; end
@@ -471,6 +473,10 @@ EOC
 
     singleton_object.send(:define_method, :rc_conf) do
       _rc_conf.to_s
+    end
+
+    singleton_object.send(:define_method, :rc_conf_local) do
+      _rc_conf_local.to_s
     end
 
     singleton_object.send(:define_method, :rc_conf_d) do

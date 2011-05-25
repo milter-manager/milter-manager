@@ -42,6 +42,7 @@ module Milter::Manager
       parse_rc_script
       return if @name.nil?
       parse_rc_conf(rc_conf)
+      parse_rc_conf(rc_conf_local)
       parse_rc_conf(specific_rc_conf)
     end
 
@@ -147,6 +148,10 @@ module Milter::Manager
 
     def rc_conf
       "/etc/rc.conf"
+    end
+
+    def rc_conf_local
+      "/etc/rc.conf.local"
     end
 
     def rc_conf_d

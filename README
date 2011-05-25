@@ -172,3 +172,5 @@ The latest source is available from the Subversion repository:
     * reported a bug.
   * Mitsuru Ogino:
     * reported bugs.
+  * moto kawasaki:
+    * added /etc/rc.conf.local loading support on FreeBSD.
