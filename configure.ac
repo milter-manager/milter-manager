@@ -888,6 +888,7 @@ AC_CONFIG_FILES([Makefile
 		 solaris/prototypes/Makefile
 		 solaris/prototypes/milter-manager/Makefile
 		 solaris/prototypes/milter-manager/pkginfo
+		 solaris/prototypes/milter-manager/postinstall
 		 solaris/prototypes/cutter/Makefile
 		 solaris/prototypes/cutter/pkginfo
 		 solaris/prototypes/gettext/Makefile
