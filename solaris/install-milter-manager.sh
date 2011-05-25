@@ -23,7 +23,7 @@ install_milter_manager()
     (
         cd "${build_dir}"
         run bash ./autogen.sh
-        run ./configure --prefix $PREFIX --enable-ruby-milter
+        run ./configure --prefix $PREFIX --enable-ruby-milter "$@"
     ) > "${log}"
     echo "$(time_stamp): done."
 
@@ -36,5 +36,9 @@ install_milter_manager()
 }
 
 echo "$(time_stamp): Installing milter manager package..."
-install_milter_manager
+if test -z "${LOCALSTATEDIR}"; then
+    install_milter_manager
+else
+    install_milter_manager --localstatedir=${LOCALSTATEDIR}
+fi
 echo "$(time_stamp): done."

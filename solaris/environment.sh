@@ -6,6 +6,7 @@ PROTOTYPES="${base_dir}/prototypes"
 PKG_DESTDIR="${BUILDS}/tmp"
 PKGS="${base_dir}/pkgs"
 PKG_PREFIX=MMGR
+: ${LOCALSTATEDIR:=}
 
 : ${PREFIX:=/opt/milter-manager}
 PATH=$PREFIX/bin:/opt/csw/bin:/usr/ccs/bin:/usr/sfw/bin:$PATH
