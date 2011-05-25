@@ -881,6 +881,7 @@ AC_CONFIG_FILES([Makefile
 		 data/munin/Makefile
 		 data/smf/Makefile
 		 data/smf/manifest/Makefile
+		 data/smf/manifest/milter-manager.xml
 		 data/smf/method/Makefile
 		 solaris/Makefile
 		 solaris/prototypes/Makefile

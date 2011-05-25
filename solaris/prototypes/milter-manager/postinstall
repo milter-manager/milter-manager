@@ -2,10 +2,7 @@
 
 test -f /lib/svc/share/smf_include.sh && . /lib/svc/share/smf_include.sh
 
-TARGET_USER=mmanager
-TARGET_GROUP=mmanager
-
-MANIFEST=@localstatedir@/svc/manifest/network/milter-manager.xml
+MANIFEST=$BASEDIR/var/svc/manifest/network/milter-manager.xml
 
 if smf_present && `svccfg validate $MANIFEST`; then
     svccfg import $MANIFEST
