@@ -32,7 +32,7 @@ CC="$CC -m64" \
     -DWITH_UNIT_TESTS=0
 
 ruby_base="ruby-1.9.2-p180"
-CC="$CC -m64" \
+CC="$CC -m64 -ggdb3" \
     install_package ${ruby_lang_org}/1.9/${ruby_base}.tar.bz2 \
     --disable-install-doc --enable-shared --enable-load-relative
 
