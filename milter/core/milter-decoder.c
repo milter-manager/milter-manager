@@ -362,8 +362,11 @@ milter_decoder_decode (MilterDecoder *decoder, const gchar *chunk, gsize size,
     if (size == 0)
         return TRUE;
 
-    milter_trace("[%u] [decoder][decode] <%zd> (%zd)",
-                 priv->tag, size, priv->buffer->len);
+    milter_trace("[%u] [decoder][decode] "
+                 "<%" G_GSIZE_FORMAT "> "
+                 "(%" G_GSIZE_FORMAT ")",
+                 priv->tag, size,
+                 priv->buffer->len);
     g_string_append_len(priv->buffer, chunk, size);
     while (loop) {
         switch (priv->state) {
@@ -394,12 +397,13 @@ milter_decoder_decode (MilterDecoder *decoder, const gchar *chunk, gsize size,
         case IN_COMMAND_CONTENT:
             if (priv->buffer->len < priv->command_length) {
                 milter_trace("[%u] [decoder][decode][content][need-more] "
-                             "<%zd>/<%d>",
+                             "<%" G_GSIZE_FORMAT ">/<%d>",
                              priv->tag,
                              priv->buffer->len, priv->command_length);
                 loop = FALSE;
             } else {
-                milter_trace("[%u] [decoder][decode][content][fill] <%d> (%zd)",
+                milter_trace("[%u] [decoder][decode][content][fill] "
+                             "<%d> (%" G_GSIZE_FORMAT ")",
                              priv->tag, priv->command_length, priv->buffer->len);
                 g_signal_emit(decoder, signals[DECODE], 0, error, &success);
                 if (success) {
@@ -412,7 +416,8 @@ milter_decoder_decode (MilterDecoder *decoder, const gchar *chunk, gsize size,
             }
             break;
         case IN_ERROR:
-            milter_error("[%u] [decoder][decode][error] <%d> (%zd)",
+            milter_error("[%u] [decoder][decode][error] "
+                         "<%d> (%" G_GSIZE_FORMAT ")",
                          priv->tag, priv->command_length, priv->buffer->len);
             loop = FALSE;
             break;
