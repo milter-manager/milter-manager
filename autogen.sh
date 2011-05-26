@@ -23,6 +23,18 @@ svn_update()
     fi
 }
 
+git_update()
+{
+    local repository="$1"
+    local dir="${2-`basename $repository`}"
+    if [ $update != yes ]; then return; fi
+    if test -d "$dir/.git"; then
+	git pull --rebase "$dir"
+    else
+	git clone "$repository" "$dir"
+    fi
+}
+
 # for old intltoolize
 if [ ! -d config/po ]; then
     ln -s ../po config/po
@@ -39,8 +51,8 @@ run svn_update ${cutter_repository}/trunk/misc
 clear_code_repository=http://www.clear-code.com/repos/svn
 run svn_update ${clear_code_repository}/tdiary html/blog/clear-code
 
-test_unit_repository=http://test-unit.rubyforge.org/svn
-run svn_update ${test_unit_repository}/trunk binding/ruby/test-unit
+test_unit_repository=https://github.com/test-unit/test-unit.git
+run git_clone ${test_unit_repository} binding/ruby/test-unit
 
 run ${ACLOCAL:-aclocal} $ACLOCAL_OPTIONS
 run ${LIBTOOLIZE:-libtoolize} --copy --force
