@@ -30,6 +30,7 @@
 
 #include <glib.h>
 
+#include "milter-logger.h"
 #include "milter-decoder.h"
 #include "milter-enum-types.h"
 #include "milter-marshalers.h"
@@ -361,32 +362,45 @@ milter_decoder_decode (MilterDecoder *decoder, const gchar *chunk, gsize size,
     if (size == 0)
         return TRUE;
 
+    milter_trace("[%u] [decoder][decode] <%zd> (%zd)",
+                 priv->tag, size, priv->buffer->len);
     g_string_append_len(priv->buffer, chunk, size);
     while (loop) {
         switch (priv->state) {
-          case IN_START:
+        case IN_START:
+            milter_trace("[%u] [decoder][decode][start]", priv->tag);
             if (priv->buffer->len == 0) {
                 loop = FALSE;
             } else {
                 priv->state = IN_COMMAND_LENGTH;
             }
             break;
-          case IN_COMMAND_LENGTH:
+        case IN_COMMAND_LENGTH:
             if (priv->buffer->len < COMMAND_LENGTH_BYTES) {
+                milter_trace("[%u] [decoder][decode][length][need-more]",
+                             priv->tag);
                 loop = FALSE;
             } else {
                 memcpy(&priv->command_length,
                        priv->buffer->str,
                        COMMAND_LENGTH_BYTES);
                 priv->command_length = g_ntohl(priv->command_length);
+                milter_trace("[%u] [decoder][decode][length] <%d>",
+                             priv->tag, priv->command_length);
                 g_string_erase(priv->buffer, 0, COMMAND_LENGTH_BYTES);
                 priv->state = IN_COMMAND_CONTENT;
             }
             break;
-          case IN_COMMAND_CONTENT:
+        case IN_COMMAND_CONTENT:
             if (priv->buffer->len < priv->command_length) {
+                milter_trace("[%u] [decoder][decode][content][need-more] "
+                             "<%zd>/<%d>",
+                             priv->tag,
+                             priv->buffer->len, priv->command_length);
                 loop = FALSE;
             } else {
+                milter_trace("[%u] [decoder][decode][content][fill] <%d> (%zd)",
+                             priv->tag, priv->command_length, priv->buffer->len);
                 g_signal_emit(decoder, signals[DECODE], 0, error, &success);
                 if (success) {
                     priv->state = IN_START;
@@ -397,7 +411,9 @@ milter_decoder_decode (MilterDecoder *decoder, const gchar *chunk, gsize size,
                 }
             }
             break;
-          case IN_ERROR:
+        case IN_ERROR:
+            milter_error("[%u] [decoder][decode][error] <%d> (%zd)",
+                         priv->tag, priv->command_length, priv->buffer->len);
             loop = FALSE;
             break;
         }
