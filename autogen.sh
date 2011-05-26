@@ -15,7 +15,9 @@ svn_update()
 {
     local repository="$1"
     local dir="${2-`basename $repository`}"
-    if [ $update != yes ]; then return; fi
+    if [ $update != yes -a -d "$dir" ]; then
+	return
+    fi
     if test -d "$dir/.svn"; then
 	svn update "$dir"
     else
@@ -27,7 +29,9 @@ git_update()
 {
     local repository="$1"
     local dir="${2-`basename $repository`}"
-    if [ $update != yes ]; then return; fi
+    if [ $update != yes -a -d "$dir" ]; then
+	return
+    fi
     if test -d "$dir/.git"; then
 	git pull --rebase "$dir"
     else
