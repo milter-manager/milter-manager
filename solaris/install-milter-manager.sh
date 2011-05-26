@@ -22,7 +22,8 @@ install_milter_manager()
     echo "$(time_stamp): Configuring ${base}..."
     (
         cd "${build_dir}"
-        run bash ./autogen.sh
+        ACLOCAL_OPTIONS="-I ${PREFIX}/share/aclocal" \
+	    run bash ./autogen.sh --no-update
         run ./configure CFLAGS="$CFLAGS -ggdb3" \
           --prefix $PREFIX --enable-ruby-milter "$@"
     ) > "${log}"
