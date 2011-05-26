@@ -5,7 +5,6 @@ i preinstall
 i postinstall
 d none bin 0755 root root
 d none etc 0755 root root
-d none etc/cron.d 0755 root root
 d none etc/init.d 0755 root root
 d none etc/milter-manager 0755 root root
 d none etc/milter-manager/applicable-conditions 0755 root root
@@ -236,6 +235,7 @@ f none lib/milter-manager/binding/lib/milter/client/command-line.rb 0644 root ro
 f none lib/milter-manager/binding/lib/milter/client/composite-session.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter/client/configuration.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter/core.rb 0644 root root
+f none lib/milter-manager/binding/lib/milter/core/callback.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter/core/compatible.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter/core/logger.rb 0644 root root
 f none lib/milter-manager/binding/lib/milter/core/macro.rb 0644 root root
