@@ -859,7 +859,7 @@ class MilterPerformanceChecker
       mechanism = nil if mechanism == "auto"
       mechanism ||= default_auth_mechanism(smtp)
       validate_auth_mechanism(smtp, mechanism)
-      smtp.authenticate(user, password, mechanism)
+      smtp.__send__(:authenticate, user, password, mechanism)
     end
   end
 
