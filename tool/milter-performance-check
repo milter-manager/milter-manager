@@ -313,7 +313,7 @@ class MilterPerformanceChecker
     @connect_host = nil
     @connect_address = nil
     @helo_fqdn = "localhost.localdomain"
-    @starttls = "auto"
+    @starttls = nil
     @auth_user = nil
     @auth_password = nil
     @auth_mechanism = "auth"
@@ -426,15 +426,18 @@ class MilterPerformanceChecker
       @helo_fqdn = helo_fqdn
     end
 
-    available_starttls_values = ["auto", "always", "disable"]
-    parser.on("--starttls=HOW",
-              "Use STARTTLS.",
-              "HOW == 'auto': STARTTLS is used if server supports it.",
-              "HOW == 'always': STARTTLS is always used.",
-              "HOW == 'disable': STARTTLS is never used.",
-              "[#{available_starttls_values.join(' ')}]",
-              "(#{@starttls})") do |starttls|
-      @starttls = starttls
+    if Net::SMTP.method_defined?(:capable_starttls?)
+      @starttls = "auto"
+      available_starttls_values = ["auto", "always", "disable"]
+      parser.on("--starttls=HOW",
+                "Use STARTTLS.",
+                "HOW == 'auto': STARTTLS is used if server supports it.",
+                "HOW == 'always': STARTTLS is always used.",
+                "HOW == 'disable': STARTTLS is never used.",
+                "[#{available_starttls_values.join(' ')}]",
+                "(#{@starttls})") do |starttls|
+        @starttls = starttls
+      end
     end
 
     parser.on("--auth-user=USER",
@@ -890,6 +893,17 @@ class MilterPerformanceChecker
     raise ArgumentError, message
   end
 
+  def setup_starttls(smtp)
+    case @starttls
+    when "always"
+      smtp.enable_starttls
+    when "auto"
+      smtp.enable_starttls_auto
+    when "disable"
+      smtp.disable_starttls
+    end
+  end
+
   def send_mail(mail_source_file=nil)
     helo_fqdn, from, recipients, source = prepare_send_mail(mail_source_file)
 
@@ -900,14 +914,7 @@ class MilterPerformanceChecker
     begin
       smtp = Net::SMTP.new(@smtp_server, @smtp_port)
       smtp.read_timeout = @reading_timeout
-      case @starttls
-      when "always"
-        smtp.enable_starttls
-      when "auto"
-        smtp.enable_starttls_auto
-      when "disable"
-        smtp.disable_starttls
-      end
+      setup_starttls(smtp)
       smtp.start(helo_fqdn) do |_smtp|
         xclient_parameters = []
         xclient_parameters << "NAME=#{@connect_host}" if @connect_host
