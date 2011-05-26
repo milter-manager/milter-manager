@@ -880,13 +880,18 @@ class MilterPerformanceChecker
   end
 
   def validate_auth_mechanism(smtp, mechanism)
+    capability_check_method = nil
     case mechanism
     when "cram_md5"
-      return if smtp.capable_cram_md5_auth?
+      capability_check_method = :capable_cram_md5_auth?
     when "plain"
-      return if smtp.capable_plain_auth?
+      capability_check_method = :capable_plain_auth?
     when "login"
-      return if smtp.capable_login_auth?
+      capability_check_method = :capable_login_auth?
+    end
+    if capability_check_method
+      return unless respond_to?(capability_check_method)
+      return if smtp.send(capability_check_method)
     end
     message = "specified mechanism isn't supported: #{mechanism.inspect}"
     message << ": #{smtp.capable_auth_types.inspect}"
