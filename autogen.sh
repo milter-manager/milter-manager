@@ -31,6 +31,7 @@ git_update()
     if test -d "$dir/.git"; then
 	git pull --rebase "$dir"
     else
+	rm -rf "$dir"
 	git clone "$repository" "$dir"
     fi
 }
@@ -52,7 +53,7 @@ clear_code_repository=http://www.clear-code.com/repos/svn
 run svn_update ${clear_code_repository}/tdiary html/blog/clear-code
 
 test_unit_repository=https://github.com/test-unit/test-unit.git
-run git_clone ${test_unit_repository} binding/ruby/test-unit
+run git_update ${test_unit_repository} binding/ruby/test-unit
 
 run ${ACLOCAL:-aclocal} $ACLOCAL_OPTIONS
 run ${LIBTOOLIZE:-libtoolize} --copy --force
