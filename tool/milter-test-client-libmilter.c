@@ -325,7 +325,7 @@ mlfi_negotiate (SMFICTX *context,
 
     *steps_output = steps & (SMFIP_NR_HELO | SMFIP_NR_MAIL | SMFIP_NR_BODY);
 
-    return SMFIS_REJECT;
+    return SMFIS_CONTINUE;
 }
 
 struct smfiDesc smfilter =
