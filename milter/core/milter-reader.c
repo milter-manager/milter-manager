@@ -170,8 +170,13 @@ read_from_channel (MilterReader *reader, GIOChannel *channel)
     }
 
     if (length > 0) {
-        milter_trace("[%d] [reader][read] <%" G_GSIZE_FORMAT ">",
-                     priv->tag, length);
+        if (milter_need_trace_log()) {
+            GIOCondition condition;
+            condition = g_io_channel_get_buffer_condition(priv->io_channel);
+            milter_trace("[%d] [reader][read] <%" G_GSIZE_FORMAT "> buffer=<%s>",
+                         priv->tag, length,
+                         (condition & G_IO_IN) ? "contain" : "empty");
+        }
         g_signal_emit(reader, signals[FLOW], 0, stream, length);
     }
 
@@ -222,6 +227,13 @@ read_watch_func (GIOChannel *channel, GIOCondition condition, gpointer data)
     if (!priv->shutdown_requested) {
         milter_trace("[%d] [reader][callback][read][reading] ...", priv->tag);
         keep_callback = read_from_channel(reader, channel);
+        while (keep_callback &&
+               g_io_channel_get_buffered(priv->io_channel) &&
+               (g_io_channel_get_buffer_condition(priv->io_channel) & G_IO_IN)) {
+            milter_trace("[%d] [reader][callback][read][reading][buffer] ...",
+                         priv->tag);
+            keep_callback = read_from_channel(reader, channel);
+        }
     }
 
     if (priv->shutdown_requested) {
