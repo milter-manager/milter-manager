@@ -2,7 +2,7 @@
 
 run()
 {
-    $@
+    "$@"
     if test $? -ne 0; then
 	echo "Failed $@"
 	exit 1
