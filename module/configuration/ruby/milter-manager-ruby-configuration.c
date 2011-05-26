@@ -393,6 +393,7 @@ G_MODULE_EXPORT void
 MILTER_MANAGER_MODULE_IMPL_EXIT (void)
 {
     if (rb_milter_ruby_interpreter_initialized) {
+        rb_milter_ruby_interpreter_initialized = FALSE;
         ruby_cleanup_without_signal_change(0);
     }
 }
