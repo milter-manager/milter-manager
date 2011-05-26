@@ -4,14 +4,14 @@ case "$1" in
 'start')
         /usr/sbin/svcadm enable -t svc:/network/milter-manager
         ;;
-'restart')
-        /usr/sbin/svcadm restart svc:/network/milter-manager
-        ;;
 'stop')
         /usr/sbin/svcadm disable -t svc:/network/milter-manager
         ;;
+'restart'|'enable'|'disable')
+        /usr/sbin/svcadm $1 svc:/network/milter-manager
+        ;;
 *)
-        echo "Usage: $0 { start | stop | restart }"
+        echo "Usage: $0 { start | stop | restart | enable | disable }"
         exit 1
         ;;
 esac
