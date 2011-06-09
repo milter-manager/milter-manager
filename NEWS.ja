@@ -2,6 +2,95 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-1-8-0] 1.8.0: 2011-06-10
+
+安定版1.8.x系最初のリリースです。
+
+=== 全体
+
+==== 改良
+
+  * 使用していない変数を削除。
+
+=== パッケージ
+
+==== 改良
+
+  * Debian GNU/Linux lennyサポートを削除。
+  * Debian GNU/Linux wheezyサポートを追加。
+  * [redhat] initファイル中で明示的にPIDファイルを指定するよ
+    うにした。
+  * [freebsd] /etc/rc.conf.local対応。
+    [川崎さんがパッチ提供]
+
+==== 修正
+
+  * [debian] milter.rbが含まれていない問題を修正。
+    [荻野充さんが報告]
+
+=== milter manager
+
+==== 改良
+
+  * trust適用条件: ドメイン名を正規化するようにした。
+  * ((<trust.clear|configuration.rd.ja#trust.clear>))設定項
+    目を追加。
+  * ((<trust.load_envelope_from_domains|configuration.rd.ja#trust.load_envelope_from_domains>))
+    設定項目を追加。
+  * trust適用条件: 組み込みの信用するドメインにezweb.ne.jpと
+    docomo.ne.jpを追加。
+  * negotiateのときでもfallback statusを使うようにした。
+  * ((<manager.chunk_size|configuration.rd.ja#manager.chunk_size>))
+    設定項目を追加。
+
+==== 修正
+
+  * 子milter軌道用プロセスが終了しない問題を修正。
+    [おばたさんが報告]
+  * 同一セッションで複数のメッセージを送った場合、子milterが
+    最初のメッセージでreject/temporary failure/discardを返す
+    と、2通目以降のメッセージが子milterに渡らない問題を修正。
+
+=== milter-core
+
+==== 改良
+
+  * debugレベルよりも多くのログを出力するtraceレベルを追加。
+  * MILTER_LOG_LEVEL環境変数でのログレベルの指定時に+/-でロ
+    グレベルを追加・削除できるようにした。
+
+==== 修正
+
+  * 読み込めるデータが残っているのにブロックしてしまう問題を
+    修正。
+
+=== Ruby milter
+
+==== 改良
+
+  * 設定ファイル: エラー時に返すステータスのデフォルト値を
+    acceptにした。
+
+=== milter-performance-check
+
+==== 改良
+
+  * CentOS 5対応。
+
+=== ドキュメント
+
+==== 修正
+
+  * Ruby milterのバージョン確認にはMilter::TOOLKIT_VERSIONで
+    はなくMilter::VERSIONを使うようにした。
+    [荻野充さんが報告]
+
+=== 感謝
+
+  * 荻野充さん
+  * おばたさん
+  * 川崎さん
+
 == [release-1-6-9] 1.6.9: 2011-04-26
 
 1.6.8のバグフィックスリリースです。
