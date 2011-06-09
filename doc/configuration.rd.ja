@@ -1531,7 +1531,7 @@ greylist.conf:
 
    1.6.0から使用可能。
 
-   信用できるenvelope-fromのドメインを追加します。
+   信用するenvelope-fromのドメインを追加します。
 
    デフォルトでは、以下のドメインを信用しています。
 
@@ -1544,6 +1544,36 @@ greylist.conf:
 
    例:
      trust.add_envelope_from_domain("example.com")
+
+: trust.clear
+
+    1.8.0から使用可能。
+
+    信用するenvelope-fromのドメインリストを消去します。
+
+    例:
+      trust.clear
+
+: trust.load_envelope_from_domains(path)
+
+    1.8.0から使用可能。
+
+    ((|path|))から信用するenvelope-fromのドメインリストを読
+    み込みます。((|path|))には以下のような書式で信用するドメ
+    インを記述します。
+
+      # コメント。この行は無視される。
+      gmail.com
+      # ↑の行はgmail.comを信用するという意味
+      /\.example\.com/
+      # ↑の行はexample.comのサブドメインすべてを信用するという意味
+
+      # ↑の行は空白だけの行。空行は無視する。
+
+    例:
+      trust.load_envelope_from_domains("/etc/milter-manager/trusted-domains.list")
+      # /etc/milter-manager/trusted-domains.listから信用する
+      # ドメインのリストを読み込みます。
 
 === Restrict Accounts
 

@@ -1566,6 +1566,35 @@ configurations:
    Example:
      trust.add_envelope_from_domain("example.com")
 
+: trust.clear
+
+    Since 1.8.0.
+
+    This clears all registered trusted envelope-from domain list.
+
+    Example:
+      trust.clear
+
+: trust.load_envelope_from_domains(path)
+
+    Since 1.8.0.
+
+    This loads trusted envelope-from domain list from
+    ((|path|)). Here is ((|path|)) format:
+
+      # This is comment line. This line is ignored.
+      gmail.com
+      # The above line means 'gmail.com is trusted domain'.
+      /\.example\.com/
+      # The above line means 'all sub domains of example.com are trusted'.
+
+      # The above line consists of spaces. The space only line is ignored.
+
+    Example:
+      trust.load_envelope_from_domains("/etc/milter-manager/trusted-domains.list")
+      # It loads trusted envelope-from domain list from
+      # /etc/milter-manager/trusted-domains.list.
+
 === Restrict Accounts
 
 TODO
