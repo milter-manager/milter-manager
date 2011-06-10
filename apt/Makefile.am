@@ -2,7 +2,7 @@ SERVER_PATH = $(SF_USER),$(SF_PROJECT_ID)@$(SF_HTDOCS)
 DISTRIBUTIONS = debian ubuntu
 CHROOT_BASE = /var/lib/chroot
 ARCHITECTURES = i386 amd64
-CODE_NAMES = squeeze wheezy unstable hardy lucid maverick
+CODE_NAMES = squeeze wheezy unstable lucid natty
 
 release: build update sign upload
 
