@@ -16,6 +16,7 @@
 require 'pathname'
 require 'tempfile'
 require 'fileutils'
+require 'stringio'
 
 require 'rubygems'
 require 'rr'
