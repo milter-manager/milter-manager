@@ -16,8 +16,11 @@ The first release of stable 1.8.x series.
 
 ==== Improvements
 
-  * Removed Debian GNU/Linux lenny support.
-  * Added Debian GNU/Linux wheezy support.
+  * [debian] Removed Debian GNU/Linux lenny support.
+  * [debian] Added Debian GNU/Linux wheezy support.
+  * [ubuntu] Removed Ubuntu Hardy Heron support.
+  * [ubuntu] Removed Ubuntu Maverick Meerkat support.
+  * [ubuntu] Added Ubuntu Natty Narwhal support.
   * [redhat] Specified PID file in init file explicitly.
   * [freebsd] Supported /etc/rc.conf.local.
     [Patch by moto kawasaki]

@@ -16,8 +16,11 @@
 
 ==== 改良
 
-  * Debian GNU/Linux lennyサポートを削除。
-  * Debian GNU/Linux wheezyサポートを追加。
+  * [debian] Debian GNU/Linux lennyサポートを削除。
+  * [debian] Debian GNU/Linux wheezyサポートを追加。
+  * [ubuntu] Ubuntu Hardy Heronサポートを削除。
+  * [ubuntu] Ubuntu Maverick Meerkatサポートを削除。
+  * [ubuntu] Ubuntu Natty Narwhalサポートを追加。
   * [redhat] initファイル中で明示的にPIDファイルを指定するよ
     うにした。
   * [freebsd] /etc/rc.conf.local対応。
