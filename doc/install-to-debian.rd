@@ -10,25 +10,12 @@ install information.
 
 == Install packages
 
-Packages for lenny, the current stable release, for squeeze,
+Packages for squeeze, the current stable release, for wheezy,
 the current testing release, and for sid, the eternal
-unstable,are distributed on the milter manager site. The
-following description is for lenny. We need to adjust the
-description if we use squeeze or sid.
+unstable, are distributed on the milter manager site.
 
 We put the following content to
 /etc/apt/sources.list.d/milter-manager.list:
-
-=== For lenny
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://milter-manager.sourceforge.net/debian/stable/ lenny main
-  deb-src http://milter-manager.sourceforge.net/debian/stable/ lenny main
-  # deb http://milter-manager.sourceforge.net/debian/development/ lenny main
-  # deb-src http://milter-manager.sourceforge.net/debian/development/ lenny main
-
-If we use development series, we need to comment the first 2
-lines out and enable comment outed the 2 lines.
 
 === For squeeze
 
@@ -37,6 +24,17 @@ lines out and enable comment outed the 2 lines.
   deb-src http://milter-manager.sourceforge.net/debian/stable/ squeeze main
   # deb http://milter-manager.sourceforge.net/debian/development/ squeeze main
   # deb-src http://milter-manager.sourceforge.net/debian/development/ squeeze main
+
+If we use development series, we need to comment the first 2
+lines out and enable comment outed the 2 lines.
+
+=== For wheezy
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://milter-manager.sourceforge.net/debian/stable/ wheezy main
+  deb-src http://milter-manager.sourceforge.net/debian/stable/ wheezy main
+  # deb http://milter-manager.sourceforge.net/debian/development/ wheezy main
+  # deb-src http://milter-manager.sourceforge.net/debian/development/ wheezy main
 
 If we use development series, we need to comment the first 2
 lines out and enable comment outed the 2 lines.
@@ -70,21 +68,6 @@ We use Postfix as MTA:
 We use spamass-milter, clamav-milter and milter-greylist as
 milters.
 
-We use clamav-milter in lenny-volatile archive. See
-((<debian-volatile project
-|URL:http://www.debian.org/volatile/>)) for more
-information.
-
-We put the following content to
-/etc/apt/sources.list.d/volatile.list:
-
-/etc/apt/sources.list.d/volatile.list:
-  deb http://volatile.debian.org/debian-volatile lenny/volatile main contrib non-free
-  deb-src http://volatile.debian.org/debian-volatile lenny/volatile main contrib non-free
-
-We update packages and install milters:
-
-  % sudo aptitude update
   % sudo aptitude -V -D -y install spamass-milter clamav-milter
   % sudo aptitude -V -D -y --without-recommends install milter-greylist
 
@@ -196,12 +179,6 @@ Before:
 After:
   ENABLED=1
   SOCKET="inet:11125@[127.0.0.1]"
-  DOPTIONS="-P $PIDFILE -u $USER -p $SOCKET"
-
-We need to specify not only SOCKET but also DOPTIONS because
-/etc/init.d/milter-greylist has a problem in lenny. The
-problem had been fixed in squeeze. We doesn't need to
-specify DOPTIONS if we use squeeze.
 
 milter-greylist should be started:
 
