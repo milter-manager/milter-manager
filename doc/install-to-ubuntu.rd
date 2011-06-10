@@ -10,21 +10,10 @@ install information.
 
 == Install packages
 
-Packages for Hardy Heron, the current LTS release, and
-Packages for Lucid Lynx, the latest release are
+Packages for Lucid Lynx, the current LTS release, and
+Packages for Natty Narwhal, the latest release are
 distributed on the milter manager site. We put the following
 content to /etc/apt/sources.list.d/milter-manager.list:
-
-=== For Hardy Heron
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://milter-manager.sourceforge.net/ubuntu/stable/ hardy universe
-  deb-src http://milter-manager.sourceforge.net/ubuntu/stable/ hardy universe
-  # deb http://milter-manager.sourceforge.net/ubuntu/development/ hardy universe
-  # deb-src http://milter-manager.sourceforge.net/ubuntu/development/ hardy universe
-
-If we use development series, we need to comment the first 2
-lines out and enable comment outed the 2 lines.
 
 === For Lucid Lynx
 
@@ -37,13 +26,13 @@ lines out and enable comment outed the 2 lines.
 If we use development series, we need to comment the first 2
 lines out and enable comment outed the 2 lines.
 
-=== For Maverick Meerkat
+=== For Natty Narwhal
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://milter-manager.sourceforge.net/ubuntu/stable/ maverick universe
-  deb-src http://milter-manager.sourceforge.net/ubuntu/stable/ maverick universe
-  # deb http://milter-manager.sourceforge.net/ubuntu/development/ maverick universe
-  # deb-src http://milter-manager.sourceforge.net/ubuntu/development/ maverick universe
+  deb http://milter-manager.sourceforge.net/ubuntu/stable/ natty universe
+  deb-src http://milter-manager.sourceforge.net/ubuntu/stable/ natty universe
+  # deb http://milter-manager.sourceforge.net/ubuntu/development/ natty universe
+  # deb-src http://milter-manager.sourceforge.net/ubuntu/development/ natty universe
 
 If we use development series, we need to comment the first 2
 lines out and enable comment outed the 2 lines.
