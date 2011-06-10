@@ -48,7 +48,9 @@ build_chroot()
 	    run_sudo sed -i'' -e 's/us/jp/' $base_dir/etc/apt/sources.list
 	    ;;
 	*)
-	    run_sudo sed -i'' -e 's/main$/main universe/' \
+	    run_sudo sed -i'' \
+		-e 's/main$/main universe/' \
+		-e 's,http://archive,http://jp.archive,' \
 		$base_dir/etc/apt/sources.list
 	    ;;
     esac
