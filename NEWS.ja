@@ -32,12 +32,12 @@
 
 ==== 改良
 
-  * trust適用条件: ドメイン名を正規化するようにした。
+  * [trust適用条件] ドメイン名を正規化するようにした。
   * ((<trust.clear|configuration.rd.ja#trust.clear>))設定項
     目を追加。
   * ((<trust.load_envelope_from_domains|configuration.rd.ja#trust.load_envelope_from_domains>))
     設定項目を追加。
-  * trust適用条件: 組み込みの信用するドメインにezweb.ne.jpと
+  * [trust適用条件] 組み込みの信用するドメインにezweb.ne.jpと
     docomo.ne.jpを追加。
   * negotiateのときでもfallback statusを使うようにした。
   * ((<manager.chunk_size|configuration.rd.ja#manager.chunk_size>))
@@ -68,7 +68,7 @@
 
 ==== 改良
 
-  * 設定ファイル: エラー時に返すステータスのデフォルト値を
+  * [設定ファイル] エラー時に返すステータスのデフォルト値を
     acceptにした。
 
 === milter-performance-check

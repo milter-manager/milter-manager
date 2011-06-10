@@ -2,6 +2,98 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-8-0] 1.8.0: 2011-06-10
+
+The first release of stable 1.8.x series.
+
+=== All
+
+==== Improvements
+
+  * Removed unused variables.
+
+=== Package
+
+==== Improvements
+
+  * Removed Debian GNU/Linux lenny support.
+  * Added Debian GNU/Linux wheezy support.
+  * [redhat] Specified PID file in init file explicitly.
+  * [freebsd] Supported /etc/rc.conf.local.
+    [Patch by moto kawasaki]
+
+==== Fixes
+
+  * [debian] Added missing milter.rb.
+    [Reported by Mitsuru Ogino]
+
+=== milter manager
+
+==== Improvements
+
+  * [trust applicable condition] Normalized domain name.
+  * Added ((<trust.clear|configuration.rd#trust.clear>))
+    configuration item.
+  * Added
+    ((<trust.load_envelope_from_domains|configuration.rd#trust.load_envelope_from_domains>))
+    configuration item.
+  * [trust applicable condition] Added ezweb.ne.jp and
+    docomo.ne.jp to built-in trusted domain list.
+  * Used fallback status on negotiate.
+  * Added
+    ((<manager.chunk_size|configuration.rd.ja#manager.chunk_size>))
+    configuration item.
+
+==== Fixes
+
+  * Fixed a bug that child milter process launcher isn't
+    exited.
+    [Reported by OBATA Akio]
+  * Fixed a bug that child milters that return reject,
+    temporary failure or discard aren't used in the same
+    session.
+
+=== milter-core
+
+==== Improvements
+
+  * Added trace log level that is more verbose than debug
+    log level.
+  * Supported +/- log level prefix to add/remove log level
+    from the current log levels in MILTER_LOG_LEVEL
+    environment environment.
+
+==== Fixes
+
+  * Fixed a read block bug when readable data is available.
+
+=== Ruby milter
+
+==== Improvements
+
+  * [configuration] Used 'accept' as default value for
+    fallback status.
+
+=== milter-performance-check
+
+==== Improvements
+
+  * Supported CentOS 5.
+
+=== Document
+
+==== Fixes
+
+  * Used Milter::VERSION instead of Milter::TOOLKIT_VERSION
+    for confirming Ruby milter's version.
+    [Reported by Mitsuru Ogino]
+
+=== Thanks
+
+  * Mitsuru Ogino
+  * OBATA Akio
+  * moto kawasaki
+
 == [release-1-6-9] 1.6.9: 2011-04-26
 
 A bug fix release of 1.6.8.
