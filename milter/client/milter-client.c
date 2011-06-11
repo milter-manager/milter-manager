@@ -2390,16 +2390,21 @@ run_worker (MilterClient *client, GError **error)
     priv->quitting = FALSE;
     loop = milter_client_get_event_loop(client);
     priv->accept_watch_id =
-        milter_event_loop_watch_io(loop,
-                                   priv->listening_channel,
-                                   G_IO_IN | G_IO_PRI,
-                                   worker_accept_watch_func, client);
+        milter_event_loop_watch_io_full(loop,
+                                        G_PRIORITY_HIGH,
+                                        priv->listening_channel,
+                                        G_IO_IN | G_IO_PRI,
+                                        worker_accept_watch_func,
+                                        client,
+                                        NULL);
     priv->accept_error_watch_id =
-        milter_event_loop_watch_io(loop,
-                                   priv->listening_channel,
-                                   G_IO_ERR | G_IO_HUP | G_IO_NVAL,
-                                   accept_error_watch_func,
-                                   client);
+        milter_event_loop_watch_io_full(loop,
+                                        G_PRIORITY_HIGH,
+                                        priv->listening_channel,
+                                        G_IO_ERR | G_IO_HUP | G_IO_NVAL,
+                                        accept_error_watch_func,
+                                        client,
+                                        NULL);
     milter_event_loop_run(loop);
 
     return TRUE;
