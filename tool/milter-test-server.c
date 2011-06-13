@@ -2004,7 +2004,7 @@ get_charset (const gchar *value)
         end_pos = strchr(pos + 1, pos[0]);
         if (!end_pos)
             return NULL;
-        return g_strndup(pos + 1, end_pos - pos);
+        return g_strndup(pos + 1, end_pos - pos - 1);
     }
 
     end_pos = strchr(pos, ';');

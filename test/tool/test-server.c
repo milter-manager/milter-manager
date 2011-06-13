@@ -1562,6 +1562,29 @@ option_test_assert_output_message (void)
 }
 
 static void
+option_test_assert_output_message_charset (void)
+{
+    cut_assert_equal_string(
+        "status: pass\n"
+        "elapsed-time: XXX seconds\n"
+        "\n"
+        "Envelope:------------------------------\n"
+        "  MAIL FROM:<sender@example.com>" "\n"
+        "  RCPT TO:<receiver@example.org>" "\n"
+        "Header:--------------------------------\n"
+        "  Content-Type: text/plain; charset=\"us-ascii\"" "\n"
+        "  From: <sender@example.com>" "\n"
+        "  To: <receiver@example.org>" "\n"
+        "Body:----------------------------------\n"
+        "La de da de da 1.\n"
+        "La de da de da 2.\n"
+        "La de da de da 3.\n"
+        "La de da de da 4."
+        "\n",
+        normalized_output_string->str);
+}
+
+static void
 option_test_assert_large_mail (void)
 {
     const gchar expected_header[] = "\r\n--=-fXjrl3xPRPdvOSpDlnzU\r\n";
@@ -1670,6 +1693,10 @@ data_option (void)
     ADD("output-message",
         "--output-message",
         option_test_assert_output_message);
+    ADD("output-message - charset",
+        "--header='Content-Type:text/plain; charset=\"us-ascii\"' "
+        "--output-message",
+        option_test_assert_output_message_charset);
     ADD("mail-file",
         mail_file_option("parse-test.mail"),
         option_test_assert_mail_file);
