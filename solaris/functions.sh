@@ -35,6 +35,53 @@ build_pkg()
     shift
     shift
 
+    create_pkginfo "${base}" "${build_dir}"
+    update_prototype "${base}" "${build_dir}"
+
+    echo "$(time_stamp): Building pkg ${package_name}..."
+    run mkdir -p "${PKGS}"
+    (
+        cd "$prototype_dir"
+        run pkgmk -o -r "${PKG_DESTDIR}${PREFIX}" -d "$PKGS"
+    ) > "${log}" 2>&1
+    echo "$(time_stamp): done."
+
+    run rm -rf "${PKG_DESTDIR}"
+}
+
+create_pkginfo()
+{
+    local base="$1"
+    local build_dir="$2"
+    local package_name="${base%%-[0-9]*}"
+    package_name="${package_name##lib}"
+    local prototype_dir="${PROTOTYPES}/${package_name}"
+    local pkginfo_template="${prototype_dir}/pkginfo.in"
+    local pkginfo="${prototype_dir}/pkginfo"
+    shift
+    shift
+
+    echo "$(time_stamp): Creating pkginfo of ${base}..."
+    sed -e "s,@prefix@,${PREFIX},g" "${pkginfo_template}" > "${pkginfo}"
+    echo "$(time_stamp): done."
+}
+
+update_prototype()
+{
+    local base="$1"
+    local build_dir="$2"
+    local package_name="${base%%-[0-9]*}"
+    package_name="${package_name##lib}"
+    local prototype_dir="${PROTOTYPES}/${package_name}"
+    local prototype="${prototype_dir}/prototype"
+    local preinstall="${prototype_dir}/preinstall"
+    local postinstall="${prototype_dir}/postinstall"
+    local user="$(/usr/xpg4/bin/id -un)"
+    local group="$(/usr/xpg4/bin/id -gn)"
+    local log="${BUILDS}/${base}.log"
+    shift
+    shift
+
     echo "$(time_stamp): Updating prototype of ${base}..."
     run mkdir -p "$prototype_dir"
     run rm -rf "${PKG_DESTDIR}"
@@ -56,16 +103,6 @@ EOP
 	gsed -e "s/$user $group\$/root root/" | \
 	sort >> "${prototype}"
     echo "$(time_stamp): done."
-
-    echo "$(time_stamp): Building pkg ${package_name}..."
-    run mkdir -p "${PKGS}"
-    (
-        cd "$prototype_dir"
-        run pkgmk -o -r "${PKG_DESTDIR}${PREFIX}" -d "$PKGS"
-    ) > "${log}" 2>&1
-    echo "$(time_stamp): done."
-
-    run rm -rf "${PKG_DESTDIR}"
 }
 
 install_pkg()
