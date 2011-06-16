@@ -42,6 +42,7 @@ test_unit_files =						\
 	test-unit/html/favicon.ico				\
 	test-unit/html/favicon.png				\
 	test-unit/html/favicon.svg				\
+	test-unit/html/github-logo.png				\
 	test-unit/html/heading-mark.png				\
 	test-unit/html/heading-mark.svg				\
 	test-unit/html/index.html				\
@@ -71,8 +72,10 @@ test_unit_files =						\
 	test-unit/lib/test/unit/collector/dir.rb		\
 	test-unit/lib/test/unit/collector/load.rb		\
 	test-unit/lib/test/unit/collector/objectspace.rb	\
+	test-unit/lib/test/unit/collector/xml.rb		\
 	test-unit/lib/test/unit/color-scheme.rb			\
 	test-unit/lib/test/unit/color.rb			\
+	test-unit/lib/test/unit/data.rb				\
 	test-unit/lib/test/unit/diff.rb				\
 	test-unit/lib/test/unit/error.rb			\
 	test-unit/lib/test/unit/exceptionhandler.rb		\
@@ -85,9 +88,11 @@ test_unit_files =						\
 	test-unit/lib/test/unit/runner/console.rb		\
 	test-unit/lib/test/unit/runner/emacs.rb			\
 	test-unit/lib/test/unit/runner/tap.rb			\
+	test-unit/lib/test/unit/runner/xml.rb			\
 	test-unit/lib/test/unit/testcase.rb			\
 	test-unit/lib/test/unit/testresult.rb			\
 	test-unit/lib/test/unit/testsuite.rb			\
+	test-unit/lib/test/unit/testsuitecreator.rb		\
 	test-unit/lib/test/unit/ui/console/outputlevel.rb	\
 	test-unit/lib/test/unit/ui/console/testrunner.rb	\
 	test-unit/lib/test/unit/ui/emacs/testrunner.rb		\
@@ -95,6 +100,7 @@ test_unit_files =						\
 	test-unit/lib/test/unit/ui/testrunner.rb		\
 	test-unit/lib/test/unit/ui/testrunnermediator.rb	\
 	test-unit/lib/test/unit/ui/testrunnerutilities.rb	\
+	test-unit/lib/test/unit/ui/xml/testrunner.rb		\
 	test-unit/lib/test/unit/util/backtracefilter.rb		\
 	test-unit/lib/test/unit/util/method-owner-finder.rb	\
 	test-unit/lib/test/unit/util/observable.rb		\
@@ -110,11 +116,13 @@ test_unit_files =						\
 	test-unit/test/collector/test-load.rb			\
 	test-unit/test/collector/test_dir.rb			\
 	test-unit/test/collector/test_objectspace.rb		\
+	test-unit/test/fixtures/plus.csv			\
 	test-unit/test/run-test.rb				\
 	test-unit/test/test-assertions.rb			\
 	test-unit/test/test-attribute.rb			\
 	test-unit/test/test-color-scheme.rb			\
 	test-unit/test/test-color.rb				\
+	test-unit/test/test-data.rb				\
 	test-unit/test/test-diff.rb				\
 	test-unit/test/test-emacs-runner.rb			\
 	test-unit/test/test-fixture.rb				\
