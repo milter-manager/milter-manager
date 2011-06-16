@@ -17,7 +17,7 @@ if test "$USE_OPEN_CSW" != "yes"; then
 	install_package ${gnu_org}/gettext/gettext-0.18.1.1.tar.gz \
 	--enable-relocatable --without-git
     install_package ${gnu_org}/libiconv/libiconv-1.13.1.tar.gz
-    yes | run_sudo /usr/sbin/pkgrm "${PKG_PREFIX}gettext" > \
+    yes | run_pfexec /usr/sbin/pkgrm "${PKG_PREFIX}gettext" > \
 	"${PKGS}/${PKG_PREFIX}gettext-uninstall.log" 2>&1
     CC="$CC -m64" \
 	install_package ${gnu_org}/gettext/gettext-0.18.1.1.tar.gz \
@@ -46,7 +46,7 @@ CC="$CC -m64" \
     build_pkg "${ruby_base}" "${BUILDS}/${ruby_base}" \
     "gem install ${gem_options} ${gems}" \
     "gem install ${gem_options} -v 0.2.6 mysql2"
-yes | run_sudo /usr/sbin/pkgrm "${PKG_PREFIX}ruby" > \
+yes | run_pfexec /usr/sbin/pkgrm "${PKG_PREFIX}ruby" > \
     "${PKGS}/${PKG_PREFIX}ruby-uninstall.log" 2>&1
 install_pkg "${ruby_base}"
 
