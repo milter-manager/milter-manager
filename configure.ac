@@ -550,6 +550,7 @@ dnl **************************************************************
 
 libev_available=no
 m4_define([BUNDLED_LIBEV_VERSION], [4.04])
+LIBEV_CFLAGS='-DEV_COMPAT3=0'
 AC_ARG_WITH(libev,
   [AS_HELP_STRING([--with-libev],
     [Specify libev installed prefix. [default=auto]])],
@@ -564,7 +565,7 @@ if test "x$with_libev" != "xno"; then
     libev_prefixes="$with_libev"
   fi
   for libev_prefix in $libev_prefixes; do
-    CFLAGS="$CFLAGS -I$libev_prefix/include"
+    CFLAGS="$CFLAGS -I$libev_prefix/include ${LIBEV_CFLAGS}"
     LDFLAGS="$LDFLAGS -L$libev_prefix/lib"
     libev_available=no
     AC_CHECK_HEADERS(ev.h,
@@ -581,7 +582,6 @@ if test "x$with_libev" != "xno"; then
     LDFLAGS="$_SAVE_LDFLAGS"
     if test "x$libev_available" != "xno"; then
       LIBEV_INCLUDES="-I$libev_prefix/include"
-      LIBEV_CFLAGS='-DEV_COMPAT3=0'
       LIBEV_LA=""
       LIBEV_LIBS="-L$libev_prefix/lib -lev"
       break
@@ -593,7 +593,6 @@ if test "x$with_libev" != "xno"; then
     m4_include([libev-]BUNDLED_LIBEV_VERSION[/libev.m4])
     AC_DEFINE(HAVE_LIBEV, [1], [Define to 1 if libev is available.])
     LIBEV_INCLUDES='-I$(top_srcdir)/libev-'BUNDLED_LIBEV_VERSION
-    LIBEV_CFLAGS='-DEV_COMPAT3=0'
     LIBEV_LA='$(top_builddir)/libev-'BUNDLED_LIBEV_VERSION'/libev.la'
     LIBEV_LIBS='$(LIBEV_LA)'
   fi
