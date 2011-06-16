@@ -101,9 +101,8 @@ if WITH_LIBEV
 libmilter_core_la_SOURCES += milter-libev-event-loop.c
 libmilter_core_la_DEPENDENCIES += $(LIBEV_LA)
 libmilter_core_la_LIBADD += $(LIBEV_LIBS)
-libmilter_core_la_CFLAGS +=			\
-	$(LIBEV_CFLAGS)				\
-	-DEV_COMPAT3=0
+libmilter_core_la_CFLAGS += $(LIBEV_CFLAGS)
+INCLUDES += $(LIBEV_INCLUDES)
 endif
 
 include $(top_srcdir)/build/enum-types.mk
