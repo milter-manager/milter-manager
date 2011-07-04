@@ -2,7 +2,7 @@
 
 MILTER_MANAGER_ROOT=@prefix@
 MILTER_COMMAND=$MILTER_MANAGER_ROOT/sbin/milter-manager
-CONFIG_DIR=$MILTER_MANAGER_ROOT/etc/milter-manager
+: ${MILTER_MANAGER_CONFIG_DIR:=$MILTER_MANAGER_ROOT/etc/milter-manager}
 
 PID_FILE=@localstatedir@/run/milter-manager/milter-manager.pid
 
@@ -23,7 +23,7 @@ start()
     mkpath $TARGET_USER:$TARGET_GROUP "${PID_FILE%/*}"
     $MILTER_COMMAND \
         --pid-file=$PID_FILE \
-        --config-dir=$CONFIG_DIR \
+        --config-dir=$MILTER_MANAGER_CONFIG_DIR \
         --daemon
     return $?
 }
