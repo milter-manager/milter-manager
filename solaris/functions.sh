@@ -21,18 +21,20 @@ time_stamp()
 
 check_pkgs()
 {
+    echo "$(time_stamp): Checking libraries..."
     check_pkg "${PKG_PREFIX}ruby"
     check_pkg "${PKG_PREFIX}iconv"
     check_pkg "${PKG_PREFIX}gettext"
     check_pkg "${PKG_PREFIX}glib"
     check_pkg "${PKG_PREFIX}mysql"
     check_pkg "${PKG_PREFIX}cutter"
+    echo "$(time_stamp): done."
 }
 
 check_pkg()
 {
     pkg="$1"
-    if pkginfo | grep -q "$pkg"; then
+    if pkginfo | ggrep -q "$pkg"; then
         echo "already installed ${pkg}."
     else
         echo "not installed ${pkg} yet."
