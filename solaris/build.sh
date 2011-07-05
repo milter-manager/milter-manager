@@ -1,5 +1,6 @@
 #!/usr/bin/bash --noprofile
 
+source ./environment.sh
 source ./functions.sh
 
 skip_libraries=false
