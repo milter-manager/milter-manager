@@ -84,7 +84,9 @@ EXTRA_DIST =						\
 	ruby-milter-configuration.rd			\
 	ruby-milter-configuration.rd.ja			\
 	available-milters.rd				\
-	available-milters.rd.ja
+	available-milters.rd.ja				\
+	log-list.rd					\
+	log-list.rd.ja
 
 dist_man1_MANS =			\
 	milter-manager.man		\

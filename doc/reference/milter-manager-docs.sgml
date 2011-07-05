@@ -49,6 +49,7 @@
       <!--xi:include href="upgrade-on-others.xml"/-->
     </chapter>
     <xi:include href="configuration.xml"/>
+    <xi:include href="log-level.xml"/>
     <xi:include href="reverse-dictionary.xml"/>
     <xi:include href="users.xml"/>
     <xi:include href="available-milters.xml"/>

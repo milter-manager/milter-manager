@@ -96,7 +96,8 @@ content_files =					\
 	ruby-milter-tutorial.xml		\
 	ruby-milter-reference.xml		\
 	ruby-milter-configuration.xml		\
-	available-milters.xml
+	available-milters.xml			\
+	log-list.xml
 
 # Extra options to supply to gtkdoc-fixxref
 FIXXREF_OPTIONS=
@@ -176,7 +177,9 @@ generated_xml_files =				\
 	ruby-milter-configuration.xml		\
 	ruby-milter-configuration.xml.ja	\
 	available-milters.xml			\
-	available-milters.xml.ja
+	available-milters.xml.ja		\
+	log-list.xml				\
+	log-list.xml.ja
 
 MAINTAINERCLEANFILES +=			\
 	$(generated_xml_files)		\
@@ -431,6 +434,12 @@ available-milters.xml: $(top_srcdir)/doc/available-milters.rd $(RD2REFENTRY_LIB)
 
 available-milters.xml.ja: $(top_srcdir)/doc/available-milters.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/available-milters.rd.ja > available-milters.xml.ja
+
+log-list.xml: $(top_srcdir)/doc/log-list.rd $(RD2REFENTRY_LIB) log-list.xml.ja
+	$(RD2DOCBOOK) $(top_srcdir)/doc/log-list.rd > log-list.xml
+
+log-list.xml.ja: $(top_srcdir)/doc/log-list.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/log-list.rd.ja > log-list.xml.ja
 
 ### SVG -> PNG
 mta-and-milter-manager-and-child-milter.png: $(top_srcdir)/doc/mta-and-milter-manager-and-child-milter.svg
