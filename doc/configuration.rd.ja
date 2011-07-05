@@ -638,8 +638,6 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
        システムによってepoll、kqueueまたはevent portsを使い
        ます。
 
-   ((*注意: この項目は実験的な機能扱いです。*))
-
    例:
      manager.event_loop_backend = "libev"
 
@@ -660,8 +658,6 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
    指定できる値は0以上、1000以下です。0のときはワーカープロセスを使用し
    ません。
-
-   ((*注意: この項目は実験的な機能扱いです。*))
 
    例:
      manager.n_workers = 10

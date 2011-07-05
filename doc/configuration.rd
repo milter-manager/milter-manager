@@ -641,8 +641,6 @@ Since 1.6.6.
      * "libev": Uses libev that uses epoll, kqueue or event
        ports as I/O multiplexer.
 
-   ((*NOTE: This item is an experimental feature.*))
-
    Example:
      manager.event_loop_backend = "libev"
 
@@ -664,8 +662,6 @@ Since 1.6.6.
 
    Availble value is between 0 and 1000.
    If it is 0, no worker processes will be used.
-
-   ((*NOTE: This item is an experimental feature.*))
 
    Example:
      manager.n_workers = 10
