@@ -19,6 +19,32 @@ time_stamp()
     date +%Y-%m-%dT%H:%m:%S
 }
 
+check_pkgs()
+{
+    check_pkg "${PKG_PREFIX}ruby"
+    check_pkg "${PKG_PREFIX}iconv"
+    check_pkg "${PKG_PREFIX}gettext"
+    check_pkg "${PKG_PREFIX}glib"
+    check_pkg "${PKG_PREFIX}mysql"
+}
+
+check_pkg()
+{
+    pkg="$1"
+    if pkginfo | grep -q "$pkg"; then
+        echo "already installed ${pkg}."
+    else
+        echo "not installed ${pkg} yet."
+        exit 1
+    fi
+    if test -f "${PKGS}/${pkg}.pkg"; then
+        echo "already exist ${pkg}.pkg."
+    else
+        echo "does not exist ${pkg}.pkg."
+        exit 1
+    fi
+}
+
 build_pkg()
 {
     local base="$1"
