@@ -87,11 +87,15 @@ create_pkginfo()
     local prototype_dir="${PROTOTYPES}/${package_name}"
     local pkginfo_template="${prototype_dir}/pkginfo.in"
     local pkginfo="${prototype_dir}/pkginfo"
+    local build_dir="${base_dir}/../"
+    local version=$(PKG_CONFIG_PATH="$build_dir" pkg-config --modversion milter-manager)
     shift
     shift
 
     echo "$(time_stamp): Creating pkginfo of ${base}..."
-    sed -e "s,@prefix@,${PREFIX},g" "${pkginfo_template}" > "${pkginfo}"
+    sed -e "s,@prefix@,${PREFIX},g" \
+        -e "s,@VERSION@,${version},g" \
+        "${pkginfo_template}" > "${pkginfo}"
     echo "$(time_stamp): done."
 }
 
