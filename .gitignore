@@ -139,6 +139,8 @@ Makefile.in
 /doc/reference/news.xml.ja
 /doc/reference/readme.xml
 /doc/reference/readme.xml.ja
+/doc/reference/log-list.xml
+/doc/reference/log-list.xml.ja
 /doc/reference/sendmail-and-milter-ja.png
 /doc/reference/sendmail-and-milter.png
 /doc/reference/sendmail-and-postfix-and-milter-ja.png
