@@ -38,7 +38,7 @@ check_pkg()
         echo "not installed ${pkg} yet."
         exit 1
     fi
-    if test -f "${PKGS}/${pkg}"; then
+    if test -d "${PKGS}/${pkg}"; then
         echo "already exist ${pkg}."
     else
         echo "does not exist ${pkg}."
