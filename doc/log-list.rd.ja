@@ -208,6 +208,10 @@ clientモジュールのログの一覧です。
 
 セッションに関係ない部分では「セッションID」は付きません。
 
+: error: [client][connection-spec][default][error]
+
+  接続設定に失敗した時。
+
 : error: [client][error][write]
 
    出力データの書き込み時にエラーが発生。
@@ -234,13 +238,26 @@ clientモジュールのログの一覧です。
 
      29(+2) 3
 
+: statistics [reply][end-of-message][quarantine]
+
+  検疫を実施した。
+
 : error: [client][error][unix]
 
    UNIXドメインソケットの初期化中にエラーが発生。
 
+: error: [client][unix][error]
+
+   UNIXドメインソケットの終了処理中にエラーが発生。
+
 : error: [client][single-thread][start][error]
+: error: [client][multi-thread][start][error]
 
    メインループ開始時にエラーが発生。
+
+: error: [client][main][error]
+
+  子 milter の実行に失敗した時。
 
 : warning: [client][accept][suspend]
 
@@ -256,8 +273,13 @@ clientモジュールのログの一覧です。
    接続受付に失敗した時。
 
 : error: [client][single-thread][accept][start][error]
+: error: [client][multi-thread][accept][error]
 
    接続受付の開始に失敗した時。
+
+: error: [client][multi-thread][error]
+
+  スレッドプールにスレッド追加時にエラーが発生。
 
 : error: [client][watch][error]
 
@@ -270,6 +292,14 @@ clientモジュールのログの一覧です。
 : error: [client][prepare][listen][error]
 
    listenに失敗した時。
+
+: error: [client][pid-file][error][remove]
+
+  PID ファイルを削除する時にエラーが発生。
+
+: error: [client][pid-file][save][error]
+
+  PID ファイルの保存時にエラーが発生。
 
 : error: [client][run][success][cleanup][error]
 
@@ -288,8 +318,13 @@ clientモジュールのログの一覧です。
    ワーカープロセスの実行時にエラーが発生。
 
 : error: [client][worker][run][listen][error]
+: error: [client][workers][run][listen][error]
 
   ワーカープロセスがlistenを開始する時にエラーが発生。
+
+: warning: [client][option][deprecated]
+
+  非推奨のオプションが与えられた時。
 
 === server
 
