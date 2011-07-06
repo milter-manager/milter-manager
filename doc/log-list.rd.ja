@@ -293,7 +293,48 @@ clientモジュールのログの一覧です。
 
 === server
 
-TOOD
+serverモジュールのログの一覧です。
+
+セッションに関係ない部分では「セッションID」は付きません。
+
+: error: [server][dispose][body][remained]
+
+  ボディが残ってしまった時。
+
+: error: [server][flushed][error][next-state][invalid]
+
+  サーバが不正な状態になってしまった時。
+
+: error: [server][error]
+
+  サーバが不正な状態になってしまった時。
+  サポートしていない ... のバージョンが要求された時。
+  ボディの応答待ちのキューが空になった時。
+
+: error: [server][error][write]
+
+  エージェントにエラーがあった時。
+
+: error: [server][error][#{action}][state][invalid][#{state_name}]
+
+  サーバが不正な状態になってしまった時。
+
+: error: [server][timeout][connection]
+
+  コネクションがタイムアウトした時。
+
+: error: [server][error][connect]
+
+  接続エラーが発生した時。
+
+: error: [server][error][connected][start]
+
+  接続開始時にエラーが発生した時。
+
+: warning: [server][reply][quitted]
+
+  サーバへの返答が終了すべきでない時に終了した場合。
+  このログの次に error ログを出力していなければ問題ない。
 
 === manager
 
