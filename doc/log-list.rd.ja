@@ -373,4 +373,301 @@ serverモジュールのログの一覧です。
 
 === manager
 
-TODO
+managerモジュールのログの一覧です。
+
+セッションに関係ない部分では「セッションID」は付きません。
+
+: critical: [%s] unable to open pipe for collecting stack trace
+: critical: %s", report_stack_trace_window + last_new_line
+: critical: %s", report_stack_trace_window + last_new_line
+
+  ...
+
+: error: [controller][error][write][success]
+
+  成功パケットの書き込み時にエラーが発生。
+
+: error: [controller][error][write][error]
+
+  失敗パケットの書き込み時にエラーが発生。
+
+: error: [controller][error][save]
+
+  設定ファイルの保存に失敗した時。
+
+: error: [controller][error][write][configuration]
+
+  設定の書き込み時にエラーが発生。
+
+: error: [controller][reload][error]
+
+  設定の再読み込み時にエラーが発生。
+
+: error: [controller][error][write][status]
+
+  ステータスの書き込み時にエラーが発生。
+
+: error: [launcher][error][child][authority][group]
+
+  GID の変更に失敗した時。
+
+: error: [launcher][error][child][authority][groups]
+
+  追加のグループリストの変更に失敗した時。
+
+: error: [launcher][error][child][authority][user]
+
+  UID の変更に失敗した時。
+
+: error: [launcher][error][launch]
+
+  子プロセスの起動に失敗した時。
+
+: error: [launcher][error][write]
+
+  パケットの書き込みに失敗した時。
+
+: error: [children][error][negotiate]
+
+  子 milter とのネゴシエーションが開始しなかった時。
+
+: error: [children][error][pending-message-request]
+
+  未定義の milter プロトコルのコマンドがリクエストされた時。
+
+: error: [children][error][body][read][seek]
+
+  ボディのシーク中にエラーが発生。
+
+: error: [children][error][body][read]
+
+  ボディの読み込み中にエラーが発生。
+
+: error: [children][error][invalid-state][temporary-failure]
+: error: [children][error][invalid-state][reject]
+: error: [children][error][invalid-state][accept]
+: error: [children][error][invalid-state][discard]
+: error: [children][error][invalid-state][stopped]
+
+  コールバック実行時に不正な状態になった時。
+
+: error: [children][error][invalid-state][%s][%s]
+
+  end_of_message でしか呼べない関数を呼んだ時。
+
+: error: [children][timeout][writing]
+
+  書き込みタイムアウトした時。
+
+: error: [children][timeout][reading]
+
+  読み込みタイムアウトした時。
+
+: error: [children][timeout][end-of-message]
+
+  end_of_message がタイムアウトした時。
+
+: error: [children][error][%s][%s]
+
+  エラーが発生した時。
+
+: error: [children][error][start-child][write]
+: error: [children][error][start-child][flush]
+
+  子 mitler 開始時にエラーが発生。
+
+: error: [children][error][negotiate][not-started]
+
+  子 milter とのネゴシエーションが始まらなかった時。
+
+: error: [children][error][negotiate][no-response]
+
+  子 milter とのネゴシエーションのレスポンスが無い時。
+
+: error: [children][timeout][connection]
+
+  接続タイムアウトが発生した時。
+
+: error: [children][error][connection]
+
+  接続エラーが発生した時。
+
+: error: [children][error][alive]
+
+  全ての子 milter に接続できなかった時。
+
+: error: [children][error][message-processing]
+
+  メッセージを処理した子 milter がいなかった時。
+
+: error: [children][error][body][open]
+
+  一時ファイルを開けなかった時。
+
+: error: [children][error][body][encoding]
+
+  エンコーディングのセットに失敗した時。
+
+: error: [children][error][body][write]
+
+  ファイルへの書き込みに失敗した時。
+
+: error: [children][error][body][send][seek]
+
+  ファイルのシーク中にエラーが発生した時。
+
+: error: [children][error][body][send]
+
+  ファイルの読み込み中にエラーが発生した時。
+
+: error: [configuration][dispose][clear][error]
+
+  milter-manager の設定のクリアに失敗した時。
+
+: error: [configuration][new][clear][error]
+
+  milter-manager の設定のクリアに失敗した時。
+
+: error: [configuration][load][clear][error]
+
+  milter-manager の設定のクリアに失敗した時。
+
+: error: [configuration][load][error]
+
+  milter-manager.conf のロードに失敗した時。
+
+: error: [configuration][load][custom][error]
+
+  milter-manager.custom.conf のロードに失敗した時。
+
+: error: [configuration][clear][custom][error]
+
+  milter-manager の設定のクリアに失敗した時。
+
+: error: [configuration][maintain][error]
+
+  milter-manager の ... 中にエラーが発生。
+
+: error: [configuration][event-loop-created][error]
+
+  イベントループの生成に失敗した時。
+
+: error: [controller][error][unix]
+
+  UNIXドメインソケットの処理中にエラーが発生。
+
+: error: [controller][error][start]
+
+  ... の開始に失敗した時。  
+
+: error: [controller][error][accept]
+
+  接続を受け付けられなかった時。
+
+: error: [controller][error][watch]
+
+  ...
+
+: error: [controller][error][listen]
+
+  listen開始時にエラー。
+
+: error: [manager][reload][signal][error]
+
+  milter-manger の設定のリロードに失敗した時。
+
+: error: [process-launcher][error][start]
+
+  子プロセスの起動に失敗した時。
+
+: error: [process-launcher][error]
+
+  子プロセスを端末から切り離すのに失敗した時。
+
+: error: failed to create pipe for launcher command:
+: error: failed to create pipe for launcher reply:
+: error: failed to fork process launcher process:
+: error: failed to find password entry for effective user:
+: error: failed to get password entry for effective user:
+: error: failed to get limit for RLIMIT_NOFILE:
+: error: failed to set limit for RLIMIT_NOFILE:
+: error: failed to create custom configuration directory:
+: error: failed to change owner and group of configuration directory：
+: error: failed to listen:
+: error: failed to drop privilege:
+: error: failed to listen controller socket:
+: error: failed to daemonize:
+: error: failed to start milter-manager process:
+
+  milter-manager を起動できなかった時。
+
+: error: [manager][reload][custom-load-path][error]
+
+  custom-load-path から設定を読み込むのに失敗した時。
+
+: error: [manager][configuration][reload][command-line-load-path][error]
+
+  コマンドラインで指定したロードパスから設定を読み込むのに失敗した時。
+
+: error: [leader][error][invalid-state]
+
+  不正な状態になった時。
+
+: error: [leader][error]
+
+  ...
+
+: error: [leader][error][reply-code]
+
+  応答をセットする時にエラーが発生。
+
+: error: [leader][error][add-header]
+
+  ヘッダ追加時にエラーが発生。
+
+: error: [leader][error][insert-header]
+
+  ヘッダ挿入時にエラーが発生。
+
+: error: [leader][error][delete-header]
+
+  ヘッダ削除時にエラーが発生。
+
+: error: [leader][error][change-from]
+
+  From ヘッダ変更時にエラーが発生。
+
+: error: [leader][error][add-recipient]
+
+  RCPT TO 追加時にエラー発生。
+
+: error: [leader][error][delete-recipient]
+
+  RCPT TO 削除時にエラー発生。
+
+: error: [leader][error][replace-body]
+
+  ボディ置き換え時にエラー発生。
+
+: error: [egg][error] invalid connection spec
+: error: [egg][error] must set connection spec
+: error: [egg][error][set-spec]
+
+  接続設定のエラー。
+
+: statistics: [milter][end][%s][%s][%g](%u): %s",
+
+  ...
+
+: statistics: [milter][header][add]
+
+  ヘッダを追加した時。
+
+: statistics: [session][disconnected][%g](%u)", elapsed, priv->tag);
+
+  セッションを切断した時。
+
+: statistics: [session][header][add]
+
+  ヘッダを追加した時。
+
