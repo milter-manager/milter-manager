@@ -234,9 +234,12 @@ clientモジュールのログの一覧です。
    UNIXドメインソケットの終了処理中にエラーが発生。
 
 : error: [client][single-thread][start][error]
+
+   シングルスレッドモードでのメインループ開始時にエラーが発生。
+
 : error: [client][multi-thread][start][error]
 
-   メインループ開始時にエラーが発生。
+   マルチスレッドモードでのメインループ開始時にエラーが発生。
 
 : error: [client][main][error]
 
@@ -256,9 +259,12 @@ clientモジュールのログの一覧です。
    接続受付に失敗。
 
 : error: [client][single-thread][accept][start][error]
+
+   シングルスレッドモードでの接続受付の開始に失敗。
+
 : error: [client][multi-thread][accept][error]
 
-   接続受付の開始に失敗。
+   マルチスレッドモードでの接続受付の開始に失敗。
 
 : error: [client][multi-thread][error]
 
