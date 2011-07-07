@@ -996,7 +996,7 @@ managerモジュールもclientモジュール同様、セッションに関係�
 
 : statistics: [session][disconnected][#{elapsed}]
 
-SMTPクライアントがセッションを途中で切断。
+   SMTPクライアントがセッションを途中で切断。
 
    「[#{elapsed}]」には接続してからの経過時間が入る。
 
