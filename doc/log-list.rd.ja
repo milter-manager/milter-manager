@@ -330,9 +330,9 @@ clientモジュールのログの一覧です。
 
 serverモジュールのログの一覧です。
 
-serverモジュールをは同時に複数のmilterと通信する用途を想定し
-ています。そのため、以下のようにログには通信相手のmilter名が
-含まれます。
+serverモジュールは同時に複数のmilterと通信する用途を想定して
+います。そのため、以下のようにログには通信相手のmilter名が含
+まれます。
 
   [#{セッションID}] [#{タグ名1}][#{タグ名2}][...] [#{milter名}] #{メッセージ}
 
@@ -374,7 +374,7 @@ serverモジュールをは同時に複数のmilterと通信する用途を想�
     : define-macro
        マクロ定義を通信している状態。
     : negotiate
-       milterとセッションのやりとり方法を調整している状態。
+       milterとセッション内でのやりとり方法を調整している状態。
     : connect
        negotiateが完了し、milterとの接続が確立された状態。
     : helo
@@ -457,306 +457,493 @@ serverモジュールをは同時に複数のmilterと通信する用途を想�
    milterプロトコルが終了したあとにレスポンスが返ってきた。
    状態「#{state}」とレスポンス「#{response}」は
    【[server][error][#{response}][state][invalid][#{state}]】
-   のところで説明している項目と同じ。
+   で説明している項目と同じ。
    このログの次に error ログを出力していなければ問題ない。
 
 === manager
 
 managerモジュールのログの一覧です。
 
-セッションに関係ない部分では「セッションID」は付きません。
+managerモジュールもclientモジュール同様、セッションに関係ない
+部分では「セッションID」は付きません。
 
-: critical: [%s] unable to open pipe for collecting stack trace
-: critical: %s", report_stack_trace_window + last_new_line
-: critical: %s", report_stack_trace_window + last_new_line
+==== サブモジュール
 
-  ...
+一番最初のタグはmanagerモジュール内のサブモジュール名になり
+ます。ただし、以下のログについてはタグが付きません。
 
-: error: [controller][error][write][success]
+  * クラッシュ時のログ
+  * milter-managerコマンド起動時に関連するログ
 
-  成功パケットの書き込み時にエラーが発生。
+サブモジュールは以下の8つです。
 
-: error: [controller][error][write][error]
+  * manager
+  * configuration
+  * launcher
+  * process-launcher
+  * controller
+  * leader
+  * children
+  * egg
 
-  失敗パケットの書き込み時にエラーが発生。
+: manager
+   各モジュールを利用してmilter-managerコマンドを実装してい
+   るサブモジュールです。
 
-: error: [controller][error][save]
+: configuration
+   設定ファイルを読み込むモジュール。
 
-  設定ファイルの保存に失敗した時。
+: launcher
+   子milterを起動するモジュール。
 
-: error: [controller][error][write][configuration]
+: process-launcher
+   milter-managerコマンド内でlauncherサブモジュールを起動す
+   るモジュール。
 
-  設定の書き込み時にエラーが発生。
+: controller
+   milter-managerプロセスを外部から操作するモジュール。
 
-: error: [controller][reload][error]
+: leader
+   childrenモジュールがまとめた子milter全体の処理結果をMTAに
+   返すモジュール。
 
-  設定の再読み込み時にエラーが発生。
+: children
+   複数の子milterに対してmilterプロトコルで処理した結果を統
+   合して、全体の処理結果としてまとめるモジュール。
 
-: error: [controller][error][write][status]
+: egg
+   1つの子milterに関する情報を管理するモジュール。
 
-  ステータスの書き込み時にエラーが発生。
+それぞれのサブモジュール毎に説明します。
 
-: error: [launcher][error][child][authority][group]
-
-  GID の変更に失敗した時。
-
-: error: [launcher][error][child][authority][groups]
-
-  追加のグループリストの変更に失敗した時。
-
-: error: [launcher][error][child][authority][user]
-
-  UID の変更に失敗した時。
-
-: error: [launcher][error][launch]
-
-  子プロセスの起動に失敗した時。
-
-: error: [launcher][error][write]
-
-  パケットの書き込みに失敗した時。
-
-: error: [children][error][negotiate]
-
-  子 milter とのネゴシエーションが開始しなかった時。
-
-: error: [children][error][pending-message-request]
-
-  未定義の milter プロトコルのコマンドがリクエストされた時。
-
-: error: [children][error][body][read][seek]
-
-  ボディのシーク中にエラーが発生。
-
-: error: [children][error][body][read]
-
-  ボディの読み込み中にエラーが発生。
-
-: error: [children][error][invalid-state][temporary-failure]
-: error: [children][error][invalid-state][reject]
-: error: [children][error][invalid-state][accept]
-: error: [children][error][invalid-state][discard]
-: error: [children][error][invalid-state][stopped]
-
-  コールバック実行時に不正な状態になった時。
-
-: error: [children][error][invalid-state][%s][%s]
-
-  end_of_message でしか呼べない関数を呼んだ時。
-
-: error: [children][timeout][writing]
-
-  書き込みタイムアウトした時。
-
-: error: [children][timeout][reading]
-
-  読み込みタイムアウトした時。
-
-: error: [children][timeout][end-of-message]
-
-  end_of_message がタイムアウトした時。
-
-: error: [children][error][%s][%s]
-
-  エラーが発生した時。
-
-: error: [children][error][start-child][write]
-: error: [children][error][start-child][flush]
-
-  子 mitler 開始時にエラーが発生。
-
-: error: [children][error][negotiate][not-started]
-
-  子 milter とのネゴシエーションが始まらなかった時。
-
-: error: [children][error][negotiate][no-response]
-
-  子 milter とのネゴシエーションのレスポンスが無い時。
-
-: error: [children][timeout][connection]
-
-  接続タイムアウトが発生した時。
-
-: error: [children][error][connection]
-
-  接続エラーが発生した時。
-
-: error: [children][error][alive]
-
-  全ての子 milter に接続できなかった時。
-
-: error: [children][error][message-processing]
-
-  メッセージを処理した子 milter がいなかった時。
-
-: error: [children][error][body][open]
-
-  一時ファイルを開けなかった時。
-
-: error: [children][error][body][encoding]
-
-  エンコーディングのセットに失敗した時。
-
-: error: [children][error][body][write]
-
-  ファイルへの書き込みに失敗した時。
-
-: error: [children][error][body][send][seek]
-
-  ファイルのシーク中にエラーが発生した時。
-
-: error: [children][error][body][send]
-
-  ファイルの読み込み中にエラーが発生した時。
-
-: error: [configuration][dispose][clear][error]
-
-  milter-manager の設定のクリアに失敗した時。
-
-: error: [configuration][new][clear][error]
-
-  milter-manager の設定のクリアに失敗した時。
-
-: error: [configuration][load][clear][error]
-
-  milter-manager の設定のクリアに失敗した時。
-
-: error: [configuration][load][error]
-
-  milter-manager.conf のロードに失敗した時。
-
-: error: [configuration][load][custom][error]
-
-  milter-manager.custom.conf のロードに失敗した時。
-
-: error: [configuration][clear][custom][error]
-
-  milter-manager の設定のクリアに失敗した時。
-
-: error: [configuration][maintain][error]
-
-  milter-manager の ... 中にエラーが発生。
-
-: error: [configuration][event-loop-created][error]
-
-  イベントループの生成に失敗した時。
-
-: error: [controller][error][unix]
-
-  UNIXドメインソケットの処理中にエラーが発生。
-
-: error: [controller][error][start]
-
-  ... の開始に失敗した時。  
-
-: error: [controller][error][accept]
-
-  接続を受け付けられなかった時。
-
-: error: [controller][error][watch]
-
-  ...
-
-: error: [controller][error][listen]
-
-  listen開始時にエラー。
+==== サブモジュール: manager
 
 : error: [manager][reload][signal][error]
 
-  milter-manger の設定のリロードに失敗した時。
+   SIGHUPシグナルによってリクエストされた設定の再読み込み中
+   にエラーが発生。
+
+==== サブモジュール: configuration
+
+: error: [configuration][dispose][clear][error]
+
+   終了時の設定クリアが失敗。
+
+: error: [configuration][new][clear][error]
+
+   初回の設定クリアが失敗。
+
+: error: [configuration][load][clear][error]
+
+   設定再読み込み前の設定クリアに失敗。
+
+: error: [configuration][load][error]
+
+   設定ファイル（milter-manager.conf）の読み込みに失敗。
+
+: error: [configuration][load][custom][error]
+
+   カスタム設定ファイル（milter-manager.custom.conf）の読み
+   込みに失敗。
+
+: error: [configuration][clear][custom][error]
+
+   Rubyでの設定クリア処理に失敗。
+
+: error: [configuration][maintain][error]
+
+   ((<manager.maintenance_interval|configuration.rd.ja#manager.maintenance_interval>))
+   で指定した間隔で実行されるメンテナンス処理中にエラーが発生。
+
+: error: [configuration][event-loop-created][error]
+
+   イベントループの作成後の処理でエラーが発生。
+
+==== サブモジュール: launcher
+
+: error: [launcher][error][child][authority][group]
+
+   子milterを起動する時に、指定したグループへの実行権限の変
+   更に失敗。
+
+: error: [launcher][error][child][authority][groups]
+
+   子milterを起動する時に、指定したユーザの追加グループの初
+   期化に失敗。
+
+: error: [launcher][error][child][authority][user]
+
+   子milterを起動する時に、指定したユーザへの実行権限の変更
+   に失敗。
+
+: error: [launcher][error][launch]
+
+   子milterの起動に失敗。
+
+: error: [launcher][error][write]
+
+   子milterの起動が成功したか失敗したかを返すレスポンスの書
+   き込み時にエラーが発生。
+
+==== サブモジュール: process-launcher
 
 : error: [process-launcher][error][start]
 
-  子プロセスの起動に失敗した時。
+   launcherモジュールとの接続開始処理でエラーが発生。
 
 : error: [process-launcher][error]
 
-  子プロセスを端末から切り離すのに失敗した時。
+   forkしたlauncherモジュールからのファイルディスクリプタ切り
+   離しに失敗。
 
-: error: failed to create pipe for launcher command:
-: error: failed to create pipe for launcher reply:
-: error: failed to fork process launcher process:
-: error: failed to find password entry for effective user:
-: error: failed to get password entry for effective user:
-: error: failed to get limit for RLIMIT_NOFILE:
-: error: failed to set limit for RLIMIT_NOFILE:
-: error: failed to create custom configuration directory:
-: error: failed to change owner and group of configuration directory：
-: error: failed to listen:
-: error: failed to drop privilege:
-: error: failed to listen controller socket:
-: error: failed to daemonize:
-: error: failed to start milter-manager process:
+==== サブモジュール: controller
 
-  milter-manager を起動できなかった時。
+: error: [controller][error][write][success]
 
-: error: [manager][reload][custom-load-path][error]
+   成功を示すレスポンスデータの書き込み時にエラーが発生。
 
-  custom-load-path から設定を読み込むのに失敗した時。
+: error: [controller][error][write][error]
 
-: error: [manager][configuration][reload][command-line-load-path][error]
+   エラーを示すレスポンスデータの書き込み時にエラーが発生。
 
-  コマンドラインで指定したロードパスから設定を読み込むのに失敗した時。
+: error: [controller][error][save]
+
+   設定ファイルの保存時にエラーが発生。
+
+: error: [controller][error][write][configuration]
+
+   設定ファイルの書き込み時にエラーが発生。
+
+: error: [controller][reload][error]
+
+   設定の再読み込み時にエラーが発生。
+
+: error: [controller][error][write][status]
+
+   ステータスを返すレスポンスの書き込み時にエラーが発生。
+
+: error: [controller][error][unix]
+
+   ((<controller.remove_unix_socket_on_create|configuration.rd.ja#controller.remove_unix_socket_on_create>))
+   を有効にした場合に終了時に実行する、使用したUNIXドメイン
+   ソケットの削除処理中にエラーが発生。
+
+: error: [controller][error][start]
+
+   通信開始処理に失敗。
+
+: error: [controller][error][accept]
+
+   接続の受け付けに失敗。
+
+: error: [controller][error][watch]
+
+   通信中にエラーが発生。
+
+: error: [controller][error][listen]
+
+   listen(2)に失敗。
+
+==== サブモジュール: leader
 
 : error: [leader][error][invalid-state]
 
-  不正な状態になった時。
+   状態遷移を検出。milter managerのバグである可能性が高い。
 
 : error: [leader][error]
 
-  ...
+   childrenモジュールでエラーが発生。
 
 : error: [leader][error][reply-code]
 
-  応答をセットする時にエラーが発生。
+   SMTPのレスポンスコード指定に失敗。通信相手のmilterが不正
+   なレスポンスコードを送っている可能性がある。
 
 : error: [leader][error][add-header]
 
-  ヘッダ追加時にエラーが発生。
+   ヘッダーを末尾に追加する時にエラーが発生。
 
 : error: [leader][error][insert-header]
 
-  ヘッダ挿入時にエラーが発生。
+   ヘッダーを任意の位置に追加する時にエラーが発生。
 
 : error: [leader][error][delete-header]
 
-  ヘッダ削除時にエラーが発生。
+   ヘッダーを削除するときにエラーが発生。
 
 : error: [leader][error][change-from]
 
-  From ヘッダ変更時にエラーが発生。
+   差出人を変更するときにエラーが発生。
 
 : error: [leader][error][add-recipient]
 
-  RCPT TO 追加時にエラー発生。
+   宛先を追加する時にエラーが発生。
 
 : error: [leader][error][delete-recipient]
 
-  RCPT TO 削除時にエラー発生。
+   宛先を削除する時にエラーが発生。
 
 : error: [leader][error][replace-body]
 
-  ボディ置き換え時にエラー発生。
+   本文を置き換える時にエラーが発生。
 
-: error: [egg][error] invalid connection spec
-: error: [egg][error] must set connection spec
+==== サブモジュール: children
+
+: error: [children][error][negotiate]
+
+   子milterにネゴシエーション（セッション内でのやりとり方法
+   の調整）開始のリクエストを送っていないのにレスポンスが返っ
+   てきた。通信相手のmilterがmilterプロトコルに沿っていない
+   通信をした可能性がある。
+
+: error: [children][error][pending-message-request]
+
+   milter-managerプロセス内部で遅延させた子milterへのリクエ
+   ストに問題があった。発生した場合はmilter manager内のバグ
+   である。
+
+: error: [children][error][body][read][seek]
+
+   本文データの読み込み位置の変更時にエラーが発生。
+
+: error: [children][error][body][read]
+
+   本文データの読み込み時にエラーが発生。
+
+: error: [children][error][invalid-state][temporary-failure]
+
+   milterプロトコルでは想定していないタイミングで子milterが
+   temporary-failureレスポンスを返した。通信相手のmilterが
+   milterプロトコルに沿っていない通信をした可能性がある。
+
+: error: [children][error][invalid-state][reject]
+
+   milterプロトコルでは想定していないタイミングで子milterが
+   rejectレスポンスを返した。通信相手のmilterが
+   milterプロトコルに沿っていない通信をした可能性がある。
+
+: error: [children][error][invalid-state][accept]
+
+   milterプロトコルでは想定していないタイミングで子milterが
+   acceptレスポンスを返した。通信相手のmilterが
+   milterプロトコルに沿っていない通信をした可能性がある。
+
+: error: [children][error][invalid-state][discard]
+
+   milterプロトコルでは想定していないタイミングで子milterが
+   discardレスポンスを返した。通信相手のmilterが
+   milterプロトコルに沿っていない通信をした可能性がある。
+
+: error: [children][error][invalid-state][stopped]
+
+   milterプロトコルでは想定していないタイミングで
+   milter-managerプロセスが子milterの実行を停止した。
+   milter manager内のバグである可能性がある。
+
+: error: [children][error][invalid-state][#{response}][#{state}]
+
+   end-of-message時しか返せないレスポンス「#{response}」を状
+   態「#{state}」の時に返した。通信相手のmilterが
+   milterプロトコルに沿っていない通信をした可能性がある。
+
+   レスポンス「#{response}」は以下のいずれかである。
+
+   : add-header
+      ヘッダーを末尾に追加するレスポンス。
+   : insert-header
+      ヘッダーを任意の位置に追加するレスポンス。
+   : change-header
+      ヘッダーを変更するレスポンス。
+   : delete-header
+      ヘッダーを変更するレスポンス。
+   : change-from
+      差出人を変更するレスポンス。
+   : add-recipient
+      宛先を追加するレスポンス。
+   : delete-recipient
+      宛先を削除するレスポンス。
+   : replace-body
+      本文を変更するレスポンス。
+   : progress
+      処理が継続中であることを示すレスポンス。
+   : quarantine
+      メールを隔離するレスポンス。
+
+   状態「#{state}」は
+  【[server][error][#{response}][state][invalid][#{state}]】
+   で説明している項目と同じ。
+
+: error: [children][timeout][writing]
+
+   書き込みがタイムアウト。
+
+: error: [children][timeout][reading]
+
+   読み込みがタイムアウト。
+
+: error: [children][timeout][end-of-message]
+
+   end-of-message時に指定した時間内にレスポンスが返ってこな
+   かった。
+
+: error: [children][error][#{state}][#{fallback_status}]
+
+   子milterとの通信に利用しているserverモジュールでエラーが
+   発生。子milterの処理結果は
+   ((<milter.fallback_status|configuration.rd.ja#milter.fallback_status>))
+   で指定したステータス「#{fallback_status}」を利用。
+
+   状態「#{state}」は
+  【[server][error][#{response}][state][invalid][#{state}]】
+   で説明している項目と同じ。
+
+: error: [children][error][start-child][write]
+
+   launcherサブモジュールへの子milterの起動リクエストの書き
+   込み時にエラーが発生。
+
+: error: [children][error][start-child][flush]
+
+   launcherサブモジュールへの子milterの起動リクエストのフラッ
+   シュ時にエラーが発生。
+
+: error: [children][error][negotiate][not-started]
+
+   MTAがネゴシエーション（セッション内でのやりとり方法
+   の調整）を開始していないのに、ネゴシエーションのレスポン
+   ス処理を実行。milter manager内のバグである可能性がある。
+
+: error: [children][error][negotiate][no-response]
+
+   すべての子milterからネゴシエーション（セッション内でのやり
+   とり方法の調整）のレスポンスがない。子milterの問題である
+   可能性が高い。
+
+: error: [children][timeout][connection]
+
+   指定した時間内に接続を確立できなかった。
+
+: error: [children][error][connection]
+
+   接続処理時にエラーが発生。
+
+: error: [children][error][alive]
+
+   全ての子milterが終了しているのにまだMTAからリクエストがき
+   ている。
+
+: error: [children][error][message-processing]
+
+   SMTPのDATAコマンドで送信されたメールの処理を実行している
+   子milterがいないのに、MTAからメール処理のリクエストがきた。
+
+: error: [children][error][body][open]
+
+   大きなメール本文保存用の一時ファイルの作成に失敗。
+
+: error: [children][error][body][encoding]
+
+   大きなメール本文保存用の一時ファイルの読み書き用のエンコー
+   ディングの設定に失敗。
+
+: error: [children][error][body][write]
+
+   大きなメール本文保存用の一時ファイルへの本文書き込みに失敗。
+
+: error: [children][error][body][send][seek]
+
+   大きなメール本文保存用の一時ファイルの読み出し位置指定に
+   失敗。
+
+: error: [children][error][body][send]
+
+   大きなメール本文保存用の一時ファイルからの本文読み出しに
+   失敗。
+
+==== サブモジュール: egg
+
+: error: [egg][error]
+
+   子milter接続時に不正な接続情報が指定されていることを検出。
+
 : error: [egg][error][set-spec]
 
-  接続設定のエラー。
+   子milterに不正な接続情報を指定。
 
-: statistics: [milter][end][%s][%s][%g](%u): %s",
+==== その他: クラッシュ時のログ
 
-  ...
+: critical: [#{signal}] unable to open pipe for collecting stack trace
 
-: statistics: [milter][header][add]
+   クラッシュ時にスタックトレース取得用のパイプの作成に失敗
+   した。シグナル「#{signal}」は「SEGV」または「ABORT」にな
+   る。
 
-  ヘッダを追加した時。
+: critical: #{stack_trace}
 
-: statistics: [session][disconnected][%g](%u)", elapsed, priv->tag);
+   タグはつかない。スタックトレースの各行を表示する。
 
-  セッションを切断した時。
+==== その他: milter-managerコマンド起動時のログ
 
-: statistics: [session][header][add]
+: error: failed to create pipe for launcher command
 
-  ヘッダを追加した時。
+   launcherモジュール用へのコマンド送信用パイプ作成に失敗。
 
+: error: failed to create pipe for launcher reply
+
+   launcherモジュール用からのレスポンス受信用パイプ作成に失敗。
+
+: error: failed to fork process launcher process
+
+   launcherモジュール用プロセスのforkに失敗。
+
+: error: failed to find password entry for effective user
+
+   指定した実行ユーザが見つからない。
+
+: error: failed to get password entry for effective user
+
+   指定した実行ユーザの取得に失敗。
+
+: error: failed to get limit for RLIMIT_NOFILE
+
+   開けるファイルディスクリプタ数の制限値取得に失敗。
+
+: error: failed to set limit for RLIMIT_NOFILE
+
+   開けるファイルディスクリプタ数の制限値設定に失敗。
+
+: error: failed to create custom configuration directory
+
+   カスタム設定ディレクトリの作成に失敗。
+
+: error: failed to change owner and group of configuration directory
+
+   設定ディレクトリの所有者・グループの変更に失敗。
+
+: error: failed to listen
+
+   listen(2)に失敗。
+
+: error: failed to drop privilege
+
+   root権限を落とすことに失敗。
+
+: error: failed to listen controller socket:
+
+   controllerモジュールがlisten(2)に失敗。
+
+: error: failed to daemonize:
+
+   デーモン化に失敗。
+
+: error: failed to start milter-manager process:
+
+   milter-managerプロセスの起動処理に失敗。
+
+: error: [manager][reload][custom-load-path][error]
+
+   設定の再読込に失敗。
+
+: error: [manager][configuration][reload][command-line-load-path][error]
+
+   コマンドラインで指定したロードパスからの設定の読み込みに失敗。
