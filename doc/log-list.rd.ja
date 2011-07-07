@@ -775,7 +775,7 @@ managerモジュールもclientモジュール同様、セッションに関係�
       メールを隔離するレスポンス。
 
    状態「#{state}」は
-  【[server][error][#{response}][state][invalid][#{state}]】
+   【[server][error][#{response}][state][invalid][#{state}]】
    で説明している項目と同じ。
 
 : error: [children][timeout][writing]
