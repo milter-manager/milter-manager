@@ -210,7 +210,7 @@ clientモジュールのログの一覧です。
 
 : error: [client][connection-spec][default][error]
 
-  接続設定に失敗した時。
+   デフォルトの接続情報の設定に失敗。
 
 : error: [client][error][write]
 
@@ -224,23 +224,6 @@ clientモジュールのログの一覧です。
 
    end-of-messageイベント応答時の自動フラッシュでエラーが発
    生。
-
-: statistics: [sessions][finished]
-
-   セッション終了時。メッセージとして以下のフォーマットの統
-   計情報が付く。
-
-     #{総処理セッション数}(+#{前回から処理したセッション数}) #{処理中のセッション数}
-
-   例えば、前回のログ出力時には27セッション処理した状態で、
-   現在は追加で2セッションの処理が完了し、3セッションを処理
-   中である場合は以下のようになります。
-
-     29(+2) 3
-
-: statistics [reply][end-of-message][quarantine]
-
-  検疫を実施した。
 
 : error: [client][error][unix]
 
@@ -257,29 +240,29 @@ clientモジュールのログの一覧です。
 
 : error: [client][main][error]
 
-  子 milter の実行に失敗した時。
+   処理開始時にエラーが発生。
 
 : warning: [client][accept][suspend]
 
    同時接続数が多すぎて（RLIMIT_NOFILEが足りない）新しく接続
-   を受け付けられず、一時的に接続受付を中断している時。
+   を受け付けられず、一時的に接続受付を中断している。
 
 : warning: [client][accept][resume]
 
-   一時中断していた接続受付を再開した時。
+   一時中断していた接続受付を再開。
 
 : warning: [client][error][accept]
 
-   接続受付に失敗した時。
+   接続受付に失敗。
 
 : error: [client][single-thread][accept][start][error]
 : error: [client][multi-thread][accept][error]
 
-   接続受付の開始に失敗した時。
+   接続受付の開始に失敗。
 
 : error: [client][multi-thread][error]
 
-  スレッドプールにスレッド追加時にエラーが発生。
+   スレッドプールにスレッド追加時にエラーが発生。
 
 : error: [client][watch][error]
 
@@ -291,15 +274,15 @@ clientモジュールのログの一覧です。
 
 : error: [client][prepare][listen][error]
 
-   listenに失敗した時。
+   listen(2)に失敗。
 
 : error: [client][pid-file][error][remove]
 
-  PID ファイルを削除する時にエラーが発生。
+   PIDファイルの削除時にエラーが発生。
 
 : error: [client][pid-file][save][error]
 
-  PID ファイルの保存時にエラーが発生。
+   PIDファイルの保存時にエラーが発生。
 
 : error: [client][run][success][cleanup][error]
 
@@ -311,20 +294,42 @@ clientモジュールのログの一覧です。
 
 : error: [client][master][run][error]
 
-   マスタープロセスの実行時にエラーが発生。
+   マスタープロセスの処理開始時にエラーが発生。
 
 : error: [client][worker][run][error]
 
-   ワーカープロセスの実行時にエラーが発生。
+   ワーカープロセスの処理開始時にエラーが発生。
 
 : error: [client][worker][run][listen][error]
+
+   マルチワーカーモード時にワーカープロセスのlisten(2)でエラー
+   が発生。
+
 : error: [client][workers][run][listen][error]
 
-  ワーカープロセスがlistenを開始する時にエラーが発生。
+   マルチワーカーモード時にマスタープロセスのlisten(2)でエラー
+   が発生。
 
 : warning: [client][option][deprecated]
 
-  非推奨のオプションが与えられた時。
+   非推奨のオプションを指定した。
+
+: statistics: [sessions][finished]
+
+   セッション終了時。メッセージとして以下のフォーマットの統
+   計情報が付く。
+
+     #{総処理セッション数}(+#{前回から処理したセッション数}) #{処理中のセッション数}
+
+   例えば、前回のログ出力時には27セッション処理した状態で、
+   現在は追加で2セッションの処理が完了し、3セッションを処理
+   中である場合は以下のようになります。
+
+     29(+2) 3
+
+: statistics: [reply][end-of-message][quarantine]
+
+   隔離レスポンスを返した。
 
 === server
 
