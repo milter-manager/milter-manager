@@ -11,6 +11,16 @@ List-Archive:
 Subject: This is a test mail
 List-Help:
  <mailto:milter-manager-commit-request@lists.sourceforge.net?subject=help>
+Authentication-Results: mail.example.com;
+	spf=none smtp.mailfrom=test-from@example.com;
+	sender-id=none header.From=test-from@example.com;
+	dkim=none;
+	dkim-adsp=none header.From=test-from@example.com
+Authentication-Results: mail.example.org;
+	spf=none smtp.mailfrom=test-from@example.com;
+	sender-id=none header.From=test-from@example.com;
+	dkim=none;
+	dkim-adsp=none header.From=test-from@example.com
 
 Message body
 Message body

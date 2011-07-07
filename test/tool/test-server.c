@@ -341,7 +341,7 @@ cb_header (MilterCommandDecoder *decoder, const gchar *name, const gchar *value,
         send_reply(MILTER_COMMAND_HEADER, test_data);
 
     n_headers++;
-    milter_headers_add_header(actual_headers, name, value);
+    milter_headers_append_header(actual_headers, name, value);
 }
 
 static void
@@ -1502,6 +1502,18 @@ option_test_assert_mail_file (void)
     MilterHeader expected_header9 = {"Subject", "This is a test mail"};
     MilterHeader expected_header10 = {"List-Help",
                                       "\n <mailto:milter-manager-commit-request@lists.sourceforge.net?subject=help>"};
+    MilterHeader expected_header11 = {"Authentication-Results",
+                                      "mail.example.com;\n"
+                                      "\tspf=none smtp.mailfrom=test-from@example.com;\n"
+                                      "\tsender-id=none header.From=test-from@example.com;\n"
+                                      "\tdkim=none;\n"
+                                      "\tdkim-adsp=none header.From=test-from@example.com"};
+    MilterHeader expected_header12 = {"Authentication-Results",
+                                      "mail.example.org;\n"
+                                      "\tspf=none smtp.mailfrom=test-from@example.com;\n"
+                                      "\tsender-id=none header.From=test-from@example.com;\n"
+                                      "\tdkim=none;\n"
+                                      "\tdkim-adsp=none header.From=test-from@example.com"};
 
     cut_assert_equal_string("<test-from@example.com>", actual_envelope_from);
     gcut_assert_equal_list_string(
@@ -1509,7 +1521,7 @@ option_test_assert_mail_file (void)
                                   NULL),
         actual_recipients);
 
-    cut_assert_equal_uint(10, milter_headers_length(actual_headers));
+    cut_assert_equal_uint(12, milter_headers_length(actual_headers));
     milter_assert_equal_header(&expected_header1,
                                milter_headers_get_nth_header(actual_headers, 1));
     milter_assert_equal_header(&expected_header2,
@@ -1530,6 +1542,10 @@ option_test_assert_mail_file (void)
                                milter_headers_get_nth_header(actual_headers, 9));
     milter_assert_equal_header(&expected_header10,
                                milter_headers_get_nth_header(actual_headers, 10));
+    milter_assert_equal_header(&expected_header11,
+                               milter_headers_get_nth_header(actual_headers, 11));
+    milter_assert_equal_header(&expected_header12,
+                               milter_headers_get_nth_header(actual_headers, 12));
 
     cut_assert_equal_string("Message body\r\nMessage body\r\nMessage body\r\n",
                             actual_body_string->str);

@@ -1200,7 +1200,7 @@ parse_header (const gchar *line, GList **recipient_list, GError **error)
     }
 
     strings = g_strsplit(line, ":", 2);
-    milter_headers_add_header(option_headers, strings[0], g_strchug(strings[1]));
+    milter_headers_append_header(option_headers, strings[0], g_strchug(strings[1]));
     g_strfreev(strings);
 
     return TRUE;
@@ -1764,10 +1764,10 @@ post_option_parse (GOptionContext *option_context,
     recipients = normalized_recipients;
 
     if (!milter_headers_lookup_by_name(option_headers, "From"))
-        milter_headers_add_header(option_headers, "From", envelope_from);
+        milter_headers_append_header(option_headers, "From", envelope_from);
 
     if (!milter_headers_lookup_by_name(option_headers, "To"))
-        milter_headers_add_header(option_headers, "To", recipients[0]);
+        milter_headers_append_header(option_headers, "To", recipients[0]);
 
     if (!body_chunks) {
         const gchar body[] =
