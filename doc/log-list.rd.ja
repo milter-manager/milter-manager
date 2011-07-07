@@ -341,104 +341,104 @@ serverモジュールは同時に複数のmilterと通信する用途を想定�
 
 : error: [server][dispose][body][remained]
 
-  セッション終了後も未送信の本文が残っている。通信相手の
-  milterが本文の通信途中で強制的に接続を切った可能性がある。
+   セッション終了後も未送信の本文が残っている。通信相手の
+   milterが本文の通信途中で強制的に接続を切った可能性がある。
 
 : error: [server][flushed][error][next-state][invalid]
 
-  非同期のデータ書き出し時に不正な状態遷移を検出した。通信相
-  手のmilterがmilterプロトコルに沿っていない通信した可能性が
-  ある。
+   非同期のデータ書き出し時に不正な状態遷移を検出した。通信相
+   手のmilterがmilterプロトコルに沿っていない通信した可能性が
+   ある。
 
 : error: [server][error]
 
-  想定外のエラーが発生。詳細はメッセージで確認する。
+   想定外のエラーが発生。詳細はメッセージで確認する。
 
 : error: [server][error][write]
 
-  書き込み時にエラーが発生。
+   書き込み時にエラーが発生。
 
 : error: [server][error][#{response}][state][invalid][#{state}]
 
-  状態「#{state}」の時にmilterから意図しないレスポンス
-  「#{response}」が返ってきた。メッセージには期待するレスポン
-  スの一覧が含まれている。通信相手のmilterがmilterプロトコル
-  に沿っていない通信をした可能性がある。
+   状態「#{state}」の時にmilterから意図しないレスポンス
+   「#{response}」が返ってきた。メッセージには期待するレスポン
+   スの一覧が含まれている。通信相手のmilterがmilterプロトコル
+   に沿っていない通信をした可能性がある。
 
-  状態「#{state}」は以下のいずれかである。
+   状態「#{state}」は以下のいずれかである。
 
-    : invalid
-       不正な状態。通常はこの状態にならない。
-    : start
-       通信を開始した直後の状態。
-    : define-macro
-       マクロ定義を通信している状態。
-    : negotiate
-       milterとセッション内でのやりとり方法を調整している状態。
-    : connect
-       negotiateが完了し、milterとの接続が確立された状態。
-    : helo
-       SMTPのHELOコマンドに対応するmilterプロトコルを処理し
-       ている状態。
-    : envelope-from
-       SMTPのMAIL FROMコマンドに対応するmilterプロトコルを処
-       理している状態。
-    : envelope-recipient
-       SMTPのRCPT TOコマンドに対応するmilterプロトコルを処
-       理している状態。
-    : data
-       SMTPのDATAコマンドに対応するmilterプロトコルを処
-       理している状態。
-    : unknown
-       SMTPで未知のコマンドに対応するmilterプロトコルを処
-       理している状態。
-    : header
-       SMTPのDATAコマンドで送信されたメールのヘッダーを
-       milterプロトコルで処理している状態。
-    : end-of-header
-       SMTPのDATAコマンドで送信されたメールのヘッダーの処理
-       が終わったという通知をmilterプロトコルで処理して
-       いる状態。
-    : body
-       SMTPのDATAコマンドで送信されたメールの本文を
-       milterプロトコルで処理している状態。
-    : end-of-message
-       SMTPのDATAコマンドで送信されたメールの処理が終わった
-       という通知をmilterプロトコルで処理している状態。
-    : quit
-       milterプロトコルで終了処理をしている状態。
-    : abort
-       milterプロトコルで中断処理をしている状態。
+   : invalid
+      不正な状態。通常はこの状態にならない。
+   : start
+      通信を開始した直後の状態。
+   : define-macro
+      マクロ定義を通信している状態。
+   : negotiate
+      milterとセッション内でのやりとり方法を調整している状態。
+   : connect
+      negotiateが完了し、milterとの接続が確立された状態。
+   : helo
+      SMTPのHELOコマンドに対応するmilterプロトコルを処理し
+      ている状態。
+   : envelope-from
+      SMTPのMAIL FROMコマンドに対応するmilterプロトコルを処
+      理している状態。
+   : envelope-recipient
+      SMTPのRCPT TOコマンドに対応するmilterプロトコルを処
+      理している状態。
+   : data
+      SMTPのDATAコマンドに対応するmilterプロトコルを処
+      理している状態。
+   : unknown
+      SMTPで未知のコマンドに対応するmilterプロトコルを処
+      理している状態。
+   : header
+      SMTPのDATAコマンドで送信されたメールのヘッダーを
+      milterプロトコルで処理している状態。
+   : end-of-header
+      SMTPのDATAコマンドで送信されたメールのヘッダーの処理
+      が終わったという通知をmilterプロトコルで処理して
+      いる状態。
+   : body
+      SMTPのDATAコマンドで送信されたメールの本文を
+      milterプロトコルで処理している状態。
+   : end-of-message
+      SMTPのDATAコマンドで送信されたメールの処理が終わった
+      という通知をmilterプロトコルで処理している状態。
+   : quit
+      milterプロトコルで終了処理をしている状態。
+   : abort
+      milterプロトコルで中断処理をしている状態。
 
-  milterからのレスポンス「#{response}」は以下のいずれかである。
-  それぞれの項目はmilterプロトコルで使われているレスポンスに
-  対応している。
+   milterからのレスポンス「#{response}」は以下のいずれかである。
+   それぞれの項目はmilterプロトコルで使われているレスポンスに
+   対応している。
 
-    : negotiate-reply
-       negotiateのレスポンス。
-    : continue
-       処理の継続を表すレスポンス。
-    : reply-code
-       SMTPのレスポンスコードを指定するレスポンス。
-    : add-header
-       ヘッダーを末尾に追加するレスポンス。
-    : insert-header
-       ヘッダーを任意の位置に追加するレスポンス。
-    : change-header
-       ヘッダーを変更するレスポンス。
-    : add-recipient
-       宛先を変更するレスポンス。
-    : delete-recipient
-       宛先を削除するレスポンス。
-    : replace-body
-       本文を変更するレスポンス。
-    : progress
-       処理が継続中であることを示すレスポンス。タイムアウト
-       時間を伸ばすために利用される。
-    : quarantine
-       メールを隔離するレスポンス。
-    : skip
-       本文の受信を中止するレスポンス。
+   : negotiate-reply
+      negotiateのレスポンス。
+   : continue
+      処理の継続を表すレスポンス。
+   : reply-code
+      SMTPのレスポンスコードを指定するレスポンス。
+   : add-header
+      ヘッダーを末尾に追加するレスポンス。
+   : insert-header
+      ヘッダーを任意の位置に追加するレスポンス。
+   : change-header
+      ヘッダーを変更するレスポンス。
+   : add-recipient
+      宛先を変更するレスポンス。
+   : delete-recipient
+      宛先を削除するレスポンス。
+   : replace-body
+      本文を変更するレスポンス。
+   : progress
+      処理が継続中であることを示すレスポンス。タイムアウト
+      時間を伸ばすために利用される。
+   : quarantine
+      メールを隔離するレスポンス。
+   : skip
+      本文の受信を中止するレスポンス。
 
 : error: [server][timeout][connection]
 
