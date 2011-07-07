@@ -3326,24 +3326,22 @@ static gboolean
 cb_connection_timeout (gpointer data)
 {
     MilterServerContext *context = data;
+    MilterServerContextPrivate *priv;
     MilterAgent *agent;
+    const gchar *name = NULL;
 
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+    if (priv)
+        name = milter_server_context_get_name(context);
     agent = MILTER_AGENT(context);
-    if (milter_need_debug_log()) {
-        MilterServerContextPrivate *priv;
-        const gchar *name = NULL;
-
-        priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
-        if (priv)
-            name = milter_server_context_get_name(context);
-        milter_debug("[%u] [server][timeout][connection] [%s] [%u] (%p)",
-                     priv ? milter_agent_get_tag(agent) : 0,
-                     NULL_SAFE_NAME(name),
-                     priv ? priv->timeout_id : 0,
-                     context);
-    }
-    milter_error("[server][timeout][connection] [%s]",
-                 milter_server_context_get_name(context));
+    milter_debug("[%u] [server][timeout][connection] [%s] [%u] (%p)",
+                 priv ? milter_agent_get_tag(agent) : 0,
+                 NULL_SAFE_NAME(name),
+                 priv ? priv->timeout_id : 0,
+                 context);
+    milter_error("[%u] [server][timeout][connection] [%s]",
+                 priv ? milter_agent_get_tag(agent) : 0,
+                 NULL_SAFE_NAME(name));
     g_signal_emit(context, signals[CONNECTION_TIMEOUT], 0);
 
     return FALSE;
