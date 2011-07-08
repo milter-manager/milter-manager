@@ -58,6 +58,12 @@ class TestClientConfiguration
         @milter_loader.fallback_status = "unknown"
       end
     end
+
+    def test_name
+      @milter_config.name = "test-milter"
+      assert_equal("test-milter", @milter_config.name)
+      assert_equal("test-milter", @milter_loader.name)
+    end
   end
 
   class Security < Base
