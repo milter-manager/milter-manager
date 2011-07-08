@@ -455,6 +455,10 @@ module Milter
                                           "temporary-failure", "discard"]
         end
 
+        def name
+          @configuration.name
+        end
+
         def connection_spec
           @configuration.connection_spec
         end
