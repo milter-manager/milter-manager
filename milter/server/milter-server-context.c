@@ -1385,6 +1385,9 @@ process_next_state (MilterServerContext *context,
         emit_message_processed_signal(context);
         milter_server_context_reset_message_related_data(context);
         break;
+    case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
+        priv->processing_message = TRUE;
+        /* FALLTHROUGH */
     default:
         milter_server_context_set_state(context, next_state);
         if (milter_server_context_need_reply(context, next_state)) {
@@ -1861,6 +1864,21 @@ milter_server_context_envelope_from (MilterServerContext *context,
     milter_debug("[%u] [server][send][envelope-from] <%s>: %s",
                  tag, from, name);
 
+    /* TODO:
+     * Those information will be cleared if both [abort]
+     * packet and [envelope-from] packet are flushed at the
+     * same time. Because
+     * milter_server_context_reset_message_related_data() is
+     * called in process_next_state() when [abort] packet is
+     * flushed:
+     *
+     *   milter_server_context_abort() ->
+     *   milter_server_context_envelope_from() ->
+     *   (flushed) ->
+     *   process_next_state() for [abort] ->
+     *   milter_server_context_reset_message_related_data()
+     *     resets data set at milter_server_context_envelope_from().
+     */
     ensure_message_result(priv);
     milter_message_result_set_from(priv->message_result, from);
     milter_message_result_set_state(priv->message_result,
