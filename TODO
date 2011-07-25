@@ -1,3 +1,5 @@
+* milter-manager-children: multi mails in a session
+  processing has some problems. We should check MILTER_STEP_NO_* cases.
 * milter-manager: shutdown immediately when all child
   milters doesn't establish negotiation. (Now, returning
   negotiate reply.)
