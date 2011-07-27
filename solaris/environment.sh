@@ -1,6 +1,7 @@
 base_dir="$(cd $(dirname $0); pwd)"
 SOURCES="${base_dir}/sources"
 PATCHES="${base_dir}/patches"
+GEMS_CACHE="${base_dir}/gems"
 BUILDS="${base_dir}/builds"
 PROTOTYPES="${base_dir}/prototypes"
 PKG_DESTDIR="${BUILDS}/tmp"
