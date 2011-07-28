@@ -65,7 +65,7 @@ build_pkg()
     shift
 
     create_pkginfo "${base}" "${build_dir}"
-    update_prototype "${base}" "${build_dir}"
+    update_prototype "${base}" "${build_dir}" "$@"
 
     echo "$(time_stamp): Building pkg ${package_name}..."
     run mkdir -p "${PKGS}"
