@@ -44,13 +44,16 @@ gem_options="${gem_options} --bindir ${dest_prefix}/bin"
 gems="bundler activerecord mail pkg-config mysql2"
 if test -d "$GEMS_CACHE"; then
     gem_options="${gem_options} --local"
-    gem_command="(cd ${GEMS_CACHE}; gem install ${gem_options} ${gems})"
+    gem_command="gem install ${gems} ${gem_options}"
+    CC="$CC -m64" \
+        build_pkg "${ruby_base}" "${BUILDS}/${ruby_base}" \
+        "cd ${GEMS_CACHE}" "${gem_command}"
 else
-    gem_command="gem install ${gem_options} ${gems}"
+    gem_command="gem install ${gems} ${gem_options}"
+    CC="$CC -m64" \
+        build_pkg "${ruby_base}" "${BUILDS}/${ruby_base}" \
+        "${gem_command}"
 fi
-CC="$CC -m64" \
-    build_pkg "${ruby_base}" "${BUILDS}/${ruby_base}" \
-    "${gem_command}"
 yes | run_pfexec /usr/sbin/pkgrm "${PKG_PREFIX}ruby" > \
     "${PKGS}/${PKG_PREFIX}ruby-uninstall.log" 2>&1
 install_pkg "${ruby_base}"
