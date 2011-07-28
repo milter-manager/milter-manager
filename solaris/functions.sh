@@ -146,9 +146,15 @@ install_pkg()
     local pkg_name="${PKG_PREFIX}${package_name}"
     local log="${PKGS}/${pkg_name}-install.log"
 
-    echo "$(time_stamp): Installing pkg ${pkg_name}..."
-    yes | run_pfexec /usr/sbin/pkgadd -G -d "${PKGS}" "${pkg_name}" > "${log}" 2>&1
-    echo "$(time_stamp): done."
+    if test $(zonename) = global; then
+        echo "$(time_stamp): Installing pkg ${pkg_name}..."
+        yes | run_pfexec /usr/sbin/pkgadd -G -d "${PKGS}" "${pkg_name}" > "${log}" 2>&1
+        echo "$(time_stamp): done."
+    else
+        echo "$(time_stamp): Installing pkg ${pkg_name}..."
+        yes | run_pfexec /usr/sbin/pkgadd -d "${PKGS}" "${pkg_name}" > "${log}" 2>&1
+        echo "$(time_stamp): done."
+    fi
 }
 
 download_package()
