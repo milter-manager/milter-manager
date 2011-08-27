@@ -2083,7 +2083,7 @@ client_run_workers (MilterClient *client, guint n_workers, GError **error)
             close(pipe_fds[MILTER_UTILS_WRITE_PIPE]);
             priv->workers.id = i + 1;
             milter_event_loop_watch_io(loop, priv->workers.control,
-                                       G_IO_IN | G_IO_PRI | G_IO_ERR,
+                                       G_IO_IN | G_IO_PRI | G_IO_ERR | G_IO_HUP,
                                        worker_watch_master, client);
             run_worker(client, error);
             milter_client_shutdown(client);
