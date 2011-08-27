@@ -1218,7 +1218,7 @@ is_header (const gchar *line)
 }
 
 static void
-append_header_value (const gchar *value)
+append_header_value (const gchar *value, const gchar *new_line)
 {
     MilterHeader *last_header;
     guint last;
@@ -1229,8 +1229,9 @@ append_header_value (const gchar *value)
                                                 last);
 
     old_value = last_header->value;
-    last_header->value = g_strdup_printf("%s\n%s",
+    last_header->value = g_strdup_printf("%s%s%s",
                                          last_header->value,
+                                         new_line,
                                          value);
     g_free(old_value);
 }
@@ -1251,12 +1252,15 @@ parse_mail_contents (const gchar *contents, GError **error)
         lines++;
 
     for (; *lines; lines++) {
-        gsize line_length;
         gchar *line = *lines;
+        gsize line_length;
+        gboolean have_cr = FALSE;
 
         line_length = strlen(line);
-        if (line_length > 0 && line[line_length - 1] == '\r')
+        if (line_length > 0 && line[line_length - 1] == '\r') {
             line[line_length - 1] = '\0';
+            have_cr = TRUE;
+        }
 
         if (line[0] == '\0') {
             lines++;
@@ -1267,7 +1271,13 @@ parse_mail_contents (const gchar *contents, GError **error)
                 return FALSE;
             }
         } else if (g_ascii_isspace(line[0])) {
-            append_header_value(line);
+            const gchar *new_line;
+            if (have_cr) {
+                new_line = "\r\n";
+            } else {
+                new_line = "\n";
+            }
+            append_header_value(line, new_line);
         } else {
             g_set_error(error,
                         MILTER_TEST_SERVER_ERROR,
@@ -1282,19 +1292,29 @@ parse_mail_contents (const gchar *contents, GError **error)
     chunks = g_ptr_array_new();
     body_string = g_string_new(NULL);
     for (; *lines; lines++) {
+        gchar *line = *lines;
         gsize chunk_length;
-        chunk_length = body_string->len + strlen(*lines) + strlen("\r\n");
+        gsize line_length;
+
+        line_length = strlen(line);
+        chunk_length = body_string->len + line_length + strlen("\n");
         if (chunk_length > MILTER_CHUNK_SIZE) {
             g_ptr_array_add(chunks, g_strdup(body_string->str));
             g_string_truncate(body_string, 0);
         }
-        g_string_append(body_string, *lines);
-        g_string_append(body_string, "\r\n");
+        g_string_append(body_string, line);
+        g_string_append(body_string, "\n");
     }
     if (body_string->len > 0) {
+        gsize last_new_line_length;
+
+        last_new_line_length = strlen("\n");
+        if (body_string->str[body_string->len] == '\r') {
+            last_new_line_length += strlen("\r");
+        }
         g_ptr_array_add(chunks,
                         g_strndup(body_string->str,
-                                  body_string->len - strlen("\r\n")));
+                                  body_string->len - last_new_line_length));
     }
     g_string_free(body_string, TRUE);
     g_ptr_array_add(chunks, NULL);

@@ -1492,7 +1492,7 @@ option_test_assert_body (void)
 }
 
 static void
-option_test_assert_mail_file (void)
+option_test_assert_mail_file_lf (void)
 {
     cut_assert_equal_string("<test-from@example.com>", actual_envelope_from);
     gcut_assert_equal_list_string(
@@ -1543,6 +1543,66 @@ option_test_assert_mail_file (void)
                                  "\tspf=none smtp.mailfrom=test-from@example.com;\n"
                                  "\tsender-id=none header.From=test-from@example.com;\n"
                                  "\tdkim=none;\n"
+                                 "\tdkim-adsp=none header.From=test-from@example.com");
+
+    milter_assert_equal_headers(expected_headers, actual_headers);
+
+    cut_assert_equal_string("Message body\nMessage body\nMessage body\n",
+                            actual_body_string->str);
+}
+
+static void
+option_test_assert_mail_file_crlf (void)
+{
+    cut_assert_equal_string("<test-from@example.com>", actual_envelope_from);
+    gcut_assert_equal_list_string(
+        gcut_take_new_list_string("<test-to@example.com>",
+                                  NULL),
+        actual_recipients);
+
+    milter_headers_append_header(expected_headers,
+                                 "Return-Path",
+                                 "<xxxx@example.com>");
+    milter_headers_append_header(expected_headers,
+                                 "Date",
+                                 "Wed, 5 Nov 2008 11:41:54 -0200");
+    milter_headers_append_header(expected_headers,
+                                 "Message-ID",
+                                 "<168f979z.5435357@xxx>");
+    milter_headers_append_header(expected_headers,
+                                 "Content-Type",
+                                 "text/plain; charset=\"us-ascii\"");
+    milter_headers_append_header(expected_headers,
+                                 "X-Source",
+                                 "");
+    milter_headers_append_header(expected_headers,
+                                 "To",
+                                 "Test Sender <test-to@example.com>");
+    milter_headers_append_header(expected_headers,
+                                 "From",
+                                 "test-from@example.com");
+    milter_headers_append_header(expected_headers,
+                                 "List-Archive",
+                                 "\r\n <http://sourceforge.net/mailarchive/forum.php?forum_name=milter-manager-commit>");
+    milter_headers_append_header(expected_headers,
+                                 "Subject",
+                                 "This is a test mail");
+    milter_headers_append_header(expected_headers,
+                                 "List-Help",
+                                 "\r\n <mailto:milter-manager-commit-request@lists.sourceforge.net?subject=help>");
+    milter_headers_append_header(expected_headers,
+                                 "Authentication-Results",
+                                 "mail.example.com;\r\n"
+                                 "\tspf=none smtp.mailfrom=test-from@example.com;\r\n"
+                                 "\tsender-id=none header.From=test-from@example.com;\r\n"
+                                 "\tdkim=none;\r\n"
+                                 "\tdkim-adsp=none header.From=test-from@example.com");
+    milter_headers_append_header(expected_headers,
+                                 "Authentication-Results",
+                                 "mail.example.org;\r\n"
+                                 "\tspf=none smtp.mailfrom=test-from@example.com;\r\n"
+                                 "\tsender-id=none header.From=test-from@example.com;\r\n"
+                                 "\tdkim=none;\r\n"
                                  "\tdkim-adsp=none header.From=test-from@example.com");
 
     milter_assert_equal_headers(expected_headers, actual_headers);
@@ -1713,9 +1773,12 @@ data_option (void)
         "--header='Content-Type:text/plain; charset=\"us-ascii\"' "
         "--output-message",
         option_test_assert_output_message_charset);
-    ADD("mail-file",
-        mail_file_option("parse-test.mail"),
-        option_test_assert_mail_file);
+    ADD("mail-file - LF",
+        mail_file_option("parse-test-lf.mail"),
+        option_test_assert_mail_file_lf);
+    ADD("mail-file - CRLF",
+        mail_file_option("parse-test-crlf.mail"),
+        option_test_assert_mail_file_crlf);
     ADD("large-file",
         mail_file_option("large.mail"),
         option_test_assert_large_mail);

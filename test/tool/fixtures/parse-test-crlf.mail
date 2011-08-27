@@ -1,0 +1,27 @@
+From xxxx@example.com Wed Nov  5 18:42:28 2008
+Return-Path: <xxxx@example.com>
+Date: Wed, 5 Nov 2008 11:41:54 -0200
+Message-ID: <168f979z.5435357@xxx>
+Content-Type: text/plain; charset="us-ascii"
+X-Source: 
+To: Test Sender <test-to@example.com>
+From: test-from@example.com
+List-Archive:
+ <http://sourceforge.net/mailarchive/forum.php?forum_name=milter-manager-commit>
+Subject: This is a test mail
+List-Help:
+ <mailto:milter-manager-commit-request@lists.sourceforge.net?subject=help>
+Authentication-Results: mail.example.com;
+	spf=none smtp.mailfrom=test-from@example.com;
+	sender-id=none header.From=test-from@example.com;
+	dkim=none;
+	dkim-adsp=none header.From=test-from@example.com
+Authentication-Results: mail.example.org;
+	spf=none smtp.mailfrom=test-from@example.com;
+	sender-id=none header.From=test-from@example.com;
+	dkim=none;
+	dkim-adsp=none header.From=test-from@example.com
+
+Message body
+Message body
+Message body

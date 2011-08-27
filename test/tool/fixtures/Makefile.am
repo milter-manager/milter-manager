@@ -1,7 +1,8 @@
 EXTRA_DIST =							\
 	sanitize-log.rb						\
 	large.mail						\
-	parse-test.mail						\
+	parse-test-lf.mail					\
+	parse-test-crlf.mail					\
 	mail-20090715-1.log					\
 	mail-20090715-2.log					\
 	session-1.fetch						\
