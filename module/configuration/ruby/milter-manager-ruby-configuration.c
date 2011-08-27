@@ -383,6 +383,15 @@ static void
 ruby_cleanup_without_signal_change (int exit_code)
 {
     RETSIGTYPE (*sigint_handler)_((int));
+    const gchar *milter_manager_ruby_reset_timer_thread_before_cleanup;
+
+    milter_manager_ruby_reset_timer_thread_before_cleanup =
+        g_getenv("MILTER_MANAGER_RUBY_RESET_TIMER_THREAD_BEFORE_CLEANUP");
+    if (milter_manager_ruby_reset_timer_thread_before_cleanup &&
+        strcmp(milter_manager_ruby_reset_timer_thread_before_cleanup, "yes") == 0) {
+        void rb_thread_reset_timer_thread(void);
+        rb_thread_reset_timer_thread();
+    }
 
     sigint_handler = signal(SIGINT, SIG_DFL);
     ruby_cleanup(exit_code);
