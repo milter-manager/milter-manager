@@ -383,8 +383,14 @@ static void
 ruby_cleanup_without_signal_change (int exit_code)
 {
     RETSIGTYPE (*sigint_handler)_((int));
-    const gchar *milter_manager_ruby_reset_timer_thread_before_cleanup;
+#ifdef HAVE_RB_THREAD_RESET_TIMER_THREAD
+    const gchar *milter_manager_ruby_reset_timer_thread_before_cleanup = NULL;
+#endif
+#ifdef HAVE_RB_THREAD_STOP_TIMER_THREAD
+    const gchar *milter_manager_ruby_stop_timer_thread_before_cleanup;
+#endif
 
+#ifdef HAVE_RB_THREAD_RESET_TIMER_THREAD
     milter_manager_ruby_reset_timer_thread_before_cleanup =
         g_getenv("MILTER_MANAGER_RUBY_RESET_TIMER_THREAD_BEFORE_CLEANUP");
     if (milter_manager_ruby_reset_timer_thread_before_cleanup &&
@@ -392,6 +398,17 @@ ruby_cleanup_without_signal_change (int exit_code)
         void rb_thread_reset_timer_thread(void);
         rb_thread_reset_timer_thread();
     }
+#endif
+
+#ifdef HAVE_RB_THREAD_STOP_TIMER_THREAD
+    milter_manager_ruby_stop_timer_thread_before_cleanup =
+        g_getenv("MILTER_MANAGER_RUBY_STOP_TIMER_THREAD_BEFORE_CLEANUP");
+    if (milter_manager_ruby_stop_timer_thread_before_cleanup &&
+        strcmp(milter_manager_ruby_stop_timer_thread_before_cleanup, "yes") == 0) {
+        void rb_thread_stop_timer_thread(void);
+        rb_thread_stop_timer_thread();
+    }
+#endif
 
     sigint_handler = signal(SIGINT, SIG_DFL);
     ruby_cleanup(exit_code);
