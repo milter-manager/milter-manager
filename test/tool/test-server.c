@@ -97,6 +97,7 @@ static gchar *actual_helo_fqdn;
 static gchar *actual_envelope_from;
 static GList *actual_recipients;
 static GString *actual_body_string;
+static MilterHeaders *expected_headers;
 static MilterHeaders *actual_headers;
 
 typedef void (*EndOfMessageActionFunc) (void);
@@ -471,6 +472,7 @@ cut_setup (void)
     actual_helo_fqdn = NULL;
     actual_envelope_from = NULL;
     actual_recipients = NULL;
+    expected_headers = milter_headers_new();
     actual_headers = milter_headers_new();
     actual_body_string = g_string_new(NULL);
     actual_defined_macros =
@@ -514,6 +516,8 @@ cut_teardown (void)
         g_list_foreach(actual_recipients, (GFunc)g_free, NULL);
         g_list_free(actual_recipients);
     }
+    if (expected_headers)
+        g_object_unref(expected_headers);
     if (actual_headers)
         g_object_unref(actual_headers);
     if (actual_body_string)
@@ -1490,62 +1494,58 @@ option_test_assert_body (void)
 static void
 option_test_assert_mail_file (void)
 {
-    MilterHeader expected_header1 = {"Return-Path", "<xxxx@example.com>"};
-    MilterHeader expected_header2 = {"Date", "Wed, 5 Nov 2008 11:41:54 -0200"};
-    MilterHeader expected_header3 = {"Message-ID", "<168f979z.5435357@xxx>"};
-    MilterHeader expected_header4 = {"Content-Type", "text/plain; charset=\"us-ascii\""};
-    MilterHeader expected_header5 = {"X-Source", ""};
-    MilterHeader expected_header6 = {"To", "Test Sender <test-to@example.com>"};
-    MilterHeader expected_header7 = {"From", "test-from@example.com"};
-    MilterHeader expected_header8 = {"List-Archive",
-                                     "\n <http://sourceforge.net/mailarchive/forum.php?forum_name=milter-manager-commit>"};
-    MilterHeader expected_header9 = {"Subject", "This is a test mail"};
-    MilterHeader expected_header10 = {"List-Help",
-                                      "\n <mailto:milter-manager-commit-request@lists.sourceforge.net?subject=help>"};
-    MilterHeader expected_header11 = {"Authentication-Results",
-                                      "mail.example.com;\n"
-                                      "\tspf=none smtp.mailfrom=test-from@example.com;\n"
-                                      "\tsender-id=none header.From=test-from@example.com;\n"
-                                      "\tdkim=none;\n"
-                                      "\tdkim-adsp=none header.From=test-from@example.com"};
-    MilterHeader expected_header12 = {"Authentication-Results",
-                                      "mail.example.org;\n"
-                                      "\tspf=none smtp.mailfrom=test-from@example.com;\n"
-                                      "\tsender-id=none header.From=test-from@example.com;\n"
-                                      "\tdkim=none;\n"
-                                      "\tdkim-adsp=none header.From=test-from@example.com"};
-
     cut_assert_equal_string("<test-from@example.com>", actual_envelope_from);
     gcut_assert_equal_list_string(
         gcut_take_new_list_string("<test-to@example.com>",
                                   NULL),
         actual_recipients);
 
-    cut_assert_equal_uint(12, milter_headers_length(actual_headers));
-    milter_assert_equal_header(&expected_header1,
-                               milter_headers_get_nth_header(actual_headers, 1));
-    milter_assert_equal_header(&expected_header2,
-                               milter_headers_get_nth_header(actual_headers, 2));
-    milter_assert_equal_header(&expected_header3,
-                               milter_headers_get_nth_header(actual_headers, 3));
-    milter_assert_equal_header(&expected_header4,
-                               milter_headers_get_nth_header(actual_headers, 4));
-    milter_assert_equal_header(&expected_header5,
-                               milter_headers_get_nth_header(actual_headers, 5));
-    milter_assert_equal_header(&expected_header6,
-                               milter_headers_get_nth_header(actual_headers, 6));
-    milter_assert_equal_header(&expected_header7,
-                               milter_headers_get_nth_header(actual_headers, 7));
-    milter_assert_equal_header(&expected_header8,
-                               milter_headers_get_nth_header(actual_headers, 8));
-    milter_assert_equal_header(&expected_header9,
-                               milter_headers_get_nth_header(actual_headers, 9));
-    milter_assert_equal_header(&expected_header10,
-                               milter_headers_get_nth_header(actual_headers, 10));
-    milter_assert_equal_header(&expected_header11,
-                               milter_headers_get_nth_header(actual_headers, 11));
-    milter_assert_equal_header(&expected_header12,
-                               milter_headers_get_nth_header(actual_headers, 12));
+    milter_headers_append_header(expected_headers,
+                                 "Return-Path",
+                                 "<xxxx@example.com>");
+    milter_headers_append_header(expected_headers,
+                                 "Date",
+                                 "Wed, 5 Nov 2008 11:41:54 -0200");
+    milter_headers_append_header(expected_headers,
+                                 "Message-ID",
+                                 "<168f979z.5435357@xxx>");
+    milter_headers_append_header(expected_headers,
+                                 "Content-Type",
+                                 "text/plain; charset=\"us-ascii\"");
+    milter_headers_append_header(expected_headers,
+                                 "X-Source",
+                                 "");
+    milter_headers_append_header(expected_headers,
+                                 "To",
+                                 "Test Sender <test-to@example.com>");
+    milter_headers_append_header(expected_headers,
+                                 "From",
+                                 "test-from@example.com");
+    milter_headers_append_header(expected_headers,
+                                 "List-Archive",
+                                 "\n <http://sourceforge.net/mailarchive/forum.php?forum_name=milter-manager-commit>");
+    milter_headers_append_header(expected_headers,
+                                 "Subject",
+                                 "This is a test mail");
+    milter_headers_append_header(expected_headers,
+                                 "List-Help",
+                                 "\n <mailto:milter-manager-commit-request@lists.sourceforge.net?subject=help>");
+    milter_headers_append_header(expected_headers,
+                                 "Authentication-Results",
+                                 "mail.example.com;\n"
+                                 "\tspf=none smtp.mailfrom=test-from@example.com;\n"
+                                 "\tsender-id=none header.From=test-from@example.com;\n"
+                                 "\tdkim=none;\n"
+                                 "\tdkim-adsp=none header.From=test-from@example.com");
+    milter_headers_append_header(expected_headers,
+                                 "Authentication-Results",
+                                 "mail.example.org;\n"
+                                 "\tspf=none smtp.mailfrom=test-from@example.com;\n"
+                                 "\tsender-id=none header.From=test-from@example.com;\n"
+                                 "\tdkim=none;\n"
+                                 "\tdkim-adsp=none header.From=test-from@example.com");
+
+    milter_assert_equal_headers(expected_headers, actual_headers);
 
     cut_assert_equal_string("Message body\r\nMessage body\r\nMessage body\r\n",
                             actual_body_string->str);

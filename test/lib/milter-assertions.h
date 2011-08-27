@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -96,9 +96,21 @@ void milter_assert_equal_macros_requests_helper
             __VA_ARGS__),                                               \
         milter_assert_equal_header(expected, actual, __VA_ARGS__))
 
-void milter_assert_equal_header_helper
-                                       (MilterHeader *expected,
+void milter_assert_equal_header_helper (MilterHeader *expected,
                                         MilterHeader *actual,
+                                        const gchar *expression_expected,
+                                        const gchar *expression_actual);
+
+#define milter_assert_equal_headers(expected, actual, ...)              \
+    cut_trace_with_info_expression(                                     \
+        cut_test_with_user_message(                                     \
+            milter_assert_equal_headers_helper(expected, actual,        \
+                                              #expected, #actual),      \
+            __VA_ARGS__),                                               \
+        milter_assert_equal_headers(expected, actual, __VA_ARGS__))
+
+void milter_assert_equal_headers_helper(MilterHeaders *expected,
+                                        MilterHeaders *actual,
                                         const gchar *expression_expected,
                                         const gchar *expression_actual);
 

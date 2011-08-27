@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -129,8 +129,50 @@ milter_assert_equal_header_helper (MilterHeader *expected,
                                    const gchar *expression_expected,
                                    const gchar *expression_actual)
 {
-    cut_assert_equal_string(expected->name, actual->name);
-    cut_assert_equal_string(expected->value, actual->value);
+    gcut_assert_equal_list_string(
+        gcut_take_new_list_string(expected->name, expected->value, NULL),
+        gcut_take_new_list_string(actual->name, actual->value, NULL));
+}
+
+static const GList *
+headers_to_list (MilterHeaders *headers)
+{
+    guint i;
+    GList *list = NULL;
+
+    for (i = 0; i < milter_headers_length(headers); i++) {
+        MilterHeader *header;
+        const GList *header_list;
+
+        header = milter_headers_get_nth_header(headers, i + 1);
+        header_list = gcut_take_new_list_string(header->name, header->value,
+                                                NULL);
+        list = g_list_append(list, (GList *)header_list);
+    }
+
+    return gcut_take_list(list, NULL);
+}
+
+static void
+header_list_inspect (GString *string, gconstpointer data, gpointer user_data)
+{
+    const GList *header_list = data;
+
+    g_string_append(string,
+                    cut_take_string(gcut_list_inspect_string(header_list)));
+}
+
+void
+milter_assert_equal_headers_helper (MilterHeaders *expected,
+                                    MilterHeaders *actual,
+                                    const gchar *expression_expected,
+                                    const gchar *expression_actual)
+{
+    gcut_assert_equal_list((GList *)headers_to_list(expected),
+                           (GList *)headers_to_list(actual),
+                           (GEqualFunc)gcut_list_equal_string,
+                           header_list_inspect,
+                           NULL);
 }
 
 /*
