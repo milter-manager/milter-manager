@@ -1663,8 +1663,8 @@ option_test_assert_output_message_charset (void)
 static void
 option_test_assert_large_mail (void)
 {
-    const gchar expected_header[] = "\r\n--=-fXjrl3xPRPdvOSpDlnzU\r\n";
-    const gchar expected_footer[] = "\r\n--=-fXjrl3xPRPdvOSpDlnzU--\r\n";
+    const gchar expected_header[] = "\n--=-fXjrl3xPRPdvOSpDlnzU\n";
+    const gchar expected_footer[] = "\n--=-fXjrl3xPRPdvOSpDlnzU--\n";
 
     cut_assert_equal_memory(expected_header, strlen(expected_header),
                             actual_body_string->str, strlen(expected_header));
@@ -1673,7 +1673,7 @@ option_test_assert_large_mail (void)
                             actual_body_string->len -
                             strlen(expected_footer),
                             strlen(expected_footer));
-    cut_assert_equal_int(2435493, actual_body_string->len);
+    cut_assert_equal_int(2404259, actual_body_string->len);
 }
 
 static void
