@@ -773,17 +773,24 @@ if test -n "$SF_USER"; then
 fi
 AC_SUBST(SF_USER_OPTION)
 
-SF_HOST="web.sourceforge.net"
+SF_WEB_HOST="web.sourceforge.net"
+SF_FRS_HOST="frs.sourceforge.net"
 if test -n "$SF_USER"; then
-   SF_HOST="$SF_USER,milter-manager@$SF_HOST"
+   SF_WEB_HOST="$SF_USER,milter-manager@$SF_WEB_HOST"
+   SF_FRS_HOST="$SF_USER,milter-manager@$SF_FRS_HOST"
 fi
-AC_SUBST(SF_HOST)
+AC_SUBST(SF_WEB_HOST)
+AC_SUBST(SF_FRS_HOST)
 
 SF_HTDOCS_PATH="/home/groups/m/mi/milter-manager/htdocs"
 AC_SUBST(SF_HTDOCS_PATH)
-
-SF_HTDOCS="$SF_HOST:$SF_HTDOCS_PATH"
+SF_HTDOCS="$SF_WEB_HOST:$SF_HTDOCS_PATH"
 AC_SUBST(SF_HTDOCS)
+
+SF_FRS_PATH="/home/frs/project/m/mi/milter-manager"
+AC_SUBST(SF_FRS_PATH)
+SF_FRS="$SF_FRS_HOST:$SF_FRS_PATH"
+AC_SUBST(SF_FRS)
 
 SF_REPOS="https://milter-manager.svn.sourceforge.net/svnroot/milter-manager/milter-manager"
 AC_SUBST(SF_REPOS)

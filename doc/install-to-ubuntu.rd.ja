@@ -17,10 +17,10 @@ Narwhal用のパッケージを配布しています。まず、以下の内容�
 === Lucid Lynxの場合
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://milter-manager.sourceforge.net/ubuntu/stable/ lucid universe
-  deb-src http://milter-manager.sourceforge.net/ubuntu/stable/ lucid universe
-  # deb http://milter-manager.sourceforge.net/ubuntu/development/ lucid universe
-  # deb-src http://milter-manager.sourceforge.net/ubuntu/development/ lucid universe
+  deb http://downloads.sourceforge.net/milter-manager/ubuntu/stable/ lucid universe
+  deb-src http://downloads.sourceforge.net/milter-manager/ubuntu/stable/ lucid universe
+  # deb http://downloads.sourceforge.net/milter-manager/ubuntu/development/ lucid universe
+  # deb-src http://downloads.sourceforge.net/milter-manager/ubuntu/development/ lucid universe
 
 開発版を利用する場合は最初の2行をコメントアウトし、すでにコメ
 ントアウトされている2行のコメントを外します。
@@ -28,10 +28,10 @@ Narwhal用のパッケージを配布しています。まず、以下の内容�
 === Natty Narwhalの場合
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://milter-manager.sourceforge.net/ubuntu/stable/ natty universe
-  deb-src http://milter-manager.sourceforge.net/ubuntu/stable/ natty universe
-  # deb http://milter-manager.sourceforge.net/ubuntu/development/ natty universe
-  # deb-src http://milter-manager.sourceforge.net/ubuntu/development/ natty universe
+  deb http://downloads.sourceforge.net/milter-manager/ubuntu/stable/ natty universe
+  deb-src http://downloads.sourceforge.net/milter-manager/ubuntu/stable/ natty universe
+  # deb http://downloads.sourceforge.net/milter-manager/ubuntu/development/ natty universe
+  # deb-src http://downloads.sourceforge.net/milter-manager/ubuntu/development/ natty universe
 
 開発版を利用する場合は最初の2行をコメントアウトし、すでにコメ
 ントアウトされている2行のコメントを外します。

@@ -1,9 +1,9 @@
-SERVER_PATH = $(SF_USER),$(SF_PROJECT_ID)@$(SF_HTDOCS)
+SERVER_PATH = $(SF_USER),$(SF_PROJECT_ID)@$(SF_FRS)
 # DISTRIBUTIONS = fedora centos
 DISTRIBUTIONS = centos
 ARCHITECTURES = i386 x86_64
 CHROOT_BASE = /var/lib/chroot
-BASE_URL_PREFIX = http://$(PACKAGE).sourceforge.net
+BASE_URL_PREFIX = http://downloads.sourceforge.net/$(PACKAGE)
 HAVE_DEVELOPMENT_BRANCH = yes
 USE_RPMFORGE = no
 USE_ATRPMS = no
