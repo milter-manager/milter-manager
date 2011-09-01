@@ -29,21 +29,7 @@ class TestTestServer < Test::Unit::TestCase
   end
 
   def test_nothing
-    @pid = fork do
-      exec(milter_test_client,
-           "--connection-spec", @connection_spec,
-           "--no-report-request",
-           "--quiet")
-      exit!(false)
-    end
-    10.times do
-      begin
-        TCPSocket.new(@host, @port)
-        break
-      rescue SystemCallError
-        sleep(0.1)
-      end
-    end
+    invoke_milter_test_client
     result = @test_server.run(:connection_spec => @connection_spec)
     result_hash = result.to_hash
     elapsed_time = result_hash.delete(:elapsed_time)
@@ -76,5 +62,23 @@ class TestTestServer < Test::Unit::TestCase
     end
     Process.kill(:KILL, pid)
     Process.waitpid(pid)
+  end
+
+  def invoke_milter_test_client
+    @pid = fork do
+      exec(milter_test_client,
+           "--connection-spec", @connection_spec,
+           "--no-report-request",
+           "--quiet")
+      exit!(false)
+    end
+    10.times do
+      begin
+        TCPSocket.new(@host, @port)
+        break
+      rescue SystemCallError
+        sleep(0.1)
+      end
+    end
   end
 end
