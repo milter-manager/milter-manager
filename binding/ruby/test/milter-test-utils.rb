@@ -19,6 +19,9 @@ require 'fileutils'
 require 'pathname'
 
 module MilterTestUtils
+  def fixture_path(*paths)
+    Pathname(__FILE__).dirname.join("fixtures", *paths)
+  end
 end
 
 Milter::Logger.default.target_level = Milter::LOG_LEVEL_NONE
