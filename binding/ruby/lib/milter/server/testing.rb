@@ -60,6 +60,9 @@ module Milter
     end
 
     def parse(command_result)
+      if Object.const_defined?(:Encoding)
+        command_result.set_encoding(Encoding::ASCII_8BIT)
+      end
       result = TestServerResult.new
 
       result.status = command_result.gets.chomp.split(/: /, 2)[1]

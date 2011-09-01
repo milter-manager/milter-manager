@@ -48,6 +48,14 @@ class TestTestServer < Test::Unit::TestCase
     assert_match(/\A\d+\.\d+\z/, elapsed_time)
   end
 
+  def test_raw_shift_jis_subject
+    invoke_milter_test_client
+    mail_file = fixture_path("raw-shift_jis-subject.eml").to_path
+    result = @test_server.run(:connection_spec => @connection_spec,
+                              :mail_file => mail_file)
+    assert_equal("pass", result.status)
+  end
+
   private
   def milter_test_client
     ENV["MILTER_TEST_CLIENT"] || "milter-test-client"
