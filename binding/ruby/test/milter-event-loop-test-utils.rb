@@ -17,6 +17,18 @@ module MilterEventLoopTestUtils
   include MilterTestUtils
 
   private
+  def event_loop_class
+    backend = ENV["MILTER_EVENT_LOOP_BACKEND"] || "glib"
+    case backend
+    when "glib"
+      Milter::GLibEventLoop
+    when "libev"
+      Milter::LibevEventLoop
+    else
+      raise "unknown backend: #{backend.inspect}"
+    end
+  end
+
   def create_event_loop
     backend = ENV["MILTER_EVENT_LOOP_BACKEND"] || "glib"
     case backend

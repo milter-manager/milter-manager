@@ -543,7 +543,9 @@ EOX
         :before => 0,
         :after => 0,
       }
-      @loader.manager.event_loop_created do |loop|
+      block_arguments = nil
+      @loader.manager.event_loop_created do |*arguments|
+        block_arguments = arguments
         n_called[:before] += 1
         raise "failed"
         n_called[:after] += 1
@@ -552,6 +554,8 @@ EOX
         @configuration.event_loop_created(create_event_loop)
       end
       assert_equal({:before => 1, :after => 0}, n_called)
+      assert_equal([event_loop_class],
+                   block_arguments.collect {|argument| argument.class})
     end
   end
 end

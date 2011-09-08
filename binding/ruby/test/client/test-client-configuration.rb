@@ -25,6 +25,8 @@ class TestClientConfiguration
   end
 
   class Milter < Base
+    include MilterEventLoopTestUtils
+
     setup
     def setup_config
       @milter_config = @configuration.milter
@@ -63,6 +65,42 @@ class TestClientConfiguration
       @milter_config.name = "test-milter"
       assert_equal("test-milter", @milter_config.name)
       assert_equal("test-milter", @milter_loader.name)
+    end
+
+    def test_maintained
+      n_called = {
+        :before => 0,
+        :after => 0,
+      }
+      @milter_loader.maintained do
+        n_called[:before] += 1
+        raise "failed"
+        n_called[:after] += 1
+      end
+      assert_nothing_raised do
+        @milter_config.maintained
+      end
+      assert_equal({:before => 1, :after => 0}, n_called)
+    end
+
+    def test_event_loop_created
+      n_called = {
+        :before => 0,
+        :after => 0,
+      }
+      block_arguments = nil
+      @milter_loader.event_loop_created do |*arguments|
+        block_arguments = arguments
+        n_called[:before] += 1
+        raise "failed"
+        n_called[:after] += 1
+      end
+      assert_nothing_raised do
+        @milter_config.event_loop_created(create_event_loop)
+      end
+      assert_equal({:before => 1, :after => 0}, n_called)
+      assert_equal([event_loop_class],
+                   block_arguments.collect {|argument| argument.class})
     end
   end
 

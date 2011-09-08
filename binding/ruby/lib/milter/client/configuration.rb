@@ -71,6 +71,7 @@ module Milter
         attr_accessor :n_workers, :packet_buffer_size
         attr_accessor :fallback_status
         attr_writer :daemon, :handle_signal, :run_gc_on_maintain
+        attr_reader :maintained_hooks, :event_loop_created_hooks
         def initialize(base_configuration)
           @base_configuration = base_configuration
           clear
@@ -129,17 +130,12 @@ module Milter
           client.n_workers = @n_workers
           unless @maintained_hooks.empty?
             client.on_maintain do
-              @maintained_hooks.each do |hook|
-                hook.call
-              end
+              maintained
             end
           end
           unless @event_loop_created_hooks.empty?
             client.on_event_loop_created do |_client, loop|
-              @event_loop = loop
-              @event_loop_created_hooks.each do |hook|
-                hook.call(loop)
-              end
+              event_loop_created(loop)
             end
           end
           if @max_file_descriptors.nonzero?
@@ -149,6 +145,19 @@ module Milter
               Milter::Logger.error("[configuration][setrlimit][nofile] #{error.message}")
               exit(false)
             end
+          end
+        end
+
+        def maintained
+          @maintained_hooks.each do |hook|
+            hook.call(self)
+          end
+        end
+
+        def event_loop_created(loop)
+          @event_loop = loop
+          @event_loop_created_hooks.each do |hook|
+            hook.call(self, loop)
           end
         end
 
