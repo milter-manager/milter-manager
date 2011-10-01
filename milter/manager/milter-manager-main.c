@@ -392,7 +392,6 @@ start_process_launcher_process (MilterManager *manager)
     gint *reply_pipe_p;
     GIOChannel *read_channel = NULL;
     GIOChannel *write_channel = NULL;
-    MilterManagerConfiguration *config;
     gboolean daemon;
 
     command_pipe_p = command_pipe;
@@ -413,8 +412,7 @@ start_process_launcher_process (MilterManager *manager)
            'milter-manager: process-launcher' by
            setproctitle() on *BSD, memcpy() argv on Linux or
            spawning another process. */
-        config = milter_manager_get_configuration(manager);
-        daemon = milter_manager_configuration_is_daemon(config);
+        daemon = milter_client_is_run_as_daemon(MILTER_CLIENT(manager));
         g_object_unref(manager);
         prepare_process_launcher_pipes_for_process_launcher(command_pipe_p,
                                                             reply_pipe_p,
