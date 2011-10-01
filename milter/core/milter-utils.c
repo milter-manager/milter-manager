@@ -741,11 +741,11 @@ milter_utils_detach_io (gchar **message)
     success = TRUE;
 
 cleanup:
-    if (null_stdin_fd == -1)
+    if (null_stdin_fd != -1)
         close(null_stdin_fd);
-    if (null_stdout_fd == -1)
+    if (null_stdout_fd != -1)
         close(null_stdout_fd);
-    if (null_stderr_fd == -1)
+    if (null_stderr_fd != -1)
         close(null_stderr_fd);
 
     return success;
