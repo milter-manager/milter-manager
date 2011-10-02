@@ -706,7 +706,7 @@ milter_manager_main (void)
         controller = NULL;
     }
 
-    daemon = milter_manager_configuration_is_daemon(config);
+    daemon = milter_client_is_run_as_daemon(client);
     if (daemon) {
         if (milter_client_daemonize(client, &error)) {
             io_detached = TRUE;
