@@ -38,12 +38,14 @@ check_pkg()
         echo "already installed ${pkg}."
     else
         echo "not installed ${pkg} yet."
+        echo "specify --all option to build all packages."
         exit 1
     fi
     if test -d "${PKGS}/${pkg}"; then
         echo "already exist ${pkg}."
     else
         echo "does not exist ${pkg}."
+        echo "specify --all option to build all packages."
         exit 1
     fi
 }
