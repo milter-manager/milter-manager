@@ -3,12 +3,12 @@
 source ./environment.sh
 source ./functions.sh
 
-skip_libraries=false
+skip_libraries=true
 
 until test $# = 0; do
     case "$1" in
-        (--skip-libraries)
-            skip_libraries=true
+        (--all)
+            skip_libraries=false
             ;;
         (*)
             echo "invalid option: ${1}"
