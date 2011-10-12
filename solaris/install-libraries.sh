@@ -91,7 +91,7 @@ install_cutter(){
 
 install_other_packages $build_other
 install_mysql $build_mysql
-install_ruby $build_mysql
+install_ruby $build_ruby
 install_cutter $build_other
 
 echo "$(time_stamp): done."
