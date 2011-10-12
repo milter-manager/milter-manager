@@ -44,5 +44,5 @@ if test $skip_milter_manager = true; then
     echo "skip install milter-manager."
 else
     run ./install-milter-manager.sh
-    run ./build-pkg.sh $skip_milter_manager $build_mysql $build_ruby
 fi
+run ./build-pkg.sh $skip_milter_manager $build_mysql $build_ruby
