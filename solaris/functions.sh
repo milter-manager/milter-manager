@@ -27,7 +27,6 @@ check_pkgs()
     check_pkg "${PKG_PREFIX}gettext"
     check_pkg "${PKG_PREFIX}glib"
     check_pkg "${PKG_PREFIX}mysql"
-    check_pkg "${PKG_PREFIX}cutter"
     echo "$(time_stamp): done."
 }
 
