@@ -59,8 +59,6 @@ build_pkg()
     local prototype="${prototype_dir}/prototype"
     local preinstall="${prototype_dir}/preinstall"
     local postinstall="${prototype_dir}/postinstall"
-    local user="$(/usr/xpg4/bin/id -un)"
-    local group="$(/usr/xpg4/bin/id -gn)"
     local log="${BUILDS}/${base}.log"
     shift
     shift
