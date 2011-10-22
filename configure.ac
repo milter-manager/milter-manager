@@ -782,12 +782,14 @@ fi
 AC_SUBST(SF_WEB_HOST)
 AC_SUBST(SF_FRS_HOST)
 
-SF_HTDOCS_PATH="/home/groups/m/mi/milter-manager/htdocs"
+SF_PROJECT_ID_HEAD_1=`echo $SF_PROJECT_ID | sed -e 's/^\(.\).*/\1/'`
+SF_PROJECT_ID_HEAD_2=`echo $SF_PROJECT_ID | sed -e 's/^\(..\).*/\1/'`
+SF_HTDOCS_PATH="/home/groups/${SF_PROJECT_ID_HEAD_1}/${SF_PROJECT_ID_HEAD_2}/${SF_PROJECT_ID}/htdocs"
 AC_SUBST(SF_HTDOCS_PATH)
 SF_HTDOCS="$SF_WEB_HOST:$SF_HTDOCS_PATH"
 AC_SUBST(SF_HTDOCS)
 
-SF_FRS_PATH="/home/frs/project/m/mi/milter-manager"
+SF_FRS_PATH="/home/frs/project/${SF_PROJECT_ID_HEAD_1}/${SF_PROJECT_ID_HEAD_2}/${SF_PROJECT_ID}"
 AC_SUBST(SF_FRS_PATH)
 SF_FRS="$SF_FRS_HOST:$SF_FRS_PATH"
 AC_SUBST(SF_FRS)
