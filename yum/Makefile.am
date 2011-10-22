@@ -53,7 +53,7 @@ build-in-chroot:
 	  '$(USE_RPMFORGE)'			\
 	  '$(USE_ATRPMS)'
 
-build-repository-rpm: RPM-GPG-KEY-milter-manager
+build-repository-rpm: RPM-GPG-KEY-$(PACKAGE)
 	./build-repository-rpm.sh		\
 	  $(PACKAGE)				\
 	  '$(PACKAGE_TITLE)'			\
@@ -61,5 +61,5 @@ build-repository-rpm: RPM-GPG-KEY-milter-manager
 	  '$(DISTRIBUTIONS)'			\
 	  $(HAVE_DEVELOPMENT_BRANCH)
 
-RPM-GPG-KEY-milter-manager:
+RPM-GPG-KEY-$(PACKAGE):
 	./gpg-public-key.sh > $@
