@@ -118,7 +118,7 @@ milter_manager_ruby_configuration_class_init (MilterManagerRubyConfigurationClas
     configuration_class->event_loop_created = real_event_loop_created;
     configuration_class->dump = real_dump;
     configuration_class->clear = real_clear;
-    configuration_class->clear = real_fork;
+    configuration_class->fork = real_fork;
 }
 
 static void
