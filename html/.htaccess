@@ -1,3 +1,3 @@
-Redirect permanent /debian/ http://downloads.sourceforge.net/milter-manager/debian/
-Redirect permanent /ubuntu/ http://downloads.sourceforge.net/milter-manager/ubuntu/
-Redirect permanent /centos/ http://downloads.sourceforge.net/milter-manager/centos/
+Redirect permanent /debian/ http://downloads.sourceforge.net/project/milter-manager/debian/
+Redirect permanent /ubuntu/ http://downloads.sourceforge.net/project/milter-manager/ubuntu/
+Redirect permanent /centos/ http://downloads.sourceforge.net/project/milter-manager/centos/
