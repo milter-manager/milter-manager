@@ -88,6 +88,7 @@ static gboolean real_event_loop_created
 static gchar   *real_dump         (MilterManagerConfiguration *configuration);
 static gboolean real_clear        (MilterManagerConfiguration *configuration,
                                    GError                    **error);
+static GPid     real_fork         (MilterManagerConfiguration *configuration);
 
 static gpointer milter_manager_ruby_configuration_parent_class = NULL;
 static GType    milter_manager_ruby_configuration_type_id = 0;
@@ -117,6 +118,7 @@ milter_manager_ruby_configuration_class_init (MilterManagerRubyConfigurationClas
     configuration_class->event_loop_created = real_event_loop_created;
     configuration_class->dump = real_dump;
     configuration_class->clear = real_clear;
+    configuration_class->clear = real_fork;
 }
 
 static void
@@ -607,6 +609,24 @@ real_clear (MilterManagerConfiguration *_configuration, GError **error)
     }
 
     return success;
+}
+
+static GPid
+real_fork (MilterManagerConfiguration *_configuration)
+{
+#ifdef HAVE_RB_FORK
+    int status;
+    return (GPid)rb_fork(&status, NULL, NULL, Qnil);
+#else
+    VALUE pid;
+
+    pid = rb_funcall2(rb_mKernel, rb_intern("fork"), 0, 0);
+    if (NIL_P(pid)) {
+	return (GPid)0;
+    } else {
+	return (GPid)NUM2INT(pid);
+    }
+#endif
 }
 
 /*

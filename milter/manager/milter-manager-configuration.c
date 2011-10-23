@@ -2048,6 +2048,19 @@ milter_manager_configuration_clear (MilterManagerConfiguration *configuration,
     return TRUE;
 }
 
+GPid
+milter_manager_configuration_fork (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationClass *configuration_class;
+
+    configuration_class = MILTER_MANAGER_CONFIGURATION_GET_CLASS(configuration);
+    if (configuration_class->fork) {
+        return configuration_class->fork(configuration);
+    } else {
+        return fork();
+    }
+}
+
 void
 milter_manager_configuration_maintain (MilterManagerConfiguration *configuration)
 {

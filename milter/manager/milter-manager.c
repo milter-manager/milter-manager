@@ -129,6 +129,7 @@ static void   set_pid_file                (MilterClient *client,
 static gboolean is_run_as_daemon          (MilterClient *client);
 static void   set_run_as_daemon           (MilterClient *client,
                                            gboolean      daemon);
+static GPid   fork_delegate               (MilterClient *client);
 
 static void
 milter_manager_class_init (MilterManagerClass *klass)
@@ -174,6 +175,7 @@ milter_manager_class_init (MilterManagerClass *klass)
     client_class->set_pid_file = set_pid_file;
     client_class->is_run_as_daemon = is_run_as_daemon;
     client_class->set_run_as_daemon = set_run_as_daemon;
+    client_class->fork = fork_delegate;
     client_class->maintain = maintain;
     client_class->sessions_finished = sessions_finished;
     client_class->event_loop_created = event_loop_created;
@@ -1322,6 +1324,17 @@ set_run_as_daemon (MilterClient *client, gboolean run_as_daemon)
     klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
     klass->set_run_as_daemon(client, run_as_daemon);
     milter_manager_configuration_set_daemon(priv->configuration, run_as_daemon);
+}
+
+static GPid
+fork_delegate (MilterClient *client)
+{
+    MilterManager *manager;
+    MilterManagerPrivate *priv;
+
+    manager = MILTER_MANAGER(client);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    return milter_manager_configuration_fork(priv->configuration);
 }
 
 MilterManagerConfiguration *

@@ -76,6 +76,7 @@ struct _MilterManagerConfigurationClass
     gchar       *(*dump)          (MilterManagerConfiguration *configuration);
     gboolean     (*clear)         (MilterManagerConfiguration *configuration,
                                    GError                    **error);
+    GPid         (*fork)          (MilterManagerConfiguration *configuration);
 };
 
 GQuark        milter_manager_configuration_error_quark (void);
@@ -309,6 +310,10 @@ void          milter_manager_configuration_clear_applicable_conditions
 gboolean      milter_manager_configuration_clear
                                      (MilterManagerConfiguration *configuration,
                                       GError                    **error);
+
+GPid          milter_manager_configuration_fork
+                                     (MilterManagerConfiguration *configuration);
+
 
 void          milter_manager_configuration_session_finished
                                      (MilterManagerConfiguration *configuration);
