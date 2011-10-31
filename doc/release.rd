@@ -8,7 +8,10 @@ You write improvements and fixes to NEWS and NEWS.ja.
 You execute command "git tag" to check previous release, then you read
 log.
 
-  % git log --reverse -p 1.8.0..HEAD
+  % git log --reverse -p <previous release tag>..
+
+ex(release 1.8.1):
+  % git log --reverse -p 1.8.0..
 
 If diff is too long,  you can search "Author:" to jump next entry.
 
