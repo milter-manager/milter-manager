@@ -44,10 +44,11 @@ You refer to the previous version entry and write entries below.
 
 == Check document
 
-
+Check and update documents that are compatible with the new version.
 
 == Update site
 
+Upload documents.
 
 == Create release packages
 
