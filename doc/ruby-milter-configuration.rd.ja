@@ -122,7 +122,7 @@ milterの設定もmilter-managerの「manager」グループの設定と同
    ((<manager.maintained|configuration.rd.ja#manager.maintained>))と同じ。
 
 : milter.event_loop_created
-   ((<milter.event_loop_created|configuration.rd.ja#milter.event_loop_created>))と同じ。
+   ((<manager.event_loop_created|configuration.rd.ja#manager.event_loop_created>))と同じ。
 
 : milter.name
    子milterの名前を取得します。1.8.1から利用可能。

@@ -122,7 +122,7 @@ details.
    See ((<manager.maintained|configuration.rd#manager.maintained>)).
 
 : milter.event_loop_created
-   See ((<milter.event_loop_created|configuration.rd#milter.event_loop_created>)).
+   See ((<manager.event_loop_created|configuration.rd#manager.event_loop_created>)).
 
 : milter.name
    Returns child milter's name. Since 1.8.1.
