@@ -23,45 +23,52 @@ EXTRA_DIST =					\
 echo-abs-top-builddir:
 	@echo $(abs_top_builddir)
 
-# cat test-unit/Manifest.txt | sed -e 's,^,\ttest-unit/,g'
+# find ./binding/ruby/test-unit -type f | sort | sed -e 's,^\./binding/ruby/\(.*\),\t\\1\t\\,g'
 test_unit_files =						\
 	test-unit/COPYING					\
 	test-unit/GPL						\
-	test-unit/History.txt					\
-	test-unit/Manifest.txt					\
+	test-unit/Gemfile					\
 	test-unit/PSFL						\
-	test-unit/README.txt					\
+	test-unit/README.textile				\
 	test-unit/Rakefile					\
 	test-unit/TODO						\
 	test-unit/bin/testrb					\
-	test-unit/html/bar.png					\
-	test-unit/html/bar.svg					\
-	test-unit/html/developer.png				\
-	test-unit/html/developer.svg				\
-	test-unit/html/famfamfam-logo.png			\
-	test-unit/html/favicon.ico				\
-	test-unit/html/favicon.png				\
-	test-unit/html/favicon.svg				\
-	test-unit/html/github-logo.png				\
-	test-unit/html/heading-mark.png				\
-	test-unit/html/heading-mark.svg				\
-	test-unit/html/index.html				\
-	test-unit/html/index.html.ja				\
-	test-unit/html/install.png				\
-	test-unit/html/install.svg				\
-	test-unit/html/jp.png					\
-	test-unit/html/kinotan-failure.png			\
-	test-unit/html/kinotan-pass.png				\
-	test-unit/html/logo.png					\
-	test-unit/html/logo.svg					\
-	test-unit/html/reference.png				\
-	test-unit/html/rubyforge.png				\
-	test-unit/html/tango-logo.png				\
-	test-unit/html/test-unit.css				\
-	test-unit/html/tutorial.png				\
-	test-unit/html/tutorial.svg				\
-	test-unit/html/us.png					\
-	test-unit/images/color-diff.png				\
+	test-unit/doc/html/bar.png				\
+	test-unit/doc/html/bar.svg				\
+	test-unit/doc/html/color-diff.png			\
+	test-unit/doc/html/developer.png			\
+	test-unit/doc/html/developer.svg			\
+	test-unit/doc/html/famfamfam-logo.png			\
+	test-unit/doc/html/favicon.ico				\
+	test-unit/doc/html/favicon.png				\
+	test-unit/doc/html/favicon.svg				\
+	test-unit/doc/html/github-logo.png			\
+	test-unit/doc/html/heading-mark.png			\
+	test-unit/doc/html/heading-mark.svg			\
+	test-unit/doc/html/index.html				\
+	test-unit/doc/html/index.html.ja			\
+	test-unit/doc/html/install.png				\
+	test-unit/doc/html/install.svg				\
+	test-unit/doc/html/jp.png				\
+	test-unit/doc/html/kinotan-failure.png			\
+	test-unit/doc/html/kinotan-pass.png			\
+	test-unit/doc/html/logo.png				\
+	test-unit/doc/html/logo.svg				\
+	test-unit/doc/html/reference.png			\
+	test-unit/doc/html/rubyforge.png			\
+	test-unit/doc/html/tango-logo.png			\
+	test-unit/doc/html/test-unit.css			\
+	test-unit/doc/html/tutorial.png				\
+	test-unit/doc/html/tutorial.svg				\
+	test-unit/doc/html/us.png				\
+	test-unit/doc/po/ja.po					\
+	test-unit/doc/templates/footer.en.html.erb		\
+	test-unit/doc/templates/footer.ja.html.erb		\
+	test-unit/doc/templates/head.en.html.erb		\
+	test-unit/doc/templates/head.ja.html.erb		\
+	test-unit/doc/templates/header.en.html.erb		\
+	test-unit/doc/templates/header.ja.html.erb		\
+	test-unit/doc/text/news.textile				\
 	test-unit/lib/test/unit.rb				\
 	test-unit/lib/test/unit/assertionfailederror.rb		\
 	test-unit/lib/test/unit/assertions.rb			\
