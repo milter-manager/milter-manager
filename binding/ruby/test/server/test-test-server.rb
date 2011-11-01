@@ -74,7 +74,7 @@ class TestTestServer < Test::Unit::TestCase
     waiting_time = Time.now
     while Process.waitpid(pid, Process::WNOHANG).nil?
       sleep(0.1)
-      return if (Time.now.to_i - waiting_time.to_i) >= 1
+      break if (Time.now.to_i - waiting_time.to_i) >= 1
     end
     Process.kill(:KILL, pid)
     Process.waitpid(pid)
