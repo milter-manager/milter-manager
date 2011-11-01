@@ -1154,6 +1154,12 @@ Required item is just only milter.connection_spec.
    Default:
      milter.end_of_message_timeout = 297.0
 
+: milter.name
+
+  Since 1.8.1.
+
+  Returns child milter's name specified by define_milter.
+
 === Operate child milter
 
 There is convenient features to operate defined child

@@ -124,6 +124,9 @@ details.
 : milter.event_loop_created
    See ((<milter.event_loop_created|configuration.rd#milter.event_loop_created>)).
 
+: milter.name
+   Returns child milter's name. Since 1.8.1.
+
 == [database] Database
 
 You can use configuration items same as ((<'"database"

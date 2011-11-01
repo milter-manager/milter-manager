@@ -1142,6 +1142,13 @@ define_milter do ... end内で設定できる項目は以下の通りです。
    既定値:
      milter.end_of_message_timeout = 297.0
 
+: milter.name
+
+  1.8.1 から利用可能。
+
+  define_milter で設定した名前を返します。
+
+
 === 子milter操作
 
 定義された子milterを操作するために便利な機能があります。ただ
