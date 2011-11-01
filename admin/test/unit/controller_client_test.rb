@@ -2,7 +2,7 @@ require 'test_helper'
 
 class ControllerClientTest < ActiveSupport::TestCase
   def test_status
-    TCPServer.open("localhost", 0) do |server|
+    TCPServer.open("127.0.0.1", 0) do |server|
       port = server.addr[1]
       Thread.new do
         _client = server.accept
@@ -112,7 +112,7 @@ EOC
 
   def assert_configuration(expected, config_xml)
     thread = nil
-    TCPServer.open("localhost", 12929) do |server|
+    TCPServer.open("127.0.0.1", 12929) do |server|
       thread = Thread.new do
         _client = server.accept
         _client.print(packet("configuration", config_xml))
