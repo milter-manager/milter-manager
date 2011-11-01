@@ -11,6 +11,11 @@ manager.event_loop_backend と manager.n_workers は実用できるほどに安�
 
 === milter manager
 
+==== 改良
+
+  * 100 IP アドレス処理するごとに DNS のキャッシュをクリアするようにし
+    た。
+
 ==== 修正
 
   * デーモンモードで起動するかどうか判定するために
@@ -22,18 +27,19 @@ manager.event_loop_backend と manager.n_workers は実用できるほどに安�
   * fork(2) の代わりに rb_fork() を使うようにした。
     --daemon オプションが *BSD で動かなかった問題を修正。
     [おばたさんが報告]
+  * 同梱している libev がビルドできなかった問題を修正。[川崎さんが報告]
 
 === milter-core
 
-==== Fixes
+==== 修正
 
-  * 空の FD を閉じるときの条件を修正。 [Reported by OBATA Akio.]
+  * 空の FD を閉じるときの条件を修正。 [おばたさんが報告]
 
 === milter-client
 
 ==== 改良
 
-  * [client] use more higher priority for accepting connection.
+  * 新規接続の受付を優先的に処理するようにした。
 
 ==== 修正
 
@@ -45,7 +51,8 @@ manager.event_loop_backend と manager.n_workers は実用できるほどに安�
 ==== 改良
 
   * エラーメッセージに出力する情報を増やした。
-  * [server] unify unknown name logging.
+  * 名前が設定されていないオブジェクトをログ出力するときの表記を
+    "(unknown)"に統一した。
 
 ==== 修正
 
@@ -63,6 +70,9 @@ manager.event_loop_backend と manager.n_workers は実用できるほどに安�
     正。
   * 本文が 8bit の Shift_JIS であるメールを与えた場合に例外が発生する問
     題を修正。
+  * 同梱している test-unit のファイルリストを更新した。[山口さんが報告]
+  * 同梱している Ruby/GLib2 では Ruby1.9 + Solaris10 の組合せで SEGV す
+    る問題を修正。
 
 === milter-test-server
 
@@ -78,33 +88,7 @@ manager.event_loop_backend と manager.n_workers は実用できるほどに安�
 ==== 改良
 
   * 出力するログの説明を追加。
-
-=== ビルドスクリプト
-
-==== 改良
-
-  * [solaris] sudo コマンドではなく pfexec コマンドを使うようにした。
-  * [solaris] prototype ファイルを自動生成するようにした。
-  * [solaris] --skip-libraries オプションを削除した。
-  * [solaris] --all, --ruby, --mysql オプションを追加した。
-
-==== 修正
-
-  * [solaris] pkginfo のバージョン情報をセットするようにした。
-  * [solaris] pkginfo で表示する glib のバージョン情報を修正した。
-
-=== その他
-
-==== 改良
-
-  * 100 IP アドレス処理するごとに DNS のキャッシュをクリアするようにし
-    た。
-
-==== 修正
-
-  * 同梱している test-unit のファイルリストを更新した。[山口さんが報告]
-  * 同梱している Ruby/GLib2 では Ruby1.9 + Solaris10 の組合せで SEGV す
-    る問題を修正。
+  * タイポを修正。[鈴木さんが Pull request]
 
 === 感謝
 

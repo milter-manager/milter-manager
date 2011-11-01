@@ -9,14 +9,12 @@ A bug fix release of 1.8.0.
 Now, manager.event_loop_backend and manager.n_workers aren't
 experimental!
 
-=== All
-
-==== Fixex
-
-  * use INCLUDES to use configured libev include path rather than
-    CPPFLAGS. [Reported by moto kawasaki]
-
 === milter manager
+
+==== Improvements
+
+  * [applicable-condition][sendmail] clear DNS cache for each 100 IP
+    addresses.
 
 ==== Fixes
 
@@ -30,6 +28,8 @@ experimental!
   * use rb_fork() as fork implementation.
     This will fix --daemon doesn't work on *BSD.
     [Reported by OBATA Akio]
+  * use INCLUDES to use configured libev include path rather than
+    CPPFLAGS. [Reported by moto kawasaki]
 
 === milter-core
 
@@ -42,7 +42,7 @@ experimental!
 
 ==== Improvements
 
-  * use more higher priority for accepting connection.
+  * use higher priority for accepting connection.
 
 ==== Fixes
 
@@ -71,6 +71,8 @@ experimental!
 
   * fix event_loop_created hook can't get event loop.
   * do not raise error if process raw shift_jis mail file. Ruby 1.9.
+  * udpate bundled test-unit file list. [Reported by Hirohisa Yamaguchi]
+  * [ruby][glib2] fix a SEGV bug on Solaris10.
 
 === milter-test-server
 
@@ -85,34 +87,7 @@ experimental!
 ==== Improvements
 
   * add log list to HTML.
-
-=== Build script
-
-==== Improvements
-
-  * [solaris] use pfexec instead of sudo in build script.
-  * [solaris] set milter-manager config dir via environment variable
-    MILTER_MANAGER_CONFIG_DIR.
-  * [solaris] create prototype file when build pkg.
-  * [solaris] add --all option and remove --skip-libraries option.
-  * [solaris] add --mysql, --ruby option to build script.
-
-==== Fixes
-
-  * [solaris] set VERSION to pkginfo.
-  * [solaris] fix glib pkginfo version.
-
-=== Others
-
-==== Improvements
-
-  * [applicable-condition][sendmail] clear DNS cache for each 100 IP
-    addresses.
-
-==== Fixes
-
-  * udpate bundled test-unit file list. [Reported by Hirohisa Yamaguchi]
-  * [ruby][glib2] fix a SEGV bug on Solaris10.
+  * fix typos. [Pull requested by Norio Suzuki]
 
 === Thanks
 
@@ -121,7 +96,7 @@ experimental!
   * moto kawasaki
   * nobu
   * Hirohisa Yamaguchi
-  * suzuki
+  * Norio Suzuki
 
 == [release-1-8-0] 1.8.0: 2011-06-10
 
