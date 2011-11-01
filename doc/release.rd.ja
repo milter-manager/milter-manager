@@ -1,6 +1,18 @@
 # -*- rd -*-
 = リリース手順
 
+== テストの実行
+
+以降の作業をする前にテストを実行する。ドキュメントの生成に rdtool と
+ruby-gettext が必要なので無ければ入れておく。
+
+  % gem install rdtool gettext
+  % ./autogen.sh --no-update
+  % ./configure --prefix=/tmp/local \
+    --enable-ruby-milter --enable-gtk-doc
+  % make
+  % make check
+
 == 変更点の記述
 
 変更点を NEWS, NEWS.ja に記述する。
@@ -47,6 +59,9 @@ NEWS にログを抜粋してざっくりカテゴリ分けしてから NEWS.ja 
 
 を書く。
 
+なお、内部的な修正は基本的には NEWS には書かないが、パッチをもらったり、
+報告をもらったりしたものは NEWS に書くようにする。
+
 == ドキュメントの確認と更新
 
 新バージョンに対応したドキュメントになっているか確認して更新する。
@@ -64,6 +79,8 @@ NEWS に書いた改良点や修正点を見ながらドキュメントをチェ
     OLD_RELEASE=1.8.0 \
     OLD_RELEASE_DATE=yyyy-mm-dd \
     NEW_RELEASE_DATE=yyyy-mm-dd
+
+バージョン情報を更新したら、差分を確認してからコミットする。
 
 == リリース用パッケージ作成のための事前準備
 
