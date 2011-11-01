@@ -42,13 +42,23 @@ You refer to the previous version entry and write entries below.
   * Fixes
   * Reporters and Contributors
 
+You don't have to write internal changes, but you must write changes
+reported or provided a patch by someone.
+
 == Check document
 
 Check and update documents that are compatible with the new version.
 
-== Update site
+== Update version information
 
-Upload documents.
+You update version information. You execute below command in top
+directory.
+
+  % make dist
+  % make update-latest-release \
+    OLD_RELEASE=1.8.0 \
+    OLD_RELEASE_DATE=yyyy-mm-dd \
+    NEW_RELEASE_DATE=yyyy-mm-dd
 
 == Create release packages
 
@@ -58,6 +68,10 @@ Upload documents.
 
 == Create source archive
 
+
+== Update site
+
+Upload documents.
 
 == Create tag on remote repository
 
