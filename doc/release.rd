@@ -52,6 +52,9 @@ Upload documents.
 
 == Create release packages
 
+=== Debian
+
+=== RedHat
 
 == Create source archive
 
