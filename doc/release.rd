@@ -17,7 +17,7 @@ If diff is too long,  you can search "Author:" to jump next entry.
 
   * Improvements
   * Fixes
-  * Reporters and Contributers
+  * Reporters and Contributors
 
 == Check document
 
