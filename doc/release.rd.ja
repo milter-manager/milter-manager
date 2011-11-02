@@ -88,7 +88,7 @@ NEWS に書いた改良点や修正点を見ながらドキュメントをチェ
 
 === 必須パッケージのインストール
 
-  % sudo apt-get install -y debootstrap gnupg2
+  % sudo apt-get install -y debootstrap gnupg
   % sudo apt-get install -y rinse createrepo rpm
 
 === GPG 鍵ペアの作成

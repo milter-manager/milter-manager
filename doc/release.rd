@@ -78,7 +78,7 @@ You need this for first time.
 
 === Install required packages
 
-  % sudo apt-get install -y debootstrap gnupg2
+  % sudo apt-get install -y debootstrap gnupg
   % sudo apt-get install -y rinse createrepo rpm
 
 === Generate GPG key pair
