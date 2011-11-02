@@ -86,6 +86,29 @@ NEWS に書いた改良点や修正点を見ながらドキュメントをチェ
 
 初回のみ必要な作業である。
 
+=== sourceforge.net への SSH アクセス
+
+公開鍵認証でアクセスするので、設定が必要である。
+
+$HOME/ssh/config:
+  ...
+  Host: *.sourceforge.net
+    User: <username>
+    IdentityFile: </path/to/secret_key>
+  ...
+
+このようにメッセージが表示できていれば、問題ない。
+  % ssh frs.sourceforge.net
+  Welcome!
+
+  This is a restricted Shell Account.
+  You can only copy files to/from here.
+
+Connection to frs.sourceforge.net closed.
+
+
+アクセスできない場合はアカウントの作成などが必要である。
+
 === 必須パッケージのインストール
 
   % sudo apt-get install -y debootstrap gnupg
@@ -128,7 +151,7 @@ apt ディレクトリに移動してからコマンドを実行すると、一�
   % make upload
 
 download を事前に実行しておかないと、アップロード済みの古いパッケージを
-全て削除してしまうので忘れずに実行するようにする。
+全て削除してしまうので忘れずに実行する。
 make build に PARALLEL=yes を付けるとビルドが並列に走ります。
 
 === RedHat 系
