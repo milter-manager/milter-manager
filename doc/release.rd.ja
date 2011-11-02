@@ -122,13 +122,14 @@ apt ディレクトリに移動してからコマンドを実行すると、一�
 実行するコマンドは Makfile.am に書いてあるので head などで確認する。
 
   % make download
-  % make build
+  % make build PARALLEL=yes
   % make update
   % make sign
   % make upload
 
 download を事前に実行しておかないと、アップロード済みの古いパッケージを
 全て削除してしまうので忘れずに実行するようにする。
+make build に PARALLEL=yes を付けるとビルドが並列に走ります。
 
 === RedHat 系
 
@@ -143,13 +144,14 @@ yum ディレクトリに移動してからコマンドを実行すると、一�
 
   % make download
   % make remove-existing-packages
-  % make build
+  % make build PARALLEL=yes
   % make sign
   % make update
   % make upload
 
 download を事前に実行しておかないと、アップロード済みの古いパッケージを
 全て削除してしまうので忘れずに実行する。
+make build に PARALLEL=yes を付けるとビルドが並列に走ります。
 
 == ソースアーカイブの作成
 
