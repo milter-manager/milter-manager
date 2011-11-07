@@ -76,6 +76,30 @@ directory.
 
 You need this for first time.
 
+=== SSH access to sourceforge.net
+
+You need public key authentication to access sourceforge.net via SSH.
+
+$HOME/ssh/config:
+  ...
+  Host: *.sourceforge.net
+    User: <username>
+    IdentityFile: </path/to/secret_key>
+  ...
+
+You will see message below.
+  % ssh frs.sourceforge.net
+  Welcome!
+  
+  This is a restricted Shell Account.
+  You can only copy files to/from here.
+  
+  Connection to frs.sourceforge.net closed.
+
+
+If you cannot access sourceforge.net via SSH, you need to contact
+project admin.
+
 === Install required packages
 
   % sudo apt-get install -y debootstrap gnupg
@@ -83,11 +107,24 @@ You need this for first time.
 
 === Generate GPG key pair
 
-...
+If you don't have GPG key pair, you have to generate GPG key pair.
+You can generate GPG key pair interactively.
+
+  % gpg --gen-key
+
+Then you send public key to keyserver.
+
+  % gpg --keyserver pgp.mit.edu --send-keys <key-id>
 
 === Encrypt shared key for milter manager.
 
-...
+You encrypt GPG key for milter manager.
+
+  % gpg -e -a -r <your mail address> password.txt
+
+Decrypt.
+
+  % gpg -d password.txt.gpg
 
 == Create release packages
 
@@ -147,7 +184,7 @@ Write release announce in Japanese and English.
 
 ((<URL:http://milter-manager.sourceforge.net/blog/ja/>))
 
-
 == Announce to Freecode
 
 ((<URL:http://freecode.com/projects/milter-manager>))
+
