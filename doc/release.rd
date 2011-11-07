@@ -150,6 +150,8 @@ You need Debian GNU/Linux or Ubuntu to create release packages.
   % make sign
   % make upload
 
+See Makefile.am.
+
 === RedHat
 
   % cd yum
@@ -160,9 +162,11 @@ You need Debian GNU/Linux or Ubuntu to create release packages.
   % make update
   % make upload
 
-== Create source archive
+See Makefile.am.
 
-....
+== Upload source archive
+
+Because you have already created source archive, upload it.
 
 == Update site
 
