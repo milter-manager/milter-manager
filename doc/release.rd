@@ -116,15 +116,21 @@ Then you send public key to keyserver.
 
   % gpg --keyserver pgp.mit.edu --send-keys <key-id>
 
-=== Encrypt shared key for milter manager.
+=== Release key for milter manager.
 
-You encrypt GPG key for milter manager.
+You encrypt GPG key for milter manager.  If you have UID's public key,
+you can encrypt release key information for UID,
 
-  % gpg -e -a -r <your mail address> password.txt
+  % gpg -e -a -r <UID> secret.txt
 
 Decrypt.
 
-  % gpg -d password.txt.gpg
+  % gpg -d secret.txt.asc > secret.txt
+
+Import.(secret.txt contains passphrase and secret key.)
+
+  % gpg --keyserver pgp.mit.edu --recv-keys 435C1F50
+  % gpg --allow-secret-key-import --import secret.txt
 
 == Create release packages
 

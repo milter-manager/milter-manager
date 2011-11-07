@@ -125,15 +125,21 @@ GPG 鍵ペアを持っていない場合は、作成する。以下のコマン�
 
   % gpg --keyserver pgp.mit.edu --send-keys <key-id>
 
-=== milter manager リリース用鍵の暗号化
+=== milter manager リリース用鍵
 
-milter-manager のリリース用鍵の情報を暗号化しておく。
+milter-manager のリリース用鍵の情報を暗号化しておく。UID の公開鍵があれ
+ば、UID 用に暗号化できる。
 
-  % gpg -e -a -r <自分のメールアドレス> password.txt
+  % gpg -e -a -r <UID> secret.txt
 
 復号する。
 
-  % gpg -d password.txt.gpg
+  % gpg -d secret.txt.asc > secret.txt
+
+インポートする。(secret.txt にはパスフレーズと秘密鍵が含まれている。)
+
+  % gpg --keyserver pgp.mit.edu --recv-keys 435C1F50
+  % gpg --allow-secret-key-import --import secret.txt
 
 == リリース用パッケージ作成
 
