@@ -100,14 +100,14 @@ $HOME/ssh/config:
 このようにメッセージが表示できていれば、問題ない。
   % ssh frs.sourceforge.net
   Welcome!
-
+  
   This is a restricted Shell Account.
   You can only copy files to/from here.
+  
+  Connection to frs.sourceforge.net closed.
 
-Connection to frs.sourceforge.net closed.
 
-
-アクセスできない場合はアカウントの作成などが必要である。
+アクセスできない場合はプロジェクト管理者に連絡してください。
 
 === 必須パッケージのインストール
 
@@ -149,7 +149,7 @@ milter-manager のリリース用鍵の情報を暗号化しておく。
 === Debian 系
 
 apt ディレクトリに移動してからコマンドを実行すると、一連のリリース作業
-を実行しますが、途中で失敗することもあるので、順番に作業した方がよい。
+を実行するが、途中で失敗することもあるので、順番に作業した方がよい。
 
   % make download
   % make release
@@ -165,12 +165,15 @@ apt ディレクトリに移動してからコマンドを実行すると、一�
 
 download を事前に実行しておかないと、アップロード済みの古いパッケージを
 全て削除してしまうので忘れずに実行する。
-make build に PARALLEL=yes を付けるとビルドが並列に走ります。
+make build に PARALLEL=yes を付けるとビルドが並列に走る。
+
+初めて実行するときは、chroot 環境を作るときにロケールなどを聞かれるので
+PARALLEL=yes をつけてはいけない。
 
 === RedHat 系
 
 yum ディレクトリに移動してからコマンドを実行すると、一連のリリース作業
-を実行しますが、途中で失敗することもあるので順番に作業した方がよい。
+を実行するが、途中で失敗することもあるので順番に作業した方がよい。
 
   % make download
   % make release
@@ -187,7 +190,7 @@ yum ディレクトリに移動してからコマンドを実行すると、一�
 
 download を事前に実行しておかないと、アップロード済みの古いパッケージを
 全て削除してしまうので忘れずに実行する。
-make build に PARALLEL=yes を付けるとビルドが並列に走ります。
+make build に PARALLEL=yes を付けるとビルドが並列に走る。
 
 == ソースアーカイブの作成
 
