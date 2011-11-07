@@ -116,11 +116,24 @@ Connection to frs.sourceforge.net closed.
 
 === GPG 鍵ペアの作成
 
-...
+GPG 鍵ペアを持っていない場合は、作成する。以下のコマンドを実行すると、
+対話的に鍵ペアを作成できる。
+
+  % gpg --gen-key
+
+作成したらキーサーバに公開鍵を送信する。
+
+  % gpg --keyserver pgp.mit.edu --send-keys <key-id>
 
 === milter manager リリース用鍵の暗号化
 
-...
+milter-manager のリリース用鍵の情報を暗号化しておく。
+
+  % gpg -e -a -r <自分のメールアドレス> password.txt
+
+復号する。
+
+  % gpg -d password.txt.gpg
 
 == リリース用パッケージ作成
 
