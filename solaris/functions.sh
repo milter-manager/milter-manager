@@ -108,8 +108,8 @@ update_prototype()
     local prototype="${prototype_dir}/prototype"
     local preinstall="${prototype_dir}/preinstall"
     local postinstall="${prototype_dir}/postinstall"
-    local user="$(/usr/xpg4/bin/id -un)"
-    local group="$(/usr/xpg4/bin/id -gn)"
+    local user="$(/usr/bin/id | gsed -e 's/uid=[0-9]*(\([^ ]*\)) gid=[0-9]*(\([^ ]*\?\)).*/\1/g')"
+    local group="$(/usr/bin/id | gsed -e 's/uid=[0-9]*(\([^ ]*\)) gid=[0-9]*(\([^ ]*\?\)).*/\2/g')"
     local log="${BUILDS}/${base}.log"
     shift
     shift
