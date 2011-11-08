@@ -1,7 +1,7 @@
 #!/bin/sh
 
 script_base_dir=`dirname $0`
-KEY_UID="435C1F50"
+GPG_UID=`$script_base_dir/gpg-uid.sh`
 
 if [ $# != 1 ]; then
     echo "Usage: $0 CODE_NAMES"
@@ -32,6 +32,6 @@ for code_name in ${CODE_NAMES}; do
     for status in stable development; do
 	release=${distribution}/${status}/dists/${code_name}/Release
 	rm -f ${release}.gpg
-	gpg --sign -ba -o ${release}.gpg -u ${KEY_UID} ${release}
+	gpg --sign -ba -o ${release}.gpg -u ${GPG_UID} ${release}
     done;
 done
