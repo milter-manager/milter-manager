@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
   end
 
   def guess_locale
-    (request.accept_language || '').split(/,/).collect do |item|
+    locale = (request.accept_language || '').split(/,/).collect do |item|
       language, quality = item.split(/;/, 2)
       quality ||= 1
       [language, quality.to_i]
@@ -37,6 +37,11 @@ class ApplicationController < ActionController::Base
     end.collect do |language, quality|
       language
     end[0]
+    if /\Aja\z/i =~ locale
+      locale
+    else
+      "en"
+    end
   end
 
   def sync_configuration
