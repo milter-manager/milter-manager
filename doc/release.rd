@@ -190,7 +190,7 @@ Write release announce in Japanese and English.
   * milter-manager-users-ja@lists.sourceforge.net
   * milter-manager-users-en@lists.sourceforge.net
 
-== Write a blog entries
+== Write a blog entry
 
 ((<URL:http://milter-manager.sourceforge.net/blog/ja/>))
 
