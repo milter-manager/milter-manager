@@ -9,6 +9,10 @@ A bug fix release of 1.8.0.
 Now, manager.event_loop_backend and manager.n_workers aren't
 experimental!
 
+=== Package
+
+  * [ubuntu] Added Ubuntu Oneiric Ocelot support.
+
 === milter manager
 
 ==== Improvements
