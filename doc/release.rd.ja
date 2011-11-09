@@ -221,8 +221,8 @@ make build に PARALLEL=yes を付けるとビルドが並列に走る。
 
 NEWS.ja, NEWS を参考にして日本語、英語のメールを書いてそれぞれ
 
-  * milter-manager-users-ja
-  * milter-manager-users-en
+  * milter-manager-users-ja@lists.sourceforge.net
+  * milter-manager-users-en@lists.sourceforge.net
 
 に投げる。
 

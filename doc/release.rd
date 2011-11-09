@@ -187,8 +187,8 @@ Example:
 
 Write release announce in Japanese and English.
 
-  * milter-manager-users-ja
-  * milter-manager-users-en
+  * milter-manager-users-ja@lists.sourceforge.net
+  * milter-manager-users-en@lists.sourceforge.net
 
 == Write a blog entries
 
