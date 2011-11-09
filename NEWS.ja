@@ -90,6 +90,13 @@ manager.event_loop_backend と manager.n_workers は実用できるほどに安�
   * 出力するログの説明を追加。
   * タイポを修正。[鈴木さんが Pull request]
 
+=== milter manager admin
+
+==== 改良
+
+  * Accept-Language が "ja" 以外のときは "en" をロケールとして使用する
+    ようにした。[Larry G. Wapnitsky さんが報告]
+
 === 感謝
 
   * 荻野充さん
@@ -98,6 +105,7 @@ manager.event_loop_backend と manager.n_workers は実用できるほどに安�
   * 中田さん
   * 山口さん
   * 鈴木さん
+  * Larry G. Wapnitsky さん
 
 == [release-1-8-0] 1.8.0: 2011-06-10
 

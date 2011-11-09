@@ -89,6 +89,13 @@ experimental!
   * add log list to HTML.
   * fix typos. [Pull requested by Norio Suzuki]
 
+=== Admin
+
+==== Improvements
+
+  * use locale "en" if Accept-Language is not "ja".
+    [Reported by Larry G. Wapnitsky]
+
 === Thanks
 
   * Mitsuru Ogino
@@ -97,6 +104,7 @@ experimental!
   * nobu
   * Hirohisa Yamaguchi
   * Norio Suzuki
+  * Larry G. Wapnitsky
 
 == [release-1-8-0] 1.8.0: 2011-06-10
 
