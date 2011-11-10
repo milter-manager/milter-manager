@@ -50,7 +50,7 @@ class TestTestServer < Test::Unit::TestCase
 
   def test_raw_shift_jis_subject
     invoke_milter_test_client
-    mail_file = fixture_path("raw-shift_jis-subject.eml").to_path
+    mail_file = fixture_path("raw-shift_jis-subject.eml").expand_path.to_s
     result = @test_server.run(:connection_spec => @connection_spec,
                               :mail_file => mail_file)
     assert_equal("pass", result.status)
@@ -58,7 +58,7 @@ class TestTestServer < Test::Unit::TestCase
 
   def test_shift_jis_8bit
     invoke_milter_test_client
-    mail_file = fixture_path("shift_jis-8bit.eml").to_path
+    mail_file = fixture_path("shift_jis-8bit.eml").expand_path.to_s
     result = @test_server.run(:connection_spec => @connection_spec,
                               :mail_file => mail_file)
     assert_equal("pass", result.status)
