@@ -10,9 +10,9 @@ Ubuntu Linuxに特化したmilter managerのインストール方法につい
 
 == パッケージのインストール
 
-milter managerのサイトで現在のLTS Lucid Lynxと最新版Natty
-Narwhal用のパッケージを配布しています。まず、以下の内容の
-/etc/apt/sources.list.d/milter-manager.listを作成します。
+milter managerのサイトで現在のLTS Lucid Lynxと
+Natty Narwhalと最新版のOneiric Ocelot 用のパッケージを配布しています。
+まず、以下の内容の/etc/apt/sources.list.d/milter-manager.listを作成します。
 
 === Lucid Lynxの場合
 
@@ -32,6 +32,17 @@ Narwhal用のパッケージを配布しています。まず、以下の内容�
   deb-src http://downloads.sourceforge.net/milter-manager/ubuntu/stable/ natty universe
   # deb http://downloads.sourceforge.net/milter-manager/ubuntu/development/ natty universe
   # deb-src http://downloads.sourceforge.net/milter-manager/ubuntu/development/ natty universe
+
+開発版を利用する場合は最初の2行をコメントアウトし、すでにコメ
+ントアウトされている2行のコメントを外します。
+
+=== Oneiric Ocelotの場合
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://downloads.sourceforge.net/milter-manager/ubuntu/stable/ oneiric universe
+  deb-src http://downloads.sourceforge.net/milter-manager/ubuntu/stable/ oneiric universe
+  # deb http://downloads.sourceforge.net/milter-manager/ubuntu/development/ oneiric universe
+  # deb-src http://downloads.sourceforge.net/milter-manager/ubuntu/development/ oneiric universe
 
 開発版を利用する場合は最初の2行をコメントアウトし、すでにコメ
 ントアウトされている2行のコメントを外します。

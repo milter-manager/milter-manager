@@ -10,8 +10,9 @@ install information.
 
 == Install packages
 
-Packages for Lucid Lynx, the current LTS release, and
-Packages for Natty Narwhal, the latest release are
+Packages for Lucid Lynx, the current LTS release,
+packages for Natty Narwhal and
+packages for Oneiric Ocelot the latest release are
 distributed on the milter manager site. We put the following
 content to /etc/apt/sources.list.d/milter-manager.list:
 
@@ -33,6 +34,17 @@ lines out and enable comment outed the 2 lines.
   deb-src http://downloads.sourceforge.net/milter-manager/ubuntu/stable/ natty universe
   # deb http://downloads.sourceforge.net/milter-manager/ubuntu/development/ natty universe
   # deb-src http://downloads.sourceforge.net/milter-manager/ubuntu/development/ natty universe
+
+If we use development series, we need to comment the first 2
+lines out and enable comment outed the 2 lines.
+
+=== For Oneiric Ocelot
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://downloads.sourceforge.net/milter-manager/ubuntu/stable/ oneiric universe
+  deb-src http://downloads.sourceforge.net/milter-manager/ubuntu/stable/ oneiric universe
+  # deb http://downloads.sourceforge.net/milter-manager/ubuntu/development/ oneiric universe
+  # deb-src http://downloads.sourceforge.net/milter-manager/ubuntu/development/ oneiric universe
 
 If we use development series, we need to comment the first 2
 lines out and enable comment outed the 2 lines.
