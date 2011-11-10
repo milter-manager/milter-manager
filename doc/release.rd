@@ -65,7 +65,7 @@ Check and update documents that are compatible with the new version.
 == Update version information
 
 You update version information. You execute below command in top
-directory.
+directory.  You can find OLD_RELEASE_DATE in debian/changelog.
 
   % make dist
   % make update-latest-release \
