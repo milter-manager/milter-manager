@@ -112,7 +112,7 @@ $HOME/ssh/config:
   Connection to frs.sourceforge.net closed.
 
 
-アクセスできない場合はプロジェクト管理者に連絡してください。
+アクセスできない場合はプロジェクト管理者に連絡する。
 
 === 必須パッケージのインストール
 
@@ -319,7 +319,8 @@ URL やバージョンを変更して使う。
 sf.net の milter manager プロジェクトからブログ用のリポジトリを clone
 して tDiary をローカルで動くようにセットアップする。
 
-CGI で動かすよりも Rack で動かした方が便利なのでそうする。
+CGI で動かすよりも Rack で動かした方が便利なのでそうする。tdiary.conf
+は milter-manager のリポジトリにあるものを使う。
 
   % mkdir -p ~/work/ruby/tdiary
   % cd ~/work/ruby/tdiary
@@ -327,10 +328,7 @@ CGI で動かすよりも Rack で動かした方が便利なのでそうする�
   % ln -s tdiary-full-3.1.1 tdiary
   % cd tdiary
   % bundle install --path vendor/bundle
-  % cp tdiary.conf{.sample,}
-
-misc/style/rd/README.rd を参照して RD スタイルを使うように変更する。
-@data_path をブログ用リポジトリを git clone したパスに設定する。
+  % ln -s path/to/milter-manager/html/blog/tdiary.conf tdiary.conf
 
   % bundle exec rackup -s thin
 
