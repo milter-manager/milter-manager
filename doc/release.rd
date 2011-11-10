@@ -3,15 +3,16 @@
 
 == Test
 
-You must test before you work below.  You need to install "rdtool" and
-"ruby-gettext", if you don't have those.
+You must test before you work below.  You need to install "rdtool",
+"ruby-gettext" and "rr",  if you don't have those.
 
-  % gem install rdtool gettext
+  % gem install rdtool gettext rr
   % ./autogen.sh --no-update
   % ./configure --prefix=/tmp/local \
-    --enable-ruby-milter --enable-gtk-doc
+    --enable-ruby-milter --enable-gtk-doc --enable-coverage
   % make
   % make check
+  % make coverage
 
 == Write NEWS
 

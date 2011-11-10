@@ -38,10 +38,10 @@ Narwhal用のパッケージを配布しています。まず、以下の内容�
 
 === インストール
 
-パッケージはkou@clear-code.comの鍵でサインされています。信用
+パッケージはmilter managerリリース用の鍵でサインされています。信用
 する場合は鍵を登録します。
 
-  % sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1C837F31
+  % sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 435C1F50
 
 milter managerをインストールします。
 

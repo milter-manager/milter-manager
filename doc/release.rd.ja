@@ -3,15 +3,19 @@
 
 == テストの実行
 
-以降の作業をする前にテストを実行する。ドキュメントの生成に rdtool と
-ruby-gettext が必要なので無ければ入れておく。
+以降の作業をする前にテストを実行する。rdtool, ruby-gettext, rr が必要な
+ので無ければ入れておく。
 
-  % gem install rdtool gettext
+  % gem install rdtool gettext rr
   % ./autogen.sh --no-update
   % ./configure --prefix=/tmp/local \
-    --enable-ruby-milter --enable-gtk-doc
+    --enable-ruby-milter --enable-gtk-doc --enable-coverage
   % make
   % make check
+  % make coverage
+
+make check でテストが失敗したり make coverage で極端にカバレッジが低い
+場合は何かがおかしいのでチェックする。
 
 == 変更点の記述
 
@@ -325,11 +329,18 @@ CGI で動かすよりも Rack で動かした方が便利なのでそうする�
   % cp tdiary.conf{.sample,}
 
 misc/style/rd/README.rd を参照して RD スタイルを使うように変更する。
+@data_path をブログ用リポジトリを git clone したパスに設定する。
 
   % bundle exec rackup -s thin
 
 ウェブブラウザで ((<URL:http://localhost:9292/>)) にアクセスしてトップ
 ページが表示されればセットアップに成功している。
+
+デフォルトのユーザ名(user)とパスワード(pass)でログインすれば更新できる。
+ブラウザから tDiary でエントリを投稿すると、ブログ用エントリのファイル
+(*.td2)が作成・更新されるのでブログ用リポジトリに git push する。
+
+  % ./update.rb --upload
 
 == Freecode でアナウンス
 
