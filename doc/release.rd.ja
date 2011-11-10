@@ -202,9 +202,14 @@ make build に PARALLEL=yes を付けるとビルドが並列に走る。
 
 ソースアーカイブの作成はもうできているのでアップロードする。
 
+  % make release
+
 == サイトの更新
 
 ドキュメントをアップロードする。
+
+  % make upload-doc
+  % make upload-coverage
 
 == リモートリポジトリにタグを打つ
 
@@ -301,12 +306,36 @@ URL やバージョンを変更して使う。
 
 == ブログでもリリースをアナウンスする
 
-((<URL:http://milter-manager.sourceforge.net/blog/ja/>)) にもリリースメー
-ルと同じ内容を書く。
+((<URL:http://milter-manager.sourceforge.net/blog/ja/>))
+
+((<URL:http://www.tdiary.org/>)) から最新版の tDiary をダウンロードして
+セットアップする。
+
+sf.net の milter manager プロジェクトからブログ用のリポジトリを clone
+して tDiary をローカルで動くようにセットアップする。
+
+CGI で動かすよりも Rack で動かした方が便利なのでそうする。
+
+  % mkdir -p ~/work/ruby/tdiary
+  % cd ~/work/ruby/tdiary
+  % tar xf tdiary-full-3.1.1.tar.gz
+  % ln -s tdiary-full-3.1.1 tdiary
+  % cd tdiary
+  % bundle install --path vendor/bundle
+  % cp tdiary.conf{.sample,}
+
+misc/style/rd/README.rd を参照して RD スタイルを使うように変更する。
+
+  % bundle exec rackup -s thin
+
+ウェブブラウザで ((<URL:http://localhost:9292/>)) にアクセスしてトップ
+ページが表示されればセットアップに成功している。
 
 == Freecode でアナウンス
 
 ((<URL:http://freecode.com/projects/milter-manager>)) でアナウンスする。
 
 内容は英語版リリースメールの始めに書いているのと同じでよい。
+
+アカウントが無い場合は作成してプロジェクト管理者に連絡する。
 
