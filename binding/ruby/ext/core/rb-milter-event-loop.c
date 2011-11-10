@@ -506,11 +506,9 @@ static void
 mark (gpointer data)
 {
     MilterEventLoop *loop = data;
-    GObject *object;
     GList *callbacks, *node;
 
-    object = G_OBJECT(loop);
-    callbacks = g_object_get_data(object, CALLBACKS_KEY);
+    callbacks = callbacks_get(loop);
     for (node = callbacks; node; node = g_list_next(node)) {
 	VALUE callback = (VALUE)(node->data);
 	rb_gc_mark(callback);
