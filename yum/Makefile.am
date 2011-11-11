@@ -8,7 +8,7 @@ HAVE_DEVELOPMENT_BRANCH = yes
 USE_RPMFORGE = no
 USE_ATRPMS = no
 
-release: remove-existing-packages build sign update upload
+release: build sign update upload
 
 dist:
 	cd ${top_builddir} && $(MAKE) dist
@@ -34,7 +34,7 @@ upload:
 
 download:
 	for distribution in $(DISTRIBUTIONS); do		\
-	  rsync -avz						\
+	  rsync -avz --delete						\
 	    $(SERVER_PATH)/$${distribution}/ $${distribution};	\
 	done
 
