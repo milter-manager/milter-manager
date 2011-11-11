@@ -157,7 +157,6 @@ See Makefile.am.
 
   % cd yum
   % make download
-  % make remove-existing-packages
   % make build
   % make sign
   % make update

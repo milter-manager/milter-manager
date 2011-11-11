@@ -193,7 +193,6 @@ yum ディレクトリに移動してからコマンドを実行すると、一�
 実行するコマンドは Makfile.am に書いてあるので head などで確認する。
 
   % make download
-  % make remove-existing-packages
   % make build PARALLEL=yes
   % make sign
   % make update
