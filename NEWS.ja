@@ -12,6 +12,7 @@ manager.event_loop_backend と manager.n_workers は実用できるほどに安�
 === パッケージ
 
   * [ubuntu] Ubuntu Oneiric Ocelotサポートを追加。
+  * パッケージの署名に使用する鍵を変更しました。
 
 === milter manager
 

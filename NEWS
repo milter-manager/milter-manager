@@ -12,6 +12,7 @@ experimental!
 === Package
 
   * [ubuntu] Added Ubuntu Oneiric Ocelot support.
+  * Changed GPG key to sign packages.
 
 === milter manager
 
