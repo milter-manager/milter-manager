@@ -22,6 +22,8 @@ Requires(post): /sbin/chkconfig
 Requires(preun): /sbin/service, /sbin/chkconfig
 Requires(postun): /sbin/service, /sbin/chkconfig, /usr/sbin/userdel
 
+%define _unpackaged_files_terminate_build 0
+
 %description
 milter manager administrates milters instead of MTA to reduce milter
 administration cost and combine milters flexibly.
