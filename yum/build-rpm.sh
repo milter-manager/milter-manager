@@ -24,7 +24,11 @@ run()
 yum_options=
 
 distribution=$(cut -d ' ' -f 1 /etc/redhat-release | tr 'A-Z' 'a-z')
-distribution_version=$(cut -d ' ' -f 3 /etc/redhat-release)
+if grep -q Linux /etc/redhat-release; then
+    distribution_version=$(cut -d ' ' -f 4 /etc/redhat-release)
+else
+    distribution_version=$(cut -d ' ' -f 3 /etc/redhat-release)
+fi
 if ! rpm -q ${distribution}-release > /dev/null 2>&1; then
     packages_dir=/var/cache/yum/core/packages
     release_rpm=${distribution}-release-${distribution_version}-*.rpm

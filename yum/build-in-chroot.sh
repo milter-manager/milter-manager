@@ -52,14 +52,11 @@ build_chroot()
         distribution_architecture=$architecture
     else
 	rinse_architecture=$architecture
-	case $distribution_name in
-	    fedora)
-		distribution_architecture=i686
-		;;
-	    *)
+	if [ "$distribution_name-$distribution_version" = "centos-5" ]; then
 		distribution_architecture=$architecture
-		;;
-	esac
+	else
+	    distribution_architecture=i686
+	fi
     fi
 
     run_sudo mkdir -p ${base_dir}/etc/rpm
@@ -84,15 +81,8 @@ build()
 {
     architecture=$1
     distribution=$2
+    distribution_version=$3
 
-    case $distribution in
-	fedora)
-	    distribution_version=14
-	    ;;
-	centos)
-	    distribution_version=5
-	    ;;
-    esac
     target=${distribution}-${distribution_version}-${architecture}
     base_dir=${CHROOT_BASE}/${target}
     if [ ! -d $base_dir ]; then
@@ -143,15 +133,35 @@ build()
     run mkdir -p $source_pool_dir
     run cp -p $rpm_dir/*-${VERSION}* $binary_pool_dir
     run cp -p $srpm_dir/*-${VERSION}* $source_pool_dir
+
+    dependencies_dir=${build_user_dir}/dependencies
+    dependencies_rpm_dir=${dependencies_dir}/RPMS
+    dependencies_srpm_dir=${dependencies_dir}/SRPMS
+    if [ -d "${dependencies_rpm_dir}" ]; then
+	run cp -p ${dependencies_rpm_dir}/* $binary_pool_dir
+    fi
+    if [ -d "${dependencies_srpm_dir}" ]; then
+	run cp -p ${dependencies_srpm_dir}/* $source_pool_dir
+    fi
 }
 
 for architecture in $ARCHITECTURES; do
     for distribution in $DISTRIBUTIONS; do
+	case $distribution in
+	    fedora)
+		distribution_versions="15"
+		;;
+	    centos)
+		distribution_versions="5 6"
+		;;
+	esac
+	for distribution_version in $distribution_versions; do
 	if test "$parallel" = "yes"; then
-	    build $architecture $distribution &
+		build $architecture $distribution $distribution_version &
 	else
-	    build $architecture $distribution
+		build $architecture $distribution $distribution_version
 	fi;
+    done;
     done;
 done
 
