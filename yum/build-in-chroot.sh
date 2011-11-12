@@ -156,12 +156,12 @@ for architecture in $ARCHITECTURES; do
 		;;
 	esac
 	for distribution_version in $distribution_versions; do
-	if test "$parallel" = "yes"; then
+	    if test "$parallel" = "yes"; then
 		build $architecture $distribution $distribution_version &
-	else
+	    else
 		build $architecture $distribution $distribution_version
-	fi;
-    done;
+	    fi;
+	done;
     done;
 done
 
