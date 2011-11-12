@@ -115,8 +115,8 @@ deb-src http://milter-manager.sourceforge.net/ubuntu/development/ hardy universe
 	</p>
 	<p>
 	  パッケージはmilter managerリリース用の鍵でサインされています。信用する場合は鍵を登録します。
-	  <pre class="command">% gpg --keyserver hkp://subkeys.pgp.net --recv-keys 435C1F50
-% gpg --export 435C1F50 | sudo apt-key add -</pre>
+	  <pre class="command">% gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1BD22CD1
+% gpg --export 1BD22CD1 | sudo apt-key add -</pre>
 	</p>
 
 	<h3>Ubuntu 10.04 LTS Lucid Lynx用開発版パッケージ</h3>
@@ -127,8 +127,8 @@ deb-src http://milter-manager.sourceforge.net/ubuntu/development/ lucid universe
 	</p>
 	<p>
 	  パッケージはmilter managerリリース用の鍵でサインされています。信用する場合は鍵を登録します。
-	  <pre class="command">% gpg --keyserver hkp://subkeys.pgp.net --recv-keys 435C1F50
-% gpg --export 435C1F50 | sudo apt-key add -</pre>
+	  <pre class="command">% gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1BD22CD1
+% gpg --export 1BD22CD1 | sudo apt-key add -</pre>
 	</p>
 
 	<h3>Debian GNU/Linux lenny用開発版パッケージ</h3>
@@ -139,8 +139,8 @@ deb-src http://milter-manager.sourceforge.net/debian/development/ lenny main</pr
 	</p>
 	<p>
 	  パッケージはmilter managerリリース用の鍵でサインされています。信用する場合は鍵を登録します。
-	  <pre class="command">% gpg --keyserver hkp://subkeys.pgp.net --recv-keys 435C1F50
-% gpg --export 435C1F50 | sudo apt-key add -</pre>
+	  <pre class="command">% gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1BD22CD1
+% gpg --export 1BD22CD1 | sudo apt-key add -</pre>
 	</p>
 
 	<h3>CentOS 5.5用開発版パッケージ</h3>

@@ -143,7 +143,7 @@ milter-manager のリリース用鍵の情報を暗号化しておく。UID の�
 
 インポートする。(secret.txt にはパスフレーズと秘密鍵が含まれている。)
 
-  % gpg --keyserver pgp.mit.edu --recv-keys 435C1F50
+  % gpg --keyserver pgp.mit.edu --recv-keys 1BD22CD1
   % gpg --allow-secret-key-import --import secret.txt
 
 == リリース用パッケージ作成

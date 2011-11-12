@@ -130,7 +130,7 @@ Decrypt.
 
 Import.(secret.txt contains passphrase and secret key.)
 
-  % gpg --keyserver pgp.mit.edu --recv-keys 435C1F50
+  % gpg --keyserver pgp.mit.edu --recv-keys 1BD22CD1
   % gpg --allow-secret-key-import --import secret.txt
 
 == Create release packages
