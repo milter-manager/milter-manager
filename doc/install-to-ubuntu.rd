@@ -53,7 +53,7 @@ lines out and enable comment outed the 2 lines.
 
 We register the key of the package repository:
 
-  % sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 435C1F50
+  % sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 435C1F50
 
 We install milter manager package:
 

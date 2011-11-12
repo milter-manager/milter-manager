@@ -52,7 +52,7 @@ Natty Narwhalと最新版のOneiric Ocelot 用のパッケージを配布して�
 パッケージはmilter managerリリース用の鍵でサインされています。信用
 する場合は鍵を登録します。
 
-  % sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 435C1F50
+  % sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 435C1F50
 
 milter managerをインストールします。
 

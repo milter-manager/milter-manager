@@ -54,7 +54,7 @@ milter managerのサイトで現在の安定版squeezeと開発版wheezyと不
 パッケージは milter manager リリース用の鍵でサインされています。信用
 する場合は鍵を登録します。
 
-  % sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 435C1F50
+  % sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 435C1F50
 
 milter managerをインストールします。
 
