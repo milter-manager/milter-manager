@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 script_base_dir=`dirname $0`
 
@@ -20,6 +20,12 @@ run()
 }
 
 for distribution in ${DISTRIBUTIONS}; do
+    packages=()
+    for package in `find $script_base_dir/${distribution}/*/*/*/ -name \*.rpm -print`; do
+	if ! rpm -Kv $package | grep -q -i signature; then
+	    packages=("${packages[@]}" "${package}")
+	fi
+    done
     run rpm -D "_gpg_name `$script_base_dir/gpg-uid.sh`" \
-	--resign $script_base_dir/${distribution}/*/*/*/*.rpm
+	--addsign `echo -n "${packages[@]}"`
 done
