@@ -20,10 +20,10 @@ We put the following content to
 === For squeeze
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/milter-manager/debian/stable/ squeeze main
-  deb-src http://downloads.sourceforge.net/milter-manager/debian/stable/ squeeze main
-  # deb http://downloads.sourceforge.net/milter-manager/debian/development/ squeeze main
-  # deb-src http://downloads.sourceforge.net/milter-manager/debian/development/ squeeze main
+  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable/ squeeze main
+  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ squeeze main
+  # deb http://downloads.sourceforge.net/project/milter-manager/debian/development/ squeeze main
+  # deb-src http://downloads.sourceforge.net/project/milter-manager/debian/development/ squeeze main
 
 If we use development series, we need to comment the first 2
 lines out and enable comment outed the 2 lines.
@@ -32,9 +32,9 @@ lines out and enable comment outed the 2 lines.
 
 /etc/apt/sources.list.d/milter-manager.list:
   deb http://downloads.sourceforge.net/milter-manager/debian/stable/ wheezy main
-  deb-src http://downloads.sourceforge.net/milter-manager/debian/stable/ wheezy main
-  # deb http://downloads.sourceforge.net/milter-manager/debian/development/ wheezy main
-  # deb-src http://downloads.sourceforge.net/milter-manager/debian/development/ wheezy main
+  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ wheezy main
+  # deb http://downloads.sourceforge.net/project/milter-manager/debian/development/ wheezy main
+  # deb-src http://downloads.sourceforge.net/project/milter-manager/debian/development/ wheezy main
 
 If we use development series, we need to comment the first 2
 lines out and enable comment outed the 2 lines.
@@ -42,10 +42,10 @@ lines out and enable comment outed the 2 lines.
 === For sid
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/milter-manager/debian/stable/ unstable main
-  deb-src http://downloads.sourceforge.net/milter-manager/debian/stable/ unstable main
-  # deb http://downloads.sourceforge.net/milter-manager/debian/development/ unstable main
-  # deb-src http://downloads.sourceforge.net/milter-manager/debian/development/ unstable main
+  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable/ unstable main
+  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ unstable main
+  # deb http://downloads.sourceforge.net/project/milter-manager/debian/development/ unstable main
+  # deb-src http://downloads.sourceforge.net/project/milter-manager/debian/development/ unstable main
 
 If we use development series, we need to comment the first 2
 lines out and enable comment outed the 2 lines.
