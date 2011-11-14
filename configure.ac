@@ -199,18 +199,23 @@ module_configurationdir='$(moduledir)/configuration'
 AC_SUBST(moduledir)
 AC_SUBST(module_configurationdir)
 
-if test "$exec_prefix" = "NONE"; then
-  if test "$prefix" = "NONE"; then
-    milter_manager_exec_prefix=$ac_default_prefix
+if echo -- "$libdir" | grep -q '\$'; then
+  if test "$exec_prefix" = "NONE"; then
+    if test "$prefix" = "NONE"; then
+      milter_manager_exec_prefix=$ac_default_prefix
+    else
+      milter_manager_exec_prefix=$prefix
+    fi
   else
-    milter_manager_exec_prefix=$prefix
+    milter_manager_exec_prefix=$exec_prefix
   fi
+  milter_manager_libdir="${milter_manager_exec_prefix}/lib"
 else
-  milter_manager_exec_prefix=$exec_prefix
+  milter_manager_libdir="${libdir}"
 fi
 
 bindingdir='$(pkglibdir)/binding'
-expanded_bindingdir="${milter_manager_exec_prefix}/lib/${PACKAGE_NAME}/binding"
+expanded_bindingdir="${milter_manager_libdir}/${PACKAGE_NAME}/binding"
 binding_extdir='$(bindingdir)/ext'
 binding_libdir='$(bindingdir)/lib'
 expanded_binding_extdir="${expanded_bindingdir}/ext"
