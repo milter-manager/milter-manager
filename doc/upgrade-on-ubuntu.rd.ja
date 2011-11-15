@@ -14,6 +14,13 @@ Ubuntu Linuxに特化したmilter managerの更新方法について説明し
 
   % sudo aptitude -V -D -y safe-upgrade
 
+=== 1.8.0 以前からの更新
+
+2011-11-15 にパッケージの署名に使用している鍵を変更したので、新しい鍵を
+登録してください。古い鍵はもう使えません。
+
+  % sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1BD22CD1
+
 == まとめ
 
 milter managerは簡単に更新することができる、メンテナンスコス
