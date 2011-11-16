@@ -37,7 +37,6 @@ struct _MilterGLibEventLoopPrivate
 {
     GMainContext *context;
     GMainLoop *loop;
-    GHashTable *ids;
 };
 
 enum
@@ -154,19 +153,6 @@ milter_glib_event_loop_init (MilterGLibEventLoop *loop)
     priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
     priv->context = NULL;
     priv->loop = NULL;
-    priv->ids = g_hash_table_new(g_direct_hash, g_direct_equal);
-}
-
-static void
-dispose_unremoved_source (gpointer key, gpointer value, gpointer user_data)
-{
-    guint id = GPOINTER_TO_UINT(key);
-    GMainContext *context = user_data;
-    GSource *source;
-
-    source = g_main_context_find_source_by_id(context, id);
-    if (source)
-        g_source_destroy(source);
 }
 
 static void
@@ -179,12 +165,6 @@ dispose (GObject *object)
     if (priv->loop) {
         g_main_loop_unref(priv->loop);
         priv->loop = NULL;
-    }
-
-    if (priv->ids) {
-        g_hash_table_foreach(priv->ids, dispose_unremoved_source, priv->context);
-        g_hash_table_unref(priv->ids);
-        priv->ids = NULL;
     }
 
     if (priv->context) {
@@ -281,7 +261,6 @@ attach_source (MilterGLibEventLoopPrivate *priv, GSource *source)
     guint id;
 
     id = g_source_attach(source, g_main_loop_get_context(priv->loop));
-    g_hash_table_insert(priv->ids, GUINT_TO_POINTER(id), NULL);
 
     return id;
 }
@@ -390,7 +369,6 @@ remove (MilterEventLoop *loop, guint id)
     source = g_main_context_find_source_by_id(context, id);
     if (source)
         g_source_destroy(source);
-    g_hash_table_remove(priv->ids, GUINT_TO_POINTER(id));
 
     return source != NULL;
 }
