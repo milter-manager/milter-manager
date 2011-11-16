@@ -22,7 +22,7 @@ Please import new GPG key.
 
   % sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1BD22CD1
 
-We have changed source.list URI. We are going to delete old URI
+We have changed sources.list URI. We are going to delete old URI
 support, when we release milter manager 1.9.0.
 
 Please update your source.list as soon as possible.
