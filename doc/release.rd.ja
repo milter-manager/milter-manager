@@ -166,7 +166,7 @@ apt ディレクトリに移動してからコマンドを実行すると、一�
   % make release
 
 順番に作業する場合は以下のようにする。
-実行するコマンドは Makfile.am に書いてあるので head などで確認する。
+実行するコマンドは Makefile.am に書いてあるので head などで確認する。
 
   % make download
   % make build PARALLEL=yes
@@ -190,7 +190,7 @@ yum ディレクトリに移動してからコマンドを実行すると、一�
   % make release
 
 順番に作業する場合は以下のようにする。
-実行するコマンドは Makfile.am に書いてあるので head などで確認する。
+実行するコマンドは Makefile.am に書いてあるので head などで確認する。
 
   % make download
   % make build PARALLEL=yes
