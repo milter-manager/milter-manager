@@ -4,12 +4,14 @@
 == テストの実行
 
 以降の作業をする前にテストを実行する。rdtool, ruby-gettext, rr が必要な
-ので無ければ入れておく。
+ので無ければ入れておく。sf_user_name には sourceforge.net のアカウント
+名を指定する。
 
-  % gem install rdtool gettext rr
+  % gem install rdtool gettext rr mechanize
   % ./autogen.sh --no-update
   % ./configure --prefix=/tmp/local \
-    --enable-ruby-milter --enable-gtk-doc --enable-coverage
+    --enable-ruby-milter --enable-gtk-doc --enable-coverage \
+    --with-sf-user=sf_user_name
   % make
   % make check
   % make coverage
@@ -93,7 +95,9 @@ OLD_RELEASE_DATE は debian/changelog をチェックすればわかる。
 
 === sourceforge.net への SSH アクセス
 
-公開鍵認証でアクセスするので、設定が必要である。
+公開鍵認証でアクセスするので、設定が必要である。<usrname> には
+sourceforge.net のアカウント名とプロジェクト名をコンマでつないだ文字列
+を指定する必要がある。(ex. hoge,milter-manager)
 
 $HOME/ssh/config:
   ...
@@ -205,12 +209,14 @@ make build に PARALLEL=yes を付けるとビルドが並列に走る。
 == ソースアーカイブのアップロード
 
 ソースアーカイブの作成はもうできているのでアップロードする。
+トップディレクトリでコマンドを実行する。
 
   % make release
 
 == サイトの更新
 
-ドキュメントをアップロードする。
+ドキュメントをアップロードする。トップディレクトリでコマンドを実行する。
+
 
   % make upload-doc
   % make upload-coverage
