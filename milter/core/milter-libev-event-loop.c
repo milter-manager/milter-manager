@@ -212,7 +212,7 @@ dispose (GObject *object)
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(object);
 
     if (priv->watchers) {
-        g_hash_table_destroy(priv->watchers);
+        g_hash_table_unref(priv->watchers);
         priv->watchers = NULL;
     }
 
