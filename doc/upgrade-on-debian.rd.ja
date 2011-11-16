@@ -21,6 +21,44 @@ Debian GNU/Linuxに特化したmilter managerの更新方法について説
 
   % sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1BD22CD1
 
+source.list に指定する URI を変更しました。
+しばらくは古いものも使用できますが、1.9 系列をリリースするときには削除する予定です。
+
+1.8.0 以前からのユーザは早めに source.list を変更してください。
+
+==== squeezeの場合
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable/ squeeze main
+  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ squeeze main
+  # deb http://downloads.sourceforge.net/project/milter-manager/debian/development/ squeeze main
+  # deb-src http://downloads.sourceforge.net/project/milter-manager/debian/development/ squeeze main
+
+開発版を利用する場合は最初の2行をコメントアウトし、すでにコメ
+ントアウトされている2行のコメントを外します。
+
+==== wheezyの場合
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable/ wheezy main
+  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ wheezy main
+  # deb http://downloads.sourceforge.net/project/milter-manager/debian/development/ wheezy main
+  # deb-src http://downloads.sourceforge.net/project/milter-manager/debian/development/ wheezy main
+
+開発版を利用する場合は最初の2行をコメントアウトし、すでにコメ
+ントアウトされている2行のコメントを外します。
+
+==== sidの場合
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable/ unstable main
+  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ unstable main
+  # deb http://downloads.sourceforge.net/project/milter-manager/debian/development/ unstable main
+  # deb-src http://downloads.sourceforge.net/project/milter-manager/debian/development/ unstable main
+
+開発版を利用する場合は最初の2行をコメントアウトし、すでにコメ
+ントアウトされている2行のコメントを外します。
+
 == まとめ
 
 milter managerは簡単に更新することができる、メンテナンスコス
