@@ -11,7 +11,7 @@ newly install information.
 == Upgrade
 
 We just upgrade milter manager package.
-  % sudo yum update -y milter-manager
+  % sudo yum update -y milter-manager milter-manager-repository
 
 == Conclusion
 
