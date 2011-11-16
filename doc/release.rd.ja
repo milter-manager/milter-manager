@@ -95,12 +95,15 @@ OLD_RELEASE_DATE は debian/changelog をチェックすればわかる。
 
 === sourceforge.net への SSH アクセス
 
-公開鍵認証でアクセスするので、設定が必要である。<usrname> には
+公開鍵認証でアクセスするので、設定が必要である。User には
 sourceforge.net のアカウント名とプロジェクト名をコンマでつないだ文字列
 を指定する必要がある。(ex. hoge,milter-manager)
 
 $HOME/ssh/config:
   ...
+  Host: frs.sourceforge.net
+    User: <username>,<project-name>
+    IdentityFile: </path/to/secret_key>
   Host: *.sourceforge.net
     User: <username>
     IdentityFile: </path/to/secret_key>
@@ -185,6 +188,20 @@ make build に PARALLEL=yes を付けるとビルドが並列に走る。
 初めて実行するときは、chroot 環境を作るときにロケールなどを聞かれるので
 PARALLEL=yes をつけてはいけない。
 
+make sign したら downloads.sourceforge.net をエミュレートするウェブサー
+バをローカルに構築してパッケージの新規インストールと更新をテストする。
+
+((<Debianへインストール|install-to-debian.rd.ja>)),
+((<Ubuntuへインストール|install-to-ubuntu.rd.ja>)),
+((<Debianで更新|upgrade-on-debian.rd.ja>)),
+((<Ubuntuで更新|upgrade-on-ubuntu.rd.ja>))
+に書いてある手順でパッケージのインストールと更新ができることを確認する。
+
+make upload したらウェブブラウザで
+((<URL:https://sourceforge.net/projects/milter-manager/files/debian/>)),
+((<URL:https://sourceforge.net/projects/milter-manager/files/ubuntu/>))
+にアクセスしてパッケージがアップロードできていることを確認する。
+
 === RedHat 系
 
 yum ディレクトリに移動してからコマンドを実行すると、一連のリリース作業
@@ -206,6 +223,17 @@ download を事前に実行しておかないと、アップロード済みの�
 全て削除してしまうので忘れずに実行する。
 make build に PARALLEL=yes を付けるとビルドが並列に走る。
 
+make sign したら downloads.sourceforge.net をエミュレートするウェブサー
+バをローカルに構築してパッケージの新規インストールと更新をテストする。
+
+((<CentOSへインストール|install-to-centos.rd.ja>)),
+((<CentOSで更新|upgrade-on-centos.rd.ja>)),
+に書いてある手順でパッケージのインストールと更新ができることを確認する。
+
+make upload したらウェブブラウザで
+((<URL:https://sourceforge.net/projects/milter-manager/files/centos/>))
+にアクセスしてパッケージがアップロードできていることを確認する。
+
 == ソースアーカイブのアップロード
 
 ソースアーカイブの作成はもうできているのでアップロードする。
@@ -213,13 +241,19 @@ make build に PARALLEL=yes を付けるとビルドが並列に走る。
 
   % make release
 
+ウェブブラウザで
+((<URL:https://sourceforge.net/projects/milter-manager/files/milter%20manager/>))
+にアクセスして新しいバージョンのファイルが追加されていることを確認する。
+
 == サイトの更新
 
 ドキュメントをアップロードする。トップディレクトリでコマンドを実行する。
 
-
   % make upload-doc
   % make upload-coverage
+
+ウェブブラウザで ((<URL:http://milter-manager.sourceforge.net/>)) にア
+クセスして新しいドキュメントがアップロードできていることを確認する。
 
 == リモートリポジトリにタグを打つ
 
@@ -231,6 +265,10 @@ make build に PARALLEL=yes を付けるとビルドが並列に走る。
 例:
   % make tag VERSION=1.8.1
   % git push --tags
+
+ウェブブラウザで
+((<URL:https://github.com/milter-manager/milter-manager/tags>)) にアク
+セスして新しいバージョンのタグができていることを確認する。
 
 == リリースメールを書いて ML に投げる
 
