@@ -348,13 +348,13 @@ destroy_watcher (gpointer data)
     g_free(watcher);
 }
 
-static void
+static gboolean
 remove_watcher (MilterLibevEventLoop *loop, guint id)
 {
     MilterLibevEventLoopPrivate *priv;
 
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
-    g_hash_table_remove(priv->watchers, GUINT_TO_POINTER(id));
+    return g_hash_table_remove(priv->watchers, GUINT_TO_POINTER(id));
 }
 
 static void
@@ -681,12 +681,7 @@ static gboolean
 remove (MilterEventLoop *loop,
         guint            id)
 {
-    gboolean success;
-    MilterLibevEventLoopPrivate *priv;
-
-    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
-    success = g_hash_table_remove(priv->watchers, GUINT_TO_POINTER(id));
-    return success;
+    return remove_watcher(MILTER_LIBEV_EVENT_LOOP(loop), id);
 }
 
 static void
