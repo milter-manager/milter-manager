@@ -4,12 +4,14 @@
 == Test
 
 You must test before you work below.  You need to install "rdtool",
-"ruby-gettext" and "rr",  if you don't have those.
+"ruby-gettext" and "rr", if you don't have those. "sf_user_name" is
+your sourceforge.net account name.
 
-  % gem install rdtool gettext rr
+  % gem install rdtool gettext rr mechanize
   % ./autogen.sh --no-update
   % ./configure --prefix=/tmp/local \
-    --enable-ruby-milter --enable-gtk-doc --enable-coverage
+    --enable-ruby-milter --enable-gtk-doc --enable-coverage \
+    --with-sf-user=sf_user_name
   % make
   % make check
   % make coverage
@@ -73,6 +75,8 @@ directory.  You can find OLD_RELEASE_DATE in debian/changelog.
     OLD_RELEASE_DATE=yyyy-mm-dd \
     NEW_RELEASE_DATE=yyyy-mm-dd
 
+Then you can commit changes.
+
 == Prepare for creating release packages
 
 You need this for first time.
@@ -83,6 +87,9 @@ You need public key authentication to access sourceforge.net via SSH.
 
 $HOME/ssh/config:
   ...
+  Host: frs.sourceforge.net
+    User: <username>,<project-name>
+    IdentityFile: </path/to/secret_key>
   Host: *.sourceforge.net
     User: <username>
     IdentityFile: </path/to/secret_key>
@@ -167,10 +174,22 @@ See Makefile.am.
 == Upload source archive
 
 Because you have already created source archive, upload it.
+You execute below command in top directory.
+
+  % make release
+
+You can check new version release on
+((<URL:https://sourceforge.net/projects/milter-manager/files/milter%20manager/>)).
 
 == Update site
 
-Upload documents.
+Upload documents. You execute below command in top directory.
+
+  % make upload-doc
+  % make upload-coverage
+
+You can check new documents on
+((<URL:http://milter-manager.sourceforge.net/>)).
 
 == Create tag on remote repository
 
@@ -182,6 +201,9 @@ You execute commands below in top directory.
 Example:
   % make tag VERSION=1.8.1
   % git push --tags
+
+You can check new version tag on
+((<URL:https://github.com/milter-manager/milter-manager/tags>)).
 
 == Write release announce mails
 
