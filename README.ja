@@ -137,10 +137,10 @@ milter managerにはいくつか便利なツールが付属されていて、bin
 
 == ソースコード
 
-最新のソースコードはSubversionリポジトリから入手することがで
+最新のソースコードはGitリポジトリから入手することがで
 きます。
 
-  % svn co https://milter-manager.svn.sourceforge.net/svnroot/milter-manager/milter-manager/trunk milter-manager
+  % git clone https://github.com/milter-manager/milter-manager.git
 
 == 感謝
 

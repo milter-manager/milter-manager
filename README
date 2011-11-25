@@ -136,9 +136,9 @@ you subscribe the mailling list.
 
 == Source code
 
-The latest source is available from the Subversion repository:
+The latest source is available from the Git repository:
 
-  % svn co https://milter-manager.svn.sourceforge.net/svnroot/milter-manager/milter-manager/trunk milter-manager
+  % git clone https://github.com/milter-manager/milter-manager.git
 
 == Thanks
 
