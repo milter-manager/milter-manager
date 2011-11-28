@@ -2,6 +2,17 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-8-2] 1.8.2: 2011-11-29
+
+A bug fix release of 1.8.1.
+
+=== milter-core
+
+==== Fixes
+
+    * [event-loop][glib] fix memory leaks since 1.6.6.
+    * [core] fix memory leak when delete header.
+
 == [release-1-8-1] 1.8.1: 2011-11-12
 
 A bug fix release of 1.8.0.
