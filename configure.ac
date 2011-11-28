@@ -199,7 +199,7 @@ module_configurationdir='$(moduledir)/configuration'
 AC_SUBST(moduledir)
 AC_SUBST(module_configurationdir)
 
-if echo -- "$libdir" | grep -q '\$'; then
+if echo -- "$libdir" | grep '\$' > /dev/null 2>&1; then
   if test "$exec_prefix" = "NONE"; then
     if test "$prefix" = "NONE"; then
       milter_manager_exec_prefix=$ac_default_prefix
