@@ -387,6 +387,7 @@ milter_headers_delete_header (MilterHeaders *headers,
 
     priv = MILTER_HEADERS_GET_PRIVATE(headers);
     priv->header_list = g_list_remove(priv->header_list, header);
+    milter_header_free(header);
 
     return TRUE;
 }
