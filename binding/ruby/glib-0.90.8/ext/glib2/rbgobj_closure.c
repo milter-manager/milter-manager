@@ -177,6 +177,9 @@ rclosure_invalidate(gpointer data, GClosure* closure)
 static void
 gr_closure_holder_mark(GRClosure *rclosure)
 {
+    if (!rclosure)
+        return;
+
     rb_gc_mark(rclosure->callback);
     rb_gc_mark(rclosure->extra_args);
 }
