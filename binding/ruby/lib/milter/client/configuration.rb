@@ -118,7 +118,7 @@ module Milter
           client.unix_socket_group = @unix_socket_group
           client.unix_socket_mode = @unix_socket_mode if @unix_socket_mode
           client.fallback_status = @fallback_status
-          client.event_loop_backend = resolved_event_loop_backend
+          client.event_loop_backend = @event_loop_backend
           client.default_packet_buffer_size = @packet_buffer_size
           client.pid_file = @pid_file
           client.maintenance_interval = @maintenance_interval
@@ -158,14 +158,6 @@ module Milter
           @event_loop = loop
           @event_loop_created_hooks.each do |hook|
             hook.call(self, loop)
-          end
-        end
-
-        # For Ruby 1.8.5 + old Ruby/GLib2. It should be
-        # removed when CentOS 5 support is dropped.
-        def resolved_event_loop_backend
-          Milter::ClientEventLoopBackend.values.find do |value|
-            value.nick == @event_loop_backend.to_s
           end
         end
 
@@ -596,7 +588,7 @@ module Milter
 
         def event_loop_backend=(backend)
           update_location("event_loop_backend", backend.nil?)
-          @configuration.event_loop_backend = backend
+          @configuration.event_loop_backend = resolve_event_loop_backend(backend)
         end
 
         def n_workers
@@ -644,6 +636,21 @@ module Milter
 
         def full_key(key)
           "milter.#{key}"
+        end
+
+        # For Ruby 1.8.5 + old Ruby/GLib2. It should be
+        # removed when CentOS 5 support is dropped.
+        def resolve_event_loop_backend(backend)
+          case backend
+          when nil
+            nil
+          when String
+            Milter::ClientEventLoopBackend.values.find do |value|
+              value.nick == backend
+            end
+          else
+            backend
+          end
         end
       end
 
