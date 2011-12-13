@@ -14,6 +14,7 @@
 static ID id_call;
 
 /*****************************************/
+#if !GLIB_CHECK_VERSION(2,30,0)
 static void
 source_free(GSource *source)
 {
@@ -31,6 +32,7 @@ g_source_get_type(void)
                     (GBoxedFreeFunc)source_free);
   return our_type;
 }
+#endif
 /*****************************************/
 
 #define _SELF(s) ((GSource*)RVAL2BOXED(s, G_TYPE_SOURCE))

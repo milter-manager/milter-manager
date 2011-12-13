@@ -12,6 +12,7 @@
 #include "rbgprivate.h"
 
 /*****************************************/
+#if !GLIB_CHECK_VERSION(2,30,0)
 GType
 g_main_loop_get_type(void)
 {
@@ -22,6 +23,7 @@ g_main_loop_get_type(void)
                     (GBoxedFreeFunc)g_main_loop_unref);
   return our_type;
 }
+#endif
 /*****************************************/
 
 #define _SELF(s) ((GMainLoop*)RVAL2BOXED(s, G_TYPE_MAIN_LOOP))
