@@ -316,9 +316,9 @@ add_watcher (MilterLibevEventLoop *loop, ev_watcher *watcher,
 
     do {
         priv->id++;
-    } while (!g_hash_table_lookup_extended(priv->watchers,
-                                           GUINT_TO_POINTER(priv->id),
-                                           NULL, NULL));
+    } while (g_hash_table_lookup_extended(priv->watchers,
+                                          GUINT_TO_POINTER(priv->id),
+                                          NULL, NULL));
 
     watcher_priv = watcher->data;
     watcher_priv->loop = loop;
