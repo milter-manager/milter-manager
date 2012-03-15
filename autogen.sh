@@ -33,7 +33,7 @@ git_update()
 	return
     fi
     if test -d "$dir/.git"; then
-	git pull --rebase "$dir"
+	(cd "$dir"; git pull --rebase)
     else
 	rm -rf "$dir"
 	git clone "$repository" "$dir"
