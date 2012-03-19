@@ -254,6 +254,10 @@ After:
   SOCKET_GROUP=postfix
   CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
+We add milter-manager user to postfix group:
+
+  % sudo adduser milter-manager postfix
+
 milter-manager's configuration is completed. We start
 milter-manager:
 
