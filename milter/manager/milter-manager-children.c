@@ -117,9 +117,9 @@ struct _NegotiateData
     MilterManagerChildren *children;
     MilterManagerChild *child;
     MilterOption *option;
-    guint error_signal_id;
-    guint ready_signal_id;
-    guint connection_timeout_signal_id;
+    gulong error_signal_id;
+    gulong ready_signal_id;
+    gulong connection_timeout_signal_id;
     gboolean is_retry;
 };
 
