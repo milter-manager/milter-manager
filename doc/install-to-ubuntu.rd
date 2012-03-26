@@ -67,13 +67,7 @@ We use Postfix as MTA:
 We use spamass-milter, clamav-milter and milter-greylist as
 milters:
 
-  % sudo apt-get -V -y install spamass-milter clamav-milter
-  % sudo apt-get -V -y --without-recommends install milter-greylist
-
-It's the reason why --without-recommends is specified that
-Sendmail is recommended package. If --without-recommends
-option isn't specified, Sendmail is installed and Postfix is
-removed.
+  % sudo apt-get -V -y install spamass-milter clamav-milter milter-greylist
 
 == Configuration
 
