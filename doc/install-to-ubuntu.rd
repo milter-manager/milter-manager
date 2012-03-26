@@ -143,16 +143,10 @@ We change /etc/default/clamav-milter to do the followings:
   * 'postfix' group can communicate to clamav-milter.
 
 Before:
-  OPTIONS="--max-children=2 -ol"
-
-  #USE_POSTFIX='yes'
-  #SOCKET=local:/var/spool/postfix/clamav/clamav-milter.ctl
+  #SOCKET_RWGROUP=postfix
 
 After:
-  OPTIONS="--max-children=2 -ol --external"
-
-  USE_POSTFIX='yes'
-  SOCKET=local:/var/spool/postfix/clamav/clamav-milter.ctl
+  SOCKET_RWGROUP=postfix
 
 clamav-milter should be restarted:
 
@@ -201,12 +195,6 @@ Before:
 After:
   ENABLED=1
   SOCKET="inet:11125@[127.0.0.1]"
-  DOPTIONS="-P $PIDFILE -u $USER -p $SOCKET"
-
-We need to specify not only SOCKET but also DOPTIONS because
-/etc/init.d/milter-greylist has a problem in 8.04 LTS Hardy
-Heron. The problem had been fixed in 8.10 Intrepid Ibex. We
-doesn't need to specify DOPTIONS if we use 8.10.
 
 milter-greylist should be started:
 
@@ -231,7 +219,7 @@ The following output shows milters are detected:
   end
   ..
   define_milter("clamav-milter") do |milter|
-    milter.connection_spec = "local:/var/spool/postfix/clamav/clamav-milter.ctl"
+    milter.connection_spec = "unix:/var/run/clamav/clamav-milter.ctl"
     ...
     milter.enabled = true
     ...
@@ -260,12 +248,12 @@ improve detect method.
 We change /etc/default/milter-manager to work with Postfix:
 
 Before:
-  #GROUP=postfix
-  #SOCKET_GROUP=postfix
-  #CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
+  # For postfix, you might want these settings:
+  # SOCKET_GROUP=postfix
+  # CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
 After:
-  GROUP=postfix
+  # For postfix, you might want these settings:
   SOCKET_GROUP=postfix
   CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
@@ -285,7 +273,7 @@ milter-manager was ran:
 
 Here is a sample success output:
 
-  status: pass
+  status: accept
   elapsed-time: 0.128 seconds
 
 If milter-manager fails to run, the following message will

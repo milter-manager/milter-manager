@@ -144,16 +144,10 @@ clamav-milterの設定は以下のように変更します。
 /etc/default/clamav-milterを変更します。
 
 変更前:
-  OPTIONS="--max-children=2 -ol"
-
-  #USE_POSTFIX='yes'
-  #SOCKET=local:/var/spool/postfix/clamav/clamav-milter.ctl
+  #SOCKET_RWGROUP=postfix
 
 変更後:
-  OPTIONS="--max-children=2 -ol --external"
-
-  USE_POSTFIX='yes'
-  SOCKET=local:/var/spool/postfix/clamav/clamav-milter.ctl
+  SOCKET_RWGROUP=postfix
 
 clamav-milterを再起動します。
 
@@ -202,13 +196,6 @@ clamav-milterを再起動します。
 変更後:
   ENABLED=1
   SOCKET="inet:11125@[127.0.0.1]"
-  DOPTIONS="-P $PIDFILE -u $USER -p $SOCKET"
-
-SOCKETを指定しただけではなく、DOPTIONSも指定しているのは、
-8.04 LTS Hardy Heronのmilter-greylistパッケージに含まれる
-/etc/init.d/milter-greylistに問題があるからです。この問題は
-8.10 Intrepid Ibexでは修正されているので、8.10を使用している
-場合はDOPTIONSは指定する必要はありません。
 
 milter-greylistを起動します。
 
@@ -233,7 +220,7 @@ milter-greylistを検出していることを確認してください。
   end
   ..
   define_milter("clamav-milter") do |milter|
-    milter.connection_spec = "local:/var/spool/postfix/clamav/clamav-milter.ctl"
+    milter.connection_spec = "unix:/var/run/clamav/clamav-milter.ctl"
     ...
     milter.enabled = true
     ...
@@ -260,12 +247,12 @@ Postfixと一緒に動作するように/etc/default/milter-managerを編
 集します。
 
 変更前:
-  #GROUP=postfix
-  #SOCKET_GROUP=postfix
-  #CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
+  # For postfix, you might want these settings:
+  # SOCKET_GROUP=postfix
+  # CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
 変更後:
-  GROUP=postfix
+  # For postfix, you might want these settings:
   SOCKET_GROUP=postfix
   CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
@@ -283,7 +270,7 @@ milter-test-serverで起動の確認をすることができます。
 
 このように表示されれば成功です。
 
-  status: pass
+  status: accept
   elapsed-time: 0.128 seconds
 
 起動に失敗しているときはこのように表示されます。
