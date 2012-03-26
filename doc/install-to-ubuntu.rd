@@ -14,7 +14,10 @@ Packages for Lucid Lynx, the current LTS release,
 packages for Natty Narwhal and
 packages for Oneiric Ocelot the latest release are
 distributed on the milter manager site. We put the following
-content to /etc/apt/sources.list.d/milter-manager.list:
+content to /etc/apt/sources.list.d/milter-manager.list.
+
+We also enable the official backports repository to detects the latest
+viruses by the latest ClamAV.
 
 === For Lucid Lynx
 
@@ -27,6 +30,12 @@ content to /etc/apt/sources.list.d/milter-manager.list:
 If we use development series, we need to comment the first 2
 lines out and enable comment outed the 2 lines.
 
+If you don't enable the official backport repository, we need to
+create /etc/apt/sources.list.d/backports.list with the following
+content:
+
+  deb http://archive.ubuntu.com/ubuntu lucid-backports main universe
+
 === For Natty Narwhal
 
 /etc/apt/sources.list.d/milter-manager.list:
@@ -38,6 +47,12 @@ lines out and enable comment outed the 2 lines.
 If we use development series, we need to comment the first 2
 lines out and enable comment outed the 2 lines.
 
+If you don't enable the official backport repository, we need to
+create /etc/apt/sources.list.d/backports.list with the following
+content:
+
+  deb http://archive.ubuntu.com/ubuntu natty-backports main universe
+
 === For Oneiric Ocelot
 
 /etc/apt/sources.list.d/milter-manager.list:
@@ -48,6 +63,12 @@ lines out and enable comment outed the 2 lines.
 
 If we use development series, we need to comment the first 2
 lines out and enable comment outed the 2 lines.
+
+If you don't enable the official backport repository, we need to
+create /etc/apt/sources.list.d/backports.list with the following
+content:
+
+  deb http://archive.ubuntu.com/ubuntu oneiric-backports main universe
 
 === Install
 
