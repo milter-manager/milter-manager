@@ -13,7 +13,7 @@ information.
 
 We just upgrade milter manager package.
 
-  % sudo aptitude -V -D -y safe-upgrade
+  % sudo apt-get -V -y upgrade
 
 === Upgrade from before 1.8.0
 

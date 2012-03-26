@@ -56,18 +56,18 @@ Natty Narwhalと最新版のOneiric Ocelot 用のパッケージを配布して�
 
 milter managerをインストールします。
 
-  % sudo aptitude update
-  % sudo aptitude -V -D -y install milter-manager
+  % sudo apt-get update
+  % sudo apt-get -V -y install milter-manager
 
 MTAはPostfixを利用することとします。
 
-  % sudo aptitude -V -D -y install postfix
+  % sudo apt-get -V -y install postfix
 
 milterはspamass-milter、clamav-milter、milter-greylistを使用
 することとします。
 
-  % sudo aptitude -V -D -y install spamass-milter clamav-milter
-  % sudo aptitude -V -D -y --without-recommends install milter-greylist
+  % sudo apt-get -V -y install spamass-milter clamav-milter
+  % sudo apt-get -V -y --without-recommends install milter-greylist
 
 --without-recommendsを指定しているのは、Postfixが削除されて
 Sendmailがインストールされてしまうからです。これは、

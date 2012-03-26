@@ -35,7 +35,7 @@ milter-manager-log-analyzerが出力するグラフは同じホストにWeb
 
 WebサーバとしてApacheを使います。
 
-  % sudo aptitude -V -D -y install apache2
+  % sudo apt-get -V -y install apache2
 
 ==== milter-manager-log-analyzerの設定
 
@@ -66,7 +66,7 @@ WebサーバとしてApacheを使います。
 milter-manager-log-analyzerが収集した統計情報をMuninに提供す
 るmilter-manager-munin-pluginsパッケージをインストールします。
 
-  % sudo aptitude -V -D -y install milter-manager-munin-plugins
+  % sudo apt-get -V -y install milter-manager-munin-plugins
 
 ((*注: Muninに統計情報を提供する場合はmilter manager 1.5.0以
 降のmilter-manager-log-analyzerが生成したデータベースを使う
@@ -95,7 +95,7 @@ munin-nodeを再起動し設定を反映させます。
 
 まず、muninとApacheをインストールします。
 
-  monitoring-server% sudo aptitude -V -D -y install munin httpd
+  monitoring-server% sudo apt-get -V -y install munin httpd
 
 muninの監視対象にmunin-nodeが動いているメールサーバを追加しま
 す。メールサーバが以下の場合の/etc/munin/munin.confへ追加する
@@ -124,7 +124,7 @@ muninの監視対象にmunin-nodeが動いているメールサーバを追加�
 以下のパッケージをインストールすることにより、関連するパッケー
 ジもインストールされます。
 
-  % sudo aptitude -V -D -y install build-essential rdoc libopenssl-ruby apache2-threaded-dev libsqlite3-ruby milter-manager-admin
+  % sudo apt-get -V -y install build-essential rdoc libopenssl-ruby apache2-threaded-dev libsqlite3-ruby milter-manager-admin
 
 === RubyGemsのインストール
 

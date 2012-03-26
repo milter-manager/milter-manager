@@ -57,18 +57,18 @@ We register the key of the package repository:
 
 We install milter manager package:
 
-  % sudo aptitude update
-  % sudo aptitude -V -D -y install milter-manager
+  % sudo apt-get update
+  % sudo apt-get -V -y install milter-manager
 
 We use Postfix as MTA:
 
-  % sudo aptitude -V -D -y install postfix
+  % sudo apt-get -V -y install postfix
 
 We use spamass-milter, clamav-milter and milter-greylist as
 milters:
 
-  % sudo aptitude -V -D -y install spamass-milter clamav-milter
-  % sudo aptitude -V -D -y --without-recommends install milter-greylist
+  % sudo apt-get -V -y install spamass-milter clamav-milter
+  % sudo apt-get -V -y --without-recommends install milter-greylist
 
 It's the reason why --without-recommends is specified that
 Sendmail is recommended package. If --without-recommends
