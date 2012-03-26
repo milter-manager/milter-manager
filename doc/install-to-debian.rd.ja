@@ -160,13 +160,13 @@ clamav-milterを再起動します。
   築を支援します。
 
 変更前:
-  acl whitelist default
+  racl whitelist default
 
 変更後:
   subnetmatch /24
   greylist 10m
   autowhite 1w
-  acl greylist default
+  racl greylist default
 
 次に、/etc/default/milter-greylistを変更し、milter-greylist
 を有効にします。milter-greylistの起動ファイルではソケットファ
@@ -204,7 +204,7 @@ milter-greylistを検出していることを確認してください。
   end
   ..
   define_milter("clamav-milter") do |milter|
-    milter.connection_spec = "local:/var/spool/postfix/clamav/clamav-milter.ctl"
+    milter.connection_spec = "unix:/var/run/clamav/clamav-milter.ctl"
     ...
     milter.enabled = true
     ...
@@ -231,12 +231,12 @@ Postfixと一緒に動作するように/etc/default/milter-managerを編
 集します。
 
 変更前:
-  #GROUP=postfix
-  #SOCKET_GROUP=postfix
-  #CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
+  # For postfix, you might want these settings:
+  # SOCKET_GROUP=postfix
+  # CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
 変更後:
-  GROUP=postfix
+  # For postfix, you might want these settings:
   SOCKET_GROUP=postfix
   CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
@@ -254,7 +254,7 @@ milter-test-serverで起動の確認をすることができます。
 
 このように表示されれば成功です。
 
-  status: pass
+  status: accept
   elapsed-time: 0.128 seconds
 
 起動に失敗しているときはこのように表示されます。

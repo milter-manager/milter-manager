@@ -160,13 +160,13 @@ configurations:
   mail system that combines some anti-spam techniques.
 
 Before:
-  acl whitelist default
+  racl whitelist default
 
 After:
   subnetmatch /24
   greylist 10m
   autowhite 1w
-  acl greylist default
+  racl greylist default
 
 We change /etc/default/milter-greylist to enable
 milter-greylist. milter-greylist uses IPv4 socket because
@@ -203,7 +203,7 @@ The following output shows milters are detected:
   end
   ..
   define_milter("clamav-milter") do |milter|
-    milter.connection_spec = "local:/var/spool/postfix/clamav/clamav-milter.ctl"
+    milter.connection_spec = "unix:/var/run/clamav/clamav-milter.ctl"
     ...
     milter.enabled = true
     ...
@@ -232,12 +232,12 @@ improve detect method.
 We change /etc/default/milter-manager to work with Postfix:
 
 Before:
-  #GROUP=postfix
-  #SOCKET_GROUP=postfix
-  #CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
+  # For postfix, you might want these settings:
+  # SOCKET_GROUP=postfix
+  # CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
 After:
-  GROUP=postfix
+  # For postfix, you might want these settings:
   SOCKET_GROUP=postfix
   CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
@@ -257,7 +257,7 @@ milter-manager was ran:
 
 Here is a sample success output:
 
-  status: pass
+  status: accept
   elapsed-time: 0.128 seconds
 
 If milter-manager fails to run, the following message will
