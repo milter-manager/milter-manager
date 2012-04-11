@@ -1,0 +1,9 @@
+#! /bin/bash
+
+FMRI=svc:/network/milter-manager
+
+if $(svcs $FMRI > /dev/null 2>&1); then
+    svcadm disable $FMRI
+    svccfg delete $FMRI
+fi
+exit 0

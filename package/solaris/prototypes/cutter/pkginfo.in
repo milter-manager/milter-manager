@@ -1,0 +1,10 @@
+PKG=MMGRcutter
+NAME=cutter
+ARCH=amd64
+VERSION=1.1.7
+CATEGORY=application
+VENDOR=http://milter-manager.sourceforge.net/ packaged for milter-manager
+EMAIL=cutter-users-en@lists.sourceforge.net
+CLASSES=none
+HOTLINE=http://cutter.sourceforge.net/
+BASEDIR=@prefix@

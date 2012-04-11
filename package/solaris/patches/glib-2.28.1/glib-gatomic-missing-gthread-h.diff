@@ -1,0 +1,10 @@
+--- glib-2.28.1.orig/glib/gatomic.c     Sat Feb 12 00:23:12 2011
++++ glib-2.28.1/glib/gatomic.c  Sat Feb 19 16:42:43 2011
+@@ -28,6 +28,7 @@
+ #endif
+ 
+ #include "gatomic.h"
++#include "gthread.h"
+ #include "gthreadprivate.h"
+ 
+ /**

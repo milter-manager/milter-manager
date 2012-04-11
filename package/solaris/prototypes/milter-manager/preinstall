@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# This script exists for the sole purpose of making sure the required user
+# accounts "mmanager" and groups "mmanager" exist already.
+# based on the CSWpostfix preinstall
+
+HOMEDIR=/dev/null
+TARGET_USER=mmanager
+TARGET_GROUP=mmanager
+
+if [ "$PKG_ROOT_DIR" = "" ] ; then
+	PKG_ROOT_DIR="/"
+fi
+
+# First check target machines password file, THEN check
+# NIS/NIS+/whatever
+
+NEEDGROUP=0
+grep "^${TARGET_GROUP}:" $PKG_ROOT_DIR/etc/group >/dev/null
+if [ $? -ne 0 ] ; then
+	getent group ${TARGET_GROUP} >/dev/null
+	if [ $? -ne 0 ] ; then
+		NEEDGROUP=1
+	fi
+fi
+
+if [ "$NEEDGROUP" = 1 ] ; then
+	echo adding ${TARGET_GROUP} group
+	chroot $PKG_ROOT_DIR /usr/sbin/groupadd ${TARGET_GROUP}
+else
+	echo ${TARGET_GROUP} group detected
+fi
+
+NEEDUSER=0
+grep "^${TARGET_USER}:" $PKG_ROOT_DIR/etc/passwd >/dev/null
+if [ $? -ne 0 ] ; then
+	getent passwd ${TARGET_USER} >/dev/null
+	if [ $? -ne 0 ] ; then
+		NEEDUSER=1
+	fi
+fi
+
+if [ "$NEEDUSER" = 1 ] ; then
+	echo adding ${TARGET_USER} user
+	chroot $PKG_ROOT_DIR /usr/sbin/useradd -g ${TARGET_GROUP} ${TARGET_USER}
+	chroot $PKG_ROOT_DIR /usr/sbin/usermod -s /bin/false -d $HOMEDIR ${TARGET_USER}
+else
+	echo ${TARGET_USER} user detected
+fi
+
+exit 0

@@ -1,0 +1,150 @@
+milter-manager (1.8.2-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Kenji Okimoto <okimoto@clear-code.com>  Tue, 29 Nov 2011 00:00:00 +0900
+
+milter-manager (1.8.1-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Kenji Okimoto <okimoto@clear-code.com>  Sat, 12 Nov 2011 00:00:00 +0900
+
+milter-manager (1.8.0-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Kouhei Sutou <kou@clear-code.com>  Fri, 10 Jun 2011 00:00:00 +0900
+
+milter-manager (1.6.9-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Kouhei Sutou <kou@clear-code.com>  Tue, 26 Apr 2011 00:00:00 +0900
+
+milter-manager (1.6.8-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Kouhei Sutou <kou@clear-code.com>  Fri, 15 Apr 2011 00:00:00 +0900
+
+milter-manager (1.6.7-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Kouhei Sutou <kou@clear-code.com>  Fri, 08 Apr 2011 00:00:00 +0900
+
+milter-manager (1.6.6-5) unstable; urgency=low
+
+  * Don't use obsoleted options. (really!)
+
+ -- Kouhei Sutou <kou@clear-code.com>  Fri, 08 Apr 2011 01:30:00 +0900
+
+milter-manager (1.6.6-4) unstable; urgency=low
+
+  * Don't use obsoleted options.
+
+ -- Kouhei Sutou <kou@clear-code.com>  Fri, 08 Apr 2011 01:00:00 +0900
+
+milter-manager (1.6.6-3) unstable; urgency=low
+
+  * Add missing dependencies.
+
+ -- Kouhei Sutou <kou@clear-code.com>  Fri, 08 Apr 2011 00:30:00 +0900
+
+milter-manager (1.6.6-2) unstable; urgency=low
+
+  * Fix Breaks/Replaces version.
+
+ -- Kouhei Sutou <kou@clear-code.com>  Fri, 08 Apr 2011 00:00:00 +0900
+
+milter-manager (1.6.6-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Kouhei Sutou <kou@clear-code.com>  Wed, 06 Apr 2011 00:00:00 +0900
+
+milter-manager (1.6.5-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Kouhei Sutou <kou@clear-code.com>  Wed, 26 Jan 2011 00:00:00 +0900
+
+milter-manager (1.6.4-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Kouhei Sutou <kou@clear-code.com>  Fri, 21 Jan 2011 00:00:00 +0900
+
+milter-manager (1.6.3-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Kouhei Sutou <kou@clear-code.com>  Thu, 20 Jan 2011 00:00:00 +0900
+
+milter-manager (1.6.2-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Kouhei Sutou <kou@clear-code.com>  Tue, 23 Nov 2010 00:00:00 +0900
+
+milter-manager (1.6.1-1) hardy; urgency=low
+
+  * New upstream release.
+
+ -- Kouhei Sutou <kou@clear-code.com>  Sat, 21 Aug 2010 10:33:15 +0900
+
+milter-manager (1.6.0-0) hardy; urgency=low
+
+  * New upstream release.
+
+ -- Kouhei Sutou <kou@clear-code.com>  Wed, 11 Aug 2010 10:33:15 +0900
+
+milter-manager (1.4.2-0~test1) hardy; urgency=low
+
+  * New upstream release.
+
+ -- Jun Kobayashi <jkbys@ubuntu.com>  Sun, 29 Mar 2010 04:19:59 +0900
+
+milter-manager (1.4.1-0~test1) hardy; urgency=low
+
+  * New upstream release.
+
+ -- Jun Kobayashi <jkbys@ubuntu.com>  Tue, 29 Oct 2009 04:19:59 +0900
+
+milter-manager (1.4.0-0~test1) hardy; urgency=low
+
+  * New upstream release.
+
+ -- Jun Kobayashi <jkbys@ubuntu.com>  Tue, 13 Oct 2009 04:19:59 +0900
+
+milter-manager (1.2.0-0~test1) hardy; urgency=low
+
+  * New upstream release.
+
+ -- Jun Kobayashi <jkbys@ubuntu.com>  Fri, 17 Jul 2009 04:19:59 +0900
+
+milter-manager (1.0.1-0~test1) hardy; urgency=low
+
+  * New upstream release.
+
+ -- Jun Kobayashi <jkbys@ubuntu.com>  Thu, 19 Apr 2009 04:19:59 +0900
+
+milter-manager (1.0.0-0~test1) hardy; urgency=low
+
+  * New upstream release.
+
+ -- Jun Kobayashi <jkbys@ubuntu.com>  Thu, 16 Apr 2009 04:19:59 +0900
+
+milter-manager (0.9.0-0~test1) hardy; urgency=low
+
+  * New upstream release.
+
+ -- Jun Kobayashi <jkbys@ubuntu.com>  Wed, 18 Mar 2009 04:19:59 +0900
+
+milter-manager (0.8.0-0~test5) hardy; urgency=low
+
+  * Initial release.
+
+ -- Jun Kobayashi <jkbys@ubuntu.com>  Mon, 02 Feb 2009 11:21:28 +0900
+

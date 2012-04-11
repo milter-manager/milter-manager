@@ -1,0 +1,10 @@
+PKG=MMGRgettext
+NAME=gettext - GNU locale utilities
+ARCH=amd64
+VERSION=0.18.1.1
+CATEGORY=application
+VENDOR=http://www.gnu.org/software/gettext/ packaged for milter-manager
+EMAIL=milter-manager-users-en@lists.sourceforge.net
+CLASSES=none
+HOTLINE=http://milter-manager.sourceforge.net/
+BASEDIR=@prefix@

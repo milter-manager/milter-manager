@@ -1,0 +1,10 @@
+PKG=MMGRglib
+NAME=glib2 - Low level core compatibility library for GTK+ and GNOME
+ARCH=amd64
+VERSION=2.28.1
+CATEGORY=application
+VENDOR=http://www.gtk.org/ packaged for milter-manager
+EMAIL=milter-manager-users-en@lists.sourceforge.net
+CLASSES=none
+HOTLINE=http://milter-manager.sourceforge.net/
+BASEDIR=@prefix@

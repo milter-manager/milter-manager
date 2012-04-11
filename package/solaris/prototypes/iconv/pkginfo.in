@@ -1,0 +1,10 @@
+PKG=MMGRiconv
+NAME=libiconv - GNU iconv library
+ARCH=amd64
+VERSION=1.13.1
+CATEGORY=application
+VENDOR=http://www.gnu.org/software/libiconv/ packaged for milter-manager
+EMAIL=milter-manager-users-en@lists.sourceforge.net
+CLASSES=none
+HOTLINE=http://milter-manager.sourceforge.net/
+BASEDIR=@prefix@
