@@ -17,10 +17,7 @@ SUBDIRS =					\
 	doc					\
 	html					\
 	license					\
-	apt					\
-	rpm					\
-	yum					\
-	solaris
+	package
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA =				\
@@ -86,8 +83,8 @@ update-latest-release:
 	  $(PACKAGE)						\
 	  $(OLD_RELEASE) $(OLD_RELEASE_DATE)			\
 	  $(VERSION) $(NEW_RELEASE_DATE)			\
-	  rpm/centos/milter-manager.spec.in			\
-	  debian/changelog					\
+	  package/rpm/centos/milter-manager.spec.in		\
+	  package/debian/changelog				\
 	  html/index.html					\
 	  html/index.html.ja					\
 	  html/blog/tdiary.conf					\

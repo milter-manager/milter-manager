@@ -840,7 +840,7 @@ AC_CONFIG_FILES([Makefile
 		 ruby-milter-core.pc
 		 ruby-milter-client.pc
 		 ruby-milter-server.pc
-		 rpm/centos/milter-manager.spec
+		 package/rpm/centos/milter-manager.spec
 		 libev-]BUNDLED_LIBEV_VERSION[/Makefile
 		 milter/Makefile
 		 milter/core/Makefile
@@ -897,22 +897,22 @@ AC_CONFIG_FILES([Makefile
 		 data/smf/manifest/Makefile
 		 data/smf/manifest/milter-manager.xml
 		 data/smf/method/Makefile
-		 solaris/Makefile
-		 solaris/prototypes/Makefile
-		 solaris/prototypes/milter-manager/Makefile
-		 solaris/prototypes/milter-manager/pkginfo
-		 solaris/prototypes/cutter/Makefile
-		 solaris/prototypes/cutter/pkginfo
-		 solaris/prototypes/gettext/Makefile
-		 solaris/prototypes/gettext/pkginfo
-		 solaris/prototypes/glib/Makefile
-		 solaris/prototypes/glib/pkginfo
-		 solaris/prototypes/iconv/Makefile
-		 solaris/prototypes/iconv/pkginfo
-		 solaris/prototypes/mysql/Makefile
-		 solaris/prototypes/mysql/pkginfo
-		 solaris/prototypes/ruby/Makefile
-		 solaris/prototypes/ruby/pkginfo
+		 package/solaris/Makefile
+		 package/solaris/prototypes/Makefile
+		 package/solaris/prototypes/milter-manager/Makefile
+		 package/solaris/prototypes/milter-manager/pkginfo
+		 package/solaris/prototypes/cutter/Makefile
+		 package/solaris/prototypes/cutter/pkginfo
+		 package/solaris/prototypes/gettext/Makefile
+		 package/solaris/prototypes/gettext/pkginfo
+		 package/solaris/prototypes/glib/Makefile
+		 package/solaris/prototypes/glib/pkginfo
+		 package/solaris/prototypes/iconv/Makefile
+		 package/solaris/prototypes/iconv/pkginfo
+		 package/solaris/prototypes/mysql/Makefile
+		 package/solaris/prototypes/mysql/pkginfo
+		 package/solaris/prototypes/ruby/Makefile
+		 package/solaris/prototypes/ruby/pkginfo
 		 tool/Makefile
 		 admin/Makefile
 		 test/Makefile
@@ -937,10 +937,11 @@ AC_CONFIG_FILES([Makefile
 		 html/Makefile
 		 license/Makefile
 		 build/Makefile
-		 apt/Makefile
-		 rpm/Makefile
-		 rpm/centos/Makefile
-		 yum/Makefile])
+		 package/Makefile
+		 package/apt/Makefile
+		 package/rpm/Makefile
+		 package/rpm/centos/Makefile
+		 package/yum/Makefile])
 
 AC_OUTPUT
 
