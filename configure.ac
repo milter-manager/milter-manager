@@ -364,7 +364,7 @@ if test "$ruby_available" = "yes"; then
         RUBY_GLIB2_CFLAGS=""
       fi
       AC_CHECK_HEADERS(rbgobject.h,
-         	       [ruby_glib2_available="yes"],
+		       [ruby_glib2_available="yes"],
 		       [ruby_glib2_available="no"],
 		       [$ruby_undef_package_macros])
     fi
