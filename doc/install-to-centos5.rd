@@ -1,11 +1,11 @@
 # -*- rd -*-
 
-= Install to CentOS 6 --- How to install milter manager to CentOS 6
+= Install to CentOS 5 --- How to install milter manager to CentOS 5
 
 == About this document
 
-This document describes how to install milter manager to CentOS 6. See
-((<Install to CentOS 5|install-to-centos5.rd>)) for CentOS 5 specific
+This document describes how to install milter manager to CentOS 5. See
+((<Install to CentOS 6|install-to-centos.rd>)) for CentOS 6 specific
 install information. See ((<Install|install.rd>)) for general install
 information.
 

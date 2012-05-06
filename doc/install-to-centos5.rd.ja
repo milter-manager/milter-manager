@@ -1,15 +1,13 @@
 # -*- rd -*-
 
-= CentOS 6へインストール --- CentOS 6へのmilter managerのインストール方法
+= CentOS 5へインストール --- CentOS 5へのmilter managerのインストール方法
 
 == このドキュメントについて
 
-CentOS 6に特化したmilter managerのインストール方法について説明します。
-CentOS 5に特化したmilter managerのインストール方法は((<CentOS 5へインス
-トール|install-to-centos5.rd.ja>))を見てください。CentOSに依存しない一
-般的なインストール情報は((<インストール|install.rd.ja>))を見てください。
-
-TODO: update
+CentOS 5に特化したmilter managerのインストール方法について説明します。
+CentOS 6に特化したmilter managerのインストール方法は((<CentOS 6へインス
+トール|install-to-centos.rd.ja>))を見てください。CentOSに依存しない一般的
+なインストール情報は((<インストール|install.rd.ja>))を見てください。
 
 CentOSのバージョンは5.8を想定しています。また、root権限での
 実行はsudoを使用することを想定しています。sudoを利用していな
