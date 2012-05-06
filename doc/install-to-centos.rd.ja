@@ -9,41 +9,32 @@ CentOS 5に特化したmilter managerのインストール方法は((<CentOS 5�
 トール|install-to-centos5.rd.ja>))を見てください。CentOSに依存しない一
 般的なインストール情報は((<インストール|install.rd.ja>))を見てください。
 
-TODO: update
-
-CentOSのバージョンは5.8を想定しています。また、root権限での
+CentOSのバージョンは6.2を想定しています。また、root権限での
 実行はsudoを使用することを想定しています。sudoを利用していな
 い場合はsuなどroot権限で実行してください。
 
 == パッケージのインストール
 
-以下のパッケージをインストールすることにより、関連するパッケー
-ジもインストールされます。
-
-  % sudo yum install -y glib2 ruby
-
-MTAは標準でインストールされているSendmailを利用することとします。
-
-  % sudo yum install -y sendmail-cf
+MTAは標準でインストールされているPostfixを利用することとします。
 
 milterはspamass-milter、clamav-milter、milter-greylistを使用
-することとします。各milterはRPMforgeにあるものを利用します。
+することとします。各milterはRepoforgeにあるものを利用します。
 
-32bit環境の場合は以下のようにRPMforgeを登録します。
+32bit環境の場合は以下のようにRepoforgeを登録します。
 
-  % sudo rpm -Uhv http://packages.sw.be/rpmforge-release/rpmforge-release-0.5.2-2.el5.rf.i386.rpm
+  % sudo rpm -Uhv http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
 
-64bit環境の場合は以下のようにRPMforgeを登録します。
+64bit環境の場合は以下のようにRepoforgeを登録します。
 
-  % sudo rpm -Uhv http://packages.sw.be/rpmforge-release/rpmforge-release-0.5.2-2.el5.rf.x86_64.rpm
+  % sudo rpm -Uhv http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm
 
-RPMforgeを登録したらmilterをインストールします。
+Repoforgeを登録したらmilterをインストールします。
 
   % sudo yum install -y spamass-milter clamav-milter milter-greylist
 
 また、グラフ作成用にRRDtoolもインストールします。
 
-  % sudo yum install -y ruby-rrdtool
+  % sudo yum install -y rrdtool-ruby
 
 == milter managerパッケージのインストール
 
@@ -167,21 +158,24 @@ clamav-milterを起動します。
   のように複数のmilterを組み合わせた迷惑メール対策システムの構
   築を支援します。
 
-# 新しいmilter-greylistを使えるようになったらこうする。
-#  socket "/var/milter-greylist/milter-greylist.sock"
-#  # ...
-#
-#  socket "/var/milter-greylist/milter-greylist.sock" 666
-#  # ...
-
 変更前:
+  socket "/var/milter-greylist/milter-greylist.sock"
+  # ...
   racl whitelist default
 
 変更後:
+  socket "/var/milter-greylist/milter-greylist.sock" 660
+  # ...
   subnetmatch /24
   greylist 10m
   autowhite 1w
   racl greylist default
+
+# TODO: libspf2サポートつきのmilter-greylistがRepoforgeで使えるようになっ
+# たらこの設定を追加する。
+# sm_macro "trusted_domain" "{trusted_domain}" "yes"
+# racl whitelist sm_macro "trusted_domain" spf pass
+# racl greylist sm_macro "trusted_domain" not spf pass
 
 次に、以下の内容の/etc/sysconfig/milter-greylistを作成します。
 
@@ -202,6 +196,11 @@ milter-managerをclamavグループに加えます。
 
   % sudo usermod -G clamav -a milter-manager
 
+同様に、milter-greylistのソケットにアクセスできるように
+milter-managerをsmmspグループに加えます。
+
+  % sudo usermod -G smmsp -a milter-manager
+
 milter-managerはシステムにインストールされているmilterを検出
 します。以下のコマンドでspamass-milter、clamav-milter、
 milter-greylistを検出していることを確認してください。
@@ -212,7 +211,7 @@ milter-greylistを検出していることを確認してください。
 
   ...
   define_milter("milter-greylist") do |milter|
-    milter.connection_spec = "inet:11122@[127.0.0.1]"
+    milter.connection_spec = "unix:/var/milter-greylist/milter-greylist.sock"
     ...
     milter.enabled = true
     ...
@@ -279,26 +278,57 @@ Ctrl+cで終了することができます。
 OPTION_ARGSをコメントアウトし、デーモンプロセスで起動するよう
 に戻してから、milter-managerを起動しなおしてください。
 
-=== Sendmailの設定
+=== Postfixの設定
 
-まず、Sendmailを有効にします。
+まず、Postfixを有効にします。
 
-  % sudo /sbin/chkconfig --add sendmail
-  % sudo /sbin/service sendmail start
+  % sudo /sbin/chkconfig --add postfix
+  % sudo /sbin/service postfix start
 
-Sendmailにmilter-managerを登録するために、
-/etc/mail/sendmail.mcに以下を追加します。
+次に、milterの設定をします。
 
-  INPUT_MAIL_FILTER(`milter-manager', `S=local:/var/run/milter-manager/milter-manager.sock')
+/etc/postfix/main.cfに以下を追加します。
 
-spamass-milter、clamav-milter、milter-greylistは
-milter-manager経由で利用するので、Sendmailにはmilter-manager
-だけを登録すればよいことに注意してください。
+  milter_protocol = 6
+  milter_default_action = accept
+  milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 
-Sendmailの設定を更新し、再読み込みします。
+それぞれ以下のような設定です。
 
-  % sudo make -C /etc/mail
-  % sudo /sbin/service sendmail reload
+: milter_protocol = 6
+
+   milterプロトコルバージョン6を使います。
+
+: milter_default_action = accept
+
+   milterに接続できないときはメールを受信します。milterとの
+   通信に問題がある場合でもメールサーバの機能を停止させない
+   ためには、この設定が有効です。ただし、milterを復旧させる
+   までの間に、スパムメールやウィルスメールを受信してしまう
+   可能性が高くなります。
+
+   迅速に復旧できる体制がととのっているのであれば、acceptで
+   はなく、tempfailを指定するのがよいでしょう。デフォルトで
+   はtempfailになっています。
+
+: milter_mail_macros = {auth_author} {auth_type} {auth_authen}
+
+   SMTP Auth関連の情報をmilterに渡します。milter-greylistな
+   どが使用します。
+
+続いて、Postfixにmilter-managerを登録します。spamass-milter、
+clamav-milter、milter-greylistはmilter-manager経由で利用する
+ので、Postfixにはmilter-managerだけを登録すればよいことに注
+意してください。
+
+/etc/postfix/main.cfに以下を追加します。Postfixは
+/var/spool/postfix/にchrootすることに注意してください。
+
+  smtpd_milters = unix:/milter-manager/milter-manager.sock
+
+Postfixの設定を再読み込みします。
+
+  % sudo /etc/init.d/postfix reload
 
 以上で設定は完了です。
 
