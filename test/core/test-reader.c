@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2012  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -225,7 +225,11 @@ test_finished_signal (void)
     cut_assert_equal_memory("first", strlen("first"),
                             actual_read_string->str, actual_read_size);
     cut_assert_false(finished);
-    g_io_channel_close(channel);
+    {
+        GError *error = NULL;
+        g_io_channel_shutdown(channel, TRUE, &error);
+        gcut_assert_error(&error);
+    }
     pump_all_events();
     cut_assert_true(finished);
 }
