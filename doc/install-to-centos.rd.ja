@@ -280,7 +280,12 @@ OPTION_ARGSをコメントアウトし、デーモンプロセスで起動する
 
 === Postfixの設定
 
-まず、Postfixを有効にします。
+まず、milter managerのソケットにアクセスできるように、
+postfixユーザーをmilter-managerグループに加えます。
+
+  % sudo usermod -G milter-manager -a postfix
+
+次に、Postfixを有効にします。
 
   % sudo /sbin/chkconfig --add postfix
   % sudo /sbin/service postfix start
