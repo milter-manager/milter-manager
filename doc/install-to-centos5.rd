@@ -291,7 +291,7 @@ milter-manager.
 
 === Configure Sendmail
 
-First, we enables Sendmail:
+First, we enable Sendmail:
 
   % sudo /sbin/chkconfig --add sendmail
   % sudo /sbin/service sendmail start
