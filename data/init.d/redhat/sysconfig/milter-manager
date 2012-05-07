@@ -11,7 +11,7 @@
 # GROUP="milter-manager"
 
 # If CONNECTION_SPEC is "unix:", socket is chgrp-ed to $SOCKET_GROUP:
-# SOCKET_GROUP="smmsp"
+# SOCKET_GROUP="milter-manager"
 
 # Socket location to listen connection from MTA:
 # CONNECTION_SPEC=unix:/var/run/milter-manager/milter-manager.sock
