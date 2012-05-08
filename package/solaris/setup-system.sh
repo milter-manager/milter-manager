@@ -5,7 +5,7 @@ export PATH=/opt/csw/bin:/usr/sfw/bin:$PATH
 source ./functions.sh
 
 if test ! -x /opt/csw/bin/pkgutil; then
-    yes | run pkgadd -d http://get.opencsw.org/now
+    yes | run pkgadd -d http://get.opencsw.org/now all
 fi
 
 run pkgutil -U
