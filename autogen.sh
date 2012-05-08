@@ -50,9 +50,6 @@ if [ x"$1" = x--no-update ]; then
     update=no
 fi
 
-cutter_repository=https://cutter.svn.sourceforge.net/svnroot/cutter/cutter
-run svn_update ${cutter_repository}/trunk/misc
-
 clear_code_repository=http://www.clear-code.com/repos/svn
 run svn_update ${clear_code_repository}/tdiary html/blog/clear-code
 
