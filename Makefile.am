@@ -13,7 +13,6 @@ SUBDIRS =					\
 	test					\
 	po					\
 	build					\
-	misc					\
 	doc					\
 	html					\
 	license					\
@@ -65,7 +64,7 @@ update-po:
 	  sort > po/POTFILES.in
 	cd po && $(MAKE) $(AM_MAKEFLAGS) update-po
 
-update-latest-release:
+update-latest-release: misc
 	@if test -z "$(OLD_RELEASE)"; then	\
 	  echo "\$$(OLD_RELEASE) is missing";	\
 	  exit 1;				\
@@ -101,6 +100,13 @@ update-latest-release:
 
 tag:
 	git tag -a "$(VERSION)" -m "released $(VERSION)!!!"
+
+misc:
+	@if test -z "$(CUTTER_SOURCE_PATH)"; then		\
+	  echo "\$$(CUTTER_SOURCE_PATH) is missing";		\
+	  exit 1;						\
+	fi
+	ln -s "$(CUTTER_SOURCE_PATH)/misc" misc;
 
 echo-abs-top-srcdir:
 	@echo $(abs_top_srcdir)
