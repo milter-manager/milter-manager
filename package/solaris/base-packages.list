@@ -1,5 +1,4 @@
 # required
-sudo
 ggrep
 git
 subversion
@@ -16,6 +15,7 @@ cmake
 bison
 groff
 # optional
+sudo
 coreutils
 vim
 zsh
