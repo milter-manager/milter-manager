@@ -11,7 +11,10 @@ fi
 run pkgutil -U
 
 base_dir=$(dirname $0)
-base_packages=$(grep -v '#' "$base_dir/base-packages.list")
 
-run pkgutil -y -i "$base_packages"
+while read package; do
+    if echo "$package" | grep -v '#' > /dev/null ; then
+        run pkgutil -y -i "$package"
+    fi
+done < "$base_dir/base-packages.list"
 
