@@ -4,14 +4,14 @@ export PATH=/opt/csw/bin:/usr/sfw/bin:$PATH
 
 source ./functions.sh
 
-if test ! -x /opt/csw/bin/pkg-get; then
-    run pkgadd -d http://mirror.opencsw.org/opencsw/pkg_get.pkg
+if test ! -x /opt/csw/bin/pkgutil; then
+    yes | run pkgadd -d http://get.opencsw.org/now
 fi
 
-run pkg-get -U
+run pkgutil -U
 
 base_dir=$(dirname $0)
 base_packages=$(grep -v '#' "$base_dir/base-packages.list")
 
-run pkg-get install "$base_packages"
+run pkgutil -y -i "$base_packages"
 
