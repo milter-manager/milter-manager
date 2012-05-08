@@ -758,6 +758,17 @@ AC_SUBST(MILTER_MANAGER_DEFAULT_CONNECTION_SPEC_C_STRING)
 AC_SUBST(MILTER_MANAGER_DEFAULT_PID_FILE_C_STRING)
 
 dnl **************************************************************
+dnl Check for misc.
+dnl **************************************************************
+
+AC_ARG_WITH([cutter-source-path],
+            AS_HELP_STRING([--with-cutter-source-path=PATH],
+                             [Specify Cutter source path for
+                             milter-manager's release manager.]),
+              [CUTTER_SOURCE_PATH="$withval"])
+AC_SUBST(CUTTER_SOURCE_PATH)
+
+dnl **************************************************************
 dnl Check for SF.net.
 dnl **************************************************************
 
@@ -933,7 +944,6 @@ AC_CONFIG_FILES([Makefile
 		 doc/Makefile
 		 doc/reference/Makefile
 		 doc/reference/version.xml
-		 misc/Makefile
 		 html/Makefile
 		 license/Makefile
 		 build/Makefile
@@ -975,3 +985,5 @@ echo "  GTK-Doc                 : $enable_gtk_doc"
 echo
 echo "  Cutter                  : $CUTTER"
 echo "  LCOV                    : $LCOV"
+echo
+echo "  Cutter Source Path      : $CUTTER_SOURCE_PATH"
