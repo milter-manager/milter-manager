@@ -7,7 +7,7 @@
 ので無ければ入れておく。sf_user_name には sourceforge.net のアカウント
 名を指定する。
 
-  % gem install rdtool gettext rr mechanize
+  % gem install rdtool rttool gettext fast_gettext rr mechanize
   % ./autogen.sh --no-update
   % ./configure --prefix=/tmp/local \
     --enable-ruby-milter --enable-gtk-doc --enable-coverage \
