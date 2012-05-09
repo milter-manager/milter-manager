@@ -9,7 +9,7 @@ install_milter_manager()
 {
     local base="milter-manager"
     local log="${BUILDS}/${base}.build.log"
-    local build_dir="${base_dir}/../"
+    local build_dir="${base_dir}/../../"
 
     mkdir -p "${BUILDS}"
 
