@@ -22,6 +22,7 @@ SUBDIRS +=					\
 EXTRA_DIST =					\
 	$(test_unit_files)			\
 	$(ruby_glib2_0_16_0_files)		\
+	$(ruby_glib2_0_90_8_files)		\
 	$(ruby_glib2_latest_files)
 
 echo-abs-top-builddir:
@@ -234,16 +235,11 @@ ruby_glib2_0_16_0_files =			\
 ruby_glib2_0_90_8_files =						\
 	glib-0.90.8/COPYING.LIB						\
 	glib-0.90.8/ChangeLog						\
-	glib-0.90.8/Makefile						\
-	glib-0.90.8/Makefile.lib					\
 	glib-0.90.8/README						\
 	glib-0.90.8/Rakefile						\
 	glib-0.90.8/TODO						\
-	glib-0.90.8/ext/glib2/Makefile					\
 	glib-0.90.8/ext/glib2/depend					\
 	glib-0.90.8/ext/glib2/extconf.rb				\
-	glib-0.90.8/ext/glib2/glib-enum-types.c				\
-	glib-0.90.8/ext/glib2/glib-enum-types.h				\
 	glib-0.90.8/ext/glib2/glib2.def					\
 	glib-0.90.8/ext/glib2/rbgcompat.h				\
 	glib-0.90.8/ext/glib2/rbglib.c					\
@@ -293,7 +289,6 @@ ruby_glib2_0_90_8_files =						\
 	glib-0.90.8/ext/glib2/rbgutil.c					\
 	glib-0.90.8/ext/glib2/rbgutil.h					\
 	glib-0.90.8/ext/glib2/rbgutil_callback.c			\
-	glib-0.90.8/ext/glib2/ruby-glib2.pc				\
 	glib-0.90.8/extconf.rb						\
 	glib-0.90.8/lib/glib-mkenums.rb					\
 	glib-0.90.8/lib/glib2.rb					\
