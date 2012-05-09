@@ -32,7 +32,6 @@ test_unit_files =						\
 	test-unit/README.textile				\
 	test-unit/Rakefile					\
 	test-unit/TODO						\
-	test-unit/bin/testrb					\
 	test-unit/doc/html/bar.png				\
 	test-unit/doc/html/bar.svg				\
 	test-unit/doc/html/color-diff.png			\
@@ -68,12 +67,15 @@ test_unit_files =						\
 	test-unit/doc/templates/head.ja.html.erb		\
 	test-unit/doc/templates/header.en.html.erb		\
 	test-unit/doc/templates/header.ja.html.erb		\
+	test-unit/doc/text/how-to.textile			\
 	test-unit/doc/text/news.textile				\
+	test-unit/lib/test-unit.rb				\
 	test-unit/lib/test/unit.rb				\
 	test-unit/lib/test/unit/assertionfailederror.rb		\
 	test-unit/lib/test/unit/assertions.rb			\
 	test-unit/lib/test/unit/attribute.rb			\
 	test-unit/lib/test/unit/autorunner.rb			\
+	test-unit/lib/test/unit/code-snippet-fetcher.rb		\
 	test-unit/lib/test/unit/collector.rb			\
 	test-unit/lib/test/unit/collector/descendant.rb		\
 	test-unit/lib/test/unit/collector/dir.rb		\
@@ -94,7 +96,6 @@ test_unit_files =						\
 	test-unit/lib/test/unit/priority.rb			\
 	test-unit/lib/test/unit/runner/console.rb		\
 	test-unit/lib/test/unit/runner/emacs.rb			\
-	test-unit/lib/test/unit/runner/tap.rb			\
 	test-unit/lib/test/unit/runner/xml.rb			\
 	test-unit/lib/test/unit/testcase.rb			\
 	test-unit/lib/test/unit/testresult.rb			\
@@ -103,7 +104,6 @@ test_unit_files =						\
 	test-unit/lib/test/unit/ui/console/outputlevel.rb	\
 	test-unit/lib/test/unit/ui/console/testrunner.rb	\
 	test-unit/lib/test/unit/ui/emacs/testrunner.rb		\
-	test-unit/lib/test/unit/ui/tap/testrunner.rb		\
 	test-unit/lib/test/unit/ui/testrunner.rb		\
 	test-unit/lib/test/unit/ui/testrunnermediator.rb	\
 	test-unit/lib/test/unit/ui/testrunnerutilities.rb	\
@@ -127,6 +127,7 @@ test_unit_files =						\
 	test-unit/test/run-test.rb				\
 	test-unit/test/test-assertions.rb			\
 	test-unit/test/test-attribute.rb			\
+	test-unit/test/test-code-snippet.rb			\
 	test-unit/test/test-color-scheme.rb			\
 	test-unit/test/test-color.rb				\
 	test-unit/test/test-data.rb				\
@@ -143,7 +144,6 @@ test_unit_files =						\
 	test-unit/test/test_testresult.rb			\
 	test-unit/test/test_testsuite.rb			\
 	test-unit/test/testunit-test-util.rb			\
-	test-unit/test/ui/test_tap.rb				\
 	test-unit/test/ui/test_testrunmediator.rb		\
 	test-unit/test/util/test-method-owner-finder.rb		\
 	test-unit/test/util/test-output.rb			\
