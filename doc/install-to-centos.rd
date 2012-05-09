@@ -9,31 +9,26 @@ This document describes how to install milter manager to CentOS 6. See
 install information. See ((<Install|install.rd>)) for general install
 information.
 
-We assume that CentOS version is 5.8. We also assume that we
-use sudo to run a command with root authority. If you don't
+We assume that CentOS version is 6.2. We also assume that we
+use sudo to run a command with root privilege. If you don't
 use sudo, use su instead.
 
 == Install packages
 
-To install the following packages, related packages are also
-installed:
-
-  % sudo yum install -y glib2 ruby
-
-We use Sendmail as MTA because it's installed by default.
-
-  % sudo yum install -y sendmail-cf
+We use Postfix as MTA because it's installed by default.
 
 We use spamass-milter, clamav-milter and milter-greylist as
-milters. We use milter packages registered in RPMforge.
+milters. We use milter packages registered in Repoforge.
 
-We register RPMforge like the following.
+We register Repoforge like the following.
 
 On 32bit environment:
-  % sudo rpm -Uhv http://packages.sw.be/rpmforge-release/rpmforge-release-0.5.2-2.el5.rf.i386.rpm
+
+  % sudo rpm -Uhv http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
 
 On 64bit environment:
-  % sudo rpm -Uhv http://packages.sw.be/rpmforge-release/rpmforge-release-0.5.2-2.el5.rf.x86_64.rpm
+
+  % sudo rpm -Uhv http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm
 
 Now, we can install milters:
 
@@ -70,7 +65,7 @@ milter-greylist should be applied only if
 ((<S25R|URL:http://gabacho.reto.jp/en/anti-spam/>))
 condition is matched to reduce needless delivery delay.
 But the configuration is automatically done by
-milter-manager. We need to do nothing for it.
+milter manager. We need to do nothing for it.
 
 === Configure spamass-milter
 
@@ -196,14 +191,19 @@ We start milter-greylist:
 
   % sudo /sbin/service milter-greylist start
 
-=== Configure milter-manager
+=== Configure milter manager
 
 We add 'milter-manager' user to 'clamav' group to access
 clamav-milter's socket:
 
   % sudo usermod -G clamav -a milter-manager
 
-milter-manager detects milters that installed in system.
+And we add 'milter-manager' user to 'smmsp' group to access
+milter-greylist's socket:
+
+  % sudo usermod -G smmsp -a milter-manager
+
+milter manager detects milters that installed in system.
 We can confirm spamass-milter, clamav-milter and
 milter-greylist are detected:
 
@@ -246,12 +246,12 @@ miter-manager.conf. If you report your environment to the
 milter manager project, the milter manager project may
 improve detect method.
 
-milter-manager's configuration is finished. We start to
-milter-manager:
+milter manager's configuration is finished. We start to
+milter manager:
 
-  % sudo /sbin/service milter-manager start
+  % sudo /sbin/service milter-manager restart
 
-milter-test-server is usuful to confirm milter-manager was
+milter-test-server is usuful to confirm milter manager was
 ran:
 
   % sudo -u milter-manager milter-test-server -s unix:/var/run/milter-manager/milter-manager.sock
@@ -261,15 +261,15 @@ Here is a sample success output:
   status: pass
   elapsed-time: 0.128 seconds
 
-If milter-manager fails to run, the following message will
+If milter manager fails to run, the following message will
 be shown:
 
   Failed to connect to unix:/var/run/milter-manager/milter-manager.sock
 
 In this case, we can use log to solve the
-problem. milter-manager is verbosily if --verbose option is
-specified. milter-manager outputs logs to standard output if
-milter-manager isn't daemon process.
+problem. milter manager is verbosily if --verbose option is
+specified. milter manager outputs logs to standard output if
+milter manager isn't daemon process.
 
 We can add the following configuration to
 /etc/sysconfig/milter-manager to output verbose log to
@@ -277,73 +277,102 @@ standard output:
 
   OPTION_ARGS="--verbose --no-daemon"
 
-We start milter-manager again:
+We start milter manager again:
 
   % sudo /sbin/service milter-manager restart
 
 Some logs are output if there is a problem. Running
-milter-manager can be exitted by Ctrl+c.
+milter manager can be exitted by Ctrl+c.
 
 OPTION_ARGS configuration in /etc/sysconfig/milter-manager
 should be commented out after the problem is solved to run
-milter-manager as daemon process. And we should restart
-milter-manager.
+milter manager as daemon process. And we should restart
+milter manager.
 
-=== Configure Sendmail
+=== Configure Postfix
 
-First, we enables Sendmail:
+First, we add 'postfix' user to 'milter-manager' group to access
+milter manager's socket:
 
-  % sudo /sbin/chkconfig --add sendmail
-  % sudo /sbin/service sendmail start
+  % sudo usermod -G milter-manager -a postfix
 
-We append the following content to /etc/mail/sendmail.mc to
-register milter-manager to Sendmail.
+We enables Postfix:
 
-  INPUT_MAIL_FILTER(`milter-manager', `S=local:/var/run/milter-manager/milter-manager.sock')
+  % sudo /sbin/chkconfig --add postfix
+  % sudo /sbin/service postfix start
 
-It's important that spamass-milter, clamav-milter,
-milter-greylist aren't needed to be registered because they
-are used via milter-manager.
+We configure Postfix for milters. We append following lines to
+/etc/postfix/main.cf:
+  milter_protocol = 6
+  milter_default_action = accept
+  milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 
-We update Sendmail configuration and reload it.
+For details for each lines.
 
-  % sudo make -C /etc/mail
-  % sudo /sbin/service sendmail reload
+: milter_protocol = 6
 
-Sendmail's milter configuration is completed.
+   Use milter protocol version 6.
 
-milter-manager logs to syslog. If milter-manager works well,
-some logs can be shown in /var/log/maillog. We need to sent
+: milter_default_action = accept
+
+   MTA receives mails when MTA cannot access milter. Although there
+   are problems between MTA and milter, MTA can deliver mails to clients.
+   But until you recover milter, perhaps MTA receives spam mails and
+   virus mails.
+
+   If you can recover the system quickly, you can specify 'tempfail'
+   instead of 'accept'. Default value is 'tempfail'.
+
+: milter_mail_macros = {auth_author} {auth_type} {auth_authen}
+
+   MTA gives information related SMTP Auth to milters. milter-greylist
+   etc. uses it.
+
+We register milter manager to Postfix.  It's important that
+spamass-milter, clamav-milter and milter-greylist aren't needed to be
+registered because they are used via milter manager.
+
+We append following lines to /etc/postfix/main.cf:
+  smtpd_milters = unix:/milter-manager/milter-manager.sock
+
+Note that Postfix chroot to /var/spool/postfix/.
+
+We reload Postfix's configuration.
+
+  % sudo /etc/init.d/postfix reload
+
+milter manager logs to syslog. If milter manager works well,
+some logs can be shown in /var/log/maillog. We need to send
 a test mail for confirming.
 
 == Conclusion
 
-There are many configurations to work milter and Sendmail
-together. They can be reduced by introducing milter-manager.
+There are many configurations to work milter and Postfix
+together. They can be reduced by introducing milter manager.
 
-Without milter-manager, we need to specify sockets of
+Without milter manager, we need to specify sockets of
 spamass-milter, clamav-milter and milter-greylist to
-sendmail.mc. With milter-manager, we doesn't need to
+/etc/postfix/main.cf. With milter manager, we doesn't need to
 specify sockets of them, just specify a socket of
-milter-manager. They are detected automatically. We doesn't
+milter manager. They are detected automatically. We doesn't
 need to take care some small mistakes like typo.
 
-milter-manager also detects which '/sbin/chkconfig -add' is
+milter manager also detects which '/sbin/chkconfig -add' is
 done or not. If we disable a milter, we use the following
 steps:
 
   % sudo /sbin/service milter-greylist stop
   % sudo /sbin/chkconfig --del milter-greylist
 
-We need to reload milter-manager after we disable a milter.
+We need to reload milter manager after we disable a milter.
 
   % sudo /sbin/service milter-manager reload
 
-milter-manager detects a milter is disabled and doesn't use
-it. We doesn't need to change Sendmail's sendmail.mc.
+milter manager detects a milter is disabled and doesn't use
+it. We don't need to change /etc/postfix/main.cf.
 
 We can reduce maintainance cost by introducing
-milter-manager if we use some milters on CentOS.
+milter manager if we use some milters on CentOS.
 
 milter manager also provides tools to help
 operation. Installing them is optional but we can reduce
