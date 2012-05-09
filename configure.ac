@@ -450,6 +450,15 @@ distclean:
 uninstall:
 EOM
   fi
+  if test "$ac_used_bundled_ruby_glib2_version" != "0.90.8"; then
+    $RUBY -run -e mkdir -- -p binding/ruby/glib-0.90.8
+    cat <<EOM > binding/ruby/glib-0.90.8/Makefile
+all:
+distdir:
+distclean:
+uninstall:
+EOM
+  fi
   if test "$ac_used_bundled_ruby_glib2_version" != "${bundled_latest_ruby_glib2_version}"; then
     $RUBY -run -e mkdir -- -p binding/ruby/glib-${bundled_latest_ruby_glib2_version}
     cat <<EOM > binding/ruby/glib-${bundled_latest_ruby_glib2_version}/Makefile
