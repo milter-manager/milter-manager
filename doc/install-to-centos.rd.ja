@@ -344,10 +344,10 @@ milter-managerはいくつかsyslogにログを出力します。mail.info
 
 == まとめ
 
-milter-managerを導入することにより、milterとSendmailを連携さ
+milter-managerを導入することにより、milterとPostfixを連携さ
 せる手間が削減されています。
 
-通常であれば、sendmail.mcにspamass-milter、clamav-milter、
+通常であれば、/etc/postfix/main.cfにspamass-milter、clamav-milter、
 miler-greylistのそれぞれのソケットを指定する必要があります。
 しかし、milter-managerを導入することにより、milter-managerの
 ソケットのみを指定するだけですむようになりました。各milterの
@@ -368,7 +368,7 @@ milter-managerはmilterが無効になったことを検出し、無効になっ
 
   % sudo /sbin/service milter-manager reload
 
-Sendmailのsendmail.mcを変更する必要はありません。
+Postfixの/etc/postfix/main.cfを変更する必要はありません。
 
 CentOS上でmilterを複数使っている場合は、milter-managerを導入
 して、管理コストを削減することができます。
