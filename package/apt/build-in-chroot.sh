@@ -88,7 +88,7 @@ build()
 	    ;;
     esac
 
-    source_dir=${script_base_dir}/..
+    source_dir=${script_base_dir}/../..
     build_user=${PACKAGE}-build
     build_user_dir=${base_dir}/home/$build_user
     build_dir=${build_user_dir}/build
@@ -103,7 +103,7 @@ build()
     run cp $source_dir/${PACKAGE}-${VERSION}.tar.gz \
 	${CHROOT_BASE}/$target/tmp/
     run rm -rf ${CHROOT_BASE}/$target/tmp/${PACKAGE}-debian
-    run cp -rp $source_dir/debian/ \
+    run cp -rp ${source_dir}/package/debian/ \
 	${CHROOT_BASE}/$target/tmp/${PACKAGE}-debian
     run find ${CHROOT_BASE}/$target/tmp/${PACKAGE}-debian/ \
 	-name ".svn" -print0 | xargs -0 -r rm -rf \{\} \;
