@@ -4,8 +4,12 @@ if WITH_BUNDLED_RUBY_GLIB2_0_16_0
 SUBDIRS += glib-0.16.0
 endif
 
-if WITH_BUNDLED_RUBY_GLIB2_LATEST
+if WITH_BUNDLED_RUBY_GLIB2_0_90_8
 SUBDIRS += glib-0.90.8
+endif
+
+if WITH_BUNDLED_RUBY_GLIB2_LATEST
+SUBDIRS += glib-1.1.3
 endif
 
 SUBDIRS +=					\
@@ -227,7 +231,7 @@ ruby_glib2_0_16_0_files =			\
 	glib-0.16.0/tests/test_unicode.rb
 
 # find glib-0.90.8 -not -path '*/.svn/*' -type f | sort
-ruby_glib2_latest_files =						\
+ruby_glib2_0_90_8_files =						\
 	glib-0.90.8/COPYING.LIB						\
 	glib-0.90.8/ChangeLog						\
 	glib-0.90.8/Makefile						\
@@ -437,3 +441,114 @@ ruby_glib2_latest_files =						\
 	glib-0.90.8/test/test_unicode.rb				\
 	glib-0.90.8/test/test_utils.rb					\
 	glib-0.90.8/test/test_win32.rb
+
+# find glib-1.1.3 -type f | sort
+ruby_glib2_latest_files =						\
+	glib-1.1.3/COPYING.LIB						\
+	glib-1.1.3/README						\
+	glib-1.1.3/Rakefile						\
+	glib-1.1.3/TODO							\
+	glib-1.1.3/ext/glib2/depend					\
+	glib-1.1.3/ext/glib2/extconf.rb					\
+	glib-1.1.3/ext/glib2/glib2.def					\
+	glib-1.1.3/ext/glib2/rbgcompat.h				\
+	glib-1.1.3/ext/glib2/rbglib.c					\
+	glib-1.1.3/ext/glib2/rbglib.h					\
+	glib-1.1.3/ext/glib2/rbglib2conversions.h			\
+	glib-1.1.3/ext/glib2/rbglib_bookmarkfile.c			\
+	glib-1.1.3/ext/glib2/rbglib_completion.c			\
+	glib-1.1.3/ext/glib2/rbglib_convert.c				\
+	glib-1.1.3/ext/glib2/rbglib_error.c				\
+	glib-1.1.3/ext/glib2/rbglib_fileutils.c				\
+	glib-1.1.3/ext/glib2/rbglib_i18n.c				\
+	glib-1.1.3/ext/glib2/rbglib_int64.c				\
+	glib-1.1.3/ext/glib2/rbglib_iochannel.c				\
+	glib-1.1.3/ext/glib2/rbglib_iochannel_win32_socket.c		\
+	glib-1.1.3/ext/glib2/rbglib_iochannelerror.c			\
+	glib-1.1.3/ext/glib2/rbglib_keyfile.c				\
+	glib-1.1.3/ext/glib2/rbglib_maincontext.c			\
+	glib-1.1.3/ext/glib2/rbglib_mainloop.c				\
+	glib-1.1.3/ext/glib2/rbglib_messages.c				\
+	glib-1.1.3/ext/glib2/rbglib_pollfd.c				\
+	glib-1.1.3/ext/glib2/rbglib_shell.c				\
+	glib-1.1.3/ext/glib2/rbglib_shellerror.c			\
+	glib-1.1.3/ext/glib2/rbglib_source.c				\
+	glib-1.1.3/ext/glib2/rbglib_spawn.c				\
+	glib-1.1.3/ext/glib2/rbglib_spawnerror.c			\
+	glib-1.1.3/ext/glib2/rbglib_threads.c				\
+	glib-1.1.3/ext/glib2/rbglib_timer.c				\
+	glib-1.1.3/ext/glib2/rbglib_ucs4.c				\
+	glib-1.1.3/ext/glib2/rbglib_unichar.c				\
+	glib-1.1.3/ext/glib2/rbglib_unicode.c				\
+	glib-1.1.3/ext/glib2/rbglib_utf16.c				\
+	glib-1.1.3/ext/glib2/rbglib_utf8.c				\
+	glib-1.1.3/ext/glib2/rbglib_utils.c				\
+	glib-1.1.3/ext/glib2/rbglib_win32.c				\
+	glib-1.1.3/ext/glib2/rbglibdeprecated.c				\
+	glib-1.1.3/ext/glib2/rbglibdeprecated.h				\
+	glib-1.1.3/ext/glib2/rbgobj_boxed.c				\
+	glib-1.1.3/ext/glib2/rbgobj_closure.c				\
+	glib-1.1.3/ext/glib2/rbgobj_convert.c				\
+	glib-1.1.3/ext/glib2/rbgobj_enumflags.c				\
+	glib-1.1.3/ext/glib2/rbgobj_enums.c				\
+	glib-1.1.3/ext/glib2/rbgobj_flags.c				\
+	glib-1.1.3/ext/glib2/rbgobj_fundamental.c			\
+	glib-1.1.3/ext/glib2/rbgobj_object.c				\
+	glib-1.1.3/ext/glib2/rbgobj_param.c				\
+	glib-1.1.3/ext/glib2/rbgobj_paramspecs.c			\
+	glib-1.1.3/ext/glib2/rbgobj_signal.c				\
+	glib-1.1.3/ext/glib2/rbgobj_strv.c				\
+	glib-1.1.3/ext/glib2/rbgobj_type.c				\
+	glib-1.1.3/ext/glib2/rbgobj_typeinstance.c			\
+	glib-1.1.3/ext/glib2/rbgobj_typeinterface.c			\
+	glib-1.1.3/ext/glib2/rbgobj_typemodule.c			\
+	glib-1.1.3/ext/glib2/rbgobj_typeplugin.c			\
+	glib-1.1.3/ext/glib2/rbgobj_value.c				\
+	glib-1.1.3/ext/glib2/rbgobj_valuearray.c			\
+	glib-1.1.3/ext/glib2/rbgobj_valuetypes.c			\
+	glib-1.1.3/ext/glib2/rbgobject.c				\
+	glib-1.1.3/ext/glib2/rbgobject.h				\
+	glib-1.1.3/ext/glib2/rbgprivate.h				\
+	glib-1.1.3/ext/glib2/rbgutil.c					\
+	glib-1.1.3/ext/glib2/rbgutil.h					\
+	glib-1.1.3/ext/glib2/rbgutil_callback.c				\
+	glib-1.1.3/ext/glib2/rbgutil_list.c				\
+	glib-1.1.3/ext/glib2/rbgutil_list.h				\
+	glib-1.1.3/ext/glib2/rbgutildeprecated.c			\
+	glib-1.1.3/ext/glib2/rbgutildeprecated.h			\
+	glib-1.1.3/extconf.rb						\
+	glib-1.1.3/lib/glib-mkenums.rb					\
+	glib-1.1.3/lib/glib2.rb						\
+	glib-1.1.3/lib/glib2/deprecatable.rb				\
+	glib-1.1.3/lib/gnome2-raketask.rb				\
+	glib-1.1.3/lib/gnome2-win32-binary-downloader.rb		\
+	glib-1.1.3/lib/mkmf-gnome2.rb					\
+	glib-1.1.3/sample/bookmarkfile.rb				\
+	glib-1.1.3/sample/completion.rb					\
+	glib-1.1.3/sample/idle.rb					\
+	glib-1.1.3/sample/iochannel.rb					\
+	glib-1.1.3/sample/keyfile.rb					\
+	glib-1.1.3/sample/shell.rb					\
+	glib-1.1.3/sample/spawn.rb					\
+	glib-1.1.3/sample/timeout.rb					\
+	glib-1.1.3/sample/timeout2.rb					\
+	glib-1.1.3/sample/timer.rb					\
+	glib-1.1.3/sample/type-register.rb				\
+	glib-1.1.3/sample/type-register2.rb				\
+	glib-1.1.3/sample/utils.rb					\
+	glib-1.1.3/test/glib-test-init.rb				\
+	glib-1.1.3/test/glib-test-utils.rb				\
+	glib-1.1.3/test/run-test.rb					\
+	glib-1.1.3/test/test_enum.rb					\
+	glib-1.1.3/test/test_file_utils.rb				\
+	glib-1.1.3/test/test_flags.rb					\
+	glib-1.1.3/test/test_glib2.rb					\
+	glib-1.1.3/test/test_iochannel.rb				\
+	glib-1.1.3/test/test_key_file.rb				\
+	glib-1.1.3/test/test_mkenums.rb					\
+	glib-1.1.3/test/test_signal.rb					\
+	glib-1.1.3/test/test_spawn.rb					\
+	glib-1.1.3/test/test_timeout.rb					\
+	glib-1.1.3/test/test_unicode.rb					\
+	glib-1.1.3/test/test_utils.rb					\
+	glib-1.1.3/test/test_win32.rb

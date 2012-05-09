@@ -259,7 +259,7 @@ else
                 [AC_MSG_WARN([$RUBY is not found. Disable milter manager.])])
 fi
 
-bundled_latest_ruby_glib2_version=0.90.8
+bundled_latest_ruby_glib2_version=1.1.3
 if test "$ruby_available" = "yes"; then
   rbconfig="$RUBY -rrbconfig -rshellwords -e "
 
@@ -502,6 +502,8 @@ AC_SUBST(sample_rubydir)
 AM_CONDITIONAL([WITH_RUBY], [test "$ruby_available" = "yes"])
 AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_0_16_0],
                [test "$ac_used_bundled_ruby_glib2_version" = "0.16.0"])
+AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_0_90_8],
+               [test "$ac_used_bundled_ruby_glib2_version" = "0.90.8"])
 AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_LATEST],
                [test "$ac_used_bundled_ruby_glib2_version" = "${bundled_latest_ruby_glib2_version}"])
 AM_CONDITIONAL([WITH_RUBY_MILTER], [test -n "$ruby_milterdir"])
