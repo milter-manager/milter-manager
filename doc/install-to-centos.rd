@@ -9,15 +9,15 @@ This document describes how to install milter manager to CentOS 6. See
 install information. See ((<Install|install.rd>)) for general install
 information.
 
-CentOS version is 6.2. Use sudo to run a command with root
-privilege. If you don't use sudo, use su instead.
+In this document, CentOS 6.2 is used. Sudo is used to run a command
+with root privilege. If you don't use sudo, use su instead.
 
 == Install packages
 
-Use Postfix as MTA because it's installed by default.
+Postfix is used as MTA because it's installed by default.
 
-You use spamass-milter, clamav-milter and milter-greylist as
-milters. You use milter packages registered in Repoforge.
+Spamass-milter, clamav-milter and milter-greylist are used as
+milters. Milter packages registered in Repoforge are used.
 
 Register Repoforge like the following.
 
@@ -58,7 +58,7 @@ repository for development series explicitly:
 
 Here is a basic configuration policy.
 
-You use IPv4 socket and accepts connections only from localhost.
+IPv4 socket is used and connections only from localhost are accepted.
 
 milter-greylist should be applied only if
 ((<S25R|URL:http://gabacho.reto.jp/en/anti-spam/>))
@@ -111,7 +111,7 @@ After:
   SOCKET="inet:11120@[127.0.0.1]"
   EXTRA_FLAGS="-m -r 15"
 
-start spamass-milter on startup:
+Start spamass-milter on startup:
 
   % sudo /sbin/chkconfig spamass-milter on
 
