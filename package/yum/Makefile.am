@@ -45,7 +45,7 @@ build-in-chroot:
 	  $(PACKAGE)				\
 	  $(VERSION)				\
 	  $(top_builddir)/$(PACKAGE)		\
-	  $(top_builddir)/rpm			\
+	  $(top_builddir)/package/rpm			\
 	  $(CHROOT_BASE)			\
 	  '$(ARCHITECTURES)'			\
 	  '$(DISTRIBUTIONS)'			\
