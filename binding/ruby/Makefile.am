@@ -518,6 +518,7 @@ ruby_glib2_latest_files =						\
 	glib-1.1.3/lib/gnome2-raketask.rb				\
 	glib-1.1.3/lib/gnome2-win32-binary-downloader.rb		\
 	glib-1.1.3/lib/mkmf-gnome2.rb					\
+	glib-1.1.3/lib/pkg-config.rb					\
 	glib-1.1.3/sample/bookmarkfile.rb				\
 	glib-1.1.3/sample/completion.rb					\
 	glib-1.1.3/sample/idle.rb					\
