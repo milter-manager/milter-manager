@@ -2,7 +2,7 @@ SERVER_PATH = $(SF_FRS)
 DISTRIBUTIONS = debian ubuntu
 CHROOT_BASE = /var/lib/chroot
 ARCHITECTURES = i386 amd64
-CODE_NAMES = squeeze wheezy unstable lucid natty oneiric
+CODE_NAMES = squeeze wheezy unstable lucid natty oneiric precise
 
 release: build update sign upload
 
