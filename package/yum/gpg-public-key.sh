@@ -3,8 +3,7 @@
 script_base_dir=`dirname $0`
 key_id=`$script_base_dir/gpg-uid.sh`
 
-gpg --fingerprint $key_id > /dev/null
-if test $? -nq 0; then
+if ! gpg --fingerprint $key_id > /dev/null; then
     gpg --keyserver pgp.mit.edu --recv-keys $key_id
 fi
 
