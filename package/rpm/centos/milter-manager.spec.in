@@ -1,4 +1,4 @@
-%define is_centos_6 %(test -L /etc/redhat-release && echo 1 || echo 0)
+%define ruby_version %(ruby -v | cut -d' ' -f2 | tr -d .)
 
 Summary: A milter to use milters effectively
 Name: milter-manager
@@ -357,7 +357,7 @@ fi
 %{_libdir}/milter-manager/binding/lib/milter/core.rb
 %{_libdir}/milter-manager/binding/lib/milter/core/
 %{_libdir}/milter-manager/binding/lib/glib*.rb
-%if %is_centos_6
+%if %ruby_version > 185
 %{_libdir}/milter-manager/binding/lib/glib2/*.rb
 %endif
 %{_libdir}/milter-manager/binding/lib/*gnome2*.rb
