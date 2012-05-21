@@ -7,7 +7,7 @@ rvm:
 install:
   - echo "deb http://downloads.sourceforge.net/project/cutter/ubuntu/ $(lsb_release --short --codename) main" | sudo tee /etc/apt/sources.list.d/cutter.list
   - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1C837F31
-  - sudo apt-get install -y autotools-dev intltool libglib2.0-dev ruby1.8-dev ruby1.9.1-dev cutter-testing-framework
+  - sudo apt-get install -y autotools-dev intltool libglib2.0-dev ruby1.8-dev ruby1.9.1-dev cutter-testing-framework subversion
 before_script:
   - ./autogen.sh
   - ./configure
