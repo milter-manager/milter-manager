@@ -12,4 +12,4 @@ before_script:
   - ./autogen.sh
   - ./configure
 script:
-  - test/run-test.sh
+  - test/run-test.sh -v v
