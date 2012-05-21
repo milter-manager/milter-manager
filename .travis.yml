@@ -8,7 +8,7 @@ install:
   - echo "deb http://downloads.sourceforge.net/project/cutter/ubuntu/ $(lsb_release --short --codename) main" | sudo tee /etc/apt/sources.list.d/cutter.list
   - gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1C837F31
   - gpg --export 1C837F31 | sudo apt-key add -
-  - sudo apt-get install -y autotools-dev intltool libglib2.0-dev ruby1.8-dev ruby1.9.1-dev
+  - sudo apt-get install -y autotools-dev intltool libglib2.0-dev ruby1.8-dev ruby1.9.1-dev cutter-testing-framework
 before_script:
   - ./autogen.sh
   - ./configure
