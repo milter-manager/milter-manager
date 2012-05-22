@@ -2,6 +2,54 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-1-8-3] 1.8.3: 2012-05-22
+
+1.8.2 のバグフィックスリリースです。
+
+=== Package
+
+  * [ubuntu] Ubuntu Precise Pangolin サポートを追加。
+  * [solaris] pkg-get のかわりに pkgutil を使用するようにした。
+    [GitHub #6]
+    [h0lzi さんが報告]
+
+=== milter manager
+
+==== 改良
+
+  * binding ruby: 同梱している ruby-glib2 を 1.1.3 に更新。
+
+==== 修正
+
+  * [manager] CentOS で manager.event_loop_backend = "libev" をサポート。
+    [塩野さんが報告]
+  * [manager][children] g_signal_connect() が gulong を返すので
+    guint ではなく gulong を使用するようにした。
+
+=== milter-core
+
+==== 修正
+
+  * [libev] 次のIDが使用済みかどうかチェックするようにした。
+
+=== Document
+
+==== 修正
+
+  * doc install debian ubuntu: postfix グループに関する設定を追加。
+    milter-manager ユーザは他の milter のソケットにアクセスするために postfix
+    グループに所属している必要がある。
+    [milter-manager-users-ja:00163]
+    [坂下さんが提案]
+  * doc debian: 最新の squeeze 環境に追従。
+    [坂下さんが提案]
+
+=== 感謝
+
+  * 坂下さん
+  * 塩野さん
+  * h0lzi
+
 == [release-1-8-2] 1.8.2: 2011-11-29
 
 1.8.1 のバグフィックスリリースです。
