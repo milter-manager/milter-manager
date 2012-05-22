@@ -228,7 +228,7 @@ test_finished_signal (void)
     {
         GError *error = NULL;
         g_io_channel_shutdown(channel, TRUE, &error);
-        gcut_assert_error(&error);
+        gcut_assert_error(error);
     }
     pump_all_events();
     cut_assert_true(finished);
