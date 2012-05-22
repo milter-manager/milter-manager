@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2012  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -591,10 +591,11 @@ test_listen_remove_failure (void)
 void
 test_listen_nonexistent_path (void)
 {
-    const gchar spec[] = "unix:/nonexistent/milter.sock";
+    const gchar *spec;
     struct sockaddr *address = NULL;
     socklen_t address_size = 0;
 
+    spec = cut_take_printf("unix:%s/nonexistent/milter.sock", tmp_dir);
     expected_error = g_error_new(MILTER_CONNECTION_ERROR,
                                  MILTER_CONNECTION_ERROR_BIND_FAILURE,
                                  "failed to bind(): %s: %s",
