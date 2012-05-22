@@ -71,6 +71,7 @@ DEB_INSTALL_DIRS_libmilter-core-ruby1.8 =		\
 	/usr/lib/pkgconfig				\
 	/usr/lib/ruby/1.8/milter			\
 	/usr/lib/milter-manager/binding/ext		\
+	/usr/lib/milter-manager/binding/lib/glib2	\
 	/usr/lib/milter-manager/binding/lib/milter/core
 
 DEB_INSTALL_DIRS_libmilter-client-ruby1.8 =			\
@@ -237,6 +238,8 @@ install/libmilter-core-ruby1.8::
 		debian/libmilter-core-ruby1.8/usr/lib/milter-manager/binding/ext
 	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/g*.rb \
 		debian/libmilter-core-ruby1.8/usr/lib/milter-manager/binding/lib/
+	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/glib2/*.rb \
+		debian/libmilter-core-ruby1.8/usr/lib/milter-manager/binding/lib/glib2/
 	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/mkmf-gnome2.rb \
 		debian/libmilter-core-ruby1.8/usr/lib/milter-manager/binding/lib/
 	cp -ar debian/tmp/usr/lib/milter-manager/binding/lib/milter/core.rb \
