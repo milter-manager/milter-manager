@@ -278,7 +278,7 @@ milter_headers_add_header (MilterHeaders *headers,
 
     for (node = priv->header_list; node; node = g_list_next(node)) {
         MilterHeader *header = node->data;
-        if (g_strcasecmp(header->name, name) == 0) {
+        if (g_ascii_strcasecmp(header->name, name) == 0) {
             same_name_header = node;
             break;
         }
