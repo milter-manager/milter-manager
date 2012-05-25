@@ -65,7 +65,7 @@ update-po:
 	cd po && $(MAKE) $(AM_MAKEFLAGS) update-po
 
 update-files:
-	cd test/fixture && $(MAKE) update-files
+	cd test/fixture && $(MAKE) $(AM_MAKEFLAGS) update-files
 
 update-latest-release: misc
 	@if test -z "$(OLD_RELEASE)"; then	\
