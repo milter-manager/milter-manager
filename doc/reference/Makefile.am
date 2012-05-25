@@ -219,8 +219,8 @@ update-po: Makefile sgml.stamp
 	    $(srcdir)/xml/*.xml;		\
 	done
 
-EXPAND_RD2_SNIPPET = $(top_srcdir)/misc/expand-rd2-snippet.rb
-RD2LIB_DIR = $(top_srcdir)/misc
+EXPAND_RD2_SNIPPET = $(CUTTER_SOURCE_PATH)/misc/expand-rd2-snippet.rb
+RD2LIB_DIR = $(CUTTER_SOURCE_PATH)/misc
 RD2REFENTRY_LIB_FILE = rd2refentry-lib.rb
 RD2REFENTRY_LIB = $(RD2LIB_DIR)/$(RD2REFENTRY_LIB_FILE)
 RD2DOCBOOK = $(RUBY) -I $(RD2LIB_DIR) $(RD2) -r $(RD2REFENTRY_LIB_FILE) --name=MILTER-MANAGER
@@ -488,10 +488,10 @@ upload: docs
 	  cp -rp $$lang/html/ tmp/reference/$$lang/;			\
 	done
 	chmod -R g+w tmp/reference
-	ruby $(top_srcdir)/misc/prepare-gtk-doc-html-for-publishing.rb	\
+	ruby $(CUTTER_SOURCE_PATH)/misc/prepare-gtk-doc-html-for-publishing.rb	\
 	  --template-directory=$(srcdir) --title "$(PACKAGE_TITLE)"	\
 	  --suffix=$(RELEASE_TYPE) tmp/reference/*.html
-	ruby $(top_srcdir)/misc/prepare-gtk-doc-html-for-publishing.rb	\
+	ruby $(CUTTER_SOURCE_PATH)/misc/prepare-gtk-doc-html-for-publishing.rb	\
 	  --template-directory=$(srcdir) --title "$(PACKAGE_TITLE)"	\
 	  --language=ja --suffix=$(RELEASE_TYPE) tmp/reference/ja/*.html
 	rsync -avz --delete tmp/reference/		\

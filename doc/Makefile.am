@@ -146,10 +146,10 @@ SUFFIXES = .rd .man .rd .jman .svg .png
 RD2RUBY = @RD2RUBY@
 
 .rd.man:
-	$(RD2RUBY) -I $(top_srcdir)/misc $(RD2) -r rd2man-lib $< > $@
+	$(RD2RUBY) -I $(CUTTER_SOURCE_PATH)/misc $(RD2) -r rd2man-lib $< > $@
 
 .rd.jman: # dirty...
-	$(RD2RUBY) -I $(top_srcdir)/misc $(RD2) -r rd2man-lib $<.ja > $@
+	$(RD2RUBY) -I $(CUTTER_SOURCE_PATH)/misc $(RD2) -r rd2man-lib $<.ja > $@
 
 .svg.png:
 	inkscape --export-png $@ $<
