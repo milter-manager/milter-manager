@@ -64,6 +64,9 @@ update-po:
 	  sort > po/POTFILES.in
 	cd po && $(MAKE) $(AM_MAKEFLAGS) update-po
 
+update-files:
+	cd test/fixture && $(MAKE) update-files
+
 update-latest-release: misc
 	@if test -z "$(OLD_RELEASE)"; then	\
 	  echo "\$$(OLD_RELEASE) is missing";	\
