@@ -20,10 +20,15 @@ utils_files =					\
 	milter-event-loop-test-utils.rb		\
 	milter-multi-process-test-utils.rb
 
-EXTRA_DIST =		\
-	$(TESTS)	\
-	run-test.rb	\
-	$(utils_files)
+fixture_files =					\
+	fixtures/raw-shift_jis-subject.eml	\
+	fixtures/shift_jis-8bit.eml
+
+EXTRA_DIST =					\
+	$(TESTS)				\
+	run-test.rb				\
+	$(utils_files)				\
+	$(fixture_files)
 
 echo-abs-top-builddir:
 	@echo $(abs_top_builddir)
