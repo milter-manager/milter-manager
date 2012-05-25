@@ -149,7 +149,7 @@ milter_manager_leader_init (MilterManagerLeader *leader)
     priv->configuration = NULL;
     priv->client_context = NULL;
     priv->children = NULL;
-    priv->state = MILTER_SERVER_CONTEXT_STATE_START;
+    priv->state = MILTER_MANAGER_LEADER_STATE_START;
     priv->sent_end_of_message = FALSE;
     priv->launcher_read_channel = NULL;
     priv->launcher_write_channel = NULL;
