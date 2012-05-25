@@ -777,6 +777,14 @@ AC_ARG_WITH([cutter-source-path],
                              [Specify Cutter source path for
                              milter-manager's release manager.]),
               [CUTTER_SOURCE_PATH="$withval"])
+case "$CUTTER_SOURCE_PATH" in
+""|/*)
+  : # do nothing
+  ;;
+*)
+  CUTTER_SOURCE_PATH="\$(top_builddir)/${CUTTER_SOURCE_PATH}"
+  ;;
+esac
 AC_SUBST(CUTTER_SOURCE_PATH)
 
 dnl **************************************************************
