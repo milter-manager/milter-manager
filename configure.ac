@@ -282,10 +282,14 @@ if test "$ruby_available" = "yes"; then
     fi
     RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_archdir "
   else
-    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitehdrdir/$rbconfig_arch "
-    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitehdrdir "
-    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorhdrdir/$rbconfig_arch "
-    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorhdrdir "
+    if test -d "$rbconfig_sitehdrdir"; then
+      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitehdrdir/$rbconfig_arch "
+      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitehdrdir "
+    fi
+    if test -d "$rbconfig_vendorhdrdir"; then
+      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorhdrdir/$rbconfig_arch "
+      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorhdrdir "
+    fi
     RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_rubyhdrdir/$rbconfig_arch "
     RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_rubyhdrdir "
   fi
