@@ -409,13 +409,13 @@ if test "$ruby_available" = "yes"; then
       fi
       RUBY_GLIB2_CFLAGS="-I \$(top_srcdir)/$ac_ruby_glib2_source_dir"
       sed -e "s,^CPPFLAGS = ,CPPFLAGS = ${CPPFLAGS} ," \
-      	  $ac_ruby_glib2_source_dir/Makefile > \
-      	  $ac_ruby_glib2_source_dir/Makefile.fix_cppflags
+          $ac_ruby_glib2_source_dir/Makefile > \
+          $ac_ruby_glib2_source_dir/Makefile.fix_cppflags
       mv $ac_ruby_glib2_source_dir/Makefile.fix_cppflags \
-      	 $ac_ruby_glib2_source_dir/Makefile
+         $ac_ruby_glib2_source_dir/Makefile
       sed -e 's/ install/ RUBYARCHDIR=$(binding_extdir) RUBYLIBDIR=$(binding_libdir) libdir=$(libdir) install/' \
-      	  $ac_ruby_glib2_dir/Makefile > \
-      	  $ac_ruby_glib2_dir/Makefile.fix_install
+          $ac_ruby_glib2_dir/Makefile > \
+          $ac_ruby_glib2_dir/Makefile.fix_install
       mv $ac_ruby_glib2_dir/Makefile.fix_install \
          $ac_ruby_glib2_dir/Makefile
       cat <<EOM >> $ac_ruby_glib2_dir/Makefile
