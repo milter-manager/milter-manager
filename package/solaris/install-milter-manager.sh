@@ -25,7 +25,9 @@ install_milter_manager()
         ACLOCAL_OPTIONS="-I ${PREFIX}/share/aclocal" \
 	    run bash ./autogen.sh --no-update
         run ./configure CFLAGS="$CFLAGS -ggdb3 -O2" \
-          --prefix $PREFIX --enable-ruby-milter "$@"
+            --prefix $PREFIX --enable-ruby-milter \
+            --with-bundled-ruby-glib2=0.90.8 \
+            "$@"
     ) > "${log}"
     echo "$(time_stamp): done."
 
