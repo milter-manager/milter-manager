@@ -86,7 +86,6 @@ create_pkginfo()
     local prototype_dir="${PROTOTYPES}/${package_name}"
     local pkginfo_template="${prototype_dir}/pkginfo.in"
     local pkginfo="${prototype_dir}/pkginfo"
-    local build_dir="${base_dir}/../"
     local version=$(PKG_CONFIG_PATH="$build_dir" pkg-config --modversion milter-manager)
     shift
     shift
