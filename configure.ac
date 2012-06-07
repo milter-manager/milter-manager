@@ -260,7 +260,6 @@ else
 fi
 
 bundled_latest_ruby_glib2_version=1.1.3
-bundled_oldest_ruby_glib2_version=0.16.0
 if test "$ruby_available" = "yes"; then
   rbconfig="$RUBY -rrbconfig -rshellwords -e "
 
@@ -412,7 +411,7 @@ if test "$ruby_available" = "yes"; then
        (cd $ac_ruby_glib2_dir && \
         $RUBY ../../../$srcdir/$ac_ruby_glib2_dir/extconf.rb); then
       ruby_glib2_available=yes
-      if test "$ac_used_bundled_ruby_glib2_version" = "${bundled_oldest_ruby_glib2_version}"; then
+      if test "$ac_used_bundled_ruby_glib2_version" = "0.16.0"; then
         ac_ruby_glib2_source_dir="$ac_ruby_glib2_dir/src"
       else
         ac_ruby_glib2_source_dir="$ac_ruby_glib2_dir/ext/glib2"
