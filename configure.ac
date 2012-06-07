@@ -260,6 +260,7 @@ else
 fi
 
 bundled_latest_ruby_glib2_version=1.1.3
+bundled_oldest_ruby_glib2_version=0.16.0
 if test "$ruby_available" = "yes"; then
   rbconfig="$RUBY -rrbconfig -rshellwords -e "
 
@@ -400,16 +401,21 @@ if test "$ruby_available" = "yes"; then
     else
       ac_used_bundled_ruby_glib2_version=0.16.0
     fi
+    if test "x$use_bundled_ruby_glib2" != "xauto" -a \
+            "x$use_bundled_ruby_glib2" != "xyes" -a \
+            "x$use_bundled_ruby_glib2" != "xno"; then
+      ac_used_bundled_ruby_glib2_version=$use_bundled_ruby_glib2
+    fi
     AC_MSG_NOTICE([checking bundled Ruby/GLib2 $ac_used_bundled_ruby_glib2_version])
     ac_ruby_glib2_dir="binding/ruby/glib-$ac_used_bundled_ruby_glib2_version"
     if $RUBY -run -e mkdir -- -p $ac_ruby_glib2_dir && \
        (cd $ac_ruby_glib2_dir && \
         $RUBY ../../../$srcdir/$ac_ruby_glib2_dir/extconf.rb); then
       ruby_glib2_available=yes
-      if test "$ac_used_bundled_ruby_glib2_version" = "${bundled_latest_ruby_glib2_version}"; then
-	ac_ruby_glib2_source_dir="$ac_ruby_glib2_dir/ext/glib2"
-      else
+      if test "$ac_used_bundled_ruby_glib2_version" = "${bundled_oldest_ruby_glib2_version}"; then
         ac_ruby_glib2_source_dir="$ac_ruby_glib2_dir/src"
+      else
+        ac_ruby_glib2_source_dir="$ac_ruby_glib2_dir/ext/glib2"
       fi
       RUBY_GLIB2_CFLAGS="-I \$(top_srcdir)/$ac_ruby_glib2_source_dir"
       sed -e "s,^CPPFLAGS = ,CPPFLAGS = ${CPPFLAGS} ," \
