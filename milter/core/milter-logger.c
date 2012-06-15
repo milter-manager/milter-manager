@@ -677,6 +677,8 @@ milter_glib_log_handler (const gchar         *log_domain,
     if (!logger)
         logger = milter_logger();
 
+    check_milter_debug(log_level);
+
 #define LOG(level)                                              \
     milter_logger_log(logger, "glib-log",                       \
                       MILTER_LOG_LEVEL_ ## level,               \
