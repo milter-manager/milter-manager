@@ -369,9 +369,17 @@ check_milter_debug (MilterLogLevelFlags level)
         const gchar *milter_debug;
 
         milter_debug = g_getenv("MILTER_DEBUG");
-        if (milter_debug &&
-            (strcmp(milter_debug, "fatal-warnings") == 0 ||
-             strcmp(milter_debug, "fatal_warnings") == 0)) {
+        if (!milter_debug)
+            return;
+
+        if (strcmp(milter_debug, "fatal-warnings") == 0 ||
+            strcmp(milter_debug, "fatal_warnings") == 0) {
+            abort();
+        }
+
+        if (level == MILTER_LOG_LEVEL_CRITICAL &&
+            (strcmp(milter_debug, "fatal-criticals") == 0 ||
+             strcmp(milter_debug, "fatal_criticals") == 0)) {
             abort();
         }
     }
