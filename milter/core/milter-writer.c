@@ -677,11 +677,8 @@ void
 milter_writer_shutdown (MilterWriter *writer)
 {
     MilterWriterPrivate *priv;
-    GError *channel_error = NULL;
 
     priv = MILTER_WRITER_GET_PRIVATE(writer);
-
-    milter_trace("[%u] [writer][shutdown]", priv->tag);
 
     if (priv->error_watch_id == 0) {
         milter_debug("[%u] [writer][shutdown][not-started]", priv->tag);
@@ -690,27 +687,11 @@ milter_writer_shutdown (MilterWriter *writer)
 
     clear_watch_id(priv);
 
-    flush_buffer_on_shutdown(writer);
-
-    if (!g_io_channel_get_close_on_unref(priv->io_channel)) {
-        milter_debug("[%u] [writer][shutdown][not-close-on-unref]", priv->tag);
-        return;
-    }
-
-    g_io_channel_shutdown(priv->io_channel, TRUE, &channel_error);
-    if (channel_error) {
-        GError *error = NULL;
-
-        milter_utils_set_error_with_sub_error(
-            &error,
-            MILTER_WRITER_ERROR,
-            MILTER_WRITER_ERROR_IO_ERROR,
-            channel_error,
-            "failed to shutdown");
-        milter_error("[%u] [writer][error][shutdown] %s",
-                     priv->tag, error->message);
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(writer), error);
-        g_error_free(error);
+    if (priv->io_channel) {
+        flush_buffer_on_shutdown(writer);
+        milter_trace("[%u] [writer][shutdown][unref]", priv->tag);
+        g_io_channel_unref(priv->io_channel);
+        priv->io_channel = NULL;
     }
 }
 

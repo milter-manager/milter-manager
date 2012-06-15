@@ -444,7 +444,6 @@ void
 milter_reader_shutdown (MilterReader *reader)
 {
     MilterReaderPrivate *priv;
-    GError *channel_error = NULL;
 
     priv = MILTER_READER_GET_PRIVATE(reader);
 
@@ -459,20 +458,10 @@ milter_reader_shutdown (MilterReader *reader)
         return;
 
     milter_trace("[%u] [reader][shutdown]", priv->tag);
-    g_io_channel_shutdown(priv->io_channel, TRUE, &channel_error);
-    if (channel_error) {
-        GError *error = NULL;
-
-        milter_utils_set_error_with_sub_error(
-            &error,
-            MILTER_READER_ERROR,
-            MILTER_READER_ERROR_IO_ERROR,
-            channel_error,
-            "failed to shutdown");
-        milter_error("[%u] [reader][error][shutdown] %s",
-                     priv->tag, error->message);
-        milter_error_emittable_emit(MILTER_ERROR_EMITTABLE(reader), error);
-        g_error_free(error);
+    if (priv->io_channel) {
+        milter_trace("[%u] [reader][shutdown][unref]", priv->tag);
+        g_io_channel_unref(priv->io_channel);
+        priv->io_channel = NULL;
     }
     clear_watch_id(priv);
     finish(reader);
