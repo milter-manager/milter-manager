@@ -16,7 +16,7 @@ run_pfexec()
 
 time_stamp()
 {
-    date +%Y-%m-%dT%H:%m:%S
+    date +%Y-%m-%dT%H:%M:%S
 }
 
 check_pkgs()
