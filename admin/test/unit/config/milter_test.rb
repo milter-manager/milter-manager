@@ -61,6 +61,8 @@ class Config::MilterTest < ActiveSupport::TestCase
     change_milter_config_for_new =
       anti_spam.attributes.merge(change_milter_config_for_new)
     changed_anti_spam = Config::Milter.new(change_milter_config_for_new)
+    changed_anti_spam.connection_spec =
+      change_milter_config_for_new["connection_spec"]
     new_milter_config_for_new =
       new_milter_config.merge(:applicable_conditions =>
                               [applicable_conditions(:s25r),
