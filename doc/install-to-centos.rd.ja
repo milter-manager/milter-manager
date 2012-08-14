@@ -119,8 +119,9 @@ spamass-milterを起動します。
 
 === clamav-milterの設定
 
-clamdを起動します。
+ClamAVで使用するウィルス定義を更新してからclamdを起動します。
 
+  % sudo freshclam
   % sudo /sbin/service clamd start
 
 clamav-milterのソケットを変更します。

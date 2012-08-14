@@ -121,8 +121,9 @@ Start spamass-milter:
 
 === Configure clamav-milter
 
-Start clamd.
+Update ClamAV virus database and start clamd.
 
+  % sudo freshclam
   % sudo /sbin/service clamd start
 
 Edit /etc/clamav-milter.conf to change clamav-milter's
