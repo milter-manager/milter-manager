@@ -333,9 +333,7 @@ spamass-milter, clamav-milter and milter-greylist aren't needed to be
 registered because they are used via milter manager.
 
 Append following lines to /etc/postfix/main.cf:
-  smtpd_milters = unix:/milter-manager/milter-manager.sock
-
-Note that Postfix chroot to /var/spool/postfix/.
+  smtpd_milters = unix:/var/run/milter-manager/milter-manager.sock
 
 Reload Postfix's configuration.
 

@@ -327,10 +327,9 @@ clamav-milter、milter-greylistはmilter-manager経由で利用する
 ので、Postfixにはmilter-managerだけを登録すればよいことに注
 意してください。
 
-/etc/postfix/main.cfに以下を追加します。Postfixは
-/var/spool/postfix/にchrootすることに注意してください。
+/etc/postfix/main.cfに以下を追加します。
 
-  smtpd_milters = unix:/milter-manager/milter-manager.sock
+  smtpd_milters = unix:/var/run/milter-manager/milter-manager.sock
 
 Postfixの設定を再読み込みします。
 
