@@ -65,6 +65,13 @@ milterの基本的な設定方針は以下の通りです。
 ときのみ適用します。しかし、これはmilter-managerが自動で行う
 ため、特に設定する必要はありません。
 
+SELinux を有効にしたまま milter-manager を使用するためには多くの設定を
+変更する必要があるため、ここでは SELinux のポリシーモジュールのうち
+postfix と milter を無効にして設定を進めることにします。
+
+  % sudo semodule -d postfix
+  % sudo semodule -d milter
+
 === spamass-milterの設定
 
 まず、spamdの設定をします。

@@ -66,6 +66,12 @@ condition is matched to reduce needless delivery delay.
 But the configuration is automatically done by
 milter manager. You need to do nothing for it.
 
+It's difficult that milter manager runs on SELinux. Disable SELinux
+policy module for Postfix and Milter.
+
+  % sudo semodule -d postfix
+  % sudo semodule -d milter
+
 === Configure spamass-milter
 
 At first, you configure spamd.
