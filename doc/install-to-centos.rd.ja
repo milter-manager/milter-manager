@@ -91,7 +91,7 @@ milterの基本的な設定方針は以下の通りです。
 
 spamdを起動します。
 
-  % sudo /sbin/service spamassassin start
+  % sudo run_init /sbin/service spamassassin start
 
 spamass-milterは以下のように設定します。
 
@@ -115,14 +115,14 @@ spamass-milterは以下のように設定します。
 
 spamass-milterを起動します。
 
-  % sudo /sbin/service spamass-milter start
+  % sudo run_init /sbin/service spamass-milter start
 
 === clamav-milterの設定
 
 ClamAVで使用するウィルス定義を更新してからclamdを起動します。
 
   % sudo freshclam
-  % sudo /sbin/service clamd start
+  % sudo run_init /sbin/service clamd start
 
 clamav-milterのソケットを変更します。
 
@@ -136,7 +136,7 @@ clamav-milterのソケットを変更します。
 
 clamav-milterを起動します。
 
-  % sudo /sbin/service clamav-milter start
+  % sudo run_init /sbin/service clamav-milter start
 
 === milter-greylistの設定
 
@@ -188,7 +188,7 @@ clamav-milterを起動します。
 
 milter-greylistを起動します。
 
-  % sudo /sbin/service milter-greylist start
+  % sudo run_init /sbin/service milter-greylist start
 
 === milter-managerの設定
 
@@ -244,7 +244,7 @@ milter-manager.confを編集しなくとも使用できるように検出方法�
 
 milter-managerの設定が完了したので、起動します。
 
-  % sudo /sbin/service milter-manager restart
+  % sudo run_init /sbin/service milter-manager restart
 
 milter-test-serverで起動の確認をすることができます。
 
@@ -270,7 +270,7 @@ milter-test-serverで起動の確認をすることができます。
 
 milter-managerをもう一度起動します。
 
-  % sudo /sbin/service milter-manager restart
+  % sudo run_init /sbin/service milter-manager restart
 
 問題があればログが表示されます。起動しているmilter-managerは
 Ctrl+cで終了することができます。
@@ -289,7 +289,7 @@ postfixユーザーをmilter-managerグループに加えます。
 次に、Postfixを有効にします。
 
   % sudo /sbin/chkconfig --add postfix
-  % sudo /sbin/service postfix start
+  % sudo run_init /sbin/service postfix start
 
 次に、milterの設定をします。
 

@@ -93,7 +93,7 @@ Start spamd on startup:
 
 Start spamd:
 
-  % sudo /sbin/service spamassassin start
+  % sudo run_init /sbin/service spamassassin start
 
 Here are spamass-milter's configuration items:
 
@@ -117,14 +117,14 @@ Start spamass-milter on startup:
 
 Start spamass-milter:
 
-  % sudo /sbin/service spamass-milter start
+  % sudo run_init /sbin/service spamass-milter start
 
 === Configure clamav-milter
 
 Update ClamAV virus database and start clamd.
 
   % sudo freshclam
-  % sudo /sbin/service clamd start
+  % sudo run_init /sbin/service clamd start
 
 Edit /etc/clamav-milter.conf to change clamav-milter's
 socket address.
@@ -137,7 +137,7 @@ After:
 
 Start clamav-milter:
 
-  % sudo /sbin/service clamav-milter start
+  % sudo run_init /sbin/service clamav-milter start
 
 === Configure milter-greylist
 
@@ -189,7 +189,7 @@ Start milter-greylist on startup:
 
 Start milter-greylist:
 
-  % sudo /sbin/service milter-greylist start
+  % sudo run_init /sbin/service milter-greylist start
 
 === Configure milter manager
 
@@ -279,7 +279,7 @@ standard output:
 
 Restart milter manager:
 
-  % sudo /sbin/service milter-manager restart
+  % sudo run_init /sbin/service milter-manager restart
 
 Some logs are output if there is a problem. Running
 milter manager can be exitted by Ctrl+c.
@@ -299,7 +299,7 @@ milter manager's socket:
 Enables Postfix:
 
   % sudo /sbin/chkconfig --add postfix
-  % sudo /sbin/service postfix start
+  % sudo run_init /sbin/service postfix start
 
 Configure Postfix for milters. Append following lines to
 /etc/postfix/main.cf:
