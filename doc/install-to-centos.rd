@@ -178,11 +178,6 @@ After:
   autowhite 1w
   racl greylist default
 
-Create /etc/sysconfig/milter-greylist with the following
-content:
-
-  OPTIONS="$OPTIONS -p inet:11122@[127.0.0.1]"
-
 Start milter-greylist on startup:
 
   % sudo /sbin/chkconfig milter-greylist on

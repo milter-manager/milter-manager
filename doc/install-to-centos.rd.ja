@@ -178,10 +178,6 @@ clamav-milterを起動します。
 # racl whitelist sm_macro "trusted_domain" spf pass
 # racl greylist sm_macro "trusted_domain" not spf pass
 
-次に、以下の内容の/etc/sysconfig/milter-greylistを作成します。
-
-  OPTIONS="$OPTIONS -p inet:11122@[127.0.0.1]"
-
 システム起動時にmilter-greylistを起動するようにします。
 
   % sudo /sbin/chkconfig milter-greylist on
