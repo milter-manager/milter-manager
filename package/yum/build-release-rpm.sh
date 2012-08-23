@@ -73,20 +73,20 @@ enabled=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-$PACKAGE
 EOR
     fi
-    run tar cfz $rpm_base_dir/SOURCES/${PACKAGE}-repository.tar.gz \
+    run tar cfz $rpm_base_dir/SOURCES/${PACKAGE}-release.tar.gz \
 	-C ${script_base_dir} ${repo} RPM-GPG-KEY-${PACKAGE}
-    run cp ${script_base_dir}/${PACKAGE}-repository.spec $rpm_base_dir/SPECS/
+    run cp ${script_base_dir}/${PACKAGE}-release.spec $rpm_base_dir/SPECS/
 
-    run rpmbuild -ba $rpm_base_dir/SPECS/${PACKAGE}-repository.spec
+    run rpmbuild -ba $rpm_base_dir/SPECS/${PACKAGE}-release.spec
 
     top_dir=$script_base_dir/$distribution
 
     run mkdir -p $top_dir
-    run cp -p $rpm_base_dir/RPMS/noarch/${PACKAGE}-repository-* $top_dir
-    run cp -p $rpm_base_dir/SRPMS/${PACKAGE}-repository-* $top_dir
-    run cp -p $rpm_base_dir/RPMS/noarch/${PACKAGE}-repository-* $top_dir/5/stable/i386/Packages/
-    run cp -p $rpm_base_dir/RPMS/noarch/${PACKAGE}-repository-* $top_dir/5/stable/x86_64/Packages/
-    run cp -p $rpm_base_dir/SRPMS/${PACKAGE}-repository-* $top_dir/5/stable/SRPMS/
+    run cp -p $rpm_base_dir/RPMS/noarch/${PACKAGE}-release-* $top_dir
+    run cp -p $rpm_base_dir/SRPMS/${PACKAGE}-release-* $top_dir
+    run cp -p $rpm_base_dir/RPMS/noarch/${PACKAGE}-release-* $top_dir/5/stable/i386/Packages/
+    run cp -p $rpm_base_dir/RPMS/noarch/${PACKAGE}-release-* $top_dir/5/stable/x86_64/Packages/
+    run cp -p $rpm_base_dir/SRPMS/${PACKAGE}-release-* $top_dir/5/stable/SRPMS/
 
     run cp -p ${script_base_dir}/RPM-GPG-KEY-${PACKAGE} $top_dir
 done
