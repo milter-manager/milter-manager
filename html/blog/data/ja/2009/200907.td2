@@ -1,0 +1,71 @@
+TDIARY2.01.00
+Date: 20090703
+Title: 
+Last-Modified: 1246629630
+Visible: true
+Format: RD
+
+= milter manager 1.1.1
+
+milter mamangerの開発版である1.1.1がリリースされました。
+
+  * ((<アナウンスメール|URL:https://sourceforge.net/mailarchive/forum.php?thread_name=20090703.162326.771607502581480107.kou%40clear-code.com&forum_name=milter-manager-users-ja>))
+  * ((<変更点|URL:/dev/reference/ja/news.html#release-1-1-1>))
+  * ((<アップデート方法|URL:/dev/reference/ja/upgrade.html>))
+
+アナウンスメールにもある通り、1.1.1に大きな問題がない場合は1.1.1相当のコードが時期安定版1.2.0としてリリースされます。
+
+ここでは、1.1.1の目玉の1つである統計グラフについて紹介します。
+
+== 統計グラフの改良
+
+milter-manager-log-analyzerが生成するグラフが改良されました。これまではmilter-managerが停止したmilterとmilter全体の適用結果（rejectやtemporary failureなど）を示したグラフは別々のグラフとして生成していましたが、このリリースから1つのグラフにまとめて生成するようになりました。このため、全体としてどのくらいのメールを拒否したかなどが視覚的にわかりやすくなりました。
+
+((%image 1, 'milter全体の適用結果を示したグラフ', 5, [349,221]%))
+
+milterベースの迷惑メール対策システムでは、異なる機能のmilterを組み合わせて組織にあわせた迷惑メール対策を実現します。milter-managerはMTAとmilterの間に入って動作するため、それぞれのmilterがMTAに返す情報を利用することができます。
+
+このリリースから、milter-managerはmilterが追加したヘッダを統計情報として出力するようになりました。多くのmilterはヘッダに適用結果をラベル付けするので、milterにより追加されたヘッダを見ることによりどのような手法が利用されたかを知ることができます。
+
+milter-manager-log-analyzerは追加されたヘッダを解析し、Greylistingをパスした、URIBLにマッチした、SPFにパスした・失敗したなどをグラフとして生成するようになりました。どのような手法がどのような結果になっているかの統計情報を確認することができて便利です。例えば、現時点では送信ドメイン認証に失敗するメールも多いということもわかります。
+
+((%image 0, 'milter全体の各種手法の結果を示したグラフ', 4, [349,200]%))
+
+なお、上記2種類のグラフはmilter全体だけではなく、個々のmilterだけのものも出力されます。個々のmilterの導入結果を確認する場合に便利です。
+
+これはmilter-greylistの適用結果を示したグラフですが、2割程度はmilter-greylistの適用自体を中止しています。これは、submissionポートからSMTP Authをして送信したメールとS25Rにマッチしなかったメールが2割程度あるということです。0.5割程度はGreylistingを抜けているということもわかります。
+
+((%image 2, 'milter-greylistの適用結果を示したグラフ', 6, [349,207]%))
+
+これまでのグラフは1日のグラフですが、1週間、1ヶ月、1年単位のグラフも生成します。より長い期間でのグラフを見ることでメールシステムの変化を見ることができます。
+
+((%image 3, 'milter-enmaの1ヶ月の各種手法の結果を示したグラフ', 7, [349,221]%))
+
+== まとめ
+
+milter manager 1.1.1がリリースされました。大きな問題がない場合、1.1.1とほとんど同じものが次期安定版1.2.0としてリリースされる予定です。
+
+ここでは、1.1.1の目玉のうち改良された統計グラフについて紹介しました。
+他にも適用条件が書きやすくなっていたり複数インタンスがサポートされていたりします。
+
+今回のリリースでも、メーリングリストでフィードバックをしてくれた((<となかさん|URL:http://www.ftnk.jp/>))やsgykさんをはじめ、たくさんの方に協力してもらいました。ありがとうございます。
+
+.
+Date: 20090728
+Title: 
+Last-Modified: 1248785869
+Visible: true
+Format: RD
+
+= milter manager 1.2.0
+
+10日ほど前になりますが、新しい安定版シリーズとして1.2.0がリリースされました。これまで1.1.xで開発版として開発してきた成果が含まれています。
+
+  * ((<アナウンスメール|URL:https://sourceforge.net/mailarchive/forum.php?thread_name=20090717.095644.703364164086280026.kou%40clear-code.com&forum_name=milter-manager-users-ja>))
+  * ((<変更点|URL:/reference/ja/news.html#release-1-2-0>))
+  * ((<アップデート方法|URL:/reference/ja/upgrade.html>))
+
+今まで通り各種パッケージも用意してあるのでアップデートも簡単です。
+Ubuntu用のパッケージも小林さんがアップデートしてくれています。Ubuntuを利用している方は、もうすでにアップデートが完了しているかもしれませんね。
+
+.
