@@ -72,6 +72,10 @@ postfix と milter を無効にして設定を進めることにします。
   % sudo semodule -d postfix
   % sudo semodule -d milter
 
+# TODO: milter のポリシーが 1.3.1 以降になったら semanage による
+# milter_port_t の設定について調査してこのセクションを更新する
+# semanage port -a -t milter_port_t -p tcp <port>
+
 === spamass-milterの設定
 
 まず、spamdの設定をします。

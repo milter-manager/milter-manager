@@ -72,6 +72,10 @@ policy module for Postfix and Milter.
   % sudo semodule -d postfix
   % sudo semodule -d milter
 
+# TODO: When milter policy version upgrade to 1.3.1 or later, research
+# about semanager and milter_port_t and update this section.
+# semanage port -a -t milter_port_t -p tcp <port>
+
 === Configure spamass-milter
 
 At first, you configure spamd.
