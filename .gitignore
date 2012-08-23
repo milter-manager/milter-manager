@@ -156,3 +156,6 @@ Makefile.in
 /doc/*.man
 /doc/*.jman
 /dist/
+/html/blog/data/ja/cache/
+/html/blog/data/ja/category/
+/html/blog/data/ja/log/
