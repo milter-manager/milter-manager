@@ -43,7 +43,7 @@ milter manager can be installed by yum.
 
 Register milter manager yum repository like the following:
 
-  % sudo rpm -Uvh http://downloads.sourceforge.net/milter-manager/centos/milter-manager-repository-1.0.1-0.noarch.rpm
+  % sudo rpm -Uvh http://downloads.sourceforge.net/milter-manager/centos/milter-manager-release-1.1.0-0.noarch.rpm
 
 Now, you can install milter manager:
 

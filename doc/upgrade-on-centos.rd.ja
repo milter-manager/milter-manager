@@ -10,14 +10,13 @@ CentOSに特化したmilter managerの更新方法について説明します。
 
 == 更新
 
-1.8.1以前から更新する場合はまずmilter-manager-repositoryパッ
-ケージを更新します。1.8.2以降の場合はこの操作は必要ありませ
-ん。
+1.8.1以前から更新する場合はまずmilter-manager-releaseパッケージをインス
+トールします。1.8.2以降の場合はこの操作は必要ありません。
 
 新しいGPG鍵がこの中に含まれているためGPG鍵チェックを無効にし
 て更新します。
 
-  % sudo yum update --nogpgcheck -y milter-manager-repository
+  % sudo yum install --nogpgcheck -y milter-manager-release
 
 パッケージを更新するだけで、追加の作業は必要ありません。
 
