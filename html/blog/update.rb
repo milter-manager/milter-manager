@@ -7,7 +7,7 @@ require 'optparse'
 def main
   sf_user = nil
   parser = OptionParser.new
-  parser.on("--upload=[USER]", "Update and upload") do |user|
+  parser.on("--sf-user=USER", "Update and upload to sf.net") do |user|
     sf_user = user
   end
 
