@@ -74,7 +74,11 @@ class TestCommandDecoder < Test::Unit::TestCase
     fqdn = "delian"
     @decoder.decode(@encoder.encode_helo(fqdn))
     @decoder.end_decode
-    assert_equal(fqdn, decoded_fqdn)
+    if decoded_fqdn.respond_to?(:encoding)
+      assert_equal([fqdn, Encoding::ASCII_8BIT], [decoded_fqdn, decoded_fqdn.encoding])
+    else
+      assert_equal(fqdn, decoded_fqdn)
+    end
   end
 
   def test_envelope_from
@@ -86,7 +90,11 @@ class TestCommandDecoder < Test::Unit::TestCase
     from = "kou+sender@cozmixng.org"
     @decoder.decode(@encoder.encode_envelope_from(from))
     @decoder.end_decode
-    assert_equal(from, decoded_from)
+    if decoded_from.respond_to?(:encoding)
+      assert_equal([from, Encoding::ASCII_8BIT], [decoded_from, decoded_from.encoding])
+    else
+      assert_equal(from, decoded_from)
+    end
   end
 
   def test_envelope_recipient
@@ -98,7 +106,11 @@ class TestCommandDecoder < Test::Unit::TestCase
     to = "kou+sender@cozmixng.org"
     @decoder.decode(@encoder.encode_envelope_recipient(to))
     @decoder.end_decode
-    assert_equal(to, decoded_to)
+    if decoded_to.respond_to?(:encoding)
+      assert_equal([to, Encoding::ASCII_8BIT], [decoded_to, decoded_to.encoding])
+    else
+      assert_equal(to, decoded_to)
+    end
   end
 
   def test_data
@@ -216,6 +228,10 @@ class TestCommandDecoder < Test::Unit::TestCase
     command = "UNKNOWN COMMAND WITH ARGUMENT"
     @decoder.decode(@encoder.encode_unknown(command))
     @decoder.end_decode
-    assert_equal(command, decoded_command)
+    if decoded_command.respond_to?(:encoding)
+      assert_equal([command, Encoding::ASCII_8BIT], [decoded_command, decoded_command.encoding])
+    else
+      assert_equal(command, decoded_command)
+    end
   end
 end
