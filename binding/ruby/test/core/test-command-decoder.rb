@@ -124,8 +124,13 @@ class TestCommandDecoder < Test::Unit::TestCase
     value = "value"
     @decoder.decode(@encoder.encode_header(name, value))
     @decoder.end_decode
-    assert_equal([name, value],
-                 [decoded_name, decoded_value])
+    if name.respond_to?(:encoding)
+      assert_equal([name, Encoding::ASCII_8BIT, value, Encoding::ASCII_8BIT],
+                   [decoded_name, decoded_name.encoding, decoded_value, decoded_value.encoding])
+    else
+      assert_equal([name, value],
+                   [decoded_name, decoded_value])
+    end
   end
 
   def test_end_of_header
