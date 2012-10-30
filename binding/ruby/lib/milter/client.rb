@@ -91,7 +91,14 @@ module Milter
             if event == :end_of_message
               session.send(event)
             else
-              session.send(event, *args)
+              binary_args = args.collect do |arg|
+                if arg.respond_to?(:force_encoding)
+                  arg.dup.force_encoding(Encoding::ASCII_8BIT)
+                else
+                  arg
+                end
+              end
+              session.send(event, *binary_args)
             end
           rescue Exception
             Milter::Logger.error($!)
