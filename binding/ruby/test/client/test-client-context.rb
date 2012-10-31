@@ -141,5 +141,89 @@ class TestClientContext < Test::Unit::TestCase
         assert_equal(fqdn, received_fqdn)
       end
     end
+
+    def test_envelope_from
+      received_from = nil
+      @context.signal_connect("envelope-from") do |_, from|
+        received_from = from
+        Milter::STATUS_CONTINUE
+      end
+
+      from = "from@example.com"
+      @context.signal_emit("envelope-from", from)
+      if received_from.respond_to?(:encoding)
+        assert_equal([from, Encoding::ASCII_8BIT], [received_from, received_from.encoding])
+      else
+        assert_equal(from, received_from)
+      end
+    end
+
+    def test_envelope_recipient
+      received_to = nil
+      @context.signal_connect("envelope-recipient") do |_, to|
+        received_to = to
+        Milter::STATUS_CONTINUE
+      end
+
+      to = "to@example.com"
+      @context.signal_emit("envelope-recipient", to)
+      if received_to.respond_to?(:encoding)
+        assert_equal([to, Encoding::ASCII_8BIT], [received_to, received_to.encoding])
+      else
+        assert_equal(to, received_to)
+      end
+    end
+
+    def test_unknown
+      received_command = nil
+      @context.signal_connect("unknown") do |_, command|
+        received_command = command
+        Milter::STATUS_CONTINUE
+      end
+
+      command = "UNKNOWN COMMAND WITH ARGUMENT"
+      @context.signal_emit("unknown", command)
+      if received_command.respond_to?(:encoding)
+        assert_equal([command, Encoding::ASCII_8BIT], [received_command, received_command.encoding])
+      else
+        assert_equal(command, received_command)
+      end
+    end
+
+    def test_header
+      received_name = nil
+      received_value = nil
+      @context.signal_connect("header") do |_, name, value|
+        received_name = name
+        received_value = value
+        Milter::STATUS_CONTINUE
+      end
+
+      name = "Subject"
+      value = "This is test subject."
+      @context.signal_emit("header", name ,value)
+      if received_name.respond_to?(:encoding)
+        assert_equal([name, Encoding::ASCII_8BIT, value, Encoding::ASCII_8BIT],
+                     [received_name, received_name.encoding, received_value, received_value.encoding])
+      else
+        assert_equal([name, value], [receive_name, received_value])
+      end
+    end
+
+    def test_body
+      received_chunk = nil
+      @context.signal_connect("body") do |_, chunk|
+        received_chunk = chunk
+        Milter::STATUS_CONTINUE
+      end
+
+      chunk = "XXX\nYYY\n"
+      @context.signal_emit("body", chunk, chunk.bytesize)
+      if received_chunk.respond_to?(:encoding)
+        assert_equal([chunk, Encoding::ASCII_8BIT], [received_chunk, received_chunk.encoding])
+      else
+        assert_equal(chunk, received_chunk)
+      end
+    end
   end
 end
