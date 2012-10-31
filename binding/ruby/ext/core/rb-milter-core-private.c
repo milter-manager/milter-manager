@@ -186,6 +186,15 @@ rb_milter__unknown_signal_convert(guint num, const GValue *values)
 }
 
 VALUE
+rb_milter__header_signal_convert(guint num, const GValue *values)
+{
+    return rb_ary_new3(3,
+                       GVAL2RVAL(&values[0]),
+                       rb_str_new2(g_value_get_string(&values[1])),
+                       rb_str_new2(g_value_get_string(&values[2])));
+}
+
+VALUE
 rb_milter__body_signal_convert (guint num, const GValue *values)
 {
     return rb_ary_new3(2,

@@ -84,6 +84,8 @@ VALUE rb_milter__envelope_recipient_signal_convert (guint num,
                                                     const GValue *values);
 VALUE rb_milter__unknown_signal_convert            (guint num,
                                                     const GValue *values);
+VALUE rb_milter__header_signal_convert             (guint num,
+                                                    const GValue *values);
 VALUE rb_milter__body_signal_convert               (guint num,
                                                     const GValue *values);
 VALUE rb_milter__end_of_message_signal_convert     (guint num,

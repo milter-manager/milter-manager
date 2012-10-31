@@ -258,15 +258,6 @@ get_packet_buffer_size (VALUE self)
     return UINT2NUM(packet_buffer_size);
 }
 
-static VALUE
-header_signal_convert(guint num, const GValue *values)
-{
-    return rb_ary_new3(3,
-                       GVAL2RVAL(&values[0]),
-                       rb_str_new2(g_value_get_string(&values[1])),
-                       rb_str_new2(g_value_get_string(&values[2])));
-}
-
 void
 Init_milter_client_context (void)
 {
@@ -318,7 +309,7 @@ Init_milter_client_context (void)
     G_DEF_SIGNAL_FUNC(rb_cMilterClientContext, "unknown",
                       rb_milter__unknown_signal_convert);
     G_DEF_SIGNAL_FUNC(rb_cMilterClientContext, "header",
-                      header_signal_convert);
+                      rb_milter__header_signal_convert);
     G_DEF_SIGNAL_FUNC(rb_cMilterClientContext, "body",
 		      rb_milter__body_signal_convert);
     G_DEF_SIGNAL_FUNC(rb_cMilterClientContext, "end-of-message",
