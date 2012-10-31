@@ -124,4 +124,22 @@ class TestClientContext < Test::Unit::TestCase
     @context.packet_buffer_size = 4096
     assert_equal(4096, @context.packet_buffer_size)
   end
+
+  class TestSignal < self
+    def test_helo
+      received_fqdn = nil
+      @context.signal_connect("helo") do |_, fqdn|
+        received_fqdn = fqdn
+        Milter::STATUS_CONTINUE
+      end
+
+      fqdn = "delian"
+      @context.signal_emit("helo", fqdn)
+      if received_fqdn.respond_to?(:encoding)
+        assert_equal([fqdn, Encoding::ASCII_8BIT], [received_fqdn, received_fqdn.encoding])
+      else
+        assert_equal(fqdn, received_fqdn)
+      end
+    end
+  end
 end
