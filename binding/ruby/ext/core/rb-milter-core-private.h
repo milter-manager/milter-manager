@@ -74,20 +74,20 @@ VALUE       rb_milter__macros2rval(GHashTable *macros);
 VALUE       rb_milter__address2rval(struct sockaddr *address,
 				    socklen_t address_length);
 
-VALUE rb_milter__connect_signal_convert        (guint num,
-						const GValue *values);
-VALUE rb_milter__helo_signal_convert           (guint num,
-						const GValue *values);
-VALUE rb_milter__envelope_from_signal_convert  (guint num,
-						const GValue *values);
-VALUE rb_milter__envelope_recipient_signal_convert  (guint num,
-                                                     const GValue *values);
-VALUE rb_milter__body_signal_convert           (guint num,
-						const GValue *values);
-VALUE rb_milter__end_of_message_signal_convert (guint num,
-						const GValue *values);
-void  rb_milter__scan_options                  (VALUE options,
-						...);
-const gchar *rb_milter__inspect                (VALUE object);
+VALUE rb_milter__connect_signal_convert            (guint num,
+                                                    const GValue *values);
+VALUE rb_milter__helo_signal_convert               (guint num,
+                                                    const GValue *values);
+VALUE rb_milter__envelope_from_signal_convert      (guint num,
+                                                    const GValue *values);
+VALUE rb_milter__envelope_recipient_signal_convert (guint num,
+                                                    const GValue *values);
+VALUE rb_milter__body_signal_convert               (guint num,
+                                                    const GValue *values);
+VALUE rb_milter__end_of_message_signal_convert     (guint num,
+                                                    const GValue *values);
+void  rb_milter__scan_options                      (VALUE options,
+                                                    ...);
+const gchar *rb_milter__inspect                    (VALUE object);
 
 #endif
