@@ -72,14 +72,6 @@ define_macro_signal_convert (guint num, const GValue *values)
 }
 
 static VALUE
-envelope_from_signal_convert(guint num, const GValue *values)
-{
-    return rb_ary_new3(2,
-                       GVAL2RVAL(&values[0]),
-                       rb_str_new2(g_value_get_string(&values[1])));
-}
-
-static VALUE
 envelope_recipient_signal_convert(guint num, const GValue *values)
 {
     return rb_ary_new3(2,
@@ -170,7 +162,7 @@ Init_milter_decoder (void)
     G_DEF_SIGNAL_FUNC(rb_cMilterCommandDecoder, "helo",
                       rb_milter__helo_signal_convert);
     G_DEF_SIGNAL_FUNC(rb_cMilterCommandDecoder, "envelope-from",
-                      envelope_from_signal_convert);
+                      rb_milter__envelope_from_signal_convert);
     G_DEF_SIGNAL_FUNC(rb_cMilterCommandDecoder, "envelope-recipient",
                       envelope_recipient_signal_convert);
     G_DEF_SIGNAL_FUNC(rb_cMilterCommandDecoder, "unknown",
