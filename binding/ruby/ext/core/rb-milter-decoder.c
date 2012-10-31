@@ -71,28 +71,6 @@ define_macro_signal_convert (guint num, const GValue *values)
 		       MACROS2RVAL(g_value_get_pointer(&values[2])));
 }
 
-static VALUE
-end_of_message_signal_convert (guint num, const GValue *values)
-{
-    const gchar *chunk;
-    gsize chunk_size;
-    VALUE rb_chunk;
-
-    chunk = g_value_get_string(&values[1]);
-#if GLIB_SIZEOF_SIZE_T == 8
-    chunk_size = g_value_get_uint64(&values[2]);
-#else
-    chunk_size = g_value_get_uint(&values[2]);
-#endif
-
-    if (chunk && chunk_size > 0)
-	rb_chunk = rb_str_new(chunk, chunk_size);
-    else
-	rb_chunk = Qnil;
-
-    return rb_ary_new3(2, GVAL2RVAL(&values[0]), rb_chunk);
-}
-
 void
 Init_milter_decoder (void)
 {
@@ -133,7 +111,7 @@ Init_milter_decoder (void)
     G_DEF_SIGNAL_FUNC(rb_cMilterCommandDecoder, "body",
                       rb_milter__body_signal_convert);
     G_DEF_SIGNAL_FUNC(rb_cMilterCommandDecoder, "end-of-message",
-		      end_of_message_signal_convert);
+                      rb_milter__end_of_message_signal_convert);
 
     G_DEF_SETTERS(rb_cMilterDecoder);
 }
