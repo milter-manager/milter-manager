@@ -76,6 +76,8 @@ VALUE       rb_milter__address2rval(struct sockaddr *address,
 
 VALUE rb_milter__connect_signal_convert        (guint num,
 						const GValue *values);
+VALUE rb_milter__helo_signal_convert           (guint num,
+						const GValue *values);
 VALUE rb_milter__body_signal_convert           (guint num,
 						const GValue *values);
 VALUE rb_milter__end_of_message_signal_convert (guint num,
