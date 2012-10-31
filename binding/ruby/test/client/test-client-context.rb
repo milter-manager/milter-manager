@@ -134,6 +134,9 @@ class TestClientContext < Test::Unit::TestCase
       end
 
       fqdn = "delian"
+      if fqdn.respond_to?(:force_encoding)
+        fqdn.force_encoding(Encoding::UTF_8)
+      end
       @context.signal_emit("helo", fqdn)
       if received_fqdn.respond_to?(:encoding)
         assert_equal([fqdn, Encoding::ASCII_8BIT],
@@ -151,6 +154,9 @@ class TestClientContext < Test::Unit::TestCase
       end
 
       from = "from@example.com"
+      if from.respond_to?(:force_encoding)
+        from.force_encoding(Encoding::UTF_8)
+      end
       @context.signal_emit("envelope-from", from)
       if received_from.respond_to?(:encoding)
         assert_equal([from, Encoding::ASCII_8BIT],
@@ -168,6 +174,9 @@ class TestClientContext < Test::Unit::TestCase
       end
 
       to = "to@example.com"
+      if to.respond_to?(:force_encoding)
+        to.force_encoding(Encoding::UTF_8)
+      end
       @context.signal_emit("envelope-recipient", to)
       if received_to.respond_to?(:encoding)
         assert_equal([to, Encoding::ASCII_8BIT],
@@ -185,6 +194,9 @@ class TestClientContext < Test::Unit::TestCase
       end
 
       command = "UNKNOWN COMMAND WITH ARGUMENT"
+      if command.respond_to?(:force_encoding)
+        command.force_encoding(Encoding::UTF_8)
+      end
       @context.signal_emit("unknown", command)
       if received_command.respond_to?(:encoding)
         assert_equal([command, Encoding::ASCII_8BIT],
@@ -204,7 +216,13 @@ class TestClientContext < Test::Unit::TestCase
       end
 
       name = "Subject"
+      if name.respond_to?(:force_encoding)
+        name.force_encoding(Encoding::UTF_8)
+      end
       value = "This is test subject."
+      if value.respond_to?(:force_encoding)
+        value.force_encoding(Encoding::UTF_8)
+      end
       @context.signal_emit("header", name ,value)
       if received_name.respond_to?(:encoding)
         assert_equal([name, Encoding::ASCII_8BIT,
@@ -224,6 +242,9 @@ class TestClientContext < Test::Unit::TestCase
       end
 
       chunk = "XXX\nYYY\n"
+      if chunk.respond_to?(:force_encoding)
+        chunk.force_encoding(Encoding::UTF_8)
+      end
       @context.signal_emit("body", chunk, chunk.bytesize)
       if received_chunk.respond_to?(:encoding)
         assert_equal([chunk, Encoding::ASCII_8BIT],
