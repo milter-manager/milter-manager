@@ -136,7 +136,8 @@ class TestClientContext < Test::Unit::TestCase
       fqdn = "delian"
       @context.signal_emit("helo", fqdn)
       if received_fqdn.respond_to?(:encoding)
-        assert_equal([fqdn, Encoding::ASCII_8BIT], [received_fqdn, received_fqdn.encoding])
+        assert_equal([fqdn, Encoding::ASCII_8BIT],
+                     [received_fqdn, received_fqdn.encoding])
       else
         assert_equal(fqdn, received_fqdn)
       end
@@ -152,7 +153,8 @@ class TestClientContext < Test::Unit::TestCase
       from = "from@example.com"
       @context.signal_emit("envelope-from", from)
       if received_from.respond_to?(:encoding)
-        assert_equal([from, Encoding::ASCII_8BIT], [received_from, received_from.encoding])
+        assert_equal([from, Encoding::ASCII_8BIT],
+                     [received_from, received_from.encoding])
       else
         assert_equal(from, received_from)
       end
@@ -168,7 +170,8 @@ class TestClientContext < Test::Unit::TestCase
       to = "to@example.com"
       @context.signal_emit("envelope-recipient", to)
       if received_to.respond_to?(:encoding)
-        assert_equal([to, Encoding::ASCII_8BIT], [received_to, received_to.encoding])
+        assert_equal([to, Encoding::ASCII_8BIT],
+                     [received_to, received_to.encoding])
       else
         assert_equal(to, received_to)
       end
@@ -184,7 +187,8 @@ class TestClientContext < Test::Unit::TestCase
       command = "UNKNOWN COMMAND WITH ARGUMENT"
       @context.signal_emit("unknown", command)
       if received_command.respond_to?(:encoding)
-        assert_equal([command, Encoding::ASCII_8BIT], [received_command, received_command.encoding])
+        assert_equal([command, Encoding::ASCII_8BIT],
+                     [received_command, received_command.encoding])
       else
         assert_equal(command, received_command)
       end
@@ -203,8 +207,10 @@ class TestClientContext < Test::Unit::TestCase
       value = "This is test subject."
       @context.signal_emit("header", name ,value)
       if received_name.respond_to?(:encoding)
-        assert_equal([name, Encoding::ASCII_8BIT, value, Encoding::ASCII_8BIT],
-                     [received_name, received_name.encoding, received_value, received_value.encoding])
+        assert_equal([name, Encoding::ASCII_8BIT,
+                      value, Encoding::ASCII_8BIT],
+                     [received_name, received_name.encoding,
+                      received_value, received_value.encoding])
       else
         assert_equal([name, value], [receive_name, received_value])
       end
@@ -220,7 +226,8 @@ class TestClientContext < Test::Unit::TestCase
       chunk = "XXX\nYYY\n"
       @context.signal_emit("body", chunk, chunk.bytesize)
       if received_chunk.respond_to?(:encoding)
-        assert_equal([chunk, Encoding::ASCII_8BIT], [received_chunk, received_chunk.encoding])
+        assert_equal([chunk, Encoding::ASCII_8BIT],
+                     [received_chunk, received_chunk.encoding])
       else
         assert_equal(chunk, received_chunk)
       end
