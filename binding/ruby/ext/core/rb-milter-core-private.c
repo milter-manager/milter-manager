@@ -213,17 +213,17 @@ rb_milter__end_of_message_signal_convert (guint num, const GValue *values)
 {
     VALUE rb_chunk = Qnil;
     const gchar *chunk;
-    gsize size;
+    gsize chunk_size;
 
     chunk = g_value_get_string(&values[1]);
 #if GLIB_SIZEOF_SIZE_T == 8
-    size = g_value_get_uint64(&values[2]);
+    chunk_size = g_value_get_uint64(&values[2]);
 #else
-    size = g_value_get_uint(&values[2]);
+    chunk_size = g_value_get_uint(&values[2]);
 #endif
 
-    if (chunk && size > 0)
-	rb_chunk = rb_str_new(chunk, size);
+    if (chunk && chunk_size > 0)
+        rb_chunk = rb_str_new(chunk, chunk_size);
 
     return rb_ary_new3(2, GVAL2RVAL(&values[0]), rb_chunk);
 }
