@@ -10,7 +10,7 @@ DEB_CONFIGURE_USER_FLAGS =							\
 	--with-default-pid-file=/var/run/milter-manager/milter-manager.pid	\
 	--with-default-connection-spec=unix:/var/run/milter-manager/milter-manager.sock \
 	--with-bundled-ruby-glib2						\
-	--enable-ruby-milter=$$(ruby -rrbconfig -e 'print Config::CONFIG["rubylibdir"]')
+	--enable-ruby-milter=$$(ruby -rrbconfig -e 'print RbConfig::CONFIG["rubylibdir"]')
 
 DEB_INSTALL_DIRS_milter-manager =			\
 	/usr/bin					\
