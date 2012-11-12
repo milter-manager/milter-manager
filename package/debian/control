@@ -146,7 +146,7 @@ Depends:
 	libmilter-core0 (= ${binary:Version})
 Description: Libraries and tools for implementing milter protocol
  milter "client" library is a library which implements client-side
- (milter-slide) milter protocol.
+ (milter-side) milter protocol.
 
 Package: libmilter-client-dev
 Section: libdevel
@@ -159,7 +159,7 @@ Depends:
 	libmilter-client0 (= ${binary:Version})
 Description: Development files for milter client library
  milter "client" library is a library which implements client-side
- (milter-slide) milter protocol.
+ (milter-side) milter protocol.
  .
  This provides development environment to build softwares against
  libmilter-client.
@@ -230,7 +230,7 @@ Depends:
 	ruby
 Description: Ruby bindings for milter client
  milter "client" library is a library which implements client-side
- (milter-slide) milter protocol.
+ (milter-side) milter protocol.
  .
  This provides Ruby bindings for libmilter-client.
 
