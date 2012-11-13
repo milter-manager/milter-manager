@@ -1,0 +1,10 @@
+usr/bin/milter-performance-check
+usr/bin/milter-report-statistics
+usr/bin/milter-manager-log-analyzer
+usr/sbin/milter-manager
+usr/share/man/man1/milter-manager*
+usr/share/man/man1/milter-performance-check*
+usr/share/man/man1/milter-report-statistics*
+usr/share/man/ja/man1/milter-manager*
+usr/share/man/ja/man1/milter-performance-check*
+usr/share/man/ja/man1/milter-report-statistics*

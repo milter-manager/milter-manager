@@ -1,0 +1,4 @@
+usr/lib/libmilter-core.so
+usr/lib/pkgconfig/milter-core.pc
+usr/include/milter-manager/milter/core.h
+usr/include/milter-manager/milter/core/*

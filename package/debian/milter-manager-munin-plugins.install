@@ -1,0 +1,2 @@
+../milter-manager-munin-plugin.conf etc/munin/plugin-conf.d/milter-manager/
+usr/share/milter-manager/munin/plugins/*

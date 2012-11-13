@@ -1,0 +1,7 @@
+usr/lib/libmilter-manager.so.*
+usr/lib/milter-manager/binding/ext/milter_manager.*
+usr/lib/milter-manager/binding/lib/milter/manager*
+usr/lib/milter-manager/module/configuration/*
+etc/milter-manager/applicable-conditions/*
+etc/milter-manager/defaults/*
+etc/milter-manager/milter-manager.conf
