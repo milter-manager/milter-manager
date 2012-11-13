@@ -6,7 +6,7 @@ Build-Depends:
 	debhelper (>= 5),
 	autotools-dev,
 	libglib2.0-dev,
-    ruby, ruby1.9.1, ruby1.9.1-dev,
+	ruby, ruby1.9.1, ruby1.9.1-dev,
 	cdbs,
 	intltool
 Standards-Version: 3.7.3.0
@@ -19,7 +19,7 @@ Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	libmilter-manager0 (= ${binary:Version}),
-    ruby1.9.1,
+	ruby1.9.1,
 	librrd-ruby1.8 | librrd-ruby1.9.1,
 	adduser
 Suggests: postfix | sendmail, spamass-milter, clamav-milter, milter-greylist
