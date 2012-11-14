@@ -47,8 +47,8 @@ Depends:
 	${misc:Depends},
 	libmilter-client0 (= ${binary:Version}),
 	libmilter-server0 (= ${binary:Version}),
-	libmilter-client-ruby1.9.1 (= ${binary:Version}),
-	libmilter-server-ruby1.9.1 (= ${binary:Version})
+	ruby-milter-client (= ${binary:Version}),
+	ruby-milter-server (= ${binary:Version})
 Description: Libraries for extending milter manager by C
  milter manager administrates milters instead of MTA to reduce milter
  administration cost and combine milters flexibly.
