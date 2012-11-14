@@ -192,67 +192,29 @@ Description: Development files for milter toolkit
  This provides development environment to build softwares against
  libmilter-server.
 
-Package: libmilter-core-ruby1.9.1
-Section: ruby
-Architecture: any
-Replaces:
-	milter-manager (<< 1.6.1-1),
-	libmilter-toolkit-ruby1.8 (<< 1.6.6-1)
-Breaks:
-	milter-manager (<< 1.6.1-1),
-	libmilter-toolkit-ruby1.8 (<< 1.6.6-1)
+Package: libmilter-core-ruby1.8
+Section: oldlibs
+Architecture: all
 Depends:
-	${shlibs:Depends},
-	${misc:Depends},
-	libmilter-core0 (= ${binary:Version}),
-	ruby1.9.1
-Description: Ruby bindings for milter core library (Ruby 1.9.1 interface)
- milter "core" library is a common library for mitler "client" and
- milter "server" libraries.
- .
- This provides Ruby bindings for libmilter-core.
+    ruby-milter-core, ${misc:Depends}
+Description: Transitional dummy package
+ This is a transitional dummy package. It can safely be removed.
 
-Package: libmilter-client-ruby1.9.1
-Section: ruby
-Architecture: any
-Replaces:
-	milter-manager (<< 1.6.1-1),
-	libmilter-toolkit-ruby1.8 (<< 1.6.6-1)
-Breaks:
-	milter-manager (<< 1.6.1-1),
-	libmilter-toolkit-ruby1.8 (<< 1.6.6-1)
+Package: libmilter-client-ruby1.8
+Section: oldlibs
+Architecture: all
 Depends:
-	${shlibs:Depends},
-	${misc:Depends},
-	libmilter-client0 (= ${binary:Version}),
-	libmilter-core-ruby1.9.1 (= ${binary:Version}),
-	ruby1.9.1
-Description: Ruby bindings for milter client (Ruby 1.9.1 interface)
- milter "client" library is a library which implements client-side
- (milter-side) milter protocol.
- .
- This provides Ruby bindings for libmilter-client.
+    ruby-milter-client, ${misc:Depends}
+Description: Transitional dummy package
+ This is a transitional dummy package. It can safely be removed.
 
-Package: libmilter-server-ruby1.9.1
-Section: ruby
-Architecture: any
-Replaces:
-	milter-manager (<< 1.6.1-1),
-	libmilter-toolkit-ruby1.8 (<< 1.6.6-1)
-Breaks:
-	milter-manager (<< 1.6.1-1),
-	libmilter-toolkit-ruby1.8 (<< 1.6.6-1)
+Package: libmilter-server-ruby1.8
+Section: oldlibs
+Architecture: all
 Depends:
-	${shlibs:Depends},
-	${misc:Depends},
-	libmilter-server0 (= ${binary:Version}),
-	libmilter-core-ruby1.9.1 (= ${binary:Version}),
-	ruby1.9.1
-Description: Ruby bindings for milter server (Ruby 1.9.1 interface)
- milter "server" library is a library which implements server-side
- (MTA-side) milter protocol.
- .
- This provides Ruby bindings for libmilter-server.
+    ruby-milter-server, ${misc:Depends}
+Description: Transitional dummy package
+ This is a transitional dummy package. It can safely be removed.
 
 Package: libmilter-compatible
 Section: libs
