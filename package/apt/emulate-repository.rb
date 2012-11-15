@@ -21,5 +21,7 @@ server = WEBrick::HTTPServer.new(:DocumentRoot => "./",
                                  :Port => 80)
 
 server.mount("/project/milter-manager/", WEBrick::HTTPServlet::FileHandler, "./")
-trap("INT"){ server.shutdown }
+trap("INT") do
+  server.shutdown
+end
 server.start
