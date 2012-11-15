@@ -20,7 +20,7 @@ Depends:
 	${misc:Depends},
 	libmilter-manager0 (= ${binary:Version}),
 	ruby1.9.1,
-	librrd-ruby1.8 | librrd-ruby1.9.1,
+	librrd-ruby1.9.1,
 	adduser
 Suggests: postfix | sendmail, spamass-milter, clamav-milter, milter-greylist
 Description: A milter to use milters effectively
