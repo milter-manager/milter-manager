@@ -52,6 +52,9 @@ build_chroot()
                         -e "\$a\\deb http://security.debian.org/ ${code_name}/updates main" \
                         $base_dir/etc/apt/sources.list
                     ;;
+                *)
+                    # do nothing
+                    ;;
             esac
 	    ;;
 	*)
