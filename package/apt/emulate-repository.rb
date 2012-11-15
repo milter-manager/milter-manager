@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-if ARGV.size != 0
+unless ARGV.empty?
   puts <<HELP
 How to run
 
