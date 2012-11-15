@@ -52,7 +52,7 @@ cp -rp /tmp/${PACKAGE}-debian debian
 if ! aptitude show librrd-ruby1.8 > /dev/null 2>&1; then
     sed -i'' -e 's/librrd-ruby1\.8/rrdtool/g' debian/control
 fi
-if $(ruby -rrbconfig -e "print RbConfig::CONFIG['ruby_version']") != "1.9.1"; then
+if test $(ruby -rrbconfig -e "print RbConfig::CONFIG['ruby_version']") = "1.8"; then
     sed -i'' -e 's/1\.9\.1/1\.8/g' debian/control debian/*.dirs debian/*.install
 fi
 debuild -us -uc
