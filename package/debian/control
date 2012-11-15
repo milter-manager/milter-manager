@@ -47,6 +47,7 @@ Depends:
 	${misc:Depends},
 	libmilter-client0 (= ${binary:Version}),
 	libmilter-server0 (= ${binary:Version}),
+	ruby-milter-core (= ${binary:Version}),
 	ruby-milter-client (= ${binary:Version}),
 	ruby-milter-server (= ${binary:Version})
 Description: Libraries for extending milter manager by C
@@ -239,6 +240,7 @@ Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	libmilter-client0 (= ${binary:Version}),
+	ruby-milter-core (= ${binary:Version}),
 	ruby1.9.1
 Description: Ruby bindings for milter client (Ruby 1.9.1 interface)
  milter "client" library is a library which implements client-side
@@ -255,6 +257,7 @@ Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	libmilter-server0 (= ${binary:Version}),
+	ruby-milter-core (= ${binary:Version}),
 	ruby1.9.1
 Description: Ruby bindings for milter server (Ruby 1.9.1 interface)
  milter "server" library is a library which implements server-side
