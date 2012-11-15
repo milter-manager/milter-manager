@@ -46,11 +46,19 @@ build_chroot()
     case $code_name in
 	squeeze|wheezy|unstable)
 	    run_sudo sed -i'' -e 's/us/jp/' $base_dir/etc/apt/sources.list
+            case $code_name in
+                squeeze)
+                    run_sudo sed -i'' \
+                        -e "\$a\\deb http://security.debian.org/ ${code_name}/updates main" \
+                        $base_dir/etc/apt/sources.list
+                    ;;
+            esac
 	    ;;
 	*)
 	    run_sudo sed -i'' \
 		-e 's/main$/main universe/' \
 		-e 's,http://archive,http://jp.archive,' \
+                -e "\$a\\deb http://security.ubuntu.com/ubuntu ${code_name}-security main" \
 		$base_dir/etc/apt/sources.list
 	    ;;
     esac
