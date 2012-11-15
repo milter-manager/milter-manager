@@ -99,6 +99,15 @@ build()
 	    ;;
     esac
 
+    case ${code_name} in
+        precise)
+            run_sudo su -c "/usr/sbin/chroot ${CHROOT_BASE}/$target /usr/bin/update-alternatives --set ruby /usr/bin/ruby1.9.1"
+            ;;
+        *)
+            # do nothing
+            ;;
+    esac
+
     source_dir=${script_base_dir}/../..
     build_user=${PACKAGE}-build
     build_user_dir=${base_dir}/home/$build_user
