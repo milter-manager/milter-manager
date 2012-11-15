@@ -16,8 +16,7 @@
 
 require "webrick"
 
-server = WEBrick::HTTPServer.new(:DocumentRoot => "./",
-                                 :BindAddress => "0.0.0.0",
+server = WEBrick::HTTPServer.new(:BindAddress => "0.0.0.0",
                                  :Port => 80)
 
 server.mount("/project/milter-manager/", WEBrick::HTTPServlet::FileHandler, "./")
