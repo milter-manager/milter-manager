@@ -192,30 +192,6 @@ Description: Development files for milter toolkit
  This provides development environment to build softwares against
  libmilter-server.
 
-Package: libmilter-core-ruby1.8
-Section: oldlibs
-Architecture: all
-Depends:
-    ruby-milter-core, ${misc:Depends}
-Description: Transitional dummy package
- This is a transitional dummy package. It can safely be removed.
-
-Package: libmilter-client-ruby1.8
-Section: oldlibs
-Architecture: all
-Depends:
-    ruby-milter-client, ${misc:Depends}
-Description: Transitional dummy package
- This is a transitional dummy package. It can safely be removed.
-
-Package: libmilter-server-ruby1.8
-Section: oldlibs
-Architecture: all
-Depends:
-    ruby-milter-server, ${misc:Depends}
-Description: Transitional dummy package
- This is a transitional dummy package. It can safely be removed.
-
 Package: libmilter-compatible
 Section: libs
 Architecture: any
