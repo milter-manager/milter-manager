@@ -100,11 +100,7 @@ build()
     build_user=${PACKAGE}-build
     build_user_dir=${base_dir}/home/$build_user
     build_dir=${build_user_dir}/build
-    if ruby -e "exit(('$VERSION'.split(/\./)[1].to_i % 2).zero?)"; then
-	status=stable
-    else
-	status=development
-    fi
+    status=stable
     package_initial=$(echo ${PACKAGE} | sed -e 's/\(.\).*/\1/')
     pool_dir=${script_base_dir}/${distribution}/${status}/pool
     pool_dir=${pool_dir}/${code_name}/${component}/${package_initial}/${PACKAGE}
