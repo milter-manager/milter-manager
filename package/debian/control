@@ -243,9 +243,8 @@ Description: Milter developement files which have API compatiblity with Sendmail
 Package: ruby-milter-core
 Section: ruby
 Architecture: any
-Provides: libmilter-core-ruby1.9.1
-Replaces: libmilter-core-ruby1.9.1
-Breaks: libmilter-core-ruby1.9.1
+Replaces: libmilter-core-ruby1.8 (<< 1.8.3-1~)
+Breaks: libmilter-core-ruby1.8 (<< 1.8.3-1~)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
@@ -258,9 +257,8 @@ Description: Ruby bindings for milter core library (Ruby 1.9.1 interface)
 Package: ruby-milter-client
 Section: ruby
 Architecture: any
-Provides: libmilter-client-ruby1.9.1
-Replaces: libmilter-client-ruby1.9.1
-Breaks: libmilter-client-ruby1.9.1
+Replaces: libmilter-client-ruby1.8 (<< 1.8.3-1~)
+Breaks: libmilter-client-ruby1.8 (<< 1.8.3-1~)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
@@ -275,9 +273,8 @@ Description: Ruby bindings for milter client (Ruby 1.9.1 interface)
 Package: ruby-milter-server
 Section: ruby
 Architecture: any
-Provides: libmilter-server-ruby1.9.1
-Replaces: libmilter-server-ruby1.9.1
-Breaks: libmilter-server-ruby1.9.1
+Replaces: libmilter-server-ruby1.8 (<< 1.8.3-1~)
+Breaks: libmilter-server-ruby1.8 (<< 1.8.3-1~)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
