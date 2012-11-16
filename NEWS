@@ -676,7 +676,7 @@ a few performance improvement features but they are marked
 
 === Ruby milter
 
-==== Improements
+==== Improvements
 
   * Added ruby-milter.pc.
   * Added --packet-buffer-size option that specifies send
