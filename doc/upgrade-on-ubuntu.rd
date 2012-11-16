@@ -27,7 +27,7 @@ support, when we release milter manager 1.9.0.
 
 Please update your source.list as soon as possible.
 
-==== For Lucid Lynx
+=== For Lucid Lynx
 
 /etc/apt/sources.list.d/milter-manager.list:
   deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
@@ -38,7 +38,7 @@ Please update your source.list as soon as possible.
 If we use development series, we need to comment the first 2
 lines out and enable comment outed the 2 lines.
 
-==== For Natty Narwhal
+=== For Natty Narwhal
 
 /etc/apt/sources.list.d/milter-manager.list:
   deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ natty universe
@@ -49,7 +49,7 @@ lines out and enable comment outed the 2 lines.
 If we use development series, we need to comment the first 2
 lines out and enable comment outed the 2 lines.
 
-==== For Oneiric Ocelot
+=== For Oneiric Ocelot
 
 /etc/apt/sources.list.d/milter-manager.list:
   deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ oneiric universe
