@@ -17,7 +17,7 @@ milter manager depends on the following softwares. They
 should be installed before building milter manager.
 
   * GLib >= 2.12.3
-  * Ruby >= 1.8.5 (1.9.x isn't supported)
+  * Ruby >= 1.8.5 (Support 1.9.x since milter manager 1.8.4)
   * Ruby/GLib2 (Ruby-GNOME2) >= 0.16.0
 
 === Optional: Testing
@@ -59,7 +59,7 @@ file. The following softwares are required for the Web
 interface.
 
   * RubyGems >= 1.3.1
-  * Ruby on Rails 2.3.5
+  * Ruby on Rails 2.3.14
   * SQLite3
   * SQLite3's Ruby bindings
   * Ruby-Locale for Ruby on Rails
