@@ -60,6 +60,17 @@ lines out and enable comment outed the 2 lines.
 If we use development series, we need to comment the first 2
 lines out and enable comment outed the 2 lines.
 
+=== For Precise Pangolin
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ precise universe
+  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ precise universe
+  # deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ precise universe
+  # deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ precise universe
+
+If we use development series, we need to comment the first 2
+lines out and enable comment outed the 2 lines.
+
 == Conclusion
 
 milter manager can be upgraded easily. It means that milter
