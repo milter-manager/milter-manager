@@ -2,6 +2,75 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-8-4] 1.8.4: 2012-11-21
+
+A bug fix release of 1.8.3.
+
+=== Package
+
+  * Added Ubuntu Quantal Quetzal support.
+  * Provided packages built by using Ruby1.9 on following distributions:
+    Debian wheezy, Debian sid, Ubuntu Precise Pangolin, Ubuntu Quantal Quetzal
+  * Added missing fixture files into tar.gz.
+    [Reported by Hirohisa Yamaguchi]
+  * Solaris: Added missing SMF method file into tar.gz.
+    [Reported by @ftnk]
+  * yum: Rename yum repository pacakge.
+    milter-manager-repository -> milter-manager-release
+  * deb: Use Ruby1.9 by default.
+  * deb: Rename packages for Ruby binding.
+    libmilter-*-ruby1.8 -> ruby-milter-*
+
+=== milter manager
+
+==== Improvements
+
+  * configure: Specify Ruby/GLib2 version to --with-bundled-ruby-glib2 option
+
+==== Fixes
+
+  * manager: Suppressed compiler type warnings.
+    [GitHub #12]
+    [Reported by Hirohisa Yamaguchi]
+  * debian cron: used mail.log instead of mail.info
+    [milter-manager-users-ja:00171]
+    [Reported by Kazuhiro NISHIYAMA]
+
+=== milter-core
+
+==== Improvements
+
+  * Supported MILTER_DEBUG=fatal-criticals.
+  * binding ruby: milter callback arguments are ASCII_8BIT.
+    [GitHub #3]
+
+==== Fixes
+
+  * Fixed an issue which a following warning is shown when running at high loads.
+    "g_io_channel_write_chars: assertion `channel->is_writeable' failed"
+
+=== Admin
+
+==== Improvements
+
+  * Upgraded to Rails2.3.14
+
+=== Document
+
+==== Fixes
+
+  * Fixed about install sequence on CentOS.
+    [GitHub #13]
+    [Reported by Kunkichi]
+
+=== Thanks
+
+  * Hirohisa Yamaguchi
+  * Kazuhiro NISHIYAMA
+  * @ftnk
+  * Kunkichi
+
+
 == [release-1-8-3] 1.8.3: 2012-05-22
 
 A bug fix release of 1.8.2.
