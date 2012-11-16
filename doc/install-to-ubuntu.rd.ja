@@ -82,6 +82,22 @@ Natty Narwhalと最新版のOneiric Ocelot 用のパッケージを配布して�
 
   deb http://jp.archive.ubuntu.com/ubuntu precise-backports main universe
 
+=== Quantal Quetzalの場合
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ quantal universe
+  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ quantal universe
+  # deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ quantal universe
+  # deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ quantal universe
+
+開発版を利用する場合は最初の2行をコメントアウトし、すでにコメ
+ントアウトされている2行のコメントを外します。
+
+もし、まだバックポートリポジトリを有効にしていない場合は以下のような内
+容の/etc/apt/sources.list.d/backports.listを作成して有効にします。
+
+  deb http://jp.archive.ubuntu.com/ubuntu quantal-backports main universe
+
 === インストール
 
 パッケージはmilter managerリリース用の鍵でサインされています。信用

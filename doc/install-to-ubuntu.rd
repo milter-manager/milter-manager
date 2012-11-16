@@ -87,6 +87,23 @@ content:
 
   deb http://archive.ubuntu.com/ubuntu precise-backports main universe
 
+=== For Quantal Quetzal
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ quantal universe
+  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ quantal universe
+  # deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ quantal universe
+  # deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ quantal universe
+
+If we use development series, we need to comment the first 2
+lines out and enable comment outed the 2 lines.
+
+If you don't enable the official backport repository, we need to
+create /etc/apt/sources.list.d/backports.list with the following
+content:
+
+  deb http://archive.ubuntu.com/ubuntu quantal-backports main universe
+
 === Install
 
 We register the key of the package repository:
