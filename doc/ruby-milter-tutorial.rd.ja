@@ -7,6 +7,10 @@
 milter managerが提供するライブラリを用いてRubyでmilterを開発
 する方法を説明します。
 
+milterプロトコルの説明は((<milter.org|URL:http://www.milter.org>))
+の((<開発者向けドキュメント|URL:https://www.milter.org/developers>))
+を参照してください。
+
 == インストール
 
 Rubyでmilterを開発する場合はconfigure時に--enable-ruby-milterオ
@@ -184,8 +188,7 @@ Rubyで開発したmilterは以下のようになります。
 
 : finished
 
-   milterの処理が全て完了したときに呼ばれます。
-   end_of_message よりも後で呼ばれます。
+   milterプロトコルの処理が完了したときに呼ばれます。
 
 == 利用するコールバック
 
