@@ -11,7 +11,8 @@
   % ./autogen.sh --no-update
   % ./configure --prefix=/tmp/local \
     --enable-ruby-milter --enable-gtk-doc --enable-coverage \
-    --with-sf-user=sf_user_name
+    --with-sf-user=sf_user_name \
+    --with-cutter-source-path=/path/to/cutter/source
   % make
   % make check
   % make coverage
