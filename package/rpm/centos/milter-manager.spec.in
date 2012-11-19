@@ -418,6 +418,9 @@ fi
 %config %{_sysconfdir}/munin/plugin-conf.d/
 
 %changelog
+* Wed Nov 21 2012 Kenji Okimoto <okimoto@clear-code.com> - 1.8.4-0
+- new upstream release.
+
 * Tue May 22 2012 Kenji Okimoto <okimoto@clear-code.com> - 1.8.3-0
 - new upstream release.
 
