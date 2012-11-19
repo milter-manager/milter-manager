@@ -1,3 +1,4 @@
 usr/lib/ruby/1.9.1/milter
 usr/lib/milter-manager/binding/ext
 usr/lib/milter-manager/binding/lib/milter/client
+usr/share/doc/ruby-milter-client/examples
