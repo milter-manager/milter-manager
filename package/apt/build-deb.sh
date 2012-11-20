@@ -34,6 +34,10 @@ fi
 run aptitude install -V -D -y devscripts ${DEPENDED_PACKAGES}
 run aptitude clean
 
+if test "$(lsb_release --codename --short)" = "precise"; then
+    /usr/bin/update-alternatives --set ruby /usr/bin/ruby1.9.1
+fi
+
 if ! id $USER_NAME >/dev/null 2>&1; then
     run useradd -m $USER_NAME
 fi
