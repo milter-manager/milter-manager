@@ -383,7 +383,7 @@ CGI で動かすよりも Rack で動かした方が便利なのでそうする�
 ブラウザから tDiary でエントリを投稿すると、ブログ用エントリのファイル
 (*.td2)が作成・更新されるのでブログ用リポジトリに git push する。
 
-  % ./update.rb --upload
+  % ./update.rb --sf-user=sf_user_name
 
 == Freecode でアナウンス
 
