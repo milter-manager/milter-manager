@@ -8,7 +8,7 @@ Source: milter-manager-release.tar.gz
 Group: System Environment/Base
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-%(%{__id_u} -n)
 BuildArchitectures: noarch
-Obsoletes: milter-manager-repository < 1.0.1-0
+Obsoletes: milter-manager-repository < %{version}-%{release}
 
 %description
 milter manager release files
