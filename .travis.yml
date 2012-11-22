@@ -12,3 +12,4 @@ before_script:
   - ./configure
 script:
   - test/run-test.sh -v v
+  - binding/ruby/test/run-test.sh -v
