@@ -230,7 +230,7 @@ class TestClientContext < Test::Unit::TestCase
                      [received_name, received_name.encoding,
                       received_value, received_value.encoding])
       else
-        assert_equal([name, value], [receive_name, received_value])
+        assert_equal([name, value], [received_name, received_value])
       end
     end
 
