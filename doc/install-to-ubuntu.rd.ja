@@ -23,11 +23,6 @@ Natty Narwhalと最新版のOneiric Ocelot 用のパッケージを配布して�
 /etc/apt/sources.list.d/milter-manager.list:
   deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
   deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
-  # deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ lucid universe
-  # deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ lucid universe
-
-開発版を利用する場合は最初の2行をコメントアウトし、すでにコメ
-ントアウトされている2行のコメントを外します。
 
 もし、まだバックポートリポジトリを有効にしていない場合は以下のような内
 容の/etc/apt/sources.list.d/backports.listを作成して有効にします。
@@ -39,11 +34,6 @@ Natty Narwhalと最新版のOneiric Ocelot 用のパッケージを配布して�
 /etc/apt/sources.list.d/milter-manager.list:
   deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ natty universe
   deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ natty universe
-  # deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ natty universe
-  # deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ natty universe
-
-開発版を利用する場合は最初の2行をコメントアウトし、すでにコメ
-ントアウトされている2行のコメントを外します。
 
 もし、まだバックポートリポジトリを有効にしていない場合は以下のような内
 容の/etc/apt/sources.list.d/backports.listを作成して有効にします。
@@ -55,11 +45,6 @@ Natty Narwhalと最新版のOneiric Ocelot 用のパッケージを配布して�
 /etc/apt/sources.list.d/milter-manager.list:
   deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ oneiric universe
   deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ oneiric universe
-  # deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ oneiric universe
-  # deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ oneiric universe
-
-開発版を利用する場合は最初の2行をコメントアウトし、すでにコメ
-ントアウトされている2行のコメントを外します。
 
 もし、まだバックポートリポジトリを有効にしていない場合は以下のような内
 容の/etc/apt/sources.list.d/backports.listを作成して有効にします。
@@ -71,11 +56,6 @@ Natty Narwhalと最新版のOneiric Ocelot 用のパッケージを配布して�
 /etc/apt/sources.list.d/milter-manager.list:
   deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ precise universe
   deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ precise universe
-  # deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ precise universe
-  # deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ precise universe
-
-開発版を利用する場合は最初の2行をコメントアウトし、すでにコメ
-ントアウトされている2行のコメントを外します。
 
 もし、まだバックポートリポジトリを有効にしていない場合は以下のような内
 容の/etc/apt/sources.list.d/backports.listを作成して有効にします。
@@ -87,11 +67,6 @@ Natty Narwhalと最新版のOneiric Ocelot 用のパッケージを配布して�
 /etc/apt/sources.list.d/milter-manager.list:
   deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ quantal universe
   deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ quantal universe
-  # deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ quantal universe
-  # deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ quantal universe
-
-開発版を利用する場合は最初の2行をコメントアウトし、すでにコメ
-ントアウトされている2行のコメントを外します。
 
 もし、まだバックポートリポジトリを有効にしていない場合は以下のような内
 容の/etc/apt/sources.list.d/backports.listを作成して有効にします。

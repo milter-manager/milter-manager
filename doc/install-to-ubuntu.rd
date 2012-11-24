@@ -24,11 +24,6 @@ viruses by the latest ClamAV.
 /etc/apt/sources.list.d/milter-manager.list:
   deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
   deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
-  # deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ lucid universe
-  # deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ lucid universe
-
-If we use development series, we need to comment the first 2
-lines out and enable comment outed the 2 lines.
 
 If you don't enable the official backport repository, we need to
 create /etc/apt/sources.list.d/backports.list with the following
@@ -41,11 +36,6 @@ content:
 /etc/apt/sources.list.d/milter-manager.list:
   deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ natty universe
   deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ natty universe
-  # deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ natty universe
-  # deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ natty universe
-
-If we use development series, we need to comment the first 2
-lines out and enable comment outed the 2 lines.
 
 If you don't enable the official backport repository, we need to
 create /etc/apt/sources.list.d/backports.list with the following
@@ -58,11 +48,6 @@ content:
 /etc/apt/sources.list.d/milter-manager.list:
   deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ oneiric universe
   deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ oneiric universe
-  # deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ oneiric universe
-  # deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ oneiric universe
-
-If we use development series, we need to comment the first 2
-lines out and enable comment outed the 2 lines.
 
 If you don't enable the official backport repository, we need to
 create /etc/apt/sources.list.d/backports.list with the following
@@ -75,11 +60,6 @@ content:
 /etc/apt/sources.list.d/milter-manager.list:
   deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ precise universe
   deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ precise universe
-  # deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ precise universe
-  # deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ precise universe
-
-If we use development series, we need to comment the first 2
-lines out and enable comment outed the 2 lines.
 
 If you don't enable the official backport repository, we need to
 create /etc/apt/sources.list.d/backports.list with the following
@@ -92,11 +72,6 @@ content:
 /etc/apt/sources.list.d/milter-manager.list:
   deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ quantal universe
   deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ quantal universe
-  # deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ quantal universe
-  # deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/development/ quantal universe
-
-If we use development series, we need to comment the first 2
-lines out and enable comment outed the 2 lines.
 
 If you don't enable the official backport repository, we need to
 create /etc/apt/sources.list.d/backports.list with the following

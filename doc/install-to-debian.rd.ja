@@ -21,33 +21,18 @@ milter managerのサイトで現在の安定版squeezeと開発版wheezyと不
 /etc/apt/sources.list.d/milter-manager.list:
   deb http://downloads.sourceforge.net/project/milter-manager/debian/stable/ squeeze main
   deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ squeeze main
-  # deb http://downloads.sourceforge.net/project/milter-manager/debian/development/ squeeze main
-  # deb-src http://downloads.sourceforge.net/project/milter-manager/debian/development/ squeeze main
-
-開発版を利用する場合は最初の2行をコメントアウトし、すでにコメ
-ントアウトされている2行のコメントを外します。
 
 === wheezyの場合
 
 /etc/apt/sources.list.d/milter-manager.list:
   deb http://downloads.sourceforge.net/project/milter-manager/debian/stable/ wheezy main
   deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ wheezy main
-  # deb http://downloads.sourceforge.net/project/milter-manager/debian/development/ wheezy main
-  # deb-src http://downloads.sourceforge.net/project/milter-manager/debian/development/ wheezy main
-
-開発版を利用する場合は最初の2行をコメントアウトし、すでにコメ
-ントアウトされている2行のコメントを外します。
 
 === sidの場合
 
 /etc/apt/sources.list.d/milter-manager.list:
   deb http://downloads.sourceforge.net/project/milter-manager/debian/stable/ unstable main
   deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ unstable main
-  # deb http://downloads.sourceforge.net/project/milter-manager/debian/development/ unstable main
-  # deb-src http://downloads.sourceforge.net/project/milter-manager/debian/development/ unstable main
-
-開発版を利用する場合は最初の2行をコメントアウトし、すでにコメ
-ントアウトされている2行のコメントを外します。
 
 === インストール
 

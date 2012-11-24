@@ -49,11 +49,6 @@ Now, you can install milter manager:
 
   % sudo yum install -y milter-manager
 
-If you want to use development series, you need to specify the Yum
-repository for development series explicitly:
-
-  % sudo yum install --enablerepo=milter-manager-development -y milter-manager
-
 == Configuration
 
 Here is a basic configuration policy.
