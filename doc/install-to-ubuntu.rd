@@ -31,18 +31,6 @@ content:
 
   deb http://archive.ubuntu.com/ubuntu lucid-backports main universe
 
-=== For Natty Narwhal
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ natty universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ natty universe
-
-If you don't enable the official backport repository, we need to
-create /etc/apt/sources.list.d/backports.list with the following
-content:
-
-  deb http://archive.ubuntu.com/ubuntu natty-backports main universe
-
 === For Oneiric Ocelot
 
 /etc/apt/sources.list.d/milter-manager.list:

@@ -29,17 +29,6 @@ Natty Narwhalと最新版のOneiric Ocelot 用のパッケージを配布して�
 
   deb http://jp.archive.ubuntu.com/ubuntu lucid-backports main universe
 
-=== Natty Narwhalの場合
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ natty universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ natty universe
-
-もし、まだバックポートリポジトリを有効にしていない場合は以下のような内
-容の/etc/apt/sources.list.d/backports.listを作成して有効にします。
-
-  deb http://jp.archive.ubuntu.com/ubuntu natty-backports main universe
-
 === Oneiric Ocelotの場合
 
 /etc/apt/sources.list.d/milter-manager.list:

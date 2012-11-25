@@ -33,12 +33,6 @@ Please update your source.list as soon as possible.
   deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
   deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
 
-=== For Natty Narwhal
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ natty universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ natty universe
-
 === For Oneiric Ocelot
 
 /etc/apt/sources.list.d/milter-manager.list:

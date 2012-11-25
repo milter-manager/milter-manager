@@ -32,12 +32,6 @@ sources.list に指定する URI を変更しました。しばらくは以前�
   deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
   deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
 
-=== Natty Narwhalの場合
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ natty universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ natty universe
-
 === Oneiric Ocelotの場合
 
 /etc/apt/sources.list.d/milter-manager.list:
