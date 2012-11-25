@@ -45,6 +45,12 @@ Please update your source.list as soon as possible.
   deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ precise universe
   deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ precise universe
 
+=== For Quantal Quetzal
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ quantal universe
+  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ quantal universe
+
 == Conclusion
 
 milter manager can be upgraded easily. It means that milter
