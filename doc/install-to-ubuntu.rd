@@ -10,13 +10,10 @@ install information.
 
 == Install packages
 
-Packages for Lucid Lynx, the current LTS release,
-packages for Natty Narwhal and
-packages for Oneiric Ocelot the latest release are
-distributed on the milter manager site. We put the following
-content to /etc/apt/sources.list.d/milter-manager.list.
+We provide milter manager deb packages for the following distributions.
+You put the following content to /etc/apt/sources.list.d/milter-manager.list.
 
-We also enable the official backports repository to detects the latest
+You also enable the official backports repository to detect the latest
 viruses by the latest ClamAV.
 
 === For Lucid Lynx
