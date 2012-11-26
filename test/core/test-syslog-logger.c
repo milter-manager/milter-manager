@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2012  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -43,7 +43,7 @@ static GPrintFunc original_print_hander;
 static void
 setup_syslog (void)
 {
-    struct stat buf;
+    struct stat status;
     gint i;
     gchar *candidates[] = {
         "/var/log/mail.log",
@@ -63,8 +63,8 @@ setup_syslog (void)
                     cut_take_string(g_strjoinv(", ", candidates)));
     cut_assert_not_null(syslog_file_name);
 
-    cut_assert_equal_int(0, g_lstat(syslog_file_name, &buf));
-    first_log_file_size = buf.st_size;
+    cut_assert_equal_int(0, g_lstat(syslog_file_name, &status));
+    first_log_file_size = status.st_size;
 }
 
 void
