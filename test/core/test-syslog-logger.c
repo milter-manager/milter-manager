@@ -113,6 +113,21 @@ collect_log_message (void)
     g_io_channel_seek_position(syslog, first_log_file_size, G_SEEK_SET, &error);
     gcut_assert_error(error);
 
+    {
+        glong waited_micro_seconds = 0;
+        glong max_wait_micro_seconds = 1 * G_USEC_PER_SEC;
+        while (waited_micro_seconds < max_wait_micro_seconds) {
+            glong wait_micro_seconds = G_USEC_PER_SEC * 0.1;
+            struct stat status;
+            cut_assert_equal_int(0, g_lstat(syslog_file_name, &status));
+            if (status.st_size > first_log_file_size) {
+                break;
+            }
+            g_usleep(wait_micro_seconds);
+            waited_micro_seconds += wait_micro_seconds;
+        }
+    }
+
     g_io_channel_read_to_end(syslog, &actual, &read_length, &error);
     gcut_assert_error(error);
 }
