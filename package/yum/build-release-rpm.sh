@@ -87,17 +87,17 @@ EOR
 
     run mkdir -p $top_dir/5/stable/i386/Packages/
     run mkdir -p $top_dir/5/stable/x86_64/Packages/
-    run mkdir -p $top_dir/5/stable/SRPMS/
+    run mkdir -p $top_dir/5/stable/source/SRPMS/
     run cp -p $rpm_base_dir/RPMS/noarch/${PACKAGE}-release-* $top_dir/5/stable/i386/Packages/
     run cp -p $rpm_base_dir/RPMS/noarch/${PACKAGE}-release-* $top_dir/5/stable/x86_64/Packages/
-    run cp -p $rpm_base_dir/SRPMS/${PACKAGE}-release-* $top_dir/5/stable/SRPMS/
+    run cp -p $rpm_base_dir/SRPMS/${PACKAGE}-release-* $top_dir/5/stable/source/SRPMS/
 
     run mkdir -p $top_dir/6/stable/i386/Packages/
     run mkdir -p $top_dir/6/stable/x86_64/Packages/
-    run mkdir -p $top_dir/6/stable/SRPMS/
+    run mkdir -p $top_dir/6/stable/source/SRPMS/
     run cp -p $rpm_base_dir/RPMS/noarch/${PACKAGE}-release-* $top_dir/6/stable/i386/Packages/
     run cp -p $rpm_base_dir/RPMS/noarch/${PACKAGE}-release-* $top_dir/6/stable/x86_64/Packages/
-    run cp -p $rpm_base_dir/SRPMS/${PACKAGE}-release-* $top_dir/6/stable/SRPMS/
+    run cp -p $rpm_base_dir/SRPMS/${PACKAGE}-release-* $top_dir/6/stable/source/SRPMS/
 
     run cp -p ${script_base_dir}/RPM-GPG-KEY-${PACKAGE} $top_dir
 done
