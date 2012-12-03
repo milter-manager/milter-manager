@@ -2,6 +2,24 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-8-5] 1.8.5: 2012-12-03
+
+A bug fix release of 1.8.4.
+
+=== Package
+
+  * Drop Ubuntu Natty Narwhal support.
+  * Fix broken documents.
+
+=== Ruby milter
+
+  * Fix a typo in test for Ruby1.8.
+    [Pull requested by umq]
+
+=== Thanks
+
+  * umq
+
 == [release-1-8-4] 1.8.4: 2012-11-21
 
 A bug fix release of 1.8.3.
