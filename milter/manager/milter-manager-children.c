@@ -2600,7 +2600,7 @@ check_fallback_status_on_negotiate (MilterManagerChildren *children)
 {
     MilterManagerChildrenPrivate *priv;
     GList *node;
-    gboolean status = MILTER_STATUS_CONTINUE;
+    MilterStatus status = MILTER_STATUS_CONTINUE;
     gchar *status_name = NULL;
 
     priv = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children);
