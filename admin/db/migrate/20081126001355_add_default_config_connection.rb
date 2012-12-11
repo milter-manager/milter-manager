@@ -1,3 +1,8 @@
+if RUBY_VERSION > '1.8'
+  $LOAD_PATH.unshift("../../app/models/")
+  require "config/connection"
+end
+
 class AddDefaultConfigConnection < ActiveRecord::Migration
   def self.up
     begin
