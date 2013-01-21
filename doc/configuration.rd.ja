@@ -75,7 +75,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
   manager.remove_unix_socket_on_close = true
   manager.daemon = false
   manager.pid_file = nil
-  manager.maintenance_interval = 100
+  manager.maintenance_interval = 10
   manager.suspend_time_on_unacceptable = 5
   manager.max_connections = 0
   manager.custom_configuration_directory = nil
@@ -490,7 +490,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
      manager.maintenance_interval = nil
 
    既定値:
-     manager.maintenance_interval = 100
+     manager.maintenance_interval = 10
 
 : manager.suspend_time_on_unacceptable
 

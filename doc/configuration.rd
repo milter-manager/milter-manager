@@ -69,7 +69,7 @@ current configuration is shown.
   manager.remove_unix_socket_on_close = true
   manager.daemon = false
   manager.pid_file = nil
-  manager.maintenance_interval = 100
+  manager.maintenance_interval = 10
   manager.suspend_time_on_unacceptable = 5
   manager.max_connections = 0
   manager.custom_configuration_directory = nil
@@ -493,7 +493,7 @@ Since 1.6.6.
      manager.maintenance_interval = nil
 
    Default:
-     manager.maintenance_interval = 100
+     manager.maintenance_interval = 10
 
 : manager.suspend_time_on_unacceptable
 
