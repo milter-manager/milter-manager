@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -27,15 +27,19 @@
 #include "rb-milter-core-private.h"
 
 static VALUE
-rval2macro (VALUE data, VALUE user_data)
+rval2macro (VALUE rb_data, VALUE user_data)
 {
-    VALUE key, value;
+    VALUE rb_key, rb_value;
+    gchar *key, *value;
     GHashTable *macros = (GHashTable *)user_data;
 
-    key = RARRAY_PTR(data)[0];
-    value = RARRAY_PTR(data)[1];
+    rb_key = RARRAY_PTR(rb_data)[0];
+    rb_value = RARRAY_PTR(rb_data)[1];
 
-    g_hash_table_insert(macros, RVAL2CSTR(key), RVAL2CSTR(value));
+    key = g_strdup(RVAL2CSTR(rb_key));
+    value = g_strdup(RVAL2CSTR(rb_value));
+
+    g_hash_table_insert(macros, key, value);
 
     return Qnil;
 }
