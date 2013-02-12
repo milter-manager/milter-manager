@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -44,15 +44,18 @@ encode_negotiate (VALUE self, VALUE option)
 }
 
 static VALUE
-encode_define_macro (VALUE self, VALUE context, VALUE macros)
+encode_define_macro (VALUE self, VALUE rb_context, VALUE rb_macros)
 {
     const gchar *packet;
     gsize packet_size;
+    GHashTable *macros;
 
+    macros = RVAL2MACROS(rb_macros);
     milter_command_encoder_encode_define_macro(SELF(self),
 					       &packet, &packet_size,
-					       RVAL2COMMAND(context),
-					       RVAL2MACROS(macros));
+					       RVAL2COMMAND(rb_context),
+					       macros);
+    g_hash_table_destroy(macros);
 
     return CSTR2RVAL_SIZE(packet, packet_size);
 }
