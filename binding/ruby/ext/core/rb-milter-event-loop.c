@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2011-2013  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -27,12 +27,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "rb-milter-core-private.h"
-#ifdef RUBY_UBF_IO
-#  define USE_DIRECT_THREAD_BLOCKING_REGION 1
-struct rb_blocking_region_buffer;
-struct rb_blocking_region_buffer *rb_thread_blocking_region_begin(void);
-void rb_thread_blocking_region_end(struct rb_blocking_region_buffer *buffer);
-#else
+#ifndef HAVE_RB_THREAD_CHECK_INTS
 #  include <rubysig.h>
 #endif
 
@@ -428,78 +423,38 @@ libev_initialize (VALUE self)
     return Qnil;
 }
 
-#ifdef USE_DIRECT_THREAD_BLOCKING_REGION
-typedef struct _ReleaseData
+#ifdef HAVE_RB_THREAD_CHECK_INTS
+static gboolean
+custom_iterate (MilterEventLoop *loop, gboolean may_block, gpointer user_data)
 {
-    struct rb_blocking_region_buffer *buffer;
-} ReleaseData;
+    gboolean dispatched;
 
-static void
-cb_release (MilterEventLoop *loop, gpointer user_data)
-{
-    ReleaseData *data = user_data;
-    data->buffer = rb_thread_blocking_region_begin();
-}
+    dispatched = milter_event_loop_iterate_without_custom(loop, may_block);
+    rb_thread_check_ints();
 
-static void
-cb_acquire (MilterEventLoop *loop, gpointer user_data)
-{
-    ReleaseData *data = user_data;
-    rb_thread_blocking_region_end(data->buffer);
-}
-
-static void
-cb_notify (gpointer user_data)
-{
-    ReleaseData *data = user_data;
-    g_free(data);
+    return dispatched;
 }
 #else
-typedef struct _ReleaseData
+static gboolean
+custom_iterate (MilterEventLoop *loop, gboolean may_block, gpointer user_data)
 {
-    int trap_immediate;
-} ReleaseData;
+    gboolean dispatched;
 
-static void
-cb_release (MilterEventLoop *loop, gpointer user_data)
-{
-    ReleaseData *data = user_data;
-    data->trap_immediate = rb_trap_immediate;
-    rb_trap_immediate = 1;
-}
+    TRAP_BEG;
+    dispatched = milter_event_loop_iterate_without_custom(loop, may_block);
+    TRAP_END;
 
-static void
-cb_acquire (MilterEventLoop *loop, gpointer user_data)
-{
-    ReleaseData *data = user_data;
-    int saved_errno;
-
-    rb_trap_immediate = data->trap_immediate;
-    saved_errno = errno;
-    CHECK_INTS;
-    errno = saved_errno;
-}
-
-static void
-cb_notify (gpointer user_data)
-{
-    ReleaseData *data = user_data;
-    g_free(data);
+    return dispatched;
 }
 #endif
 
 void
 rb_milter_event_loop_setup (MilterEventLoop *loop)
 {
-    if (MILTER_IS_LIBEV_EVENT_LOOP(loop)) {
-	ReleaseData *data;
-	data = g_new0(ReleaseData, 1);
-	milter_libev_event_loop_set_release_func(loop,
-						 (GFunc)cb_release,
-						 (GFunc)cb_acquire,
-						 data,
-						 cb_notify);
-    }
+    milter_event_loop_set_custom_iterate_func(loop,
+					      custom_iterate,
+					      NULL,
+					      NULL);
 }
 
 static void
