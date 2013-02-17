@@ -1,4 +1,4 @@
-# Copyright (C) 2011  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2011-2013  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -206,10 +206,11 @@ class TestEventLoop < Test::Unit::TestCase
 
   def test_watch_io_exception
     n_called_before = n_called_after = 0
+    sleep_time = 0.01
     parent_read, child_write = IO.pipe
     pid = fork do
       child_write.puts("child")
-      sleep(0.1)
+      sleep(sleep_time)
       child_write.puts("child")
       exit!(true)
     end
@@ -219,6 +220,7 @@ class TestEventLoop < Test::Unit::TestCase
       raise "should be rescued"
       n_called_after += 1
     end
+    sleep(sleep_time)
     assert_nothing_raised {@loop.iterate(:may_block => false)}
     assert_equal([1, 0], [n_called_before, n_called_after])
     assert_nothing_raised {@loop.iterate(:may_block => false)}
