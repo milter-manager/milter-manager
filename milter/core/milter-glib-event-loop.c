@@ -37,7 +37,6 @@ struct _MilterGLibEventLoopPrivate
 {
     GMainContext *context;
     GMainLoop *loop;
-    GSource *breaker;
 };
 
 enum
@@ -152,18 +151,6 @@ milter_glib_event_loop_init (MilterGLibEventLoop *loop)
     priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
     priv->context = NULL;
     priv->loop = NULL;
-    priv->breaker = NULL;
-}
-
-static void
-dispose_breaker (MilterGLibEventLoopPrivate *priv)
-{
-    if (!priv->breaker) {
-        return;
-    }
-
-    g_source_destroy(priv->breaker);
-    priv->breaker = NULL;
 }
 
 static void
@@ -172,8 +159,6 @@ dispose (GObject *object)
     MilterGLibEventLoopPrivate *priv;
 
     priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(object);
-
-    dispose_breaker(priv);
 
     if (priv->loop) {
         g_main_loop_unref(priv->loop);
@@ -260,25 +245,13 @@ attach_source (MilterGLibEventLoopPrivate *priv, GSource *source)
     return id;
 }
 
-static gboolean
-cb_break (gpointer user_data)
-{
-    MilterGLibEventLoopPrivate *priv = user_data;
-    priv->breaker = NULL;
-    return G_SOURCE_REMOVE;
-}
-
 static void
 quit (MilterEventLoop *loop)
 {
     MilterGLibEventLoopPrivate *priv;
 
     priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
-    priv->breaker = g_idle_source_new();
-    g_source_set_priority(priv->breaker, G_PRIORITY_HIGH);
-    g_source_set_callback(priv->breaker, cb_break, priv, NULL);
-    attach_source(priv, priv->breaker);
-    g_source_unref(priv->breaker);
+    g_main_context_wakeup(g_main_loop_get_context(priv->loop));
 }
 
 static guint
