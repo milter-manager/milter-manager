@@ -1,7 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
- *  Copyright (C) 2011  Kouhei Sutou <nakada@clear-code.com>
+ *  Copyright (C) 2011-2013  Kouhei Sutou <nakada@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -36,6 +36,9 @@ typedef struct _MilterEventLoopPrivate	MilterEventLoopPrivate;
 struct _MilterEventLoopPrivate
 {
     MilterEventLoopCustomRunFunc custom_run;
+    MilterEventLoopCustomIterateFunc custom_iterate;
+    gpointer custom_iterate_user_data;
+    GDestroyNotify custom_iterate_destroy;
     guint depth;
 };
 
@@ -92,12 +95,36 @@ milter_event_loop_init (MilterEventLoop *loop)
 
     priv = MILTER_EVENT_LOOP_GET_PRIVATE(loop);
     priv->depth = 0;
+    priv->custom_iterate = NULL;
+    priv->custom_iterate_user_data = NULL;
+    priv->custom_iterate_destroy = NULL;
+}
+
+static void
+dispose_custom_iterate (MilterEventLoopPrivate *priv)
+{
+    if (!priv->custom_iterate) {
+        return;
+    }
+
+    if (priv->custom_iterate_destroy) {
+        priv->custom_iterate_destroy(priv->custom_iterate_user_data);
+    }
+    priv->custom_iterate           = NULL;
+    priv->custom_iterate_user_data = NULL;
+    priv->custom_iterate_destroy   = NULL;
 }
 
 static void
 dispose (GObject *object)
 {
+    MilterEventLoopPrivate *priv;
+
     milter_debug("[event-loop][dispose]");
+
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(object);
+    dispose_custom_iterate(priv);
+
     G_OBJECT_CLASS(milter_event_loop_parent_class)->dispose(object);
 }
 
@@ -215,12 +242,59 @@ milter_event_loop_get_custom_run_func (MilterEventLoop *loop)
 gboolean
 milter_event_loop_iterate (MilterEventLoop *loop, gboolean may_block)
 {
+    MilterEventLoopPrivate *priv;
+
+    g_return_val_if_fail(loop != NULL, FALSE);
+
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(loop);
+    if (priv->custom_iterate) {
+        return priv->custom_iterate(loop, may_block,
+                                    priv->custom_iterate_user_data);
+    } else {
+        return milter_event_loop_iterate_without_custom(loop, may_block);
+    }
+}
+
+gboolean
+milter_event_loop_iterate_without_custom (MilterEventLoop *loop,
+                                          gboolean may_block)
+{
     MilterEventLoopClass *loop_class;
 
     g_return_val_if_fail(loop != NULL, FALSE);
 
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
     return loop_class->iterate(loop, may_block);
+}
+
+void
+milter_event_loop_set_custom_iterate_func (MilterEventLoop             *loop,
+                                           MilterEventLoopCustomIterateFunc custom_iterate,
+                                           gpointer                     user_data,
+                                           GDestroyNotify               destroy)
+{
+    MilterEventLoopPrivate *priv;
+
+    g_return_if_fail(loop != NULL);
+
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(loop);
+
+    dispose_custom_iterate(priv);
+
+    priv->custom_iterate           = custom_iterate;
+    priv->custom_iterate_user_data = user_data;
+    priv->custom_iterate_destroy   = destroy;
+}
+
+MilterEventLoopCustomIterateFunc
+milter_event_loop_get_custom_iterate_func (MilterEventLoop *loop)
+{
+    MilterEventLoopPrivate *priv;
+
+    g_return_val_if_fail(loop != NULL, NULL);
+
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(loop);
+    return priv->custom_iterate;
 }
 
 void

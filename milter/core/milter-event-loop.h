@@ -1,7 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
- *  Copyright (C) 2011  Kouhei Sutou <nakada@clear-code.com>
+ *  Copyright (C) 2011-2013  Kouhei Sutou <nakada@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -85,6 +85,9 @@ struct _MilterEventLoopClass
 };
 
 typedef void        (*MilterEventLoopCustomRunFunc)      (MilterEventLoop *loop);
+typedef gboolean    (*MilterEventLoopCustomIterateFunc)  (MilterEventLoop *loop,
+                                                          gboolean         may_block,
+                                                          gpointer         user_data);
 
 GQuark               milter_event_loop_error_quark       (void);
 GType                milter_event_loop_get_type          (void) G_GNUC_CONST;
@@ -99,6 +102,17 @@ MilterEventLoopCustomRunFunc milter_event_loop_get_custom_run_func
                                                          (MilterEventLoop *loop);
 gboolean             milter_event_loop_iterate           (MilterEventLoop *loop,
                                                           gboolean         may_block);
+gboolean             milter_event_loop_iterate_without_custom
+                                                         (MilterEventLoop *loop,
+                                                          gboolean         may_block);
+void                 milter_event_loop_set_custom_iterate_func
+                                                         (MilterEventLoop *loop,
+                                                          MilterEventLoopCustomIterateFunc custom_iterate,
+                                                          gpointer         user_data,
+                                                          GDestroyNotify   destroy);
+MilterEventLoopCustomIterateFunc
+                     milter_event_loop_get_custom_iterate_func
+                                                         (MilterEventLoop *loop);
 void                 milter_event_loop_quit              (MilterEventLoop *loop);
 
 guint                milter_event_loop_watch_io          (MilterEventLoop *loop,
