@@ -1,7 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
- *  Copyright (C) 2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2011-2013  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -60,7 +60,6 @@ static void     get_property     (GObject         *object,
                                   GValue          *value,
                                   GParamSpec      *pspec);
 
-static void     run              (MilterEventLoop *loop);
 static gboolean iterate          (MilterEventLoop *loop,
                                   gboolean         may_block);
 static void     quit             (MilterEventLoop *loop);
@@ -109,7 +108,6 @@ milter_glib_event_loop_class_init (MilterGLibEventLoopClass *klass)
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
 
-    klass->parent_class.run = run;
     klass->parent_class.iterate = iterate;
     klass->parent_class.quit = quit;
     klass->parent_class.watch_io_full = watch_io_full;
@@ -227,15 +225,6 @@ milter_glib_event_loop_new (GMainContext *context)
                         NULL);
 }
 
-static void
-run (MilterEventLoop *loop)
-{
-    MilterGLibEventLoopPrivate *priv;
-
-    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
-    g_main_loop_run(priv->loop);
-}
-
 static gboolean
 iterate (MilterEventLoop *loop, gboolean may_block)
 {
@@ -246,15 +235,6 @@ iterate (MilterEventLoop *loop, gboolean may_block)
                                     may_block);
 }
 
-static void
-quit (MilterEventLoop *loop)
-{
-    MilterGLibEventLoopPrivate *priv;
-
-    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
-    g_main_loop_quit(priv->loop);
-}
-
 static guint
 attach_source (MilterGLibEventLoopPrivate *priv, GSource *source)
 {
@@ -263,6 +243,26 @@ attach_source (MilterGLibEventLoopPrivate *priv, GSource *source)
     id = g_source_attach(source, g_main_loop_get_context(priv->loop));
 
     return id;
+}
+
+static gboolean
+cb_break (gpointer user_data)
+{
+    return G_SOURCE_REMOVE;
+}
+
+static void
+quit (MilterEventLoop *loop)
+{
+    MilterGLibEventLoopPrivate *priv;
+    GSource *source;
+
+    priv = MILTER_GLIB_EVENT_LOOP_GET_PRIVATE(loop);
+    source = g_idle_source_new();
+    g_source_set_priority(source, G_PRIORITY_HIGH);
+    g_source_set_callback(source, cb_break, NULL, NULL);
+    attach_source(priv, source);
+    g_source_unref(source);
 }
 
 static guint

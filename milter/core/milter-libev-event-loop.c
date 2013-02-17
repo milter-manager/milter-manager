@@ -1,7 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010, 2011  Nobuyoshi Nakada <nakada@clear-code.com>
- *  Copyright (C) 2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2011-2013  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -70,7 +70,6 @@ static void     get_property     (GObject         *object,
 
 static void     destroy_watcher  (gpointer         data);
 
-static void     run              (MilterEventLoop *loop);
 static gboolean iterate          (MilterEventLoop *loop,
                                   gboolean         may_block);
 static void     quit             (MilterEventLoop *loop);
@@ -118,7 +117,6 @@ milter_libev_event_loop_class_init (MilterLibevEventLoopClass *klass)
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
 
-    klass->parent_class.run = run;
     klass->parent_class.iterate = iterate;
     klass->parent_class.quit = quit;
     klass->parent_class.watch_io_full = watch_io_full;
@@ -368,15 +366,6 @@ remove_watcher (MilterLibevEventLoop *loop, guint id)
 
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
     return g_hash_table_remove(priv->watchers, GUINT_TO_POINTER(id));
-}
-
-static void
-run (MilterEventLoop *loop)
-{
-    MilterLibevEventLoopPrivate *priv;
-
-    priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
-    ev_run(priv->ev_loop, 0);
 }
 
 static gboolean

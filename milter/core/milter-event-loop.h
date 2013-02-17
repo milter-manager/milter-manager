@@ -51,7 +51,6 @@ struct _MilterEventLoopClass
 {
     GObjectClass parent_class;
 
-    void     (*run)              (MilterEventLoop *loop);
     gboolean (*iterate)          (MilterEventLoop *loop,
                                   gboolean         may_block);
     void     (*quit)             (MilterEventLoop *loop);

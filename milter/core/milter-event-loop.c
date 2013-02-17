@@ -71,7 +71,6 @@ milter_event_loop_class_init (MilterEventLoopClass *klass)
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
 
-    klass->run = NULL;
     klass->quit = NULL;
     klass->watch_io_full = NULL;
     klass->watch_child_full = NULL;
@@ -179,18 +178,15 @@ milter_event_loop_error_quark (void)
 void
 milter_event_loop_run (MilterEventLoop *loop)
 {
-    MilterEventLoopClass *loop_class;
     MilterEventLoopPrivate *priv;
 
     g_return_if_fail(loop != NULL);
 
     priv = MILTER_EVENT_LOOP_GET_PRIVATE(loop);
-    loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
-    priv->depth++;
     if (priv->custom_run) {
         priv->custom_run(loop);
     } else {
-        loop_class->run(loop);
+        milter_event_loop_run_without_custom(loop);
     }
 }
 
@@ -208,12 +204,16 @@ milter_event_loop_is_running (MilterEventLoop *loop)
 void
 milter_event_loop_run_without_custom (MilterEventLoop *loop)
 {
-    MilterEventLoopClass *loop_class;
+    MilterEventLoopPrivate *priv;
+    guint depth;
 
     g_return_if_fail(loop != NULL);
 
-    loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
-    loop_class->run(loop);
+    priv = MILTER_EVENT_LOOP_GET_PRIVATE(loop);
+    depth = priv->depth++;
+    while (priv->depth > depth) {
+        milter_event_loop_iterate(loop, TRUE);
+    }
 }
 
 void
