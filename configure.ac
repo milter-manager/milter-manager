@@ -537,6 +537,9 @@ if test "$RD2" != "rd2-not-found"; then
     if test -z "$RD2RUBY"; then
 	RD2RUBY='$(RUBY)'
     fi
+    if test "$RD2RUBY" = "ruby_noexec_wrapper"; then
+	RD2RUBY='$(RUBY)'
+    fi
     AC_SUBST(RD2RUBY)
 fi
 
