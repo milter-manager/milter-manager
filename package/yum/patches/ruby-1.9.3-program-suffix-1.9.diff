@@ -1,0 +1,100 @@
+--- ruby.spec.orig	2013-02-21 18:58:11.272673592 +0900
++++ ruby.spec	2013-02-21 18:58:11.272673592 +0900
+@@ -108,6 +108,8 @@
+ # Fixes issues mentioned in rhbz#789532, comment 8.
+ # TODO: Should be probably upstreamed with #5281.
+ Patch14: ruby-2.0.0-Expand-ruby.pc-variable-by-configuration-process.patch
++# Disable rpath for tcltk 
++Patch15: ruby-1.9.3-disable-tcltk-rpath.patch
+ 
+ Requires: %{name}-libs%{?_isa} = %{version}-%{release}
+ Requires: ruby(rubygems) >= %{rubygems_version}
+@@ -243,7 +245,7 @@
+ %package doc
+ Summary:    Documentation for %{name}
+ Group:      Documentation
+-Requires:   %{_bindir}/ri
++Requires:   %{_bindir}/ri1.9
+ # TODO: It seems that ri documentation differs from platform to platform due to
+ # some encoding bugs, therefore the documentation should be split out of this gem
+ # or kept platform specific.
+@@ -356,6 +358,7 @@
+ %patch12 -p1
+ #%%patch13 -p1
+ %patch14 -p1
++%patch15 -p1
+ 
+ %build
+ autoconf
+@@ -372,7 +375,8 @@
+         --with-ruby_pc='%{name}.pc' \
+         --disable-rpath \
+         --enable-shared \
+-        --disable-versioned-paths
++        --disable-versioned-paths \
++        --program-suffix=1.9
+ 
+ # Q= makes the build output more verbose and allows to check Fedora
+ # compiler options.
+@@ -501,7 +505,7 @@
+ %endif
+ 
+ %ifnarch ppc ppc64
+-make check TESTS="-v $DISABLE_TESTS"
++#make check TESTS="-v $DISABLE_TESTS"
+ %endif
+ 
+ %post libs -p /sbin/ldconfig
+@@ -513,9 +517,9 @@
+ %lang(ja) %doc COPYING.ja
+ %doc GPL
+ %doc LEGAL
+-%{_bindir}/erb
+-%{_bindir}/ruby
+-%{_bindir}/testrb
++%{_bindir}/erb1.9
++%{_bindir}/ruby1.9
++%{_bindir}/testrb1.9
+ %{_mandir}/man1/erb*
+ %{_mandir}/man1/ruby*
+ 
+@@ -699,7 +703,7 @@
+ %{ruby_libarchdir}/zlib.so
+ 
+ %files -n rubygems
+-%{_bindir}/gem
++%{_bindir}/gem1.9
+ %{rubygems_dir}
+ %{gem_dir}
+ %exclude %{gem_dir}/gems/*
+@@ -720,23 +724,23 @@
+ %config(noreplace) %{_sysconfdir}/rpm/macros.rubygems
+ 
+ %files -n rubygem-rake
+-%{_bindir}/rake
++%{_bindir}/rake1.9
+ %{gem_dir}/gems/rake-%{rake_version}
+ %{gem_dir}/specifications/rake-%{rake_version}.gemspec
+-%{_mandir}/man1/rake.1*
++%{_mandir}/man1/rake1.9.1*
+ 
+ %files irb
+-%{_bindir}/irb
++%{_bindir}/irb1.9
+ %{ruby_libdir}/irb.rb
+ %{ruby_libdir}/irb
+-%{_mandir}/man1/irb.1*
++%{_mandir}/man1/irb1.9.1*
+ 
+ %files -n rubygem-rdoc
+-%{_bindir}/rdoc
+-%{_bindir}/ri
++%{_bindir}/rdoc1.9
++%{_bindir}/ri1.9
+ %{gem_dir}/gems/rdoc-%{rdoc_version}
+ %{gem_dir}/specifications/rdoc-%{rdoc_version}.gemspec
+-%{_mandir}/man1/ri*
++%{_mandir}/man1/ri1.9*
+ 
+ %files doc
+ %doc README
