@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -60,6 +60,7 @@ void test_use_syslog (void);
 void test_syslog_facility (void);
 void test_chunk_size (void);
 void test_chunk_size_over (void);
+void test_max_pending_finished_sessions (void);
 void test_egg (void);
 void test_find_egg (void);
 void test_remove_egg (void);
@@ -630,6 +631,18 @@ test_chunk_size_over (void)
         milter_manager_configuration_get_chunk_size(config));
 }
 
+void
+test_max_pending_finished_sessions (void)
+{
+    cut_assert_equal_uint(
+        0,
+        milter_manager_configuration_get_max_pending_finished_sessions(config));
+    milter_manager_configuration_set_max_pending_finished_sessions(config, 29);
+    cut_assert_equal_uint(
+        29,
+        milter_manager_configuration_get_max_pending_finished_sessions(config));
+}
+
 static void
 milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
 {
@@ -724,6 +737,10 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
     cut_assert_equal_uint(
         MILTER_CHUNK_SIZE,
         milter_manager_configuration_get_chunk_size(config));
+
+    cut_assert_equal_uint(
+        0,
+        milter_manager_configuration_get_max_pending_finished_sessions(config));
 
     if (expected_children)
         g_object_unref(expected_children);
@@ -948,6 +965,7 @@ test_clear (void)
     test_use_syslog();
     test_syslog_facility();
     test_chunk_size();
+    test_max_pending_finished_sessions();
 
     handler_id = g_signal_connect(config, "connected",
                                   G_CALLBACK(cb_connected), NULL);

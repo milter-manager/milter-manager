@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -81,6 +81,7 @@ struct _MilterManagerConfigurationPrivate
     gboolean use_syslog;
     gchar *syslog_facility;
     guint chunk_size;
+    guint max_pending_finished_sessions;
 };
 
 enum
@@ -117,7 +118,8 @@ enum
     PROP_PREFIX,
     PROP_USE_SYSLOG,
     PROP_SYSLOG_FACILITY,
-    PROP_CHUNK_SIZE
+    PROP_CHUNK_SIZE,
+    PROP_MAX_PENDING_FINISHED_SESSIONS
 };
 
 enum
@@ -454,6 +456,16 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                              G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
     g_object_class_install_property(gobject_class, PROP_CHUNK_SIZE, spec);
 
+    spec = g_param_spec_uint("max-pending-finished-sessions",
+                             "Maximum number of pending finished sessions",
+                             "The maximum number of pending finished sessions "
+                             "of milter-manager",
+                             0, G_MAXUINT, 0,
+                             G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class,
+                                    PROP_MAX_PENDING_FINISHED_SESSIONS,
+                                    spec);
+
     signals[CONNECTED] =
         g_signal_new("connected",
                      G_TYPE_FROM_CLASS(klass),
@@ -507,6 +519,7 @@ milter_manager_configuration_init (MilterManagerConfiguration *configuration)
     priv->default_packet_buffer_size = 0;
     priv->syslog_facility = NULL;
     priv->chunk_size = MILTER_CHUNK_SIZE;
+    priv->max_pending_finished_sessions = 0;
 
     config_dir_env = g_getenv("MILTER_MANAGER_CONFIG_DIR");
     if (config_dir_env)
@@ -680,6 +693,10 @@ set_property (GObject      *object,
         milter_manager_configuration_set_chunk_size(
             config, g_value_get_uint(value));
         break;
+    case PROP_MAX_PENDING_FINISHED_SESSIONS:
+        milter_manager_configuration_set_max_pending_finished_sessions(
+            config, g_value_get_uint(value));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -791,6 +808,9 @@ get_property (GObject    *object,
         break;
     case PROP_CHUNK_SIZE:
         g_value_set_uint(value, priv->chunk_size);
+        break;
+    case PROP_MAX_PENDING_FINISHED_SESSIONS:
+        g_value_set_uint(value, priv->max_pending_finished_sessions);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -1929,6 +1949,7 @@ clear_manager (MilterManagerConfigurationPrivate *priv)
     priv->n_workers = 0;
     priv->default_packet_buffer_size = 0;
     priv->chunk_size = MILTER_CHUNK_SIZE;
+    priv->max_pending_finished_sessions = 0;
 }
 
 static void
@@ -2392,6 +2413,25 @@ milter_manager_configuration_set_chunk_size (MilterManagerConfiguration *configu
 
     priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
     priv->chunk_size = MIN(size, MILTER_CHUNK_SIZE);
+}
+
+guint
+milter_manager_configuration_get_max_pending_finished_sessions (MilterManagerConfiguration *configuration)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    return priv->max_pending_finished_sessions;
+}
+
+void
+milter_manager_configuration_set_max_pending_finished_sessions (MilterManagerConfiguration *configuration,
+                                                                guint                       n_sessions)
+{
+    MilterManagerConfigurationPrivate *priv;
+
+    priv = MILTER_MANAGER_CONFIGURATION_GET_PRIVATE(configuration);
+    priv->max_pending_finished_sessions = n_sessions;
 }
 
 /*

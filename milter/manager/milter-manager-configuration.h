@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -389,6 +389,12 @@ guint         milter_manager_configuration_get_chunk_size
 void          milter_manager_configuration_set_chunk_size
                                      (MilterManagerConfiguration *configuration,
                                       guint                       size);
+
+guint         milter_manager_configuration_get_max_pending_finished_sessions
+                                     (MilterManagerConfiguration *configuration);
+void          milter_manager_configuration_set_max_pending_finished_sessions
+                                     (MilterManagerConfiguration *configuration,
+                                      guint                       n_sessions);
 
 G_END_DECLS
 
