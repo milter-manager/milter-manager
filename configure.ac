@@ -271,9 +271,11 @@ if test "$ruby_available" = "yes"; then
     rbconfig_value=`$rbconfig "print Shellwords.shellwords(RbConfig::CONFIG['$var_name'] || '').join(' ')"`
     eval "rbconfig_$var_name=\"$rbconfig_value\""
   done
+  ruby_major_version="`$RUBY -e 'print RUBY_VERSION.split(/\\./)[0]'`"
   ruby_minor_version="`$RUBY -e 'print RUBY_VERSION.split(/\\./)[1]'`"
   ruby_micro_version="`$RUBY -e 'print RUBY_VERSION.split(/\\./)[2]'`"
   changequote([, ])
+  ruby_version="${ruby_major_version}${ruby_minor_version}${ruby_micro_version}"
 
   if test "$rbconfig_rubyhdrdir" = ""; then
     RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitearchdir "
@@ -395,7 +397,7 @@ if test "$ruby_available" = "yes"; then
 
   if test "x$use_bundled_ruby_glib2" != "xno" -a \
           "x$ruby_glib2_available" != "xyes"; then
-    if test $ruby_minor_version$ruby_micro_version -gt 85; then
+    if test $ruby_version -gt 185; then
       ac_used_bundled_ruby_glib2_version=${bundled_latest_ruby_glib2_version}
     else
       ac_used_bundled_ruby_glib2_version=0.16.0
