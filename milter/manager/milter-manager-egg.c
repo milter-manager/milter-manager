@@ -672,7 +672,7 @@ milter_manager_egg_get_user_name (MilterManagerEgg *egg)
 
 void
 milter_manager_egg_set_command (MilterManagerEgg *egg,
-                                  const gchar *command)
+                                const gchar *command)
 {
     MilterManagerEggPrivate *priv;
 
