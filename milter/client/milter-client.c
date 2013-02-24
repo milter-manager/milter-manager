@@ -112,7 +112,7 @@ struct _MilterClientPrivate
     gchar *effective_group;
 
     guint finisher_id;
-    GList *finished_data;
+    GPtrArray *finished_data;
 
     MilterSyslogLogger *syslog_logger;
     MilterClientEventLoopBackend event_loop_backend;
@@ -653,8 +653,7 @@ dispose_finished_data (MilterClient *client)
         return;
 
     n_processed_sessions_before = priv->n_processed_sessions;
-    g_list_foreach(priv->finished_data, (GFunc)finish_processing, NULL);
-    g_list_free(priv->finished_data);
+    g_ptr_array_unref(priv->finished_data);
     priv->finished_data = NULL;
     n_finished_sessions =
         priv->n_processed_sessions - n_processed_sessions_before;
@@ -1124,7 +1123,7 @@ single_thread_finisher (gpointer _data)
 {
     MilterClientProcessData *data = _data;
 
-    milter_debug("[client][finisher][run]");
+    milter_debug("[client][finisher][idle][run]");
 
     data->priv->finisher_id = 0;
     dispose_finished_data(data->client);
@@ -1137,11 +1136,29 @@ single_thread_cb_finished (MilterClientContext *context, gpointer _data)
 {
     MilterClientPrivate *priv;
     MilterClientProcessData *data = _data;
+    guint max_pending_finished_sessions;
 
     dispose_process_data_finished_handler(data);
     priv = data->priv;
-    priv->finished_data = g_list_prepend(priv->finished_data, data);
-    if (priv->finisher_id == 0) {
+    if (!priv->finished_data) {
+        priv->finished_data = g_ptr_array_new();
+        g_ptr_array_set_free_func(priv->finished_data,
+                                  (GDestroyNotify)finish_processing);
+    }
+    g_ptr_array_add(priv->finished_data, data);
+
+    max_pending_finished_sessions =
+        milter_client_get_max_pending_finished_sessions(data->client);
+    if (0 < max_pending_finished_sessions &&
+        max_pending_finished_sessions < priv->finished_data->len) {
+        milter_debug("[client][finisher][immediate][run] %u > %u",
+                     priv->finished_data->len, max_pending_finished_sessions);
+        if (priv->finisher_id != 0) {
+            milter_event_loop_remove(priv->event_loop, priv->finisher_id);
+            priv->finisher_id = 0;
+        }
+        dispose_finished_data(data->client);
+    } else if (priv->finisher_id == 0) {
         priv->finisher_id =
             milter_event_loop_add_idle_full(priv->event_loop,
                                             G_PRIORITY_DEFAULT,
