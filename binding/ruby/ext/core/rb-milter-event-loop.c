@@ -429,6 +429,7 @@ custom_iterate (MilterEventLoop *loop, gboolean may_block, gpointer user_data)
 {
     gboolean dispatched;
 
+    rb_thread_check_ints();
     dispatched = milter_event_loop_iterate_without_custom(loop, may_block);
     rb_thread_check_ints();
 
