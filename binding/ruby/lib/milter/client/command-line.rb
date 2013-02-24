@@ -1,4 +1,4 @@
-# Copyright (C) 2010-2011  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2010-2013  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -208,6 +208,14 @@ module Milter
                           "(#{milter_conf.packet_buffer_size})") do |size|
           raise OptionParser::InvalidArgument if size < 0
           milter_conf.packet_buffer_size = size
+        end
+
+        @option_parser.on("--max-pending-finished-sessions=N",
+                          Integer,
+                          "Don't hold over N pending finished sessions.",
+                          "(#{milter_conf.max_pending_finished_sessions})") do |n|
+          raise OptionParser::InvalidArgument if n <= 0
+          milter_conf.max_pending_finished_sessions = n
         end
 
         @option_parser.on("--[no-]handle-signal",
