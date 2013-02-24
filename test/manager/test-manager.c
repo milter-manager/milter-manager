@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -432,17 +432,24 @@ test_unknown_option (void)
             "\n"
             "Help Options:\n"
 #if GLIB_CHECK_VERSION(2, 21, 0)
-            "  -h, --help                        Show help options\n"
+            "  -h, --help                                     "
+            "Show help options\n"
 #else
-            "  -?, --help                        Show help options\n"
+            "  -?, --help                                     "
+            "Show help options\n"
 #endif
-            "  --help-all                        Show all help options\n"
-            "  --help-milter                     Show milter help options\n"
+            "  --help-all                                     "
+            "Show all help options\n"
+            "  --help-milter                                  "
+            "Show milter help options\n"
             "\n"
             "Application Options:\n"
-            "  -c, --config-dir=DIRECTORY        The configuration directory that has configuration file.\n"
-            "  --show-config                     Show configuration and exit\n"
-            "  --version                         Show version\n"
+            "  -c, --config-dir=DIRECTORY                     "
+            "The configuration directory that has configuration file.\n"
+            "  --show-config                                  "
+            "Show configuration and exit\n"
+            "  --version                                      "
+            "Show version\n"
             "\n",
             milter_manager_program_name),
         manager_data->output_string->str);

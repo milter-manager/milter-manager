@@ -538,6 +538,41 @@ parse_pid_file (const gchar *option_name,
     return TRUE;
 }
 
+static gboolean
+parse_max_pending_finished_sessions (const gchar *option_name,
+                                     const gchar *value,
+                                     gpointer data,
+                                     GError **error)
+{
+    MilterClient *client = data;
+    gchar *end;
+    glong n_sessions;
+
+    errno = 0;
+    n_sessions = strtol(value, &end, 0);
+
+    if (end[0] != '\0') {
+        set_invalid_integer_value_error(error, option_name, value, end);
+        return FALSE;
+    }
+
+    if (n_sessions > G_MAXUINT || errno == ERANGE) {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    _("%s: too big: <%s>: parsed=<%ld>, max=<%d>"),
+                    option_name,
+                    value,
+                    n_sessions,
+                    G_MAXUINT);
+      return FALSE;
+    }
+
+    milter_client_set_max_pending_finished_sessions(client, n_sessions);
+
+    return TRUE;
+}
+
 static const GOptionEntry option_entries[] =
 {
     {"connection-spec", 's', 0, G_OPTION_ARG_CALLBACK, parse_connection_spec,
@@ -591,6 +626,10 @@ static const GOptionEntry option_entries[] =
         "(default: 0; disabled)"), "SIZE"},
     {"pid-file", 0, 0, G_OPTION_ARG_CALLBACK, parse_pid_file,
      N_("Put PID to FILE (default: disabled)"), "FILE"},
+    {"max-pending-finished-sessions", 0, 0, G_OPTION_ARG_CALLBACK,
+     parse_max_pending_finished_sessions,
+     N_("Don't hold over N_SESSIONS pending finished sessions (default: 0)"),
+     "N_SESSIONS"},
     {NULL}
 };
 
