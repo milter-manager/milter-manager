@@ -7,7 +7,7 @@ rvm:
   - 2.0.0
 env:
   - MILTER_EVENT_LOOP_BACKEND=glib
-  - MILTER_EVENT_LOOP_BACKEND=libev
+#  - MILTER_EVENT_LOOP_BACKEND=libev
 install:
   - curl https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh
   - sudo apt-get install -y autotools-dev intltool libglib2.0-dev ruby1.8-dev ruby1.9.1-dev cutter-testing-framework subversion
