@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -84,6 +84,12 @@ class TestConfiguration < Test::Unit::TestCase
     assert_equal(0, @configuration.default_packet_buffer_size)
     @configuration.default_packet_buffer_size = 4096
     assert_equal(4096, @configuration.default_packet_buffer_size)
+  end
+
+  def test_max_pending_finished_sessions
+    assert_equal(0, @configuration.max_pending_finished_sessions)
+    @configuration.max_pending_finished_sessions = 29
+    assert_equal(29, @configuration.max_pending_finished_sessions)
   end
 
   def test_package
@@ -293,6 +299,8 @@ manager.packet_buffer_size = 0
 manager.connection_check_interval = 0
 # default
 manager.chunk_size = 65535
+# default
+manager.max_pending_finished_sessions = 0
 
 # default
 controller.connection_spec = nil
@@ -434,6 +442,8 @@ manager.packet_buffer_size = 0
 manager.connection_check_interval = 0
 # default
 manager.chunk_size = 65535
+# default
+manager.max_pending_finished_sessions = 0
 
 # #{__FILE__}:#{controller_connection_spec}
 controller.connection_spec = "inet:10025"

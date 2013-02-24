@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -203,6 +203,8 @@ module Milter
         dump_item("manager.connection_check_interval",
                   c.connection_check_interval.inspect)
         dump_item("manager.chunk_size", c.chunk_size)
+        dump_item("manager.max_pending_finished_sessions",
+                  c.max_pending_finished_sessions)
         @result << "\n"
       end
 
@@ -927,6 +929,14 @@ module Milter
 
           def packet_buffer_size=(size)
             @configuration.default_packet_buffer_size = size
+          end
+
+          def max_pending_finished_sessions
+            @configuration.max_pending_finished_sessions
+          end
+
+          def max_pending_finished_sessions=(n_sessions)
+            @configuration.max_pending_finished_sessions = n_sessions
           end
 
           def maintained_hooks
