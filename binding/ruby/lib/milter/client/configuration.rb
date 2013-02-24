@@ -1,4 +1,4 @@
-# Copyright (C) 2011  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2011-2013  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -69,6 +69,7 @@ module Milter
         attr_accessor :suspend_time_on_unacceptable, :max_connections
         attr_accessor :max_file_descriptors, :event_loop_backend
         attr_accessor :n_workers, :packet_buffer_size
+        attr_accessor :max_pending_finished_sessions
         attr_accessor :fallback_status
         attr_writer :daemon, :handle_signal, :run_gc_on_maintain
         attr_reader :maintained_hooks, :event_loop_created_hooks
@@ -107,6 +108,7 @@ module Milter
           @event_loop_backend = Milter::Client::EVENT_LOOP_BACKEND_GLIB.nick
           @n_workers = 0
           @packet_buffer_size = 0
+          @max_pending_finished_sessions = 0
           @run_gc_on_maintain = true
           @handle_signal = true
           @maintained_hooks = []
@@ -128,6 +130,7 @@ module Milter
             end
           end
           client.n_workers = @n_workers
+          client.max_pending_finished_sessions = @max_pending_finished_sessions
           unless @maintained_hooks.empty?
             client.on_maintain do
               maintained
@@ -609,6 +612,16 @@ module Milter
           update_location("size", size.nil?)
           size ||= 0
           @configuration.packet_buffer_size = size
+        end
+
+        def max_pending_finished_sessions
+          @configuration.max_pending_finished_sessions
+        end
+
+        def max_pending_finished_sessions=(n_sessions)
+          update_location("max_pending_finished_sessions", n_sessions.nil?)
+          n_sessions ||= 0
+          @configuration.max_pending_finished_sessions = n_sessions
         end
 
         def maintained(hook=Proc.new)

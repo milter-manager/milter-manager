@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -243,6 +243,14 @@ class TestConfigurationLoader < Test::Unit::TestCase
   def test_manager_chunk_size_over
     @loader.manager.chunk_size = 65536
     assert_equal(65535, @configuration.chunk_size)
+  end
+
+  def test_manager_max_pending_finished_sessions
+    assert_equal(0, @configuration.max_pending_finished_sessions)
+    @loader.manager.max_pending_finished_sessions = 29
+    assert_equal(29, @configuration.max_pending_finished_sessions)
+    @loader.manager.max_pending_finished_sessions = nil
+    assert_equal(0, @configuration.max_pending_finished_sessions)
   end
 
   def test_database_type
