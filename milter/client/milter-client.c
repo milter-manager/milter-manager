@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -52,7 +52,8 @@ enum
     PROP_SYSLOG_IDENTIFY,
     PROP_SYSLOG_FACILITIY,
     PROP_START_SYSLOG,
-    PROP_RUN_AS_DAEMON
+    PROP_RUN_AS_DAEMON,
+    PROP_MAX_PENDING_FINISHED_SESSIONS
 };
 
 enum
@@ -126,6 +127,8 @@ struct _MilterClientPrivate
     gchar *syslog_facility;
     gboolean run_as_daemon;
     gboolean daemonized;
+
+    guint max_pending_finished_sessions;
 };
 
 typedef struct _MilterClientProcessData
@@ -210,6 +213,12 @@ static gboolean run_master (MilterClient *client,
 static gboolean run_worker (MilterClient *client,
                             GError      **error);
 
+static guint        get_max_pending_finished_sessions
+                           (MilterClient    *client);
+static void         set_max_pending_finished_sessions
+                           (MilterClient    *client,
+                            guint            n_sessions);
+
 static void
 _milter_client_class_init (MilterClientClass *klass)
 {
@@ -244,6 +253,10 @@ _milter_client_class_init (MilterClientClass *klass)
     client_class->set_run_as_daemon      = set_run_as_daemon;
     client_class->listen_started         = listen_started;
     client_class->fork                   = default_fork;
+    client_class->get_max_pending_finished_sessions
+                                         = get_max_pending_finished_sessions;
+    client_class->set_max_pending_finished_sessions
+                                         = set_max_pending_finished_sessions;
 
     spec = g_param_spec_string("connection-spec",
                                "Connection Spec",
@@ -350,6 +363,15 @@ _milter_client_class_init (MilterClientClass *klass)
                                NULL,
                                G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_RUN_AS_DAEMON, spec);
+
+    spec = g_param_spec_uint("max-pending-finished-sessions",
+                             "Maximum number of pending finished sessions",
+                             "The maximum number of pending finished sessions "
+                             "of the client",
+                             0, G_MAXUINT, 0,
+                             G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class,
+                                    PROP_MAX_PENDING_FINISHED_SESSIONS, spec);
 
     signals[CONNECTION_ESTABLISHED] =
         g_signal_new("connection-established",
@@ -490,6 +512,8 @@ _milter_client_init (MilterClient *client)
 
     priv->run_as_daemon = FALSE;
     priv->daemonized = FALSE;
+
+    priv->max_pending_finished_sessions = 0;
 }
 
 static void
@@ -836,6 +860,10 @@ set_property (GObject      *object,
     case PROP_RUN_AS_DAEMON:
         milter_client_set_run_as_daemon(client, g_value_get_boolean(value));
         break;
+    case PROP_MAX_PENDING_FINISHED_SESSIONS:
+        milter_client_set_max_pending_finished_sessions(client,
+                                                        g_value_get_uint(value));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -895,6 +923,10 @@ get_property (GObject    *object,
         break;
     case PROP_RUN_AS_DAEMON:
         g_value_set_boolean(value, milter_client_is_run_as_daemon(client));
+        break;
+    case PROP_MAX_PENDING_FINISHED_SESSIONS:
+        g_value_set_uint(value,
+                         milter_client_get_max_pending_finished_sessions(client));
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -3146,6 +3178,40 @@ milter_client_set_run_as_daemon (MilterClient *client, gboolean daemon)
 
     klass = MILTER_CLIENT_GET_CLASS(client);
     klass->set_run_as_daemon(client, daemon);
+}
+
+static guint
+get_max_pending_finished_sessions (MilterClient *client)
+{
+    return MILTER_CLIENT_GET_PRIVATE(client)->max_pending_finished_sessions;
+}
+
+guint
+milter_client_get_max_pending_finished_sessions (MilterClient *client)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    return klass->get_max_pending_finished_sessions(client);
+}
+
+static void
+set_max_pending_finished_sessions (MilterClient *client, guint n_sessions)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    priv->max_pending_finished_sessions = n_sessions;
+}
+
+void
+milter_client_set_max_pending_finished_sessions (MilterClient  *client,
+                                                 guint          n_sessions)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    klass->set_max_pending_finished_sessions(client, n_sessions);
 }
 
 /*

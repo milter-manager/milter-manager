@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -198,6 +198,11 @@ struct _MilterClientClass
     gboolean (*is_run_as_daemon)          (MilterClient *client);
     void   (*set_run_as_daemon)           (MilterClient *client,
                                            gboolean      daemon);
+    guint  (*get_max_pending_finished_sessions)
+                                          (MilterClient *client);
+    void   (*set_max_pending_finished_sessions)
+                                          (MilterClient *client,
+                                           guint         n_sessions);
 };
 
 GQuark               milter_client_error_quark       (void);
@@ -1008,6 +1013,32 @@ gboolean             milter_client_is_run_as_daemon  (MilterClient  *client);
  */
 void                 milter_client_set_run_as_daemon (MilterClient  *client,
                                                       gboolean       daemon);
+
+/**
+ * milter_client_get_max_pending_finished_sessions:
+ * @client: a %MilterClient.
+ *
+ * Gets the maximum number of pending finished sessions of @client.
+ *
+ * Returns: the maximum number of pending finished sessions of @client.
+ */
+guint                milter_client_get_max_pending_finished_sessions
+                                                     (MilterClient  *client);
+
+/**
+ * milter_client_set_max_pending_finished_sessions:
+ * @client: a %MilterClient.
+ * @n_sessions: the maximum number of pending finished sessions.
+ *
+ * Sets the maximum number of pending finished sessions of @client. If
+ * the number of finished sessions that are not freed is larger than
+ * @n_sessions, all those finished sessions are freed immediately.
+ *
+ * 0 means that this cheack is disabled.
+ */
+void                 milter_client_set_max_pending_finished_sessions
+                                                     (MilterClient  *client,
+                                                      guint          n_sessions);
 
 G_END_DECLS
 

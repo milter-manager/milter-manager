@@ -69,6 +69,7 @@ void test_n_workers (void);
 void test_custom_fork (void);
 void test_default_packet_buffer_size (void);
 void test_worker_id (void);
+void test_max_pending_finished_sessions (void);
 
 static MilterEventLoop *loop;
 
@@ -1088,6 +1089,16 @@ void
 test_worker_id (void)
 {
     cut_assert_equal_uint(0, milter_client_get_worker_id(client));
+}
+
+void
+test_max_pending_finished_sessions (void)
+{
+    cut_assert_equal_uint(
+        0, milter_client_get_max_pending_finished_sessions(client));
+    milter_client_set_max_pending_finished_sessions(client, 29);
+    cut_assert_equal_uint(
+        29, milter_client_get_max_pending_finished_sessions(client));
 }
 
 
