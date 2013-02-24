@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -54,6 +54,7 @@ struct _MilterManagerPrivate
 
     gboolean is_custom_n_workers;
     gboolean is_custom_run_as_daemon;
+    gboolean is_custom_max_pending_finished_sessions;
 };
 
 enum
@@ -130,6 +131,11 @@ static gboolean is_run_as_daemon          (MilterClient *client);
 static void   set_run_as_daemon           (MilterClient *client,
                                            gboolean      daemon);
 static GPid   fork_delegate               (MilterClient *client);
+static guint  get_max_pending_finished_sessions
+                                          (MilterClient *client);
+static void   set_max_pending_finished_sessions
+                                          (MilterClient *client,
+                                           guint         n_sessions);
 
 static void
 milter_manager_class_init (MilterManagerClass *klass)
@@ -179,6 +185,10 @@ milter_manager_class_init (MilterManagerClass *klass)
     client_class->maintain = maintain;
     client_class->sessions_finished = sessions_finished;
     client_class->event_loop_created = event_loop_created;
+    client_class->get_max_pending_finished_sessions =
+        get_max_pending_finished_sessions;
+    client_class->set_max_pending_finished_sessions =
+        set_max_pending_finished_sessions;
 
     spec = g_param_spec_object("configuration",
                                "Configuration",
@@ -1337,6 +1347,48 @@ fork_delegate (MilterClient *client)
     return milter_manager_configuration_fork(priv->configuration);
 }
 
+static guint
+get_max_pending_finished_sessions (MilterClient *client)
+{
+    MilterManager *manager;
+    MilterManagerPrivate *priv;
+    guint n_sessions;
+
+    manager = MILTER_MANAGER(client);
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    if (priv->is_custom_max_pending_finished_sessions) {
+        MilterClientClass *klass;
+
+        klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+        n_sessions = klass->get_max_pending_finished_sessions(client);
+    } else {
+        MilterManagerConfiguration *configuration;
+
+        configuration = priv->configuration;
+        n_sessions =
+            milter_manager_configuration_get_max_pending_finished_sessions(configuration);
+    }
+    return n_sessions;
+}
+
+static void
+set_max_pending_finished_sessions (MilterClient *client, guint n_sessions)
+{
+    MilterClientClass *klass;
+    MilterManager *manager;
+    MilterManagerPrivate *priv;
+
+    manager = MILTER_MANAGER(client);
+
+    priv = MILTER_MANAGER_GET_PRIVATE(manager);
+    priv->is_custom_max_pending_finished_sessions = TRUE;
+
+    klass = MILTER_CLIENT_CLASS(milter_manager_parent_class);
+    klass->set_max_pending_finished_sessions(client, n_sessions);
+    milter_manager_configuration_set_max_pending_finished_sessions(priv->configuration,
+                                                                   n_sessions);
+}
+
 MilterManagerConfiguration *
 milter_manager_get_configuration (MilterManager *manager)
 {
@@ -1457,6 +1509,16 @@ apply_custom_parameters (MilterManager *manager)
                                                             backend);
         milter_manager_configuration_reset_location(configuration,
                                                     "manager.event_loop_backend");
+    }
+
+    if (priv->is_custom_max_pending_finished_sessions) {
+        guint n_sessions;
+
+        n_sessions = klass->get_max_pending_finished_sessions(client);
+        milter_manager_configuration_set_max_pending_finished_sessions(configuration,
+                                                                       n_sessions);
+        milter_manager_configuration_reset_location(configuration,
+                                                    "manager.max_pending_finished_sessions");
     }
 }
 
