@@ -1,4 +1,4 @@
-# Copyright (C) 2011  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2011-2013  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -14,6 +14,19 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 class TestClientSession < Test::Unit::TestCase
+  class Session < Milter::ClientSession
+    attr_reader :n_resets
+    def initialize(context)
+      @n_resets = 0
+      super
+    end
+
+    def reset
+      super
+      @n_resets += 1
+    end
+  end
+
   include MilterTestUtils
 
   def setup
@@ -21,7 +34,7 @@ class TestClientSession < Test::Unit::TestCase
     @context = Milter::ClientContext.new(@client)
     @context.event_loop = Milter::GLibEventLoop.new
     @session_context = Milter::ClientSessionContext.new(@context)
-    @session = Milter::ClientSession.new(@session_context)
+    @session = Session.new(@session_context)
   end
 
   def test_add_header
@@ -98,53 +111,75 @@ class TestClientSession < Test::Unit::TestCase
 
   def test_accept
     assert_equal(Milter::Status::DEFAULT, @session_context.status)
+    before_n_resets = @session.n_resets
     @session.send(:accept)
     assert_equal(Milter::Status::ACCEPT, @session_context.status)
+    assert_equal(before_n_resets + 1, @session.n_resets)
   end
 
   def test_reject
     assert_equal(Milter::Status::DEFAULT, @session_context.status)
+    before_n_resets = @session.n_resets
     @session.send(:reject)
     assert_equal(Milter::Status::REJECT, @session_context.status)
+    assert_equal(before_n_resets + 1, @session.n_resets)
   end
 
   def test_temporary_failure
     assert_equal(Milter::Status::DEFAULT, @session_context.status)
+    before_n_resets = @session.n_resets
     @session.send(:temporary_failure)
     assert_equal(Milter::Status::TEMPORARY_FAILURE, @session_context.status)
+    assert_equal(before_n_resets + 1, @session.n_resets)
   end
 
   def test_discard
     assert_equal(Milter::Status::DEFAULT, @session_context.status)
+    before_n_resets = @session.n_resets
     @session.send(:discard)
     assert_equal(Milter::Status::DISCARD, @session_context.status)
+    assert_equal(before_n_resets + 1, @session.n_resets)
   end
 
   def test_continue
     assert_equal(Milter::Status::DEFAULT, @session_context.status)
+    before_n_resets = @session.n_resets
     @session.send(:continue)
     assert_equal(Milter::Status::CONTINUE, @session_context.status)
+    assert_equal(before_n_resets, @session.n_resets)
   end
 
   def test_quarantine
     assert_equal(Milter::Status::DEFAULT, @session_context.status)
+    before_n_resets = @session.n_resets
     @session.send(:quarantine, "a virus is detected.")
     assert_equal("a virus is detected.", @context.quarantine_reason)
     assert_equal(Milter::Status::ACCEPT, @session_context.status)
+    assert_equal(before_n_resets + 1, @session.n_resets)
   end
 
   def test_delay_response
     assert_equal(Milter::Status::DEFAULT, @session_context.status)
+    before_n_resets = @session.n_resets
     @session.send(:delay_response)
     assert_equal(Milter::Status::PROGRESS, @session_context.status)
+    assert_equal(before_n_resets, @session.n_resets)
   end
 
   def test_progress
     @context.option = Milter::Option.new
     @context.state = Milter::ClientContext::STATE_END_OF_MESSAGE
+    before_n_resets = @session.n_resets
     assert_nothing_raised do
       @session.send(:progress)
     end
+    assert_equal(before_n_resets, @session.n_resets)
+  end
+
+  def test_abort
+    before_n_resets = @session.n_resets
+    @session.abort(Milter::ClientContextState::ENVELOPE_RECIPIENT_REPLIED)
+    assert_equal(before_n_resets + 1, @session.n_resets)
   end
 
   def test_worker_id

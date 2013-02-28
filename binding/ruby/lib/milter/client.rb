@@ -112,6 +112,7 @@ module Milter
   class ClientSession
     def initialize(context)
       @context = context
+      reset
     end
 
     def negotiate(option, macros_requests)
@@ -130,6 +131,13 @@ module Milter
       continue
     end
 
+    def abort(state)
+      reset
+    end
+
+    def reset
+    end
+
     private
     def need_header_value_with_leading_space?
       false
@@ -137,10 +145,12 @@ module Milter
 
     def accept
       @context.status = :accept
+      reset
     end
 
     def discard
       @context.status = :discard
+      reset
     end
 
     def continue
@@ -168,6 +178,7 @@ module Milter
       else
         @context.status = :reject
       end
+      reset
     end
 
     def temporary_failure(options={})
@@ -183,6 +194,7 @@ module Milter
       else
         @context.status = :temporary_failure
       end
+      reset
     end
 
     def quarantine(reason)

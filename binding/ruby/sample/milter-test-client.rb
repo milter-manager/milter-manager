@@ -102,6 +102,8 @@ class Session < Milter::ClientSession
   end
 
   def abort(state)
+    p state
+    super
     if report_request?
       puts("abort: <#{state.nick}>")
       print_macros
