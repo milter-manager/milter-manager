@@ -186,6 +186,19 @@ Rubyで開発したmilterは以下のようになります。
 
    ((|command|))は与えられたコマンド名です。
 
+: reset
+
+   initializeのときとメールトランザクションが終了したときに呼ばれます。
+
+   ((<メールトランザクション|URL:http://tools.ietf.org/html/rfc5321#section-3.3>))
+   が終了するのは以下のときです。
+
+     * (({abort}))が呼ばれるとき
+     * (({reject}))を呼んだ時
+     * (({temporary_failure}))を呼んだ時
+     * (({discard}))を呼んだ時
+     * (({accept}))を呼んだ時
+
 : finished
 
    milterプロトコルの処理が完了したときに呼ばれます。
