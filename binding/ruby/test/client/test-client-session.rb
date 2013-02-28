@@ -176,12 +176,6 @@ class TestClientSession < Test::Unit::TestCase
     assert_equal(before_n_resets, @session.n_resets)
   end
 
-  def test_abort
-    before_n_resets = @session.n_resets
-    @session.abort(Milter::ClientContextState::ENVELOPE_RECIPIENT_REPLIED)
-    assert_equal(before_n_resets + 1, @session.n_resets)
-  end
-
   def test_worker_id
     assert_equal(0, @session.send(:worker_id))
   end

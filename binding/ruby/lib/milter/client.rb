@@ -84,7 +84,7 @@ module Milter
 
       [:negotiate, :connect, :helo, :envelope_from, :envelope_recipient,
        :data, :unknown, :header, :end_of_header, :body, :end_of_message,
-       :abort, :finished].each do |event|
+       :finished].each do |event|
         next unless session.respond_to?(event)
         context.signal_connect(event) do |_context, *args|
           begin
@@ -101,6 +101,26 @@ module Milter
           session_context.clear
           status
         end
+      end
+
+      context.signal_connect(:abort) do |_context, *args|
+        if session.respond_to?(:abort)
+          begin
+            session.abort(*args)
+          rescue Exception
+            Milter::Logger.error($!)
+            session_context.status = fallback_status
+          end
+        end
+        begin
+          session.reset
+        rescue Exception
+          Milter::Logger.error($!)
+          session_context.status = fallback_status
+        end
+        status = session_context.status
+        session_context.clear
+        status
       end
     end
 
@@ -129,10 +149,6 @@ module Milter
       end
       option.remove_step(Milter::StepFlags::NO_REPLY_MASK)
       continue
-    end
-
-    def abort(state)
-      reset
     end
 
     def reset
