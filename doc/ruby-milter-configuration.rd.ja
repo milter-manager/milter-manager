@@ -118,6 +118,9 @@ milterの設定もmilter-managerの「manager」グループの設定と同
 : milter.packet_buffer_size
    ((<manager.packet_buffer_size|configuration.rd.ja#manager.packet_buffer_size>))と同じ。
 
+: milter.max_pending_finished_sessions
+   ((<manager.max_pending_finished_sessions|configuration.rd.ja#manager.max_pending_finished_sessions>))と同じ。
+
 : milter.maintained
    ((<manager.maintained|configuration.rd.ja#manager.maintained>))と同じ。
 

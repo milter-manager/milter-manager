@@ -118,6 +118,9 @@ details.
 : milter.packet_buffer_size
    See ((<manager.packet_buffer_size|configuration.rd#manager.packet_buffer_size>)).
 
+: milter.max_pending_finished_sessions
+   See ((<manager.max_pending_finished_sessions|configuration.rd#manager.max_pending_finished_sessions>)).
+
 : milter.maintained
    See ((<manager.maintained|configuration.rd#manager.maintained>)).
 
