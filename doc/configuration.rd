@@ -80,6 +80,7 @@ current configuration is shown.
   manager.packet_buffer_size = 0
   manager.connection_check_interval = 0
   manager.chunk_size = 65535
+  manager.max_pending_finished_sessions = 0
 
   controller.connection_spec = nil
   controller.unix_socket_mode = 0660
@@ -710,6 +711,47 @@ Since 1.6.6.
 
    Default:
      manager.chunk_size = 65535 # Sends body data as 64KB chunks.
+
+: manager.max_pending_finished_sessions
+
+   ((*Normally, this item doesn't need to be used.*))
+
+   Since 1.8.6.
+
+   Milter manager delays processings that don't effect to throughput
+   until idle time. For example, termination processing for finished
+   milter session is one of those delayed processings.
+
+   Milter manager does termination processing for finished milter
+   sessions by setting this item. Normally, there is idle time even
+   when milter manager processes multiple milter sessions concurrently.
+   If the number of processing milter sssions is too large, there will
+   be no idle time. So termination processins are not done. If
+   termination processings are not done for a long time, the number of
+   openable file descripters may be lacked. Because used socket is
+   closed in termination processing.
+
+   Normally, you should avoid the no idle time situation because it is
+   overload. It is better that increasing the number of workers by
+   ((<manager.n_workers|.#manager.n-workers>)) configuration.
+
+   Milter manager does termination processing even when there is no
+   idle time by setting one or larger number. Termination processing
+   is done when specified the number of finished sessions. This item
+   doesn't disable termination processing on idle time. So this item
+   doesn't effect to throughput on normal time. This item effects
+   on only no idle time.
+
+   The default value is 0. It distables termination processing on no
+   idle time feature.
+
+   Example:
+     # Do termination processing after each session is finished
+     manager.max_pending_finished_sessions = 1
+
+   Default:
+     # Do termination processing when no other processings aren't remining
+     manager.max_pending_finished_sessions = 0
 
 : manager.use_netstat_connection_checker
 

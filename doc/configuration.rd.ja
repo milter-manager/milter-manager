@@ -86,6 +86,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
   manager.packet_buffer_size = 0
   manager.connection_check_interval = 0
   manager.chunk_size = 65535
+  manager.max_pending_finished_sessions = 0
 
   controller.connection_spec = nil
   controller.unix_socket_mode = 0660
@@ -703,6 +704,44 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
    既定値:
      manager.chunk_size = 65535 # 本文データを64KBずつ送る
+
+: manager.max_pending_finished_sessions
+
+   ((*この項目は通常は使用する必要はありません。*))
+
+   1.8.6から使用可能。
+
+   milter managerはスループットを向上させるため、スループットに影響しな
+   い処理は何も処理がないときまで処理を遅延します。終了したmilterセッショ
+   ンの後始末処理もそのような遅延される処理の1つです。
+
+   この項目を設定することで、他に処理があるときでもmilterセッションの後
+   始末処理を行うようになります。通常は、複数のmilterセッションを処理し
+   ている場合でも途中に他に何も処理するものがない状態になりますが、同時
+   接続数が非常に多くなると常になんらかの処理を実施し続けるため、後始末
+   処理が実行されなくなります。後始末処理ではソケットのクローズも行って
+   いるため、長い間、後始末処理が実行されないと開けるファイルディスクリ
+   プタ数が足りなくなる危険性があります。
+
+   常になんらかの処理を実行し続けている状態は過負荷の状態なので、本来で
+   あれば、そうならないように
+   ((<manager.n_workers|.#manager.n-workers>))を設定してワーカー
+   数を増やした構成にすることが望ましいです。
+
+   この項目に0より大きい値を設定すると、他に処理があるときでも、指定した
+   値分セッションを処理した後に後始末処理を実行します。もちろん、他に処
+   理がないときも後始末処理を実行するので、通常時はスループットへの影響
+   はありません。負荷が高くなった時のみこの値が影響します。
+
+   規定値は0でこの機能は無効になっています。
+
+   例:
+     # セッションが終了したら毎回すぐに終了処理を行う
+     manager.max_pending_finished_sessions = 1
+
+   既定値:
+     # なにも処理がないときのみセッションの終了処理を行う
+     manager.max_pending_finished_sessions = 0
 
 : manager.use_netstat_connection_checker
 
