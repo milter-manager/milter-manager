@@ -2,6 +2,49 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-8-6] 1.8.5: 2013-03-04
+
+A bug fix release of 1.8.5.
+
+=== milter-core
+
+==== Improvements
+
+  * [core][event-loop] Add an API to customize event loop on your own.
+
+=== milter manager
+
+==== Improvements
+
+  * Add max-pending-finished-sessions as configuration option.
+    If the number of current pending finished sessions is larger than
+    'max-pending-finished-sessions', the current pending finished sessions are
+    freed immediately.
+
+=== milter-client
+
+==== Improvements
+
+  * Add --max-pending-finished-sessions command line option.
+
+=== Ruby milter
+
+  * Add an API to customize event loop on your own from Ruby.
+  * Support manager.max_pending_finished_sessions.
+  * Add API to reset when transaction is finished.
+    Use this API to avoid not to share instance information for each transaction unexpectedly.
+
+=== Document
+
+==== Improvements
+
+  * Add documentation about manager.max_pending_finished_sessions
+  * Add API to reset transaction.
+
+==== Fixes
+
+  * Fix the default value of manager.maitenance_interval which is not correct.
+
 == [release-1-8-5] 1.8.5: 2012-12-03
 
 A bug fix release of 1.8.4.
