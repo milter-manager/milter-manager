@@ -2,6 +2,55 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-1-8-6] 1.8.6: 2013-03-04
+
+1.8.5 のバグフィックスリリースです。
+
+=== milter-core
+
+==== 改良
+
+  * [core][event-loop] イベントループを独自にカスタマイズするための
+    APIを提供。
+
+=== milter manager
+
+==== 改良
+
+  * 設定項目としてmax-pending-finished-sessionsを追加。
+    終了したmilterのセッションのうち、リソースの開放待ちになっているも
+    のが一定数を超えたら強制的に開放できるようにします。
+
+=== milter-client
+
+==== 改良
+
+  * --max-pending-finished-sessionsオプションを追加。
+
+==== 修正
+
+  * [core] Rubyバインディングを使ってmilterサーバーを実装した場合に
+    メモリリークする問題を修正。
+
+=== Ruby milter
+
+  * Rubyからイベントループを独自にカスタマイズするためのAPIをサポート。
+  * manager.max_pending_finished_sessions設定項目をサポート。
+  * トランザクション終了のタイミングで呼ばれるリセット用のAPIを追加。
+    メールのトランザクションごとに作られるインスタンスの情報が
+    トランザクション間で意図せず共有されないようにするために使用します。
+
+=== Document
+
+==== 改良
+
+  * manager.max_pending_finished_sessionsのドキュメントを追加。
+  * トランザクションをリセットするAPIのドキュメントを追加
+
+==== 修正
+
+  * manager.maitenance_intervalの既定値を正確な値に修正した
+
 == [release-1-8-5] 1.8.5: 2012-12-03
 
 1.8.4 のバグフィックスリリースです。
