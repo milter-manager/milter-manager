@@ -76,6 +76,11 @@ NEWS にログを抜粋してざっくりカテゴリ分けしてから NEWS.ja 
 NEWS に書いた改良点や修正点を見ながらドキュメントをチェックして、更新で
 きていない場合は、更新する。
 
+  % make update-files
+  % make update-po
+  % make -C html
+  % make -C doc/reference
+
 == バージョン情報の更新
 
 各種パッケージやドキュメントに埋め込むバージョン情報を更新する。
