@@ -653,7 +653,8 @@ dispose_finished_data (MilterClient *client)
         return;
 
     n_processed_sessions_before = priv->n_processed_sessions;
-    g_ptr_array_unref(priv->finished_data);
+    g_ptr_array_foreach(priv->finished_data, (GFunc)finish_processing, NULL);
+    g_ptr_array_free(priv->finished_data, TRUE);
     priv->finished_data = NULL;
     n_finished_sessions =
         priv->n_processed_sessions - n_processed_sessions_before;
@@ -1142,8 +1143,6 @@ single_thread_cb_finished (MilterClientContext *context, gpointer _data)
     priv = data->priv;
     if (!priv->finished_data) {
         priv->finished_data = g_ptr_array_new();
-        g_ptr_array_set_free_func(priv->finished_data,
-                                  (GDestroyNotify)finish_processing);
     }
     g_ptr_array_add(priv->finished_data, data);
 
