@@ -27,11 +27,6 @@
 
   * --max-pending-finished-sessionsオプションを追加。
 
-==== 修正
-
-  * [core] Rubyバインディングを使ってmilterサーバーを実装した場合に
-    メモリリークする問題を修正。
-
 === Ruby milter
 
   * Rubyからイベントループを独自にカスタマイズするためのAPIをサポート。
