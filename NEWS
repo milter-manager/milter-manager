@@ -29,6 +29,8 @@ A bug fix release of 1.8.5.
 
 === Ruby milter
 
+==== Improvements
+
   * Add an API to customize event loop on your own from Ruby.
   * Support manager.max_pending_finished_sessions.
   * Add API to reset when transaction is finished.
