@@ -29,6 +29,8 @@
 
 === Ruby milter
 
+==== 改良
+
   * Rubyからイベントループを独自にカスタマイズするためのAPIをサポート。
   * manager.max_pending_finished_sessions設定項目をサポート。
   * トランザクション終了のタイミングで呼ばれるリセット用のAPIを追加。
