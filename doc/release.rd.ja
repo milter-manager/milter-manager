@@ -368,6 +368,8 @@ URL やバージョンを変更して使う。
 sf.net の milter manager プロジェクトからブログ用のリポジトリを clone
 して tDiary をローカルで動くようにセットアップする。
 
+  % git clone ssh://(sf.netアカウント名)@git.code.sf.net/p/milter-manager/code milter-manager-code
+
 CGI で動かすよりも Rack で動かした方が便利なのでそうする。tdiary.conf
 は milter-manager のリポジトリにあるものを使う。
 
