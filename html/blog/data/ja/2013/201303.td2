@@ -1,0 +1,25 @@
+TDIARY2.01.00
+Date: 20130307
+Title: 
+Last-Modified: 1362644275
+Visible: true
+Format: RD
+
+= milter manager 1.8.6
+
+milter manager 1.8.6 をリリースしました。
+
+== 変更点
+
+1.8.5から1.8.6では以下のような改善や不具合修正が行われました。
+
+* Ruby 1.9でlibevバックエンドが使えない不具合を修正
+* RubyバインディングでトランザクションをリセットするAPIの追加
+* 開放待ちのソケットを強制的に閉じるmax_pending_finished_sessions設定項目の追加
+
+
+詳しい変更点は以下を参照してください。
+
+* ((<1.8.5から1.8.6への変更点|URL:/reference/ja/news.html#news.release-1-8-6>))
+
+.
