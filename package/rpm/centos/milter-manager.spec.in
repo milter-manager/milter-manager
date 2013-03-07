@@ -418,7 +418,7 @@ fi
 %config %{_sysconfdir}/munin/plugin-conf.d/
 
 %changelog
-* Mon Mar 04 2013 HAYASHI Kentaro <hayashi@clear-code.com> - 1.8.6-0
+* Thu Mar 07 2013 HAYASHI Kentaro <hayashi@clear-code.com> - 1.8.6-0
 - new upstream release.
 
 * Mon Dec 03 2012 Kenji Okimoto <okimoto@clear-code.com> - 1.8.5-0
