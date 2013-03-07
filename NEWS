@@ -12,6 +12,11 @@ A bug fix release of 1.8.5.
 
   * [core][event-loop] Add an API to customize event loop on your own.
 
+==== Fixes
+
+  * [core][event-loop] Fix to work broken libev backend with Ruby 1.9.
+
+
 === milter manager
 
 ==== Improvements

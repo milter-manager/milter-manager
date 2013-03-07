@@ -13,6 +13,11 @@
   * [core][event-loop] イベントループを独自にカスタマイズするための
     APIを提供。
 
+==== 修正
+
+  * [core][event-loop] Ruby 1.9でlibevバックエンドが動作しない不具合を
+    修正。
+
 === milter manager
 
 ==== 改良
