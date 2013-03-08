@@ -958,7 +958,6 @@ AC_CONFIG_FILES([Makefile
 		 package/solaris/prototypes/ruby/Makefile
 		 package/solaris/prototypes/ruby/pkginfo
 		 tool/Makefile
-		 admin/Makefile
 		 test/Makefile
 		 test/lib/Makefile
 		 test/fixtures/Makefile

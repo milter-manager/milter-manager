@@ -9,7 +9,6 @@ SUBDIRS =					\
 	src					\
 	tool					\
 	data					\
-	admin					\
 	test					\
 	po					\
 	build					\
