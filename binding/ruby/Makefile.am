@@ -28,11 +28,15 @@ EXTRA_DIST =					\
 echo-abs-top-builddir:
 	@echo $(abs_top_builddir)
 
-# find ./binding/ruby/test-unit -type f | sort | sed -e 's,^\./binding/ruby/\(.*\),\t\\1\t\\,g'
+# find test-unit -not -path '*/.git/*' -type f | sort | sed -e 's,^,\t,g'
 test_unit_files =						\
+	test-unit/.gitignore					\
+	test-unit/.travis.yml					\
+	test-unit/.yardopts					\
 	test-unit/COPYING					\
 	test-unit/GPL						\
 	test-unit/Gemfile					\
+	test-unit/LGPL						\
 	test-unit/PSFL						\
 	test-unit/README.textile				\
 	test-unit/Rakefile					\
@@ -78,6 +82,7 @@ test_unit_files =						\
 	test-unit/lib/test/unit.rb				\
 	test-unit/lib/test/unit/assertionfailederror.rb		\
 	test-unit/lib/test/unit/assertions.rb			\
+	test-unit/lib/test/unit/attribute-matcher.rb		\
 	test-unit/lib/test/unit/attribute.rb			\
 	test-unit/lib/test/unit/autorunner.rb			\
 	test-unit/lib/test/unit/code-snippet-fetcher.rb		\
@@ -94,6 +99,7 @@ test_unit_files =						\
 	test-unit/lib/test/unit/error.rb			\
 	test-unit/lib/test/unit/exceptionhandler.rb		\
 	test-unit/lib/test/unit/failure.rb			\
+	test-unit/lib/test/unit/fault-location-detector.rb	\
 	test-unit/lib/test/unit/fixture.rb			\
 	test-unit/lib/test/unit/notification.rb			\
 	test-unit/lib/test/unit/omission.rb			\
@@ -124,13 +130,21 @@ test_unit_files =						\
 	test-unit/sample/test_adder.rb				\
 	test-unit/sample/test_subtracter.rb			\
 	test-unit/sample/test_user.rb				\
+	test-unit/test-unit.gemspec				\
 	test-unit/test/collector/test-descendant.rb		\
 	test-unit/test/collector/test-load.rb			\
 	test-unit/test/collector/test_dir.rb			\
 	test-unit/test/collector/test_objectspace.rb		\
+	test-unit/test/fixtures/header-label.csv		\
+	test-unit/test/fixtures/header-label.tsv		\
+	test-unit/test/fixtures/header.csv			\
+	test-unit/test/fixtures/header.tsv			\
+	test-unit/test/fixtures/no-header.csv			\
+	test-unit/test/fixtures/no-header.tsv			\
 	test-unit/test/fixtures/plus.csv			\
 	test-unit/test/run-test.rb				\
 	test-unit/test/test-assertions.rb			\
+	test-unit/test/test-attribute-matcher.rb		\
 	test-unit/test/test-attribute.rb			\
 	test-unit/test/test-code-snippet.rb			\
 	test-unit/test/test-color-scheme.rb			\
@@ -138,6 +152,7 @@ test_unit_files =						\
 	test-unit/test/test-data.rb				\
 	test-unit/test/test-diff.rb				\
 	test-unit/test/test-emacs-runner.rb			\
+	test-unit/test/test-fault-location-detector.rb		\
 	test-unit/test/test-fixture.rb				\
 	test-unit/test/test-notification.rb			\
 	test-unit/test/test-omission.rb				\
