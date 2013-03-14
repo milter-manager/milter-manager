@@ -274,12 +274,12 @@ fi
 %{_datadir}/milter-manager/admin/
 %{_sysconfdir}/rc.d/init.d/
 %{_sysconfdir}/cron.d/
-%config %{_sysconfdir}/sysconfig/milter-manager
-%config %{_sysconfdir}/milter-manager/milter-manager.conf
+%config(noreplace) %{_sysconfdir}/sysconfig/milter-manager
+%config(noreplace) %{_sysconfdir}/milter-manager/milter-manager.conf
 %config %{_sysconfdir}/milter-manager/defaults/
 %config %{_sysconfdir}/milter-manager/applicable-conditions/
 %config %{_sysconfdir}/milter-manager/models/
-%config %{_sysconfdir}/httpd/conf.d/milter-manager-log.conf
+%config(noreplace) %{_sysconfdir}/httpd/conf.d/milter-manager-log.conf
 
 %defattr(-, milter-manager, milter-manager, 0755)
 %dir %{_localstatedir}/run/milter-manager/
