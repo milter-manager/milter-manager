@@ -373,7 +373,7 @@ We start milter's configuration.
 We add the following milter configuration to
 /usr/local/etc/postfix/main.cf:
 
-  milter_protocol = 6 # if Postfix >= 2.5
+  milter_protocol = 6
   milter_default_action = accept
   milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 

@@ -378,7 +378,7 @@ milter_manager_debugをコメントアウトし、デーモンプロセスで起
 
 /usr/local/etc/postfix/main.cfに以下を追加します。
 
-  milter_protocol = 6 # Postfix 2.5以上の場合
+  milter_protocol = 6
   milter_default_action = accept
   milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 
