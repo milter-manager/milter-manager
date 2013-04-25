@@ -26,15 +26,12 @@ Here is a concrete list:
   * Files that describe their license:
     * milter/core/milter-memory-profile.c: LGPL2+
     * binding/ruby/lib/milter/compatible.rb: Ruby's
-    * admin/vendor/plugins/restful-auth/: MIT
   * Commands: GPL3
     * src/*
     * tool/*
   * Documents: GFDL
     * README, README.ja
     * doc/*
-  * Web interface: AGPL3
-    * admin/**/*
   * Images: Public Domain
     * doc/*.svg, doc/*.png, html/*.svg, html/*.png
   * Libraries: LGPL3

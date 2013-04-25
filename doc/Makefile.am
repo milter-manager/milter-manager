@@ -46,12 +46,6 @@ EXTRA_DIST =						\
 	upgrade-options-on-centos.rd.ja			\
 	upgrade-options-on-freebsd.rd			\
 	upgrade-options-on-freebsd.rd.ja		\
-	admin-applicable-condition-ja.png		\
-	admin-applicable-condition.png			\
-	admin-milters-ja.png				\
-	admin-milters.png				\
-	milter-manager-admin-ja.svg			\
-	milter-manager-admin.svg			\
 	mta-and-milter-manager-and-child-milter-ja.svg	\
 	mta-and-milter-manager-and-child-milter.svg	\
 	sendmail-and-milter-ja.svg			\

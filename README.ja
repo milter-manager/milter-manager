@@ -26,15 +26,12 @@ milter manager
   * ライセンスが明記してあるファイル:
     * milter/core/milter-memory-profile.c: LGPL2+
     * binding/ruby/lib/milter/compatible.rb: Ruby's
-    * admin/vendor/plugins/restful-auth/: MIT
   * コマンド: GPL3
     * src/以下
     * tool/直下
   * ドキュメント: GFDL
     * README, README.ja
     * doc/以下
-  * Webインターフェイス: AGPL3
-    * admin/以下
   * 画像: Public Domain
     * doc/*.svg, doc/*.png, html/*.svg, html/*.png
   * ライブラリ: LGPL3

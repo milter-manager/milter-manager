@@ -100,37 +100,10 @@ graphs. milter-manager-log-analyzer analyzes the logs
 periodically by cron.
 
 Here are documents about how to install
-milter-manager-log-analyzer. They also describes about how
-to install Web interface for administration.
-
-  * ((<Debian|install-options-to-debian.rd>))
-  * ((<Ubuntu|install-options-to-ubuntu.rd>))
-  * ((<CentOS|install-options-to-centos.rd>))
-  * ((<FreeBSD|install-options-to-freebsd.rd>))
-
-== milter manager admin
-
-((<milter manager admin|milter-manager-admin.svg>))
-
-milter manager admin is a Web interface for administrating
-milter-manager. Installing milter manager admin is optional.
-
-With milter manager admin, we can modify milter-manager
-configuration. For example, we can enable or disable child
-milter, change child milter's applicable condition and so
-on. It's useful for trying to find the best match
-countermeasure against just mail.
-
-To provide user-friendly and simple interface, milter
-manager admin doesn't provide all features which are be able
-to in configuration file. For example, we can't edit
-applicable condition in browser.
-
-Here are documents about how to install milter manager
-admin. They also describes about how to install
 milter-manager-log-analyzer.
 
   * ((<Debian|install-options-to-debian.rd>))
   * ((<Ubuntu|install-options-to-ubuntu.rd>))
   * ((<CentOS|install-options-to-centos.rd>))
   * ((<FreeBSD|install-options-to-freebsd.rd>))
+

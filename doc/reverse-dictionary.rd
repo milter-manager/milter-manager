@@ -39,15 +39,6 @@ There are documents for each platform:
   * ((<For CentOS|install-options-to-centos.rd#milter-manager-log-analyzer>))
   * ((<For FreeBSD|install-options-to-freebsd.rd#milter-manager-log-analyzer>))
 
-=== Use Web administration interface
-
-There are documents for each platform:
-
-  * ((<For Debian|install-options-to-debian.rd#milter-manager-admin>))
-  * ((<For Ubuntu|install-options-to-ubuntu.rd#milter-manager-admin>))
-  * ((<For CentOS|install-options-to-centos.rd#milter-manager-admin>))
-  * ((<For FreeBSD|install-options-to-freebsd.rd#milter-manager-admin>))
-
 == Configuration: Basic
 
 === [configuration-basic-find-configuration-file] Find a configuration file

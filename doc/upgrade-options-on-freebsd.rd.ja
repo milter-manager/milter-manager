@@ -17,44 +17,6 @@ FreeBSDに特化したmilter manager関連ソフトウェアの更新方法に�
 milter managerを上書きインストールするだけなので、追加の作業
 は必要ありません。
 
-== milter manager adminの更新
-
-=== gemの更新
-
-  % sudo gem install rack -v '1.1.0'
-  % sudo gem install rails -v '2.3.8'
-  % sudo gem install passenger -v '2.2.15'
-
-=== Passengerの更新
-
-以下のコマンドを実行し、Passengerをビルドします。
-
-  % (echo 1; echo) | sudo passenger-install-apache2-module
-
-/usr/local/etc/apache22/Includes/passenger.confに記述してあ
-るPassengerのバージョンを2.2.15にします。
-
-/usr/local/etc/apache22/Includes/passenger.conf:
-  LoadModule passenger_module /usr/local/lib/ruby/gems/1.8/gems/passenger-2.2.15/ext/apache2/mod_passenger.so
-  PassengerRoot /usr/local/lib/ruby/gems/1.8/gems/passenger-2.2.15
-  PassengerRuby /usr/local/bin/ruby18
-
-  RailsBaseURI /milter-manager
-
-Apacheを再起動します。
-
-  % sudo /usr/local/etc/rc.d/apache22 restart
-
-=== milter manager adminの更新
-
-milter manager admin本体とデータベーススキーマを更新します。
-
-  % tar cf - -C /usr/local/share/milter-manager admin | sudo -u milter-manager -H tar xf - -C ~milter-manager
-  % cd ~milter-manager/admin
-  % sudo -u milter-manager -H rake gems:install
-  % sudo -u milter-manager -H rake RAILS_ENV=production db:migrate
-  % sudo -u milter-manager -H touch tmp/restart.txt
-
 == まとめ
 
 milter manager本体同様にmilter manager関連ソフトウェアも簡単
