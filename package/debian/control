@@ -20,7 +20,6 @@ Depends:
 	${misc:Depends},
 	libmilter-manager0 (= ${binary:Version}),
 	ruby1.9.1,
-	librrd-ruby1.9.1,
 	adduser
 Suggests: postfix | sendmail, spamass-milter, clamav-milter, milter-greylist
 Description: A milter to use milters effectively
@@ -89,6 +88,23 @@ Description: munin-node plugins for milter manager
  .
  This provides munin-node plugins to monitor milter manager and related
  softwares. (e.g. Postfix, Sendmail and milters.)
+
+Package: milter-manager-log-analyzer
+Section: ruby
+Architecture: any
+Depends:
+	${shlibs:Depends},
+	${misc:Depends},
+	milter-manager (= ${binary:Version}),
+	rrdtool,
+    librrd-ruby1.9.1,
+	ruby1.9.1
+Description: Analyze milter-manager's log.
+ milter manager administrates milters instead of MTA to reduce milter
+ administration cost and combine milters flexibly.
+ .
+ This provides a Ruby script to generate some graphs from
+ milter-manager's log.
 
 Package: libmilter-core0
 Section: libs
