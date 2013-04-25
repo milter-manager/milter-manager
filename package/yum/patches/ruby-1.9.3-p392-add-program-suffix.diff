@@ -1,0 +1,102 @@
+--- /tmp/b/ruby.spec	2013-04-25 17:01:32.104683834 +0900
++++ /tmp/a/ruby.spec	2013-04-25 17:03:27.580683934 +0900
+@@ -9,7 +9,9 @@
+ %global ruby_version_patch_level %{major_minor_version}.%{teeny_version}.%{patch_level}
+ %global ruby_abi %{major_minor_version}.1
+ 
+-%global ruby_archive %{name}-%{ruby_version}-p%{patch_level}
++%global ruby_name ruby
++
++%global ruby_archive %{ruby_name}-%{ruby_version}-p%{patch_level}
+ 
+ %global ruby_libdir %{_datadir}/%{name}
+ %global ruby_libarchdir %{_libdir}/%{name}
+@@ -49,7 +51,7 @@
+ %global	_normalized_cpu	%(echo %{_target_cpu} | sed 's/^ppc/powerpc/;s/i.86/i386/;s/sparcv./sparc/')
+ 
+ Summary: An interpreter of object-oriented scripting language
+-Name: ruby
++Name: ruby19
+ Version: %{ruby_version_patch_level}
+ # Note:
+ # As seen on perl srpm, as this (ruby) srpm contains several sub-components,
+@@ -243,7 +245,7 @@
+ %package doc
+ Summary:    Documentation for %{name}
+ Group:      Documentation
+-Requires:   %{_bindir}/ri
++Requires:   %{_bindir}/ri1.9
+ # TODO: It seems that ri documentation differs from platform to platform due to
+ # some encoding bugs, therefore the documentation should be split out of this gem
+ # or kept platform specific.
+@@ -372,7 +374,8 @@
+         --with-ruby_pc='%{name}.pc' \
+         --disable-rpath \
+         --enable-shared \
+-        --disable-versioned-paths
++        --disable-versioned-paths \
++        --program-suffix=1.9
+ 
+ # Q= makes the build output more verbose and allows to check Fedora
+ # compiler options.
+@@ -513,9 +516,9 @@
+ %lang(ja) %doc COPYING.ja
+ %doc GPL
+ %doc LEGAL
+-%{_bindir}/erb
+-%{_bindir}/ruby
+-%{_bindir}/testrb
++%{_bindir}/erb*
++%{_bindir}/ruby*
++%{_bindir}/testrb*
+ %{_mandir}/man1/erb*
+ %{_mandir}/man1/ruby*
+ 
+@@ -535,9 +538,9 @@
+ %{_libdir}/libruby.so
+ # TODO
+ # ruby.pc still needs fixing, see bug 789532 comment 8
+-%{_libdir}/pkgconfig/ruby.pc
++%{_libdir}/pkgconfig/%{name}.pc
+ %if 0%{?fedora} <= 18
+-%{_libdir}/pkgconfig/ruby-%{major_minor_version}.pc
++%{_libdir}/pkgconfig/%{name}-%{major_minor_version}.pc
+ %endif
+ 
+ %files libs
+@@ -699,7 +702,7 @@
+ %{ruby_libarchdir}/zlib.so
+ 
+ %files -n rubygems
+-%{_bindir}/gem
++%{_bindir}/gem*
+ %{rubygems_dir}
+ %{gem_dir}
+ %exclude %{gem_dir}/gems/*
+@@ -720,20 +723,20 @@
+ %config(noreplace) %{_sysconfdir}/rpm/macros.rubygems
+ 
+ %files -n rubygem-rake
+-%{_bindir}/rake
++%{_bindir}/rake*
+ %{gem_dir}/gems/rake-%{rake_version}
+ %{gem_dir}/specifications/rake-%{rake_version}.gemspec
+-%{_mandir}/man1/rake.1*
++%{_mandir}/man1/rake*
+ 
+ %files irb
+-%{_bindir}/irb
++%{_bindir}/irb*
+ %{ruby_libdir}/irb.rb
+ %{ruby_libdir}/irb
+-%{_mandir}/man1/irb.1*
++%{_mandir}/man1/irb*
+ 
+ %files -n rubygem-rdoc
+-%{_bindir}/rdoc
+-%{_bindir}/ri
++%{_bindir}/rdoc*
++%{_bindir}/ri*
+ %{gem_dir}/gems/rdoc-%{rdoc_version}
+ %{gem_dir}/specifications/rdoc-%{rdoc_version}.gemspec
+ %{_mandir}/man1/ri*
