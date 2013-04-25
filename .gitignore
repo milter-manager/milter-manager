@@ -72,8 +72,6 @@ Makefile.in
 /package/solaris/builds/
 /package/solaris/pkgs/
 /package/solaris/prototypes/*/pkginfo
-/admin/log/*
-/admin/config/secret
 /package/yum/*.repo
 /package/yum/RPM-GPG-KEY-*
 /package/yum/centos/
@@ -116,8 +114,6 @@ Makefile.in
 /doc/reference/introduction.xml.ja
 /doc/reference/ja
 /doc/reference/main.sgml
-/doc/reference/milter-manager-admin-ja.png
-/doc/reference/milter-manager-admin.png
 /doc/reference/milter-manager-decl-list.txt
 /doc/reference/milter-manager-decl.txt
 /doc/reference/milter-manager-log-analyzer-graphs.png
