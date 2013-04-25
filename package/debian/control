@@ -74,22 +74,6 @@ Description: Development files to extend milter manager by C
  This provides development environemnt to extend milter manager by C.
  Normally, milter manager can be extended by Ruby.
 
-Package: milter-manager-admin
-Section: admin
-Architecture: any
-Depends:
-	${shlibs:Depends},
- 	${misc:Depends},
-	milter-manager (= ${binary:Version}),
-	ruby,
-	ruby1.8
-Description: A Web based administaration interface for milter manager
- milter manager administrates milters instead of MTA to reduce milter
- administration cost and combine milters flexibly.
- .
- This provides Web based administration interface for milter manager.
- You need to setup Ruby on Rails environment by yourself.
-
 Package: milter-manager-munin-plugins
 Section: net
 Architecture: any
