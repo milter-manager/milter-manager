@@ -271,7 +271,6 @@ fi
 %{_mandir}/ja/man1/milter-manager.*
 %{_mandir}/ja/man1/milter-manager-log-analyzer.*
 %{_initrddir}/milter-manager
-%{_datadir}/milter-manager/admin/
 %{_sysconfdir}/rc.d/init.d/
 %{_sysconfdir}/cron.d/
 %config(noreplace) %{_sysconfdir}/sysconfig/milter-manager
