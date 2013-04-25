@@ -97,7 +97,7 @@ Depends:
 	${misc:Depends},
 	milter-manager (= ${binary:Version}),
 	rrdtool,
-    librrd-ruby1.9.1,
+	librrd-ruby1.9.1,
 	ruby1.9.1
 Description: Analyze milter-manager's log.
  milter manager administrates milters instead of MTA to reduce milter
