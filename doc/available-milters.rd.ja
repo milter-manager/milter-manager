@@ -1,0 +1,56 @@
+# -*- rd -*-
+
+= 利用可能なmilter --- milter managerで利用できるmilter
+
+== このドキュメントについて
+
+milter managerと一緒に利用できたことが報告されているmilterを
+紹介します。
+
+ここで紹介されているmilter以外でも利用できると思います。利用
+しているmilterがここに載っていない場合は((<メーリングリスト
+|URL:https://lists.sourceforge.net/lists/listinfo/milter-manager-users-ja>))
+でお知らせください。
+
+== spam対策
+
+  * ((<milter-greylist|URL:http://hcpnet.free.fr/milter-greylist/>))
+  * ((<spamass-milter|URL:http://savannah.nongnu.org/projects/spamass-milt/>))
+  * ((<Cloudmark
+    Authority|URL:http://www.cloudmark.com/ja/serviceproviders/authority.html>)):
+    アンチウイルス機能付き。
+  * ((<Kaspersky Anti-Spam 3.0|URL:http://www.kaspersky.co.jp/anti-spam>))
+
+== アンチウイルス
+
+  * ((<Dr.Web|URL:http://drweb.jp/productlineup.html>)):
+    spam対策機能付き。
+  * ((<clamav-milter|URL:http://www.clamav.net/>))
+  * ((<ProScan|URL:http://www.promark-inc.com/products/mailserver.html>))
+  * ((<Kaspersky Anti-Virus Linux Mail Server 5.6|URL:http://www.kaspersky.co.jp/anti-virus_linux_mail_server>))
+
+== ドメイン認証
+
+=== DKIM/DomainKeys
+
+  * ((<OpenDKIM|URL:http://www.opendkim.org/>))
+  * ((<ENMA|URL:http://enma.sourceforge.net/>)):
+    SPF/Sender IDにも対応。
+  * ((<dkim-milter|URL:http://sourceforge.net/projects/dkim-milter/>))
+
+=== SPF/Sender ID
+
+  * ((<spfmilter|URL:http://www.acme.com/software/spfmilter/>))
+  * ((<sid-milter|URL:http://sourceforge.net/projects/sid-milter/>))
+
+== その他
+
+  * ((<amavisd-milter|URL:http://amavisd-milter.sourceforge.net/>))
+
+== 未確認
+
+動作を確認した場合は教えてもらえると助かります。
+
+  * ((<milter-regex|URL:http://www.benzedrine.cx/milter-regex.html>))
+  * ((<MIMEDefang|URL:http://www.mimedefang.org/>))
+  * ...
