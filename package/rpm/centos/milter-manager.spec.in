@@ -3,7 +3,7 @@
 %define ruby_libversion %(ruby1.9 -rrbconfig -e "print RbConfig::CONFIG['ruby_version']")
 %else
 %define ruby_version %(ruby -e "print RUBY_VERSION.tr('.', '')")
-%define ruby_libversion %(ruby -rrbconfig -e "pring RbConfig::CONFIG['ruby_version']")
+%define ruby_libversion %(ruby -rrbconfig -e "print RbConfig::CONFIG['ruby_version']")
 %endif
 
 Summary: A milter to use milters effectively
