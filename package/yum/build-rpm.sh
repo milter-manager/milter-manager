@@ -95,11 +95,24 @@ if [ ! -f ~/.rpmmacros ]; then
 EOM
 fi
 
+rm -rf rpm
 mkdir -p rpm/SOURCES
 mkdir -p rpm/SPECS
 mkdir -p rpm/BUILD
 mkdir -p rpm/RPMS
 mkdir -p rpm/SRPMS
+
+case $distribution_version in
+  6.*)
+    if ! rpm -q ruby1.9 > /dev/null 2>&1; then
+      yum install wget libyaml libyaml-devel -y
+      wget ftp://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.3-p392.tar.gz -P rpm/SOURCES
+      cp -a /tmp/ruby193.spec rpm/SPECS/ruby193.spec
+      rpmbuild -ba rpm/SPECS/ruby193.spec
+      sudo rpm -Uvh rpm/RPMS/*/*.rpm
+    fi
+    ;;
+esac
 
 if test -f /tmp/${SOURCE_BASE_NAME}-$VERSION-*.src.rpm; then
     if ! rpm -Uvh /tmp/${SOURCE_BASE_NAME}-$VERSION-*.src.rpm; then
