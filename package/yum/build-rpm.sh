@@ -90,12 +90,9 @@ fi
 case $distribution_version in
     6.*)
 	if ! rpm -q ruby1.9 > /dev/null 2>&1; then
-	    yum install wget libyaml libyaml-devel -y
-	fi
-	;;
-esac
-
-cat <<EOF > $BUILD_RUBY_SCRIPT
+	    yum install -y wget libyaml libyaml-devel
+            yum install -y $(grep BuildRequires: /tmp/ruby193.spec | cut -d: -f2)
+            cat <<EOF > $BUILD_RUBY_SCRIPT
 if [ ! -f ~/.rpmmacros ]; then
     cat <<EOM > ~/.rpmmacros
 %_topdir \$HOME/rpm
@@ -120,9 +117,12 @@ case $distribution_version in
 esac
 EOF
 
-run chmod +x $BUILD_RUBY_SCRIPT
-run su - $USER_NAME $BUILD_RUBY_SCRIPT
-run rpm -Uvh ~$USER_NAME/rpm/RPMS/*/*.rpm
+            run chmod +x $BUILD_RUBY_SCRIPT
+            run su - $USER_NAME $BUILD_RUBY_SCRIPT
+            run rpm -Uvh ~$USER_NAME/rpm/RPMS/*/*.rpm
+	fi
+	;;
+esac
 
 cat <<EOF > $BUILD_SCRIPT
 #!/bin/sh
