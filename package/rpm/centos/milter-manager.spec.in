@@ -1,9 +1,11 @@
 %if 0%{?centos} >= 6
 %define ruby_command ruby1.9
 %define ruby_package ruby1.9
+%define ruby_build_requires ruby1.9
 %else
 %define ruby_command ruby
 %define ruby_package ruby
+%define ruby_build_requires ruby ruby-devel
 %endif
 
 %define ruby_version %(%{ruby_command} -e "print RUBY_VERSION.tr('.', '')")
@@ -23,10 +25,7 @@ BuildRequires: gettext
 BuildRequires: gcc
 BuildRequires: make
 BuildRequires: glib2-devel
-BuildRequires: %{ruby_package}
-%if 0%{?centos} < 6
-BuildRequires: ruby-devel
-%endif
+BuildRequires: %{ruby_build_requires}
 Requires: ruby-milter-client = %{version}-%{release}
 Requires: ruby-milter-server = %{version}-%{release}
 Requires(pre): /usr/bin/getent, /usr/sbin/useradd
