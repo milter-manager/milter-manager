@@ -156,6 +156,18 @@ Requires: milter-manager = %{version}-%{release}
 %description -n milter-manager-munin-plugins
 This package contains the munin plugins for munin-node.
 
+%package -n milter-manager-log-analyzer
+Summary: Analyze milter-manager's log.
+Group: Applications/System
+Requires: milter-manager = %{version}-%{release}
+Requires: ruby
+Requires: rrdtool
+
+%description -n milter-manager-log-analyzer
+This provides a Ruby script to generate some graphs from
+milter-manager's log.
+
+
 %prep
 %setup -q
 
@@ -252,7 +264,6 @@ fi
 %doc %{_datadir}/gtk-doc/html/milter-manager/
 %{_bindir}/milter-performance-check
 %{_bindir}/milter-report-statistics
-%{_bindir}/milter-manager-log-analyzer
 %{_sbindir}/milter-manager
 %{_includedir}/milter-manager/milter/manager.h
 %{_includedir}/milter-manager/milter/manager/
@@ -265,11 +276,9 @@ fi
 %{_mandir}/man1/milter-performance-check.*
 %{_mandir}/man1/milter-report-statistics.*
 %{_mandir}/man1/milter-manager.*
-%{_mandir}/man1/milter-manager-log-analyzer.*
 %{_mandir}/ja/man1/milter-performance-check.*
 %{_mandir}/ja/man1/milter-report-statistics.*
 %{_mandir}/ja/man1/milter-manager.*
-%{_mandir}/ja/man1/milter-manager-log-analyzer.*
 %{_initrddir}/milter-manager
 %{_sysconfdir}/rc.d/init.d/
 %{_sysconfdir}/cron.d/
@@ -415,6 +424,14 @@ fi
 %doc %{_datadir}/milter-manager/license/
 %{_datadir}/munin/
 %config %{_sysconfdir}/munin/plugin-conf.d/
+
+%files -n milter-manager-log-analyzer
+%defattr(-,root,root)
+%doc README README.ja NEWS NEWS.ja TODO
+%doc %{_datadir}/milter-manager/license/
+%{_bindir}/milter-manager-log-analyzer
+%{_mandir}/man1/milter-manager-log-analyzer.*
+%{_mandir}/ja/man1/milter-manager-log-analyzer.*
 
 %changelog
 * Thu Mar 07 2013 HAYASHI Kentaro <hayashi@clear-code.com> - 1.8.6-0
