@@ -1,4 +1,10 @@
-%define ruby_version %(ruby -v | cut -d' ' -f2 | tr -d .)
+%if 0%{?centos} >= 6
+%define ruby_version %(ruby1.9 -e "print RUBY_VERSION.tr('.', '')")
+%define ruby_libversion %(ruby1.9 -rrbconfig -e "print RbConfig::CONFIG['ruby_version']")
+%else
+%define ruby_version %(ruby -e "print RUBY_VERSION.tr('.', '')")
+%define ruby_libversion %(ruby -rrbconfig -e "pring RbConfig::CONFIG['ruby_version']")
+%endif
 
 Summary: A milter to use milters effectively
 Name: milter-manager
@@ -14,8 +20,12 @@ BuildRequires: gettext
 BuildRequires: gcc
 BuildRequires: make
 BuildRequires: glib2-devel
+%if 0%{?centos} >= 6
+BuildRequires: ruby1.9
+%else
 BuildRequires: ruby
 BuildRequires: ruby-devel
+%endif
 Requires: ruby-milter-client = %{version}-%{release}
 Requires: ruby-milter-server = %{version}-%{release}
 Requires(pre): /usr/bin/getent, /usr/sbin/useradd
@@ -99,7 +109,11 @@ required for developing applications against libmilter-server.
 Summary: Ruby bindings for libmilter-core
 Group: Development/Libraries
 Obsoletes: ruby-milter-toolkit < 1.6.6-0
+%if 0%{?centos} >= 6
+Requires: ruby1.9
+%else
 Requires: ruby
+%endif
 Requires: libmilter-core = %{version}-%{release}
 
 %description -n ruby-milter-core
@@ -109,7 +123,11 @@ This package contains the Ruby bindings for libmilter-core.
 Summary: Ruby bindings for libmilter-client
 Group: Development/Libraries
 Obsoletes: ruby-milter-toolkit < 1.6.6-0
+%if 0%{?centos} >= 6
+Requires: ruby1.9
+%else
 Requires: ruby
+%endif
 Requires: libmilter-client = %{version}-%{release}
 Requires: ruby-milter-core = %{version}-%{release}
 
@@ -120,7 +138,11 @@ This package contains the Ruby bindings for libmilter-client.
 Summary: Ruby bindings for libmilter-server
 Group: Development/Libraries
 Obsoletes: ruby-milter-toolkit < 1.6.6-0
+%if 0%{?centos} >= 6
+Requires: ruby1.9
+%else
 Requires: ruby
+%endif
 Requires: libmilter-server = %{version}-%{release}
 
 %description -n ruby-milter-server
@@ -160,7 +182,11 @@ This package contains the munin plugins for munin-node.
 Summary: Analyze milter-manager's log.
 Group: Applications/System
 Requires: milter-manager = %{version}-%{release}
+%if 0%{?centos} >= 6
+Requires: ruby1.9
+%else
 Requires: ruby
+%endif
 Requires: rrdtool
 
 %description -n milter-manager-log-analyzer
@@ -179,7 +205,11 @@ milter-manager's log.
     --with-default-pid-file=/var/run/milter-manager/milter-manager.pid	\
     --with-default-connection-spec=unix:/var/run/milter-manager/milter-manager.sock \
     --with-bundled-ruby-glib2						\
+%if 0%{?centos} >= 6
+    --enable-ruby-milter=$(ruby1.9 -rrbconfig -e 'print Config::CONFIG["rubylibdir"]')
+%else
     --enable-ruby-milter=$(ruby -rrbconfig -e 'print Config::CONFIG["rubylibdir"]')
+%endif
 make %{?_smp_mflags}
 
 %install
@@ -354,7 +384,7 @@ fi
 %doc README README.ja NEWS NEWS.ja TODO
 %doc %{_datadir}/milter-manager/license/
 %doc %{_datadir}/gtk-doc/html/milter-manager/
-%{_exec_prefix}/lib/ruby/1.8/milter/core.rb
+%{_exec_prefix}/lib/ruby/%{ruby_libversion}/milter/core.rb
 %{_libdir}/milter-manager/binding/ext/glib2.so
 %{_libdir}/milter-manager/binding/ext/rbg*.h
 %{_libdir}/milter-manager/binding/ext/glib*.h
@@ -377,8 +407,8 @@ fi
 %doc README README.ja NEWS NEWS.ja TODO
 %doc %{_datadir}/milter-manager/license/
 %doc %{_datadir}/gtk-doc/html/milter-manager/
-%{_exec_prefix}/lib/ruby/1.8/milter.rb
-%{_exec_prefix}/lib/ruby/1.8/milter/client.rb
+%{_exec_prefix}/lib/ruby/%{ruby_libversion}/milter.rb
+%{_exec_prefix}/lib/ruby/%{ruby_libversion}/milter/client.rb
 %{_libdir}/milter-manager/binding/ext/milter_client.so
 %{_libdir}/milter-manager/binding/ext/milter_client.la
 %{_libdir}/milter-manager/binding/ext/rb-milter-client.h
@@ -393,7 +423,7 @@ fi
 %doc README README.ja NEWS NEWS.ja TODO
 %doc %{_datadir}/milter-manager/license/
 %doc %{_datadir}/gtk-doc/html/milter-manager/
-%{_exec_prefix}/lib/ruby/1.8/milter/server.rb
+%{_exec_prefix}/lib/ruby/%{ruby_libversion}/milter/server.rb
 %{_libdir}/milter-manager/binding/ext/milter_server.so
 %{_libdir}/milter-manager/binding/ext/milter_server.la
 %{_libdir}/milter-manager/binding/ext/rb-milter-server.h
