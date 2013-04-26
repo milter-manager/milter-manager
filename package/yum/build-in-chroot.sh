@@ -132,8 +132,8 @@ build()
     run_sudo su -c "chroot ${CHROOT_BASE}/$target /tmp/build-rpm.sh"
     run mkdir -p $binary_pool_dir
     run mkdir -p $source_pool_dir
-    run cp -p $rpm_dir/*-${VERSION}* $binary_pool_dir
-    run cp -p $srpm_dir/*-${VERSION}* $source_pool_dir
+    run cp -p $rpm_dir/*.rpm $binary_pool_dir
+    run cp -p $srpm_dir/*.src.rpm $source_pool_dir
 
     dependencies_dir=${build_user_dir}/dependencies
     dependencies_rpm_dir=${dependencies_dir}/RPMS
