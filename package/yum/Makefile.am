@@ -5,7 +5,7 @@ ARCHITECTURES = i386 x86_64
 CHROOT_BASE = /var/lib/chroot
 BASE_URL_PREFIX = http://downloads.sourceforge.net/project/$(PACKAGE)
 HAVE_DEVELOPMENT_BRANCH = yes
-USE_RPMFORGE = no
+USE_RPMFORGE = yes
 USE_ATRPMS = no
 
 release: build sign update upload
