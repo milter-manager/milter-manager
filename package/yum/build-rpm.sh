@@ -11,6 +11,7 @@ USE_RPMFORGE=$(cat /tmp/build-use-rpmforge)
 USE_ATRPMS=$(cat /tmp/build-use-atrpms)
 BUILD_OPTIONS=$(cat /tmp/build-options)
 BUILD_SCRIPT=/tmp/build-${PACKAGE}.sh
+BUILD_RUBY_SCRIPT=/tmp/build-ruby.sh
 
 run()
 {
@@ -86,9 +87,15 @@ if ! id $USER_NAME >/dev/null 2>&1; then
     run useradd -m $USER_NAME
 fi
 
-cat <<EOF > $BUILD_SCRIPT
-#!/bin/sh
+case $distribution_version in
+    6.*)
+	if ! rpm -q ruby1.9 > /dev/null 2>&1; then
+	    yum install wget libyaml libyaml-devel -y
+	fi
+	;;
+esac
 
+cat <<EOF > $BUILD_RUBY_SCRIPT
 if [ ! -f ~/.rpmmacros ]; then
     cat <<EOM > ~/.rpmmacros
 %_topdir \$HOME/rpm
@@ -105,14 +112,32 @@ mkdir -p rpm/SRPMS
 case $distribution_version in
   6.*)
     if ! rpm -q ruby1.9 > /dev/null 2>&1; then
-      yum install wget libyaml libyaml-devel -y
       wget ftp://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.3-p392.tar.gz -P rpm/SOURCES
       cp -a /tmp/ruby193.spec rpm/SPECS/ruby193.spec
       rpmbuild -ba rpm/SPECS/ruby193.spec
-      sudo rpm -Uvh rpm/RPMS/*/*.rpm
     fi
     ;;
 esac
+EOF
+
+run chmod +x $BUILD_RUBY_SCRIPT
+run su - $USER_NAME $BUILD_RUBY_SCRIPT
+run rpm -Uvh ~$USER_NAME/rpm/RPMS/*/*.rpm
+
+cat <<EOF > $BUILD_SCRIPT
+#!/bin/sh
+
+if [ ! -f ~/.rpmmacros ]; then
+    cat <<EOM > ~/.rpmmacros
+%_topdir \$HOME/rpm
+EOM
+fi
+
+mkdir -p rpm/SOURCES
+mkdir -p rpm/SPECS
+mkdir -p rpm/BUILD
+mkdir -p rpm/RPMS
+mkdir -p rpm/SRPMS
 
 if test -f /tmp/${SOURCE_BASE_NAME}-$VERSION-*.src.rpm; then
     if ! rpm -Uvh /tmp/${SOURCE_BASE_NAME}-$VERSION-*.src.rpm; then
