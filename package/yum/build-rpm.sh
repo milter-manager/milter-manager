@@ -82,6 +82,7 @@ fi
 
 if test "$USE_EPEL" = "yes"; then
     if ! rpm -q epel-release > /dev/null 2>&1; then
+	epel_url=
 	case $distribution_version in
 	    5.*)
 		epel_url=http://ftp.iij.ad.jp/pub/linux/fedora/epel/5/i386/epel-release-5-4.noarch.rpm
@@ -90,10 +91,12 @@ if test "$USE_EPEL" = "yes"; then
 		epel_url=http://ftp.iij.ad.jp/pub/linux/fedora/epel/6/i386/epel-release-6-8.noarch.rpm
 		;;
 	esac
-	run wget $epel_url
-	run rpm -Uvh $(basename $epel_url)
-	run rm $(basename $epel_url)
-	sed -i'' -e 's/enabled = 1/enabled = 0/g' /etc/yum.repos.d/epel.repo
+	if test -n "$epel_url"; then
+	    run wget $epel_url
+	    run rpm -Uvh $(basename $epel_url)
+	    run rm $(basename $epel_url)
+	    sed -i'' -e 's/enabled = 1/enabled = 0/g' /etc/yum.repos.d/epel.repo
+	fi
     fi
     yum_options="$yum_options --enablerepo=epel"
 fi
