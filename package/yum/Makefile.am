@@ -5,8 +5,9 @@ ARCHITECTURES = i386 x86_64
 CHROOT_BASE = /var/lib/chroot
 BASE_URL_PREFIX = http://downloads.sourceforge.net/project/$(PACKAGE)
 HAVE_DEVELOPMENT_BRANCH = yes
-USE_RPMFORGE = yes
+USE_RPMFORGE = no
 USE_ATRPMS = no
+USE_EPEL = yes
 
 release: build sign update upload
 
@@ -51,7 +52,8 @@ build-in-chroot:
 	  '$(DISTRIBUTIONS)'			\
 	  '$(HAVE_DEVELOPMENT_BRANCH)'		\
 	  '$(USE_RPMFORGE)'			\
-	  '$(USE_ATRPMS)'
+	  '$(USE_ATRPMS)'			\
+	  '$(USE_EPEL)'
 
 build-release-rpm: RPM-GPG-KEY-$(PACKAGE)
 	./build-release-rpm.sh		\

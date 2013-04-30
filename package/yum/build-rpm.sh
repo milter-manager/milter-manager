@@ -9,6 +9,7 @@ USER_NAME=$(cat /tmp/build-user)
 DEPENDED_PACKAGES=$(cat /tmp/depended-packages)
 USE_RPMFORGE=$(cat /tmp/build-use-rpmforge)
 USE_ATRPMS=$(cat /tmp/build-use-atrpms)
+USE_EPEL=$(cat /tmp/build-use-epel)
 BUILD_OPTIONS=$(cat /tmp/build-options)
 BUILD_SCRIPT=/tmp/build-${PACKAGE}.sh
 BUILD_RUBY_SCRIPT=/tmp/build-ruby.sh
@@ -77,6 +78,24 @@ gpgcheck=1
 enabled=0
 EOF
     yum_options="$yum_options --enablerepo=atrpms"
+fi
+
+if test "$USE_EPEL" = "yes"; then
+    if ! rpm -q epel-release > /dev/null 2>&1; then
+	case $distribution_version in
+	    5.*)
+		epel_url=http://ftp.iij.ad.jp/pub/linux/fedora/epel/5/i386/epel-release-5-4.noarch.rpm
+		;;
+	    6.*)
+		epel_url=http://ftp.iij.ad.jp/pub/linux/fedora/epel/6/i386/epel-release-6-8.noarch.rpm
+		;;
+	esac
+        run wget $epel_url
+        run rpm -Uvh $(basename $epel_url)
+        run rm $(basename $epel_url)
+	sed -i'' -e 's/enabled = 1/enabled = 0/g' /etc/yum.repos.d/rpmforge.repo
+    fi
+    yum_options="$yum_options --enablerepo=epel"
 fi
 
 run yum update ${yum_options} -y

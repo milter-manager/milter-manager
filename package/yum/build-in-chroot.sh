@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ $# != 10 ]; then
-    echo "Usage: $0 PACKAGE VERSION SOURCE_BASE_NAME SPEC_DIR CHROOT_BASE ARCHITECTURES DISTRIBUTIONS HAVE_DEVELOPMENT_BRANCH USE_RPMFORGE USE_ATRPMS"
+    echo "Usage: $0 PACKAGE VERSION SOURCE_BASE_NAME SPEC_DIR CHROOT_BASE ARCHITECTURES DISTRIBUTIONS HAVE_DEVELOPMENT_BRANCH USE_RPMFORGE USE_ATRPMS USE_EPEL"
     echo " e.g.: $0 milter-manager 1.1.1 ../milter-manager ../rpm /var/lib/chroot 'i386 x86_64' 'fedora centos' yes no no"
     exit 1
 fi
@@ -16,6 +16,7 @@ DISTRIBUTIONS=$7
 HAVE_DEVELOPMENT_BRANCH=$8
 USE_RPMFORGE=$9
 USE_ATRPMS=$10
+USE_EPEL=$11
 
 PATH=/usr/local/sbin:/usr/sbin:$PATH
 
@@ -124,6 +125,7 @@ build()
 	${CHROOT_BASE}/$target/tmp/depended-packages
     run echo $USE_RPMFORGE > ${CHROOT_BASE}/$target/tmp/build-use-rpmforge
     run echo $USE_ATRPMS > ${CHROOT_BASE}/$target/tmp/build-use-atrpms
+    run echo $USE_EPEL > ${CHROOT_BASE}/$target/tmp/build-use-epel
     run cp ${script_base_dir}/${PACKAGE}-build-options \
 	${CHROOT_BASE}/$target/tmp/build-options
     run cp ${script_base_dir}/build-rpm.sh ${CHROOT_BASE}/$target/tmp/
