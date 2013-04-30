@@ -93,7 +93,7 @@ if test "$USE_EPEL" = "yes"; then
         run wget $epel_url
         run rpm -Uvh $(basename $epel_url)
         run rm $(basename $epel_url)
-	sed -i'' -e 's/enabled = 1/enabled = 0/g' /etc/yum.repos.d/rpmforge.repo
+	sed -i'' -e 's/enabled = 1/enabled = 0/g' /etc/yum.repos.d/epel.repo
     fi
     yum_options="$yum_options --enablerepo=epel"
 fi
