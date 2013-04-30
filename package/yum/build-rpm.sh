@@ -42,6 +42,7 @@ if test "$USE_RPMFORGE" = "yes"; then
     if ! rpm -q rpmforge-release > /dev/null 2>&1; then
 	architecture=$(cut -d '-' -f 1 /etc/rpm/platform)
 	rpmforge_url=http://packages.sw.be/rpmforge-release
+	rpmforge_rpm_base=
 	case $distribution_version in
 		5.*)
 			rpmforge_rpm_base=rpmforge-release-0.5.3-1.el5.rf.${architecture}.rpm
@@ -50,10 +51,12 @@ if test "$USE_RPMFORGE" = "yes"; then
 			rpmforge_rpm_base=rpmforge-release-0.5.3-1.el6.rf.${architecture}.rpm
 			;;
 	esac
-	wget $rpmforge_url/$rpmforge_rpm_base
-	run rpm -Uvh $rpmforge_rpm_base
-	rm $rpmforge_rpm_base
-	sed -i'' -e 's/enabled = 1/enabled = 0/g' /etc/yum.repos.d/rpmforge.repo
+	if test -n "$rpmforge_rpm_base"; then
+	    wget $rpmforge_url/$rpmforge_rpm_base
+	    run rpm -Uvh $rpmforge_rpm_base
+	    rm $rpmforge_rpm_base
+	    sed -i'' -e 's/enabled = 1/enabled = 0/g' /etc/yum.repos.d/rpmforge.repo
+	fi
     fi
     yum_options="$yum_options --enablerepo=rpmforge"
 fi
