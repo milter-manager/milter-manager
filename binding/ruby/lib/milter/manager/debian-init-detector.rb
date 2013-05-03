@@ -53,6 +53,7 @@ module Milter::Manager
 
     def parse_init_script
       content = File.read(init_script)
+      content.force_encoding("UTF-8") if content.respond_to?(:force_encoding)
 
       content = content.gsub(/\A#!\s*\/bin\/sh\s*/m, '')
       before, init_info_content, after = extract_meta_data_blocks(content)
