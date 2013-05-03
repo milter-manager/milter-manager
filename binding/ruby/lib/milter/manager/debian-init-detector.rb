@@ -52,7 +52,7 @@ module Milter::Manager
     end
 
     def parse_init_script
-      content = File.open(init_script).read
+      content = File.read(init_script)
 
       content = content.gsub(/\A#!\s*\/bin\/sh\s*/m, '')
       before, init_info_content, after = extract_meta_data_blocks(content)
