@@ -8,7 +8,7 @@ FreeBSDに特化したmilter managerのインストール方法について説�
 します。FreeBSDに依存しない一般的なインストール情報は((<イン
 ストール|install.rd.ja>))を見てください。
 
-FreeBSD 8.1-RELEASEを想定しています。
+FreeBSD 9.1-RELEASEを想定しています。
 
 == パッケージのインストール
 
@@ -24,9 +24,6 @@ MTAはPostfixを利用することとします。
 milterはspamass-milter、clamav-milter、milter-greylistを使用
 することとします。
 
-  % sudo /usr/local/sbin/portupgrade -NRr -m "WITH_CHARSET=utf-8" ja-mecab ja-mecab-ipadic
-  % sudo /usr/local/sbin/portupgrade -NRr -m "ENCODING=utf-8" ja-p5-Text-MeCab
-  % sudo /usr/local/sbin/portupgrade -NRr ja-p5-Mail-SpamAssassin
   % sudo /usr/local/sbin/portupgrade -NRr spamass-milter
   % sudo /usr/local/sbin/portupgrade -NRr -m 'WITH_POSTFIX=true' milter-greylist
   % sudo /usr/local/sbin/portupgrade -NRr -m 'WITH_MILTER=true' clamav
@@ -93,7 +90,7 @@ SpamAssassinまでは処理がまわってきません。まずは、SMTPクラ�
 
 spamdを起動します。
 
-  % sudo /usr/local/etc/rc.d/sa-spamd start
+  % sudo /usr/sbin/service sa-spamd start
 
 次にspamass-milterの設定をします。spamass-milterはspamdユー
 ザ・spamdグループで動かすことにします。
@@ -121,7 +118,7 @@ spamdを起動します。
 
 spamass-milterを起動します。
 
-  % sudo /usr/local/etc/rc.d/spamass-milter start
+  % sudo /usr/sbin/service spamass-milter start
 
 === clamav-milterの設定
 
@@ -132,10 +129,14 @@ spamass-milterを起動します。
   clamav_clamd_enable="YES"
   clamav_freshclam_enable="YES"
 
+clamdを起動する前に最新の定義ファイルを取得します。
+
+  % sudo /usr/local/bin/freshcram
+
 clamdとfreshclamを起動します。
 
-  % sudo /usr/local/etc/rc.d/clamav-clamd start
-  % sudo /usr/local/etc/rc.d/clamav-freshclam start
+  % sudo /usr/sbin/service clamav-clamd start
+  % sudo /usr/sbin/service clamav-freshclam start
 
 clamav-milterはデフォルトではclamavユーザ・clamavグループで
 起動します。一般ユーザなのでその設定を利用することにし、ソケッ
@@ -195,12 +196,12 @@ clamav-milterはデフォルトではclamavユーザ・clamavグループで
 
 clamav-milterを起動します。
 
-  % sudo /usr/local/etc/rc.d/clamav-milter start
+  % sudo /usr/sbin/service clamav-milter start
 
 === milter-greylistの設定
 
-milter-greylistはsmmspユーザ・mailグループで実行します。
-smmspユーザはデフォルト設定のユーザであり、Postfixを使ってい
+milter-greylistはmailnullユーザ・mailグループで実行します。
+mailnullユーザはデフォルト設定ユーザであり、Postfixを使ってい
 る環境では使用されていないユーザなので、そのまま使うことにし
 ます。
 
@@ -208,6 +209,8 @@ smmspユーザはデフォルト設定のユーザであり、Postfixを使っ�
 /usr/local/etc/mail/greylist.confにコピーし、以下のような設
 定にします。
 
+  * 実行グループをmailnullグループからmailグループにする
+  * ソケットファイルにはmailグループでも書き込めるようにする
   * IPアドレスのマッチには前半24ビットのみを使う（送信元が複
     数のMTAを利用している場合のGreylistの悪影響を抑えるため）
   * 再送チェック時間を30分後（デフォルト）から10分後に短くす
@@ -226,9 +229,13 @@ smmspユーザはデフォルト設定のユーザであり、Postfixを使っ�
   築を支援します。
 
 変更前:
+  socket "/var/milter-greylist/milter-greylist.sock"
+  user "mailnull:mailnull"
   racl whitelist default
 
 変更後:
+  socket "/var/milter-greylist/milter-greylist.sock" 660
+  user "mailnull:mail"
   subnetmatch /24
   greylist 10m
   autowhite 1w
@@ -237,27 +244,11 @@ smmspユーザはデフォルト設定のユーザであり、Postfixを使っ�
 /etc/rc.confに以下を追加します。
 
   miltergreylist_enable="YES"
-  miltergreylist_runas="smmsp:mail"
-
-また、/etc/rc.conf.d/miltergreylistを作成し、ソケットファイル
-のパーミッションを設定します。sleep 1はmilter-greylistの起動
-待ちのためです。もし、1秒では足りない場合は、
-/usr/local/etc/rc.d/clamav-milterのようにもう少し賢くする方
-がよいと思います。
-
-/etc/rc.conf.d/miltergreylist
-
-  start_postcmd=start_postcmd
-
-  start_postcmd() {
-    sleep 1
-    /bin/chmod g+w $miltergreylist_sockfile
-    /usr/bin/chgrp mail $miltergreylist_sockfile
-  }
+  miltergreylist_runas="mailnull:mail"
 
 milter-greylistを起動します。
 
-  % sudo /usr/local/etc/rc.d/milter-greylist start
+  % sudo /usr/sbin/service milter-greylist start
 
 === milter-managerの設定
 
@@ -317,21 +308,13 @@ FreeBSD上ではデフォルトでは
 
 milter-managerの設定が完了したので、起動の設定をします。
 
-FreeBSD用の起動スクリプトが
-/usr/local/etc/milter-manager/rc.d/milter-managerにインストー
-ルされています。/usr/local/etc/rc.d/以下にシンボリックリンク
-を作成し、自動起動するようにします。
-
-  % cd /usr/local/etc/rc.d/
-  % sudo ln -s /usr/local/etc/milter-manager/rc.d/milter-manager ./
-
 /etc/rc.confに以下を追加してmilter-managerを有効にします。
 
   milter_manager_enable="YES"
 
 milter-managerを起動します。
 
-  % sudo /usr/local/etc/rc.d/milter-manager start
+  % sudo /usr/sbin/service milter-manager start
 
 /usr/local/bin/milter-test-serverで起動の確認をすることがで
 きます。
@@ -358,7 +341,7 @@ milter-managerを起動します。
 
 milter-managerをもう一度起動します。
 
-  % sudo /usr/local/etc/rc.d/milter-manager start
+  % sudo /usr/sbin/service milter-manager restart
 
 問題があればログが表示されます。起動しているmilter-managerは
 Ctrl+cで終了することができます。
@@ -416,7 +399,7 @@ clamav-milter、milter-greylistはmilter-manager経由で利用する
 
 Postfixの設定を再読み込みします。
 
-  % sudo /usr/local/etc/rc.d/postfix reload
+  % sudo /usr/sbin/service postfix reload
 
 以上で設定は完了です。
 
@@ -443,13 +426,13 @@ milter-managerのソケットのみを指定するだけですむようになり
 milterを無効にしたい場合は、他のサーバプロセスと同様に以下の
 ような手順になります。
 
-  % sudo /usr/local/etc/rc.d/XXX stop
+  % sudo /usr/sbin/service XXX stop
   % sudo vim /etc/rc.conf # XXX_enabled="YES" => XXX_enabled="NO"
 
 後は、milter-managerの設定を再読み込みすれば、milterが無効に
 なったことを検出し、無効になったmilterとは接続しなくなります。
 
-  % sudo /usr/local/etc/rc.d/milter-manager reload
+  % sudo /usr/sbin/service milter-manager reload
 
 Postfixのmain.cfを変更する必要はありません。
 

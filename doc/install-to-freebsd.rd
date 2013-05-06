@@ -8,7 +8,7 @@ This document describes how to install milter manager to
 FreeBSD. See ((<Install|install.rd>)) for general install
 information.
 
-This document assumes that FreeBSD 8.1-RELEASE is used.
+This document assumes that FreeBSD 9.1-RELEASE is used.
 
 == Install packages
 
@@ -87,7 +87,7 @@ milter manager's statistics graphs at the time.
 
 spamd should be started:
 
-  % sudo /usr/local/etc/rc.d/sa-spamd start
+  % sudo /usr/sbin/service sa-spamd start
 
 Next, we configure spamass-milter. We run spamass-milter
 with 'spamd' user and 'spamd' group.
@@ -114,7 +114,7 @@ We add the following to /etc/rc.conf:
 
 spamass-milter should be started:
 
-  % sudo /usr/local/etc/rc.d/spamass-milter start
+  % sudo /usr/sbin/service spamass-milter start
 
 === Configure clamav-milter
 
@@ -126,10 +126,14 @@ freshclam:
   clamav_clamd_enable="YES"
   clamav_freshclam_enable="YES"
 
+Get the latest definition files before run clamd:
+
+  % sudo /usr/local/bin/freshcram
+
 clamd and freshclam should be started:
 
-  % sudo /usr/local/etc/rc.d/clamav-clamd start
-  % sudo /usr/local/etc/rc.d/clamav-freshclam start
+  % sudo /usr/sbin/service clamav-clamd start
+  % sudo /usr/sbin/service clamav-freshclam start
 
 clamav-milter is ran as 'clamav' user and 'clamav' group by
 default. We use the configuration because 'clamav' user is
@@ -183,18 +187,20 @@ Here are explanations of the above configurations:
 
 clamav-milter should be started:
 
-  % sudo /usr/local/etc/rc.d/clamav-milter start
+  % sudo /usr/sbin/service clamav-milter start
 
 === Configure milter-greylist
 
-We run milter-greylist as 'smmsp' user and 'mail' group.
-'smmsp' user is the default configuration and it is unused
+We run milter-greylist as 'mailnull' user and 'mailnull' group.
+'mailnull' user is the default configuration and it is unused
 user on Postfix environment.
 
 We copy /usr/local/etc/mail/greylist.conf.sample to
 /usr/local/etc/mail/greylist.conf and change it for the
 following configurations:
 
+  * change the effective group to "mail" group from "mailnull" group.
+  * add write permission for the socket file to "mail" group.
   * use the leading 24bits for IP address match to avoid
     Greylist adverse effect for sender uses some MTA case.
   * decrease retransmit check time to 10 minutes from 30
@@ -214,9 +220,13 @@ following configurations:
   mail system that combines some anti-spam techniques.
 
 Before:
+  socket "/var/milter-greylist/milter-greylist.sock"
+  user "mailnull:mailnull"
   racl whitelist default
 
 After:
+  socket "/var/milter-greylist/milter-greylist.sock" 660
+  user "mailnull:mail"
   subnetmatch /24
   greylist 10m
   autowhite 1w
@@ -225,26 +235,11 @@ After:
 We add the following to /etc/rc.conf:
 
   miltergreylist_enable="YES"
-  miltergreylist_runas="smmsp:mail"
-
-We create /etc/rc.conf.d/miltergreylist to set socket file's
-permission. 'sleep 1' is just for waiting milter-greylist is
-ran. If 1 second is small, we can improve it like
-/usr/local/etc/rc.d/clamav-milter:
-
-/etc/rc.conf.d/miltergreylist
-
-  start_postcmd=start_postcmd
-
-  start_postcmd() {
-    sleep 1
-    /bin/chmod g+w $miltergreylist_sockfile
-    /usr/bin/chgrp mail $miltergreylist_sockfile
-  }
+  miltergreylist_runas="mailnull:mail"
 
 milter-greylist should be started:
 
-  % sudo /usr/local/etc/rc.d/milter-greylist start
+  % sudo /usr/sbin/service milter-greylist start
 
 === Configure milter-manager
 
@@ -308,22 +303,13 @@ before running milter-manager:
 milter-manager's configuration is completed. We start to
 setup running milter-manager.
 
-milter-manager has its own run script for FreeBSD. It will
-be installed into
-/usr/local/etc/milter-manager/rc.d/milter-manager. We need
-to create a symbolic link to /usr/local/etc/rc.d/ and mark
-it run on start-up:
-
-  % cd /usr/local/etc/rc.d/
-  % sudo ln -s /usr/local/etc/milter-manager/rc.d/milter-manager ./
-
 We add the following to /etc/rc.conf to enable milter-manager:
 
   milter_manager_enable="YES"
 
 milter-manager should be started:
 
-  % sudo /usr/local/etc/rc.d/milter-manager start
+  % sudo /usr/sbin/service milter-manager start
 
 /usr/local/bin/milter-test-server is usuful to confirm
 milter-manager was ran:
@@ -352,7 +338,7 @@ to standard output:
 
 milter-manager should be started:
 
-  % sudo /usr/local/etc/rc.d/milter-manager start
+  % sudo /usr/sbin/service milter-manager restart
 
 Some logs are output if there is a problem. Running
 milter-manager can be exitted by Ctrl+c.
@@ -410,7 +396,7 @@ We add the following to /usr/local/etc/postfix/main.cf:
 
 Postfix should reload its configuration:
 
-  % sudo /usr/local/etc/rc.d/postfix reload
+  % sudo /usr/sbin/service postfix reload
 
 Postfix's milter configuration is completed.
 
@@ -434,12 +420,12 @@ milter-manager also supports xxx_enabled="NO" configuration
 used in /etc/rc.conf. If we disable a milter, we use the
 following steps:
 
-  % sudo /usr/local/etc/rc.d/XXX stop
+  % sudo /usr/sbin/service XXX stop
   % sudo vim /etc/rc.conf # XXX_enabled="YES" => XXX_enabled="NO"
 
 We need to reload milter-manager after we disable a milter.
 
-  % sudo /usr/local/etc/rc.d/milter-manager reload
+  % sudo /usr/sbin/service milter-manager reload
 
 milter-manager detects a milter is disabled and doesn't use
 it. We doesn't need to change Postfix's main.cf.
