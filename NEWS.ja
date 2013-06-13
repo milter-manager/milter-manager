@@ -2,6 +2,39 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-1-8-7] 1.8.7: 2013-06-xx
+
+1.8.6 のバグフィックスリリースです。
+
+=== パッケージ
+
+  * [rpm] 更新時にユーザーの設定を上書きしないように修正。
+  * [deb][rpm] milter-manager-log-analyzer を milter-manager から分離。
+    [西山和弘さんが報告][GitHub #21]
+  * CentOS6 以降ではRuby1.9を使用するように変更。
+  * Ubuntu Oneiric Ocelot(11.10) のサポートを削除。
+  * Ubuntu Raring Ringtail(13.04) のサポートを追加。
+  * Debian jessie サポートを追加。
+
+=== milter manager
+
+==== 改善
+
+  * Ruby2.0.0 をサポート。
+
+==== 修正
+
+  * [debian] non-ASCII な文字列を含む設定ファイルをサポート。
+    [西山和弘さんが報告][GitHub #23]
+
+=== Admin
+
+  * 削除。
+
+=== 感謝
+
+  * 西山和弘さん
+
 == [release-1-8-6] 1.8.6: 2013-03-07
 
 1.8.5 のバグフィックスリリースです。
