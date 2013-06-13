@@ -22,7 +22,7 @@ viruses by the latest ClamAV.
   deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
   deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
 
-If you don't enable the official backport repository, we need to
+If you don't enable the official backport repository, you need to
 create /etc/apt/sources.list.d/backports.list with the following
 content:
 
@@ -34,7 +34,7 @@ content:
   deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ precise universe
   deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ precise universe
 
-If you don't enable the official backport repository, we need to
+If you don't enable the official backport repository, you need to
 create /etc/apt/sources.list.d/backports.list with the following
 content:
 
@@ -46,7 +46,7 @@ content:
   deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ quantal universe
   deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ quantal universe
 
-If you don't enable the official backport repository, we need to
+If you don't enable the official backport repository, you need to
 create /etc/apt/sources.list.d/backports.list with the following
 content:
 
@@ -58,7 +58,7 @@ content:
   deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ raring universe
   deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ raring universe
 
-If you don't enable the official backport repository, we need to
+If you don't enable the official backport repository, you need to
 create /etc/apt/sources.list.d/backports.list with the following
 content:
 
