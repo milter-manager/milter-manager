@@ -34,7 +34,7 @@ milterはspamass-milter、clamav-milter、milter-greylistを使用
 
 また、グラフ作成用にRRDtoolもインストールします。
 
-  % sudo yum install -y rrdtool-ruby
+  % sudo yum install -y rrdtool
 
 == milter managerパッケージのインストール
 

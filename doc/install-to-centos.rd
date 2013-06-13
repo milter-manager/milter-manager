@@ -35,7 +35,7 @@ Now, you can install milters:
 
 And you can install RRDtool for generating graphs:
 
-  % sudo yum install -y ruby-rrdtool
+  % sudo yum install -y rrdtool
 
 == Build and Install
 
