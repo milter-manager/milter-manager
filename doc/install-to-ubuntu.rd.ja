@@ -28,17 +28,6 @@ milter managerのサイトでは以下のUbuntu用debパッケージを提供し
 
   deb http://jp.archive.ubuntu.com/ubuntu lucid-backports main universe
 
-=== Oneiric Ocelotの場合
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ oneiric universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ oneiric universe
-
-もし、まだバックポートリポジトリを有効にしていない場合は以下のような内
-容の/etc/apt/sources.list.d/backports.listを作成して有効にします。
-
-  deb http://jp.archive.ubuntu.com/ubuntu oneiric-backports main universe
-
 === Precise Pangolinの場合
 
 /etc/apt/sources.list.d/milter-manager.list:

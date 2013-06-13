@@ -28,18 +28,6 @@ content:
 
   deb http://archive.ubuntu.com/ubuntu lucid-backports main universe
 
-=== For Oneiric Ocelot
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ oneiric universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ oneiric universe
-
-If you don't enable the official backport repository, we need to
-create /etc/apt/sources.list.d/backports.list with the following
-content:
-
-  deb http://archive.ubuntu.com/ubuntu oneiric-backports main universe
-
 === For Precise Pangolin
 
 /etc/apt/sources.list.d/milter-manager.list:
