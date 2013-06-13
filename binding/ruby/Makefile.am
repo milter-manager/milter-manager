@@ -545,6 +545,7 @@ ruby_glib2_latest_files =						\
 	glib-2.0.2/lib/gnome2/rake/win32-binary-build-task.rb		\
 	glib-2.0.2/lib/gnome2/rake/win32-binary-download-task.rb	\
 	glib-2.0.2/lib/mkmf-gnome2.rb					\
+	glib-2.0.2/lib/pkg-config.rb					\
 	glib-2.0.2/sample/bookmarkfile.rb				\
 	glib-2.0.2/sample/idle.rb					\
 	glib-2.0.2/sample/iochannel.rb					\
