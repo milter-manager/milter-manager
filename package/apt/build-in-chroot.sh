@@ -1,4 +1,5 @@
 #!/bin/sh
+# -*- indent-tabs-mode: nil; sh-basic-offset: 4; sh-indentation: 4 -*-
 
 if [ $# != 4 ]; then
     echo "Usage: $0 VERSION CHROOT_BASE ARCHITECTURES CODES"
@@ -26,8 +27,8 @@ run()
 {
     "$@"
     if test $? -ne 0; then
-	echo "Failed $@"
-	exit 1
+        echo "Failed $@"
+        exit 1
     fi
 }
 
@@ -44,8 +45,8 @@ build_chroot()
     run_sudo debootstrap --arch $architecture $code_name $base_dir
 
     case $code_name in
-	squeeze|wheezy|unstable)
-	    run_sudo sed -i'' -e 's/us/jp/' $base_dir/etc/apt/sources.list
+        squeeze|wheezy|unstable)
+            run_sudo sed -i'' -e 's/us/jp/' $base_dir/etc/apt/sources.list
             case $code_name in
                 squeeze)
                     run_sudo sed -i'' \
@@ -56,14 +57,14 @@ build_chroot()
                     # do nothing
                     ;;
             esac
-	    ;;
-	*)
-	    run_sudo sed -i'' \
-		-e 's/main$/main universe/' \
-		-e 's,http://archive,http://jp.archive,' \
+            ;;
+        *)
+            run_sudo sed -i'' \
+                -e 's/main$/main universe/' \
+                -e 's,http://archive,http://jp.archive,' \
                 -e "\$a\\deb http://security.ubuntu.com/ubuntu ${code_name}-security main" \
-		$base_dir/etc/apt/sources.list
-	    ;;
+                $base_dir/etc/apt/sources.list
+            ;;
     esac
 
     run_sudo sh -c "echo >> /etc/fstab"
@@ -85,18 +86,18 @@ build()
     target=${code_name}-${architecture}
     base_dir=${CHROOT_BASE}/${target}
     if [ ! -d $base_dir ]; then
-	run build_chroot $architecture $code_name
+        run build_chroot $architecture $code_name
     fi
 
     case ${code_name} in
-	squeeze|wheezy|unstable)
-	    distribution=debian
-	    component=main
-	    ;;
-	*)
-	    distribution=ubuntu
-	    component=universe
-	    ;;
+        squeeze|wheezy|unstable)
+            distribution=debian
+            component=main
+            ;;
+        *)
+            distribution=ubuntu
+            component=universe
+            ;;
     esac
 
     source_dir=${script_base_dir}/../..
@@ -108,35 +109,35 @@ build()
     pool_dir=${script_base_dir}/${distribution}/${status}/pool
     pool_dir=${pool_dir}/${code_name}/${component}/${package_initial}/${PACKAGE}
     run cp $source_dir/${PACKAGE}-${VERSION}.tar.gz \
-	${CHROOT_BASE}/$target/tmp/
+        ${CHROOT_BASE}/$target/tmp/
     run rm -rf ${CHROOT_BASE}/$target/tmp/${PACKAGE}-debian
     run cp -rp ${source_dir}/package/debian/ \
-	${CHROOT_BASE}/$target/tmp/${PACKAGE}-debian
+        ${CHROOT_BASE}/$target/tmp/${PACKAGE}-debian
     run find ${CHROOT_BASE}/$target/tmp/${PACKAGE}-debian/ \
-	-name ".svn" -print0 | xargs -0 -r rm -rf \{\} \;
+        -name ".svn" -print0 | xargs -0 -r rm -rf \{\} \;
     run echo $PACKAGE > ${CHROOT_BASE}/$target/tmp/build-package
     run echo $VERSION > ${CHROOT_BASE}/$target/tmp/build-version
     run echo $build_user > ${CHROOT_BASE}/$target/tmp/build-user
     run cp ${script_base_dir}/${PACKAGE}-depended-packages \
-	${CHROOT_BASE}/$target/tmp/depended-packages
+        ${CHROOT_BASE}/$target/tmp/depended-packages
     run cp ${script_base_dir}/build-deb.sh \
-	${CHROOT_BASE}/$target/tmp/
+        ${CHROOT_BASE}/$target/tmp/
     run_sudo rm -rf $build_dir
     run_sudo su -c "/usr/sbin/chroot ${CHROOT_BASE}/$target /tmp/build-deb.sh"
     run mkdir -p $pool_dir
     run echo 'Options +Indexes' > ${script_base_dir}/${distribution}/.htaccess
     for path in $build_dir/*; do
-	[ -f $path ] && run cp -p $path $pool_dir/
+        [ -f $path ] && run cp -p $path $pool_dir/
     done
 }
 
 for architecture in $ARCHITECTURES; do
     for code_name in $CODES; do
-	if test "$parallel" = "yes"; then
-	    build $architecture $code_name &
-	else
-	    build $architecture $code_name
-	fi;
+        if test "$parallel" = "yes"; then
+            build $architecture $code_name &
+        else
+            build $architecture $code_name
+        fi;
     done;
 done
 

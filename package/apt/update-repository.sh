@@ -1,4 +1,5 @@
 #!/bin/sh
+# -*- indent-tabs-mode: nil; sh-basic-offset: 4; sh-indentation: 4 -*-
 
 script_base_dir=`dirname $0`
 
@@ -16,8 +17,8 @@ run()
 {
     "$@"
     if test $? -ne 0; then
-	echo "Failed $@"
-	exit 1
+        echo "Failed $@"
+        exit 1
     fi
 }
 
@@ -59,7 +60,7 @@ Label: The ${PROJECT_NAME} project
 Architecture: source
 EOF
 
-    cat <<EOF > generate-${code_name}.conf
+cat <<EOF > generate-${code_name}.conf
 Dir::ArchiveDir ".";
 Dir::CacheDir ".";
 TreeDefault::Directory "pool/${code_name}/${component}";
@@ -101,24 +102,24 @@ APT::FTPArchive::Release::Components "${component}";
 APT::FTPArchive::Release::Description "${PACKAGE_NAME} packages";
 EOF
     apt-ftparchive -c release-${code_name}.conf \
-	release dists/${code_name} > /tmp/Release
+        release dists/${code_name} > /tmp/Release
     mv /tmp/Release dists/${code_name}
 }
 
 for code_name in ${CODE_NAMES}; do
     case ${code_name} in
-	squeeze|wheezy|unstable)
-	    distribution=debian
-	    component=main
-	    ;;
-	*)
-	    distribution=ubuntu
-	    component=universe
-	    ;;
+        squeeze|wheezy|unstable)
+            distribution=debian
+            component=main
+            ;;
+        *)
+            distribution=ubuntu
+            component=universe
+            ;;
     esac
     for status in stable development; do
-	mkdir -p ${distribution}/${status}
-	(cd ${distribution}/${status} &&
-	    update_repository $distribution $code_name $component)
+        mkdir -p ${distribution}/${status}
+        (cd ${distribution}/${status} &&
+            update_repository $distribution $code_name $component)
     done
 done

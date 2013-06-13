@@ -1,4 +1,5 @@
 #!/bin/sh
+# -*- indent-tabs-mode: nil; sh-basic-offset: 4; sh-indentation: 4 -*-
 
 PACKAGE=$(cat /tmp/build-package)
 USER_NAME=$(cat /tmp/build-user)
@@ -10,8 +11,8 @@ run()
 {
     "$@"
     if test $? -ne 0; then
-	echo "Failed $@"
-	exit 1
+        echo "Failed $@"
+        exit 1
     fi
 }
 
@@ -26,8 +27,8 @@ if test "$(lsb_release --id --short)" = "Ubuntu"; then
     run aptitude install -V -D -y language-pack-ja
 else
     if ! dpkg -l | grep 'ii  locales' > /dev/null 2>&1; then
-	run aptitude install -V -D -y locales
-	run dpkg-reconfigure locales
+        run aptitude install -V -D -y locales
+        run dpkg-reconfigure locales
     fi
 fi
 
