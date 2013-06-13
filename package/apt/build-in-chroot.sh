@@ -45,10 +45,10 @@ build_chroot()
     run_sudo debootstrap --arch $architecture $code_name $base_dir
 
     case $code_name in
-        squeeze|wheezy|unstable)
+        squeeze|wheezy|jessie|unstable)
             run_sudo sed -i'' -e 's/us/jp/' $base_dir/etc/apt/sources.list
             case $code_name in
-                squeeze)
+                squeeze|wheezy)
                     run_sudo sed -i'' \
                         -e "\$a\\deb http://security.debian.org/ ${code_name}/updates main" \
                         $base_dir/etc/apt/sources.list
@@ -90,7 +90,7 @@ build()
     fi
 
     case ${code_name} in
-        squeeze|wheezy|unstable)
+        squeeze|wheezy|jessie|unstable)
             distribution=debian
             component=main
             ;;
