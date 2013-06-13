@@ -472,6 +472,15 @@ distclean:
 uninstall:
 EOM
   fi
+  if test "$ac_used_bundled_ruby_glib2_version" != "1.2.6"; then
+    $RUBY -run -e mkdir -- -p binding/ruby/glib-1.2.6
+    cat <<EOM > binding/ruby/glib-1.2.6/Makefile
+all:
+distdir:
+distclean:
+uninstall:
+EOM
+  fi
   if test "$ac_used_bundled_ruby_glib2_version" != "${bundled_latest_ruby_glib2_version}"; then
     $RUBY -run -e mkdir -- -p binding/ruby/glib-${bundled_latest_ruby_glib2_version}
     cat <<EOM > binding/ruby/glib-${bundled_latest_ruby_glib2_version}/Makefile
@@ -526,6 +535,8 @@ AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_0_16_0],
                [test "$ac_used_bundled_ruby_glib2_version" = "0.16.0"])
 AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_0_90_8],
                [test "$ac_used_bundled_ruby_glib2_version" = "0.90.8"])
+AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_1_2_6],
+               [test "$ac_used_bundled_ruby_glib2_version" = "1.2.6"])
 AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_LATEST],
                [test "$ac_used_bundled_ruby_glib2_version" = "${bundled_latest_ruby_glib2_version}"])
 AM_CONDITIONAL([WITH_RUBY_MILTER], [test -n "$ruby_milterdir"])
