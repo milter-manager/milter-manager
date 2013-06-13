@@ -23,11 +23,11 @@ Register Repoforge like the following.
 
 On 32bit environment:
 
-  % sudo rpm -Uhv http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.i686.rpm
+  % sudo rpm -Uhv http://ftp.jaist.ac.jp/pub/Linux/Fedora/epel/6/i386/epel-release-6-8.noarch.rpm
 
 On 64bit environment:
 
-  % sudo rpm -Uhv http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.2-2.el6.rf.x86_64.rpm
+  % sudo rpm -Uhv http://ftp.jaist.ac.jp/pub/Linux/Fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
 
 Now, you can install milters:
 
