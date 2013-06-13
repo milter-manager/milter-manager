@@ -39,6 +39,12 @@ Please update your source.list as soon as possible.
   deb http://downloads.sourceforge.net/milter-manager/debian/stable/ wheezy main
   deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ wheezy main
 
+=== For jessie
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://downloads.sourceforge.net/milter-manager/debian/stable/ jessie main
+  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ jessie main
+
 === For sid
 
 /etc/apt/sources.list.d/milter-manager.list:

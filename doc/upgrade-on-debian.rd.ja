@@ -38,6 +38,12 @@ sources.list に指定する URI を変更しました。しばらくは以前�
   deb http://downloads.sourceforge.net/project/milter-manager/debian/stable/ wheezy main
   deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ wheezy main
 
+=== jessieの場合
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable/ jessie main
+  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ jessie main
+
 === sidの場合
 
 /etc/apt/sources.list.d/milter-manager.list:
