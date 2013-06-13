@@ -52,6 +52,18 @@ content:
 
   deb http://archive.ubuntu.com/ubuntu quantal-backports main universe
 
+=== For Raring Ringtail
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ raring universe
+  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ raring universe
+
+If you don't enable the official backport repository, we need to
+create /etc/apt/sources.list.d/backports.list with the following
+content:
+
+  deb http://archive.ubuntu.com/ubuntu raring-backports main universe
+
 === Install
 
 We register the key of the package repository:
