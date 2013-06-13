@@ -9,7 +9,7 @@ This document describes how to install milter manager to CentOS 6. See
 install information. See ((<Install|install.rd>)) for general install
 information.
 
-In this document, CentOS 6.2 is used. Sudo is used to run a command
+In this document, CentOS 6.4 is used. Sudo is used to run a command
 with root privilege. If you don't use sudo, use su instead.
 
 == Install packages
