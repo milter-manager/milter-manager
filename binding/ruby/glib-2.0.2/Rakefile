@@ -1,0 +1,128 @@
+# -*- ruby -*-
+
+$LOAD_PATH.unshift("./lib")
+require 'gnome2-raketask'
+
+include_dir        = nil
+glib2_include_dir  = nil
+libffi_lib_dir     = nil
+
+package = GNOME2Package.new do |_package|
+  include_dir        = (_package.windows.absolute_binary_dir + "include").to_s
+  glib2_include_dir  = File.join(include_dir, "glib-2.0")
+  libffi_lib_dir     = (_package.windows.absolute_binary_dir + "lib").to_s
+
+  _package.summary = "Ruby/GLib2 is a Ruby binding of GLib-2.x."
+  _package.description = "Ruby/GLib2 is a Ruby binding of GLib-2.x."
+  _package.dependency.gem.runtime = [["pkg-config", ">= 0"]]
+  _package.dependency.gem.development = [["test-unit", ">= 2"]]
+  _package.win32.packages = []
+  _package.win32.dependencies = ["zlib", "libffi", "gettext-runtime"]
+  _package.external_packages = [
+    {
+      :name => "glib",
+      :download_site => :gnome,
+      :label => "GLib",
+      :version => "2.36.2",
+      :compression_method => "xz",
+      :windows => {
+        :configure_args => [
+          "LIBFFI_CFLAGS=-I#{include_dir}",
+          "LIBFFI_LIBS=-L#{libffi_lib_dir} -lffi",
+          "--disable-modular-tests",
+        ],
+        :need_autoreconf => true,
+      },
+    },
+    {
+      :name => "gmp",
+      :download_base_url => "ftp://ftp.gmplib.org/pub/gmp-5.1.2",
+      :label => "GNU MP",
+      :version => "5.1.2",
+      :compression_method => "xz",
+      :windows => {
+        :configure_args => [
+          "--disable-static",
+          "--enable-shared",
+        ],
+      },
+    },
+    {
+      :name => "nettle",
+      :download_base_url => "http://www.lysator.liu.se/~nisse/archive",
+      :label => "Nettle",
+      :version => "2.7",
+      :windows => {
+        :configure_args => [],
+      },
+    },
+    {
+      :name => "gnutls",
+      :download_base_url => "ftp://ftp.gnutls.org/gcrypt/gnutls/v3.1",
+      :label => "GnuTLS",
+      :version => "3.1.11",
+      :compression_method => "xz",
+      :windows => {
+        :configure_args => [
+          "--with-libnettle-prefix=#{_package.win32.absolute_binary_dir}"
+        ],
+        :use_cc_environment_variable => false,
+      },
+    },
+    {
+      :name => "glib-networking",
+      :download_site => :gnome,
+      :label => "glib-networking",
+      :version => "2.36.2",
+      :compression_method => "xz",
+      :windows => {
+        :configure_args => [
+          "--without-libproxy",
+          "--without-gnome-proxy",
+          "--without-ca-certificates",
+        ],
+      },
+    },
+  ]
+end
+package.define_tasks
+
+namespace :win32 do
+  namespace :libffi do
+    namespace :header do
+      desc "Move libffi headers to include/"
+      task :fix do
+        libffi_version = "libffi-3.0.6"
+        mv(Dir.glob(File.join(libffi_lib_dir, libffi_version, "include", "*.h")),
+           include_dir)
+        rm_rf(File.join(libffi_lib_dir, libffi_version))
+      end
+    end
+  end
+
+  namespace :downloader do
+    task :after => [
+      "win32:libffi:header:fix",
+    ]
+  end
+
+  namespace :gettext do
+    namespace :header do
+      desc "Copy gettext headers to include/glib-2.0/"
+      task :fix do
+        cp(File.join(include_dir, "libintl.h"),
+           glib2_include_dir)
+      end
+    end
+  end
+
+  namespace :buildler do
+    namespace :build do
+      namespace :glib do
+        task :after => [
+          "win32:gettext:header:fix",
+        ]
+      end
+    end
+  end
+end
