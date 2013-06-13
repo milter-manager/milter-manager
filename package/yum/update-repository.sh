@@ -1,4 +1,5 @@
 #!/bin/sh
+# -*- indent-tabs-mode: nil; sh-basic-offset: 4; sh-indentation: 4 -*-
 
 script_base_dir=`dirname $0`
 
@@ -15,16 +16,16 @@ run()
 {
     "$@"
     if test $? -ne 0; then
-	echo "Failed $@"
-	exit 1
+        echo "Failed $@"
+        exit 1
     fi
 }
 
 for distribution in ${DISTRIBUTIONS}; do
     for dir in $script_base_dir/${distribution}/*/*; do
-	test -d $dir &&	run createrepo $dir
+        test -d $dir && run createrepo $dir
     done;
 
     run $script_base_dir/gpg-public-key.sh > \
-	$script_base_dir/${distribution}/RPM-GPG-KEY-${GPG_KEY_NAME};
+        $script_base_dir/${distribution}/RPM-GPG-KEY-${GPG_KEY_NAME};
 done

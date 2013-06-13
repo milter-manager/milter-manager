@@ -1,4 +1,5 @@
 #!/bin/sh
+# -*- indent-tabs-mode: nil; sh-basic-offset: 4; sh-indentation: 4 -*-
 
 script_base_dir=`dirname $0`
 key_id=`$script_base_dir/gpg-uid.sh`

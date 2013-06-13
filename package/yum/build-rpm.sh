@@ -1,4 +1,5 @@
 #!/bin/sh
+# -*- indent-tabs-mode: nil; sh-basic-offset: 4; sh-indentation: 4 -*-
 
 LANG=C
 
@@ -18,8 +19,8 @@ run()
 {
     "$@"
     if test $? -ne 0; then
-	echo "Failed $@"
-	exit 1
+        echo "Failed $@"
+        exit 1
     fi
 }
 
@@ -40,37 +41,37 @@ fi
 
 if test "$USE_RPMFORGE" = "yes"; then
     if ! rpm -q rpmforge-release > /dev/null 2>&1; then
-	architecture=$(cut -d '-' -f 1 /etc/rpm/platform)
-	rpmforge_url=http://packages.sw.be/rpmforge-release
-	rpmforge_rpm_base=
-	case $distribution_version in
-		5.*)
-			rpmforge_rpm_base=rpmforge-release-0.5.3-1.el5.rf.${architecture}.rpm
-			;;
-		6.*)
-			rpmforge_rpm_base=rpmforge-release-0.5.3-1.el6.rf.${architecture}.rpm
-			;;
-	esac
-	if test -n "$rpmforge_rpm_base"; then
-	    wget $rpmforge_url/$rpmforge_rpm_base
-	    run rpm -Uvh $rpmforge_rpm_base
-	    rm $rpmforge_rpm_base
-	    sed -i'' -e 's/enabled = 1/enabled = 0/g' /etc/yum.repos.d/rpmforge.repo
-	fi
+        architecture=$(cut -d '-' -f 1 /etc/rpm/platform)
+        rpmforge_url=http://packages.sw.be/rpmforge-release
+        rpmforge_rpm_base=
+        case $distribution_version in
+            5.*)
+                rpmforge_rpm_base=rpmforge-release-0.5.3-1.el5.rf.${architecture}.rpm
+                ;;
+            6.*)
+                rpmforge_rpm_base=rpmforge-release-0.5.3-1.el6.rf.${architecture}.rpm
+                ;;
+        esac
+        if test -n "$rpmforge_rpm_base"; then
+            wget $rpmforge_url/$rpmforge_rpm_base
+            run rpm -Uvh $rpmforge_rpm_base
+            rm $rpmforge_rpm_base
+            sed -i'' -e 's/enabled = 1/enabled = 0/g' /etc/yum.repos.d/rpmforge.repo
+        fi
     fi
     yum_options="$yum_options --enablerepo=rpmforge"
 fi
 
 if test "$USE_ATRPMS" = "yes"; then
     case "$(cat /etc/redhat-release)" in
-	CentOS*)
-	    repository_label=CentOS
-	    repository_prefix=el
-	    ;;
-	*)
-	    repository_label=Fedora
-	    repository_prefix=f
-	    ;;
+        CentOS*)
+            repository_label=CentOS
+            repository_prefix=el
+            ;;
+        *)
+            repository_label=Fedora
+            repository_prefix=f
+            ;;
     esac
     cat <<EOF > /etc/yum.repos.d/atrpms.repo
 [atrpms]
@@ -85,21 +86,21 @@ fi
 
 if test "$USE_EPEL" = "yes"; then
     if ! rpm -q epel-release > /dev/null 2>&1; then
-	epel_url=
-	case $distribution_version in
-	    5.*)
-		epel_url=http://ftp.iij.ad.jp/pub/linux/fedora/epel/5/i386/epel-release-5-4.noarch.rpm
-		;;
-	    6.*)
-		epel_url=http://ftp.iij.ad.jp/pub/linux/fedora/epel/6/i386/epel-release-6-8.noarch.rpm
-		;;
-	esac
-	if test -n "$epel_url"; then
-	    run wget $epel_url
-	    run rpm -Uvh $(basename $epel_url)
-	    run rm $(basename $epel_url)
-	    sed -i'' -e 's/enabled = 1/enabled = 0/g' /etc/yum.repos.d/epel.repo
-	fi
+        epel_url=
+        case $distribution_version in
+            5.*)
+                epel_url=http://ftp.iij.ad.jp/pub/linux/fedora/epel/5/i386/epel-release-5-4.noarch.rpm
+                ;;
+            6.*)
+                epel_url=http://ftp.iij.ad.jp/pub/linux/fedora/epel/6/i386/epel-release-6-8.noarch.rpm
+                ;;
+        esac
+        if test -n "$epel_url"; then
+            run wget $epel_url
+            run rpm -Uvh $(basename $epel_url)
+            run rm $(basename $epel_url)
+            sed -i'' -e 's/enabled = 1/enabled = 0/g' /etc/yum.repos.d/epel.repo
+        fi
     fi
     yum_options="$yum_options --enablerepo=epel"
 fi
@@ -114,8 +115,8 @@ fi
 
 case $distribution_version in
     6.*)
-	if ! rpm -q ruby1.9 > /dev/null 2>&1; then
-	    yum install -y wget libyaml libyaml-devel
+        if ! rpm -q ruby1.9 > /dev/null 2>&1; then
+            yum install -y wget libyaml libyaml-devel
             yum install -y $(grep BuildRequires: /tmp/ruby193.spec | cut -d: -f2)
             cat <<EOF > $BUILD_RUBY_SCRIPT
 if [ ! -f ~/.rpmmacros ]; then
@@ -142,11 +143,11 @@ case $distribution_version in
 esac
 EOF
 
-            run chmod +x $BUILD_RUBY_SCRIPT
-            run su - $USER_NAME $BUILD_RUBY_SCRIPT
-            run rpm -Uvh ~$USER_NAME/rpm/RPMS/*/*.rpm
-	fi
-	;;
+run chmod +x $BUILD_RUBY_SCRIPT
+run su - $USER_NAME $BUILD_RUBY_SCRIPT
+run rpm -Uvh ~$USER_NAME/rpm/RPMS/*/*.rpm
+        fi
+        ;;
 esac
 
 cat <<EOF > $BUILD_SCRIPT

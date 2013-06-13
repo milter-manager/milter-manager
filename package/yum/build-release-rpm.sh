@@ -1,4 +1,5 @@
 #!/bin/sh
+# -*- indent-tabs-mode: nil; sh-basic-offset: 4; sh-indentation: 4 -*-
 
 script_base_dir=`dirname $0`
 
@@ -18,8 +19,8 @@ run()
 {
     "$@"
     if test $? -ne 0; then
-	echo "Failed $@"
-	exit 1
+        echo "Failed $@"
+        exit 1
     fi
 }
 
@@ -39,16 +40,16 @@ run mkdir -p $rpm_base_dir/SRPMS
 
 for distribution in ${DISTRIBUTIONS}; do
     case $distribution in
-	fedora)
-	    distribution_label=Fedora
-	    ;;
-	centos)
-	    distribution_label=CentOS
-	    ;;
+        fedora)
+            distribution_label=Fedora
+            ;;
+        centos)
+            distribution_label=CentOS
+            ;;
     esac
     repo=${PACKAGE}.repo
     if test "$HAVE_DEVELOPMENT_BRANCH" = "yes"; then
-	run cat <<EOR > $repo
+        run cat <<EOR > $repo
 [$PACKAGE]
 name=$PACKAGE_TITLE for $distribution_label \$releasever - \$basearch
 baseurl=$BASE_URL_PREFIX/$distribution/\$releasever/stable/\$basearch/
@@ -64,7 +65,7 @@ enabled=0
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-$PACKAGE
 EOR
     else
-	run cat <<EOR > $repo
+        run cat <<EOR > $repo
 [$PACKAGE]
 name=$PACKAGE_TITLE for $distribution_label \$releasever - \$basearch
 baseurl=$BASE_URL_PREFIX/$distribution/\$releasever/\$basearch/
@@ -74,7 +75,7 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-$PACKAGE
 EOR
     fi
     run tar cfz $rpm_base_dir/SOURCES/${PACKAGE}-release.tar.gz \
-	-C ${script_base_dir} ${repo} RPM-GPG-KEY-${PACKAGE}
+        -C ${script_base_dir} ${repo} RPM-GPG-KEY-${PACKAGE}
     run cp ${script_base_dir}/${PACKAGE}-release.spec $rpm_base_dir/SPECS/
 
     run rpmbuild -ba $rpm_base_dir/SPECS/${PACKAGE}-release.spec
