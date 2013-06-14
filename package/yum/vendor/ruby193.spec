@@ -1,9 +1,9 @@
 %define rubyver         1.9.3
-%define rubyminorver    p392
+%define rubyminorver    p429
 
 Name:           ruby1.9
 Version:        %{rubyver}%{rubyminorver}
-Release:        2%{?dist}
+Release:        0%{?dist}
 License:        Ruby License/GPL - see COPYING
 URL:            http://www.ruby-lang.org/
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -56,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}
 
 %changelog
+* Fri Jun 14 2013 Kenji Okimoto <okimoto@clear-code.com> -1.9.3-p429
+- Update ruby version to 1.9.3-p429.
+
 * Fri Apr 26 2013 Kenji Okimoto <okimoto@clear-code.com> -1.9.3-p392
 - Co-exist multiple ruby versions.
 
