@@ -446,6 +446,9 @@ fi
 %{_mandir}/ja/man1/milter-manager-log-analyzer.*
 
 %changelog
+* Fri Jun 14 2013 Kenji Okimoto <okimoto@clear-code.com> - 1.8.7-0
+- new upstream release.
+
 * Thu Mar 07 2013 HAYASHI Kentaro <hayashi@clear-code.com> - 1.8.6-0
 - new upstream release.
 
