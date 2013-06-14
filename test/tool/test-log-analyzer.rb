@@ -151,6 +151,18 @@ class TestLogAnalyzer < Test::Unit::TestCase
                  fetch(milter_report_rrd, start_time, end_time))
   end
 
+  def test_update_invalid_byte_sequence
+    @analyzer.output_directory = @tmp_dir.to_s
+    @analyzer.prepare
+
+    input = (@data_dir + "mail-20090715-invalid-byte-sequence.log").open
+    @analyzer.log = input
+
+    assert_nothing_raised do
+      @analyzer.update
+    end
+  end
+
   def test_parse_authentication_results
     report_graph_generator = MilterManagerLogAnalyzer::MilterManagerReportGraphGenerator.new(nil, Time.now)
     value =<<EOH

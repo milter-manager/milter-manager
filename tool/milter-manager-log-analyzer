@@ -1127,6 +1127,9 @@ EOF
 
     year = now.year
     @log.each_line do |line|
+      if line.respond_to?(:force_encoding)
+        line.force_encoding("ASCII-8BIT")
+      end
       case line
       when /\A(\w{3}) +(\d+) (\d+):(\d+):(\d+) [\w\-]+ ([\w\-]+)\[\d+\]: /
         month_name = $1
