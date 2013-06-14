@@ -143,9 +143,9 @@ case $distribution_version in
 esac
 EOF
 
-run chmod +x $BUILD_RUBY_SCRIPT
-run su - $USER_NAME $BUILD_RUBY_SCRIPT
-run rpm -Uvh ~$USER_NAME/rpm/RPMS/*/*.rpm
+            run chmod +x $BUILD_RUBY_SCRIPT
+            run su - $USER_NAME $BUILD_RUBY_SCRIPT
+            run rpm -Uvh ~$USER_NAME/rpm/RPMS/*/*.rpm
         fi
         ;;
 esac
