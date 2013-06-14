@@ -380,6 +380,9 @@ fi
 %if %ruby_version > 185
 %{_libdir}/milter-manager/binding/lib/glib2/*.rb
 %endif
+%if %ruby_version > 191
+%{_libdir}/milter-manager/binding/lib/gnome2/rake/*.rb
+%endif
 %{_libdir}/milter-manager/binding/lib/*gnome2*.rb
 %{_libdir}/milter-manager/binding/lib/pkg-config.rb
 %{_libdir}/pkgconfig/ruby-milter-core.pc
