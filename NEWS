@@ -27,6 +27,13 @@ A bug fix release of 1.8.6.
   * [debian] Support init file that contains non-ASCII characters.
     [Reported by Kazuhiro NISHIYAMA][GitHub #23]
 
+=== milter-manager-log-analyzer
+
+==== Fixes
+
+  * Process mail log even if it includes invalid byte sequence.
+    [Reported by Satoru Sakashita][GitHub #24]
+
 === Admin
 
   * Dropped.

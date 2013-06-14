@@ -27,6 +27,13 @@
   * [debian] non-ASCII な文字列を含む設定ファイルをサポート。
     [西山和弘さんが報告][GitHub #23]
 
+=== milter-manager-log-analyzer
+
+==== 修正
+
+  * ログに不正なバイト列を含む場合でも処理できるようにした。
+    [坂下聡さんが報告][GitHub #24]
+
 === Admin
 
   * 削除。
