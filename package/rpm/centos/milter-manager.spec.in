@@ -293,7 +293,6 @@ fi
 %{_mandir}/ja/man1/milter-manager.*
 %{_initrddir}/milter-manager
 %{_sysconfdir}/rc.d/init.d/
-%{_sysconfdir}/cron.d/
 %config(noreplace) %{_sysconfdir}/sysconfig/milter-manager
 %config(noreplace) %{_sysconfdir}/milter-manager/milter-manager.conf
 %config %{_sysconfdir}/milter-manager/defaults/
@@ -447,6 +446,7 @@ fi
 %{_bindir}/milter-manager-log-analyzer
 %{_mandir}/man1/milter-manager-log-analyzer.*
 %{_mandir}/ja/man1/milter-manager-log-analyzer.*
+%{_sysconfdir}/cron.d/
 
 %changelog
 * Fri Jun 14 2013 Kenji Okimoto <okimoto@clear-code.com> - 1.8.7-0
