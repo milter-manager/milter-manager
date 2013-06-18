@@ -5,6 +5,7 @@ EXTRA_DIST =							\
 	parse-test-crlf.mail					\
 	mail-20090715-1.log					\
 	mail-20090715-2.log					\
+	mail-20090715-invalid-byte-sequence.log			\
 	session-1.fetch						\
 	milter-manager.report-1.fetch				\
 	milter-manager.status-1.fetch				\
