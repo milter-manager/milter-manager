@@ -43,6 +43,8 @@ class TestLogAnalyzer < Test::Unit::TestCase
 
   priority :must
   def test_update
+    omit("Support RRDtool 1.4.7 or later.") if rrdtool_version < "1.4.7"
+
     @analyzer.output_directory = @tmp_dir.to_s
     @analyzer.prepare
 
@@ -73,6 +75,8 @@ class TestLogAnalyzer < Test::Unit::TestCase
   end
 
   def test_update_incrementally
+    omit("Support RRDtool 1.4.7 or later.") if rrdtool_version < "1.4.7"
+
     session_rrd = (@tmp_dir + "session.rrd").to_s
     status_rrd = (@tmp_dir + "milter-manager.status.rrd").to_s
     report_rrd = (@tmp_dir + "milter-manager.report.rrd").to_s
@@ -120,6 +124,8 @@ class TestLogAnalyzer < Test::Unit::TestCase
   end
 
   def test_update_with_distance
+    omit("Support RRDtool 1.4.7 or later.") if rrdtool_version < "1.4.7"
+
     FileUtils.cp(Dir.glob((@data_dir + "*.rrd").to_s), @tmp_dir)
 
     @analyzer.output_directory = @tmp_dir.to_s
@@ -216,6 +222,10 @@ EOH
 
   def rrdtool_time_format(time)
     time.strftime("%Y%m%d %H:%M")
+  end
+
+  def rrdtool_version
+    `rrdtool -v`.lines.first[/RRDtool +(\d+\.\d+\.\d+)/, 1]
   end
 
   def read_fetch_file(base_name)
