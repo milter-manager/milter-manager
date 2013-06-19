@@ -9,4 +9,9 @@ if [ "$1" = "purge" ]; then
         dpkg-statoverride --remove /var/spool/postfix/milter-manager
 fi
 
+# Remove the file installed by 1.8.6 or earlier
+if test -f /etc/cron.d/milter-manager; then
+        rm -f /etc/cron.d/milter-manager
+fi
+
 #DEBHELPER#

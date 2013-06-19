@@ -18,10 +18,17 @@ fixperms() {
                 dpkg-statoverride --update --add milter-manager milter-manager 0755 /var/spool/postfix/milter-manager
 }
 
+remove_unused_file() {
+        if test -f /etc/cron.d/milter-manager; then
+                rm -f /etc/cron.d/milter-manager
+        fi
+}
+
 case "$1" in
         configure)
                 add_system_user
                 fixperms
+                remove_unused_file
                 ;;
         abort-upgrade|abort-deconfigure|abort-remove)
                 :
