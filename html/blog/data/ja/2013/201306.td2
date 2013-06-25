@@ -20,3 +20,23 @@ milter manager 1.8.7 をリリースしました。
 * ((<1.8.6から1.8.7への変更点|URL:/reference/ja/news.html#news.release-1-8-7>))
 
 .
+Date: 20130625
+Title: 
+Last-Modified: 1372148249
+Visible: true
+Format: RD
+
+= milter manager 1.8.8
+
+milter manager 1.8.8 をリリースしました。
+
+== 変更点
+
+前回のリリースでは、milter-manager パッケージから milter-manager-log-analyzer というパッケージを分離したのですが、それに関連したバグがいくつかあったので修正しました。
+提供している機能に1.8.7との違いはありません。
+
+詳しい変更点は以下を参照してください。
+
+  * ((<1.8.7から1.8.8への変更点|URL:http://milter-manager.sourceforge.net/reference/ja/news.html#news.release-1-8-8>))
+
+.
