@@ -44,27 +44,6 @@ The following software is also needed to integrate with
 
   * munin-node
 
-=== Optional: Web interface for administration
-
-milter manager can be ran without editing configuration if
-you use system standard package system. But you need to
-modify configuration if you install a milter without using
-package system or want to tune milter manager behavior.
-
-milter manager provides Web interface for modifying
-simple configurations. You can modify configurations by
-browser. The Web interface is optional because modifying
-configurations can be done with editing configuration
-file. The following softwares are required for the Web
-interface.
-
-  * RubyGems >= 1.3.1
-  * Ruby on Rails 2.3.14
-  * SQLite3
-  * SQLite3's Ruby bindings
-  * Ruby-Locale for Ruby on Rails
-  * Passenger
-
 == milter-manager
 
 milter-manager is a core program of the milter manager

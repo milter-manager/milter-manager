@@ -42,27 +42,6 @@ milter managerはログからmilterの適用状況などをグラフ化する機
 
   * munin-node
 
-=== 任意: 管理用Webインターフェイス
-
-milter managerはシステム標準のパッケージシステムを利用してい
-る場合は、設定を変更せずに動作させることができます。しかし、
-特別な方法で子milterを設定していたり、より細かくシステムに応
-じたmilter managerの設定を行いたい場合は設定を変更する必要が
-あります。
-
-子milterの接続先の変更や、子milterへの適用条件の設定など単純
-な項目であればブラウザを使って変更することもできます。そのよ
-うな設定は設定ファイルを編集することでも行えるため、milter
-managerの実行には必須ではありません。利用する場合は以下のソフ
-トウェアが必要です。
-
-  * RubyGems >= 1.3.1
-  * Ruby on Rails 2.3.14
-  * SQLite3
-  * SQLite3のRubyバインディング
-  * Ruby-Locale for Ruby on Rails
-  * Passenger
-
 == milter-manager
 
 milter-managerはmilter managerパッケージの中核となるプログラ
