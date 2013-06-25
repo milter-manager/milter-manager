@@ -2,6 +2,30 @@
 
 = NEWS --- The history of milter manager
 
+== [release-1-8-8] 1.8.8: 2013-06-25
+
+A bug fix release of 1.8.7.
+
+=== Package
+
+==== Fixes
+
+  * [rpm] milter-manager-log-analyzer should include cron configuration.
+    [Reported by Satoru Sakashita][milter-manager-users-ja:00200]
+  * [deb] Remove old configuration file installed by milter-manager.
+    [Reported by Youhei SASAKI][milter-manager-users-ja:00202]
+
+=== Known Issues
+
+  * [test] Failed some test cases using rrdtool on some environments.
+    [Reported by Hirohisa Yamaguchi][GitHub #29]
+
+=== Thanks
+
+  * Satoru Sakashita
+  * Youhei SASAKI
+  * Hirohisa Yamaguchi
+
 == [release-1-8-7] 1.8.7: 2013-06-14
 
 A bug fix release of 1.8.6.
