@@ -1,5 +1,5 @@
 %define rubyver         1.9.3
-%define rubyminorver    p429
+%define rubyminorver    p448
 
 Name:           ruby1.9
 Version:        %{rubyver}%{rubyminorver}
