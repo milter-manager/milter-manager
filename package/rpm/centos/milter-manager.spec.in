@@ -449,6 +449,9 @@ fi
 %{_sysconfdir}/cron.d/
 
 %changelog
+* Fri Jun 28 2013 Kenji Okimoto <okimoto@clear-code.com> - 1.8.9-1
+- new upstream release.
+
 * Tue Jun 25 2013 Kenji Okimoto <okimoto@clear-code.com> - 1.8.8-0
 - new upstream release.
 
