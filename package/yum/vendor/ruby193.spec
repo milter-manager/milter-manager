@@ -56,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}
 
 %changelog
+* Fri Jun 28 2013 Kenji Okimoto <okimoto@clear-code.com> -1.9.3-p448
+- Update ruby version to 1.9.3-p448.
+
 * Fri Jun 14 2013 Kenji Okimoto <okimoto@clear-code.com> -1.9.3-p429
 - Update ruby version to 1.9.3-p429.
 
