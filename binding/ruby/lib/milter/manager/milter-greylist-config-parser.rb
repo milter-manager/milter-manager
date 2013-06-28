@@ -24,7 +24,11 @@ module Milter::Manager
     end
 
     def socket
-      @variables["socket"]
+      if @variables["socket"].is_a?(Array)
+        @variables["socket"].first
+      else
+        @variables["socket"]
+      end
     end
 
     def parse(conf_file)
@@ -41,8 +45,8 @@ module Milter::Manager
           @data_acls << $POSTMATCH
         when /\A\s*([\w_]+)\s+"(.+?)"\s*\z/
           @variables[$1] = $2
-        when /\A\s*([\w_]+)\s+"(.+?)"\s*\d+\z/
-          @variables[$1] = $2
+        when /\A\s*([\w_]+)\s+"(.+?)"\s*(\d+)\z/
+          @variables[$1] = [$2, $3.to_i]
         when /\A\s*([\w_]+)\s+/
           @variables[$1] = $POSTMATCH
         end
