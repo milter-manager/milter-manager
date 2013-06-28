@@ -40,3 +40,20 @@ milter manager 1.8.8 をリリースしました。
   * ((<1.8.7から1.8.8への変更点|URL:http://milter-manager.sourceforge.net/reference/ja/news.html#news.release-1-8-8>))
 
 .
+Date: 20130628
+Title: 
+Last-Modified: 1372396269
+Visible: true
+Format: RD
+
+= milter manager 1.8.9
+
+milter manager 1.8.9 をリリースしました。
+
+== 変更点
+
+milter-greylist の設定ファイル greylist.conf でソケットのパスが書かれた行にパーミッションの情報が含まれていると mitler manager の milter 自動検出がうまく動かなくなっていた問題を修正しました。
+
+また、CentOS6.4向けに提供しているRubyのパッケージをRuby1.9.3-p448に更新しました。Ruby1.9.3-p448にはセキュリティFIXが含まれているので、使用している場合はアップデートしてください。詳しくは((<Rubyのリリースアナウンス|URL:http://www.ruby-lang.org/ja/news/2013/06/27/ruby-1-9-3-p448-is-released/>))を参照してください。
+
+.
