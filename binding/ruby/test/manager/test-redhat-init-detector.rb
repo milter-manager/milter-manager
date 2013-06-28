@@ -500,6 +500,45 @@ EOC
                   "unix:/var/run/milter-greylist/milter-greylist.sock"]])
   end
 
+  def test_apply_milter_greylist_epel_style
+    etc_mail_dir = @etc_dir + "mail"
+    etc_mail_dir.mkpath
+    greylist_conf = etc_mail_dir + "greylist.conf"
+    (@init_d + "milter-greylist").open("w") do |file|
+      file << milter_greylist_init_header_fedora(greylist_conf)
+    end
+    create_rc_files("milter-greylist")
+
+    greylist_conf.open("w") do |file|
+      file << <<-'EOC'
+#
+# Simple greylisting config file using the new features
+# See greylist2.conf for a more detailed list of available options
+#
+# $Id: greylist.conf,v 1.45.2.1 2009/02/12 22:39:01 manu Exp $
+#
+
+pidfile "/var/run/milter-greylist.pid"
+socket "/var/milter-greylist/milter-greylist.sock" 660
+dumpfile "/var/milter-greylist/greylist.db" 600
+dumpfreq 1
+geoipdb "/usr/share/GeoIP/GeoIP.dat"
+user "grmilter"
+EOC
+    end
+
+    detector = redhat_init_detector("milter-greylist")
+    detector.detect
+    detector.apply(@loader)
+    assert_equal("milter-greylist", detector.name)
+    assert_eggs([["milter-greylist",
+                  "Milter Greylist Daemon",
+                  true,
+                  (@init_d + "milter-greylist").to_s,
+                  "start",
+                  "unix:/var/milter-greylist/milter-greylist.sock"]])
+  end
+
   def test_apply_spamass_milter_style
     (@init_d + "spamass-milter").open("w") do |file|
       file << spamass_milter_init_header

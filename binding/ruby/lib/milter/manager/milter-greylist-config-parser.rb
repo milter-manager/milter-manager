@@ -32,7 +32,7 @@ module Milter::Manager
 
       lines = normalize_lines(conf_file)
       lines.each do |line|
-        case line
+        case line.chomp
         when /\A\s*r?acl\s+/
           recipient_acl = $POSTMATCH
           @recipient_acls << recipient_acl
@@ -40,6 +40,8 @@ module Milter::Manager
         when /\A\s*d?acl\s+/
           @data_acls << $POSTMATCH
         when /\A\s*([\w_]+)\s+"(.+?)"\s*\z/
+          @variables[$1] = $2
+        when /\A\s*([\w_]+)\s+"(.+?)"\s*\d+\z/
           @variables[$1] = $2
         when /\A\s*([\w_]+)\s+/
           @variables[$1] = $POSTMATCH
