@@ -195,7 +195,7 @@ module Milter
       else
         @context.status = :reject
       end
-      reset
+      reset unless @context.state.envelope_recipient?
     end
 
     def temporary_failure(options={})
