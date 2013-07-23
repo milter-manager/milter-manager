@@ -176,9 +176,12 @@ class TestEventLoop < Test::Unit::TestCase
     callback_arguments = nil
     read_data = nil
     parent_read, child_write = IO.pipe
+    flush_notify_read, flush_notify_write = IO.pipe
     pid = fork do
       child_write.puts("child")
       child_write.flush
+      flush_notify_write.puts("flushed")
+      flush_notify_write.flush
       sleep(0.1)
       exit!(true)
     end
@@ -188,6 +191,7 @@ class TestEventLoop < Test::Unit::TestCase
       read_data = channel.readline
       false
     end
+    flush_notify_read.gets
     assert_true(@loop.iterate(:may_block => false))
     assert_equal([[input.class, GLib::IOChannel::IN], "child\n"],
                  [callback_arguments, read_data])
