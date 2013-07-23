@@ -1620,6 +1620,12 @@ option_test_assert_mail_file_folded_to (void)
         actual_recipients);
 }
 
+static void
+option_test_assert_mail_file_folded_from (void)
+{
+    cut_assert_equal_string("<test-from@example.com>", actual_envelope_from);
+}
+
 #define RED_COLOR "\033[01;31m"
 #define GREEN_COLOR "\033[01;32m"
 #define NORMAL_COLOR "\033[00m"
@@ -1791,6 +1797,9 @@ data_option (void)
     ADD("mail-file - folded headers - To",
         mail_file_option("folded-to.mail"),
         option_test_assert_mail_file_folded_to);
+    ADD("mail-file - folded headers - From",
+        mail_file_option("folded-from.mail"),
+        option_test_assert_mail_file_folded_from);
     ADD("large-file",
         mail_file_option("large.mail"),
         option_test_assert_large_mail);
