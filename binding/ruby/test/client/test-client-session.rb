@@ -118,13 +118,13 @@ class TestClientSession < Test::Unit::TestCase
   end
 
   class TestReject < self
-  def test_reject
-    assert_equal(Milter::Status::DEFAULT, @session_context.status)
-    before_n_resets = @session.n_resets
-    @session.send(:reject)
-    assert_equal(Milter::Status::REJECT, @session_context.status)
-    assert_equal(before_n_resets + 1, @session.n_resets)
-  end
+    def test_reject
+      assert_equal(Milter::Status::DEFAULT, @session_context.status)
+      before_n_resets = @session.n_resets
+      @session.send(:reject)
+      assert_equal(Milter::Status::REJECT, @session_context.status)
+      assert_equal(before_n_resets + 1, @session.n_resets)
+    end
   end
 
   def test_temporary_failure
