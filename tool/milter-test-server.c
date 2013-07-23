@@ -1237,10 +1237,10 @@ append_header_value (const gchar *value, const gchar *new_line)
 }
 
 static gboolean
-parse_mail_contents_header_part (gchar ***lines_, GList **recipient_list,
-                                 GError **error)
+parse_mail_contents_header_part (gchar ***lines_, GError **error)
 {
     gchar **lines = *lines_;
+    GList *recipient_list = NULL;
 
     for (; *lines; lines++) {
         gchar *line = *lines;
@@ -1257,7 +1257,7 @@ parse_mail_contents_header_part (gchar ***lines_, GList **recipient_list,
             lines++;
             break;
         } else if (is_header(line)) {
-            if (!parse_header(line, recipient_list, error)) {
+            if (!parse_header(line, &recipient_list, error)) {
                 return FALSE;
             }
         } else if (g_ascii_isspace(line[0])) {
@@ -1277,31 +1277,30 @@ parse_mail_contents_header_part (gchar ***lines_, GList **recipient_list,
             return FALSE;
         }
     }
-
     *lines_ = lines;
+
+    if (recipient_list) {
+        gint i, length;
+        GList *node;
+
+        length = g_list_length(recipient_list);
+        recipients = g_new0(gchar *, length + 1);
+        for (i = 0, node = recipient_list; node; i++, node = g_list_next(node)) {
+            recipients[i] = node->data;
+        }
+        recipients[length] = NULL;
+        g_list_free(recipient_list);
+    }
 
     return TRUE;
 }
 
 static gboolean
-parse_mail_contents (const gchar *contents, GError **error)
+parse_mail_contents_body_part (gchar ***lines_, GError **error)
 {
-    gchar **lines, **first_lines;
-    GList *recipient_list = NULL;
+    gchar **lines = *lines_;
     GString *body_string;
     GPtrArray *chunks;
-
-    lines = g_strsplit(contents, "\n", -1);
-    first_lines = lines;
-
-    /* Ignore mbox separation 'From ' mark. */
-    if (g_str_has_prefix(*lines, "From "))
-        lines++;
-
-    if (!parse_mail_contents_header_part(&lines, &recipient_list, error)) {
-        g_strfreev(first_lines);
-        return FALSE;
-    }
 
     chunks = g_ptr_array_new();
     body_string = g_string_new(NULL);
@@ -1319,6 +1318,8 @@ parse_mail_contents (const gchar *contents, GError **error)
         g_string_append(body_string, line);
         g_string_append(body_string, "\n");
     }
+    *lines_ = lines;
+
     if (body_string->len > 0) {
         gsize last_new_line_length;
 
@@ -1334,17 +1335,29 @@ parse_mail_contents (const gchar *contents, GError **error)
     g_ptr_array_add(chunks, NULL);
     body_chunks = (gchar **)g_ptr_array_free(chunks, FALSE);
 
-    if (recipient_list) {
-        gint i, length;
-        GList *node;
+    return TRUE;
+}
 
-        length = g_list_length(recipient_list);
-        recipients = g_new0(gchar *, length + 1);
-        for (i = 0, node = recipient_list; node; i++, node = g_list_next(node)) {
-            recipients[i] = node->data;
-        }
-        recipients[length] = NULL;
-        g_list_free(recipient_list);
+static gboolean
+parse_mail_contents (const gchar *contents, GError **error)
+{
+    gchar **lines, **first_lines;
+
+    lines = g_strsplit(contents, "\n", -1);
+    first_lines = lines;
+
+    /* Ignore mbox separation 'From ' mark. */
+    if (g_str_has_prefix(*lines, "From "))
+        lines++;
+
+    if (!parse_mail_contents_header_part(&lines, error)) {
+        g_strfreev(first_lines);
+        return FALSE;
+    }
+
+    if (!parse_mail_contents_body_part(&lines, error)) {
+        g_strfreev(first_lines);
+        return FALSE;
     }
 
     g_strfreev(first_lines);
