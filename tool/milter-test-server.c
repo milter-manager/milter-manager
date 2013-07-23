@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -1237,19 +1237,10 @@ append_header_value (const gchar *value, const gchar *new_line)
 }
 
 static gboolean
-parse_mail_contents (const gchar *contents, GError **error)
+parse_mail_contents_header_part (gchar ***lines_, GList **recipient_list,
+                                 GError **error)
 {
-    gchar **lines, **first_lines;
-    GList *recipient_list = NULL;
-    GString *body_string;
-    GPtrArray *chunks;
-
-    lines = g_strsplit(contents, "\n", -1);
-    first_lines = lines;
-
-    /* Ignore mbox separation 'From ' mark. */
-    if (g_str_has_prefix(*lines, "From "))
-        lines++;
+    gchar **lines = *lines_;
 
     for (; *lines; lines++) {
         gchar *line = *lines;
@@ -1266,8 +1257,7 @@ parse_mail_contents (const gchar *contents, GError **error)
             lines++;
             break;
         } else if (is_header(line)) {
-            if (!parse_header(line, &recipient_list, error)) {
-                g_strfreev(first_lines);
+            if (!parse_header(line, recipient_list, error)) {
                 return FALSE;
             }
         } else if (g_ascii_isspace(line[0])) {
@@ -1284,9 +1274,33 @@ parse_mail_contents (const gchar *contents, GError **error)
                         MILTER_TEST_SERVER_ERROR_INVALID_HEADER,
                         "invalid header: <%s>",
                         line);
-            g_strfreev(first_lines);
             return FALSE;
         }
+    }
+
+    *lines_ = lines;
+
+    return TRUE;
+}
+
+static gboolean
+parse_mail_contents (const gchar *contents, GError **error)
+{
+    gchar **lines, **first_lines;
+    GList *recipient_list = NULL;
+    GString *body_string;
+    GPtrArray *chunks;
+
+    lines = g_strsplit(contents, "\n", -1);
+    first_lines = lines;
+
+    /* Ignore mbox separation 'From ' mark. */
+    if (g_str_has_prefix(*lines, "From "))
+        lines++;
+
+    if (!parse_mail_contents_header_part(&lines, &recipient_list, error)) {
+        g_strfreev(first_lines);
+        return FALSE;
     }
 
     chunks = g_ptr_array_new();
