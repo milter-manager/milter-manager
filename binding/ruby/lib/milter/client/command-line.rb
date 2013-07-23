@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'optparse'
+require "optparse"
 require "ostruct"
 require "syslog"
 require "webrick/server"
@@ -69,7 +69,7 @@ module Milter
 
       def setup_configuration(options)
         @configuration = Configuration.new
-        @configuration.milter.name = options[:name] || File.basename($0, '.*')
+        @configuration.milter.name = options[:name] || File.basename($0, ".*")
       end
 
       def setup_option_parser
@@ -246,7 +246,7 @@ module Milter
         level_names << "all"
         @option_parser.on("--log-level=LEVEL",
                           "Specify log level as LEVEL.",
-                          "Select from [%s]." % level_names.join(', '),
+                          "Select from [%s]." % level_names.join(", "),
                           "(#{ENV['MILTER_LOG_LEVEL'] || 'default'})") do |level|
           log_conf.level = level
         end
@@ -260,7 +260,7 @@ module Milter
         facilities = Syslog.constants.find_all do |name|
           /\ALOG_/ =~ name.to_s
         end.collect do |name|
-          name.to_s.gsub(/\ALOG_/, '').downcase
+          name.to_s.gsub(/\ALOG_/, "").downcase
         end
         available_values = "available values: [#{facilities.join(', ')}]"
         @option_parser.on("--syslog-facility=FACILITY", facilities,
