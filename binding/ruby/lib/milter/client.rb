@@ -211,7 +211,7 @@ module Milter
       else
         @context.status = :temporary_failure
       end
-      reset
+      reset unless @context.state.envelope_recipient?
     end
 
     def quarantine(reason)

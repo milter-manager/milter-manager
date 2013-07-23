@@ -146,6 +146,15 @@ class TestClientSession < Test::Unit::TestCase
       assert_equal(Milter::Status::TEMPORARY_FAILURE, @session_context.status)
       assert_equal(before_n_resets + 1, @session.n_resets)
     end
+
+    def test_envelope_recipient
+      assert_equal(Milter::Status::DEFAULT, @session_context.status)
+      @context.state = Milter::ClientContext::STATE_ENVELOPE_RECIPIENT
+      before_n_resets = @session.n_resets
+      @session.send(:temporary_failure)
+      assert_equal(Milter::Status::TEMPORARY_FAILURE, @session_context.status)
+      assert_equal(before_n_resets, @session.n_resets)
+    end
   end
 
   def test_discard
