@@ -1243,13 +1243,12 @@ append_header_value (MilterHeaders *headers, const gchar *value,
 }
 
 static gboolean
-parse_mail_contents_header_part (gchar ***lines_, GError **error)
+parse_mail_contents_header_part_collect_headers (gchar ***lines_,
+                                                 MilterHeaders *headers,
+                                                 GError **error)
 {
     gchar **lines = *lines_;
-    GList *recipient_list = NULL;
-    MilterHeaders *headers;
 
-    headers = milter_headers_new();
     for (; *lines; lines++) {
         gchar *line = *lines;
         gsize line_length;
@@ -1280,11 +1279,27 @@ parse_mail_contents_header_part (gchar ***lines_, GError **error)
                         MILTER_TEST_SERVER_ERROR_INVALID_HEADER,
                         "invalid header: <%s>",
                         line);
-            g_object_unref(headers);
             return FALSE;
         }
     }
     *lines_ = lines;
+
+    return TRUE;
+}
+
+static gboolean
+parse_mail_contents_header_part (gchar ***lines_, GError **error)
+{
+    GList *recipient_list = NULL;
+    MilterHeaders *headers;
+
+    headers = milter_headers_new();
+    if (!parse_mail_contents_header_part_collect_headers(lines_,
+                                                         headers,
+                                                         error)) {
+        g_object_unref(headers);
+        return FALSE;
+    }
 
     {
         const GList *header_list;
