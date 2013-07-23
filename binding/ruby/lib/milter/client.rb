@@ -13,13 +13,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'milter/core'
+require "milter/core"
 
-require 'milter_client.so'
-require 'milter/client/configuration'
-require 'milter/client/context-state'
-require 'milter/client/command-line'
-require 'milter/client/composite-session'
+require "milter_client.so"
+require "milter/client/configuration"
+require "milter/client/context-state"
+require "milter/client/command-line"
+require "milter/client/composite-session"
 
 module Milter
   class Client
