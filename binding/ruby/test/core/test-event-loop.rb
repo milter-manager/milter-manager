@@ -178,6 +178,7 @@ class TestEventLoop < Test::Unit::TestCase
     parent_read, child_write = IO.pipe
     pid = fork do
       child_write.puts("child")
+      child_write.flush
       sleep(0.1)
       exit!(true)
     end
