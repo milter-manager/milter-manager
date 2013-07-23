@@ -1611,6 +1611,15 @@ option_test_assert_mail_file_crlf (void)
                             actual_body_string->str);
 }
 
+static void
+option_test_assert_mail_file_folded_to (void)
+{
+    gcut_assert_equal_list_string(
+        gcut_take_new_list_string("<test-to@example.com>",
+                                  NULL),
+        actual_recipients);
+}
+
 #define RED_COLOR "\033[01;31m"
 #define GREEN_COLOR "\033[01;32m"
 #define NORMAL_COLOR "\033[00m"
@@ -1779,6 +1788,9 @@ data_option (void)
     ADD("mail-file - CRLF",
         mail_file_option("parse-test-crlf.mail"),
         option_test_assert_mail_file_crlf);
+    ADD("mail-file - folded headers - To",
+        mail_file_option("folded-to.mail"),
+        option_test_assert_mail_file_folded_to);
     ADD("large-file",
         mail_file_option("large.mail"),
         option_test_assert_large_mail);

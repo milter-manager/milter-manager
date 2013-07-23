@@ -1176,32 +1176,25 @@ extract_path_from_mail_address (const gchar *mail_address, GError **error)
 }
 
 static gboolean
-parse_header (const gchar *line, GList **recipient_list, GError **error)
+parse_header (const gchar *name, const gchar *value,
+              GList **recipient_list, GError **error)
 {
-    gchar **strings;
-
-    if (g_str_has_prefix(line, "From: ")) {
+    if (strcmp(name, "From") == 0) {
         gchar *reverse_path;
 
-        reverse_path = extract_path_from_mail_address(line + strlen("From :"),
-                                                      error);
+        reverse_path = extract_path_from_mail_address(value, error);
         if (!reverse_path)
             return FALSE;
         set_envelope_from(reverse_path);
         g_free(reverse_path);
-    } else if (g_str_has_prefix(line, "To: ")) {
+    } else if (strcmp(name, "To") == 0) {
         gchar *forward_path;
 
-        forward_path = extract_path_from_mail_address(line + strlen("To: "),
-                                                      error);
+        forward_path = extract_path_from_mail_address(value, error);
         if (!forward_path)
             return FALSE;
         *recipient_list = g_list_append(*recipient_list, forward_path);
     }
-
-    strings = g_strsplit(line, ":", 2);
-    milter_headers_append_header(option_headers, strings[0], g_strchug(strings[1]));
-    g_strfreev(strings);
 
     return TRUE;
 }
@@ -1218,15 +1211,28 @@ is_header (const gchar *line)
 }
 
 static void
-append_header_value (const gchar *value, const gchar *new_line)
+append_header (MilterHeaders *headers, const char *header_line)
+{
+    gchar **header_and_value;
+
+    header_and_value = g_strsplit(header_line, ":", 2);
+    milter_headers_append_header(headers,
+                                 header_and_value[0],
+                                 g_strchug(header_and_value[1]));
+    g_strfreev(header_and_value);
+
+}
+
+static void
+append_header_value (MilterHeaders *headers, const gchar *value,
+                     const gchar *new_line)
 {
     MilterHeader *last_header;
     guint last;
     gchar *old_value;
 
-    last = milter_headers_length(option_headers);
-    last_header = milter_headers_get_nth_header(option_headers,
-                                                last);
+    last = milter_headers_length(headers);
+    last_header = milter_headers_get_nth_header(headers, last);
 
     old_value = last_header->value;
     last_header->value = g_strdup_printf("%s%s%s",
@@ -1241,7 +1247,9 @@ parse_mail_contents_header_part (gchar ***lines_, GError **error)
 {
     gchar **lines = *lines_;
     GList *recipient_list = NULL;
+    MilterHeaders *headers;
 
+    headers = milter_headers_new();
     for (; *lines; lines++) {
         gchar *line = *lines;
         gsize line_length;
@@ -1257,9 +1265,7 @@ parse_mail_contents_header_part (gchar ***lines_, GError **error)
             lines++;
             break;
         } else if (is_header(line)) {
-            if (!parse_header(line, &recipient_list, error)) {
-                return FALSE;
-            }
+            append_header(headers, line);
         } else if (g_ascii_isspace(line[0])) {
             const gchar *new_line;
             if (have_cr) {
@@ -1267,17 +1273,33 @@ parse_mail_contents_header_part (gchar ***lines_, GError **error)
             } else {
                 new_line = "\n";
             }
-            append_header_value(line, new_line);
+            append_header_value(headers, line, new_line);
         } else {
             g_set_error(error,
                         MILTER_TEST_SERVER_ERROR,
                         MILTER_TEST_SERVER_ERROR_INVALID_HEADER,
                         "invalid header: <%s>",
                         line);
+            g_object_unref(headers);
             return FALSE;
         }
     }
     *lines_ = lines;
+
+    {
+        const GList *header_list;
+        header_list = milter_headers_get_list(headers);
+        for (; header_list; header_list = g_list_next(header_list)) {
+            MilterHeader *header = header_list->data;
+            milter_headers_append_header(option_headers,
+                                         header->name, header->value);
+            if (!parse_header(header->name, header->value,
+                              &recipient_list, error)) {
+                g_object_unref(headers);
+                return FALSE;
+            }
+        }
+    }
 
     if (recipient_list) {
         gint i, length;
@@ -1291,6 +1313,8 @@ parse_mail_contents_header_part (gchar ***lines_, GError **error)
         recipients[length] = NULL;
         g_list_free(recipient_list);
     }
+
+    g_object_unref(headers);
 
     return TRUE;
 }
