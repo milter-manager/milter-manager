@@ -1,4 +1,4 @@
-INCLUDES = 			\
+AM_CPPFLAGS = 			\
 	 -I$(top_builddir)	\
 	 -I$(top_srcdir)
 
@@ -102,7 +102,7 @@ libmilter_core_la_SOURCES += milter-libev-event-loop.c
 libmilter_core_la_DEPENDENCIES += $(LIBEV_LA)
 libmilter_core_la_LIBADD += $(LIBEV_LIBS)
 libmilter_core_la_CFLAGS += $(LIBEV_CFLAGS)
-INCLUDES += $(LIBEV_INCLUDES)
+AM_CPPFLAGS += $(LIBEV_AM_CPPFLAGS)
 endif
 
 include $(top_srcdir)/build/enum-types.mk

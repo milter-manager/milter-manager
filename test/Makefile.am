@@ -22,7 +22,7 @@ endif
 EXTRA_DIST =		\
 	run-test.sh
 
-INCLUDES =		\
+AM_CPPFLAGS =		\
 	-I$(srcdir)	\
 	-I$(top_srcdir)
 

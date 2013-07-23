@@ -10,7 +10,7 @@ noinst_LTLIBRARIES =			\
 	test-client.la
 endif
 
-INCLUDES =				\
+AM_CPPFLAGS =				\
 	-I$(srcdir)			\
 	-I$(srcdir)/lib			\
 	-I$(top_srcdir)			\

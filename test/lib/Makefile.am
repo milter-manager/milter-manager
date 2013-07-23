@@ -15,7 +15,7 @@ enum_source_prefix = milter-test-enum-types
 enum_sources_h =			\
 	$(libmilter_test_headers)
 
-INCLUDES =			\
+AM_CPPFLAGS =			\
 	-I$(top_srcdir)
 
 AM_CFLAGS = 				\

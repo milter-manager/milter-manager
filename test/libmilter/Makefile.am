@@ -4,7 +4,7 @@ noinst_LTLIBRARIES =			\
 	test-libmilter-compatible.la
 endif
 
-INCLUDES =				\
+AM_CPPFLAGS =				\
 	-I$(srcdir)			\
 	-I$(srcdir)/lib			\
 	-I$(top_srcdir)			\

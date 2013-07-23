@@ -28,7 +28,7 @@ CFILE_GLOB=					\
 IGNORE_HFILES=					\
 	milter-marshalers.h
 
-INCLUDES =					\
+AM_CPPFLAGS =					\
 	-I$(top_srcdir)/libmilter		\
 	-I$(top_srcdir)				\
 	-I$(top_builddir)			\

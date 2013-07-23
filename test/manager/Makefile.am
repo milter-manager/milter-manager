@@ -20,7 +20,7 @@ noinst_LTLIBRARIES =				\
 	test-process-launcher.la
 endif
 
-INCLUDES =				\
+AM_CPPFLAGS =				\
 	-I../lib			\
 	-I$(srcdir)			\
 	-I$(top_srcdir)/test/lib	\

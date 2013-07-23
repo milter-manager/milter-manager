@@ -13,7 +13,7 @@ noinst_LTLIBRARIES =				\
 	test-server.la
 endif
 
-INCLUDES =				\
+AM_CPPFLAGS =				\
 	-I$(srcdir)			\
 	-I$(srcdir)/lib			\
 	-I$(top_srcdir)			\

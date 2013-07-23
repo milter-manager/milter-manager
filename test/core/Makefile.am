@@ -23,7 +23,7 @@ noinst_LTLIBRARIES =			\
 	test-session-result.la
 endif
 
-INCLUDES =				\
+AM_CPPFLAGS =				\
 	-I$(srcdir)			\
 	-I$(top_srcdir)			\
 	-I$(top_srcdir)/test/lib
