@@ -1288,31 +1288,18 @@ parse_mail_contents_header_part_collect_headers (gchar ***lines_,
 }
 
 static gboolean
-parse_mail_contents_header_part (gchar ***lines_, GError **error)
+parse_mail_contents_header_part_parse_headers (MilterHeaders *headers,
+                                               GError **error)
 {
+    const GList *header_list;
     GList *recipient_list = NULL;
-    MilterHeaders *headers;
 
-    headers = milter_headers_new();
-    if (!parse_mail_contents_header_part_collect_headers(lines_,
-                                                         headers,
-                                                         error)) {
-        g_object_unref(headers);
-        return FALSE;
-    }
-
-    {
-        const GList *header_list;
-        header_list = milter_headers_get_list(headers);
-        for (; header_list; header_list = g_list_next(header_list)) {
-            MilterHeader *header = header_list->data;
-            milter_headers_append_header(option_headers,
-                                         header->name, header->value);
-            if (!parse_header(header->name, header->value,
-                              &recipient_list, error)) {
-                g_object_unref(headers);
-                return FALSE;
-            }
+    header_list = milter_headers_get_list(headers);
+    for (; header_list; header_list = g_list_next(header_list)) {
+        MilterHeader *header = header_list->data;
+        if (!parse_header(header->name, header->value,
+                          &recipient_list, error)) {
+            return FALSE;
         }
     }
 
@@ -1327,6 +1314,35 @@ parse_mail_contents_header_part (gchar ***lines_, GError **error)
         }
         recipients[length] = NULL;
         g_list_free(recipient_list);
+    }
+
+    return TRUE;
+}
+
+static gboolean
+parse_mail_contents_header_part (gchar ***lines_, GError **error)
+{
+    MilterHeaders *headers;
+    const GList *header_list;
+
+    headers = milter_headers_new();
+    if (!parse_mail_contents_header_part_collect_headers(lines_,
+                                                         headers,
+                                                         error)) {
+        g_object_unref(headers);
+        return FALSE;
+    }
+
+    if (!parse_mail_contents_header_part_parse_headers(headers, error)) {
+        g_object_unref(headers);
+        return FALSE;
+    }
+
+    header_list = milter_headers_get_list(headers);
+    for (; header_list; header_list = g_list_next(header_list)) {
+        MilterHeader *header = header_list->data;
+        milter_headers_append_header(option_headers,
+                                     header->name, header->value);
     }
 
     g_object_unref(headers);
