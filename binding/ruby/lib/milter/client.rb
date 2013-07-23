@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2011  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2013  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -17,6 +17,7 @@ require 'milter/core'
 
 require 'milter_client.so'
 require 'milter/client/configuration'
+require 'milter/client/context-state'
 require 'milter/client/command-line'
 require 'milter/client/composite-session'
 
