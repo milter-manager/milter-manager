@@ -118,8 +118,9 @@ class TestClientSession < Test::Unit::TestCase
   end
 
   class TestReject < self
-    def test_reject
+    def test_not_envelope_recipient
       assert_equal(Milter::Status::DEFAULT, @session_context.status)
+      @context.state = Milter::ClientContext::STATE_HELO
       before_n_resets = @session.n_resets
       @session.send(:reject)
       assert_equal(Milter::Status::REJECT, @session_context.status)
