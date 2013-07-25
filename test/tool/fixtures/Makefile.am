@@ -3,6 +3,8 @@ EXTRA_DIST =							\
 	large.mail						\
 	parse-test-lf.mail					\
 	parse-test-crlf.mail					\
+	folded-from.mail					\
+	folded-to.mail						\
 	mail-20090715-1.log					\
 	mail-20090715-2.log					\
 	mail-20090715-invalid-byte-sequence.log			\

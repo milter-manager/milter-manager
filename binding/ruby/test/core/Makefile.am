@@ -1,5 +1,6 @@
 test_files =					\
 	test-logger.rb				\
+	test-event-loop.rb 			\
 	test-command-decoder.rb			\
 	test-command-encoder.rb			\
 	test-connection.rb			\
