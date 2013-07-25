@@ -5,10 +5,10 @@
 ####################################
 
 if GTK_DOC_USE_LIBTOOL
-GTKDOC_CC = $(LIBTOOL) --mode=compile $(CC) $(INCLUDES) $(AM_CFLAGS) $(CFLAGS)
+GTKDOC_CC = $(LIBTOOL) --mode=compile $(CC) $(AM_CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 GTKDOC_LD = $(LIBTOOL) --mode=link $(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS)
 else
-GTKDOC_CC = $(CC) $(INCLUDES) $(AM_CFLAGS) $(CFLAGS)
+GTKDOC_CC = $(CC) $(AM_CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 GTKDOC_LD = $(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS)
 endif
 
