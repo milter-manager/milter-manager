@@ -2,6 +2,23 @@
 
 = NEWS --- The history of milter manager
 
+== [release-2-0-0] 2.0.0: 2013-07-25
+
+A bug fix release of 1.8.9.
+
+=== milter-test-server
+
+==== Improvements
+
+  * Support multiline header
+
+=== Ruby milter
+
+==== Fixes
+
+  * Fix a bug that reject/temporary failure on envelope recipient
+    calls reset.
+
 == [release-1-8-9] 1.8.9: 2013-06-28
 
 A bug fix release of 1.8.8.

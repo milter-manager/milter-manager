@@ -2,6 +2,23 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-2-0-0] 2.0.0: 2013-07-25
+
+1.8.9 のバグフィックスリリースです。
+
+=== milter-test-server
+
+==== 改善
+
+  * 複数行のヘッダをサポート。
+
+=== Ruby milter
+
+==== 修正
+
+  * envelope recipient で reject や temporary failure したときにも
+    reset を呼んでいた問題を修正。
+
 == [release-1-8-9] 1.8.9: 2013-06-28
 
 1.8.8 のバグフィックスリリースです。
