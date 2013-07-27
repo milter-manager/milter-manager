@@ -10,7 +10,7 @@ A bug fix release of 1.8.9.
 
 ==== Improvements
 
-  * Support multiline header
+  * Support multiline header. [GitHub #33]
 
 === Ruby milter
 
