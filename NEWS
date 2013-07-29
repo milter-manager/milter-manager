@@ -4,7 +4,31 @@
 
 == [release-2-0-0] 2.0.0: 2013-07-25
 
-A bug fix release of 1.8.9.
+The major version up about 2 years!
+
+There are no incompatible changes between 1.8.9 and 2.0.0.  This
+version is compatible to 1.8.x, so you can upgrade without editing
+config files.
+
+The reasons:
+
+  * We are developing milter manager continuously.
+  * We think milter manager is stable enough.
+
+We released milter manager 1.8.0 at 2011/06/10. There are 10 releases
+between 1.8.0 and 2.0.0. We have developed milter manager continuously.
+
+milter manager 2.0.0 is more stable than 1.8.0, because users have
+been increased and reported issues. We have been able to fix problems,
+because users have reported a lot of problems. Of course, milter
+manager is very stable, and Ruby/milter (functionality which you can
+write milter in Ruby) is also stable enough. We have reflected our
+knowledge that we have developed milter written in Ruby to
+Ruby/milter.
+
+We can say that milter manager 2.0.0 is better than 1.8.0 with
+confidence. Let's try milter manager if you haven't used milter
+manager yet.
 
 === milter-test-server
 
