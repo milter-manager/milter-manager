@@ -34,15 +34,15 @@
 #include "milter-logger.h"
 
 #define MEM_PROFILE_TABLE_SIZE 4096
-#define	PROFILE_TABLE(f1, f2, f3) \
+#define PROFILE_TABLE(f1, f2, f3) \
     ((((f3) << 2) | ((f2) << 1) | (f1)) * (MEM_PROFILE_TABLE_SIZE + 1))
 #define N_PROFILE_DATA (MEM_PROFILE_TABLE_SIZE + 1) * 8 * sizeof(guint)
 
 typedef enum {
-  PROFILER_FREE		= 0,
-  PROFILER_ALLOC	= 1,
-  PROFILER_RELOC	= 2,
-  PROFILER_ZINIT	= 4
+  PROFILER_FREE         = 0,
+  PROFILER_ALLOC        = 1,
+  PROFILER_RELOC        = 2,
+  PROFILER_ZINIT        = 4
 } ProfilerJob;
 
 static gboolean profile_enabled = FALSE;
@@ -55,8 +55,8 @@ static GStaticMutex profile_mutex = G_STATIC_MUTEX_INIT;
 
 static void
 profiler_log (ProfilerJob job,
-	      gsize       n_bytes,
-	      gboolean    success)
+              gsize       n_bytes,
+              gboolean    success)
 {
     g_static_mutex_lock(&profile_mutex);
 
@@ -86,7 +86,7 @@ profiler_log (ProfilerJob job,
 
 static void
 profile_print_locked (guint   *local_data,
-		      gboolean success)
+                      gboolean success)
 {
     gboolean need_header = TRUE;
     guint i;
@@ -106,7 +106,7 @@ profile_print_locked (guint   *local_data,
             milter_profile("  n_bytes  | n_times by | n_times by | n_times by | n_times by | remaining ");
             milter_profile("           | malloc()   | free()     | realloc()  | realloc()  |           ");
             milter_profile("===========|============|============|============|============|===========");
-	}
+        }
         if (i < MEM_PROFILE_TABLE_SIZE) {
             milter_profile("%10u | %10ld | %10ld | %10ld | %10ld |%+11ld",
                            i, t_malloc, t_free, t_realloc, t_refree,
@@ -182,7 +182,7 @@ profiler_try_malloc (gsize n_bytes)
     p = malloc(sizeof(gsize) * 1 + n_bytes);
 
     if (p) {
-        p[0] = n_bytes;	/* length */
+        p[0] = n_bytes; /* length */
         profiler_log(PROFILER_ALLOC, n_bytes, TRUE);
         p += 1;
     } else {
@@ -205,7 +205,7 @@ profiler_malloc (gsize n_bytes)
 
 static gpointer
 profiler_calloc (gsize n_blocks,
-		 gsize n_block_bytes)
+                 gsize n_block_bytes)
 {
     gsize l = n_blocks * n_block_bytes;
     gsize *p;
@@ -213,7 +213,7 @@ profiler_calloc (gsize n_blocks,
     p = calloc(1, sizeof(gsize) * 1 + l);
 
     if (p) {
-        p[0] = l;		/* length */
+        p[0] = l;               /* length */
         profiler_log(PROFILER_ALLOC | PROFILER_ZINIT, l, TRUE);
         p += 1;
     } else {
@@ -231,14 +231,14 @@ profiler_free (gpointer mem)
 
     p -= 1;
     profiler_log(PROFILER_FREE,
-                 p[0],	/* length */
+                 p[0],  /* length */
                  TRUE);
     free(p);
 }
 
 static gpointer
 profiler_try_realloc (gpointer mem,
-		      gsize    n_bytes)
+                      gsize    n_bytes)
 {
     gsize *p = mem;
 
@@ -259,7 +259,7 @@ profiler_try_realloc (gpointer mem,
 
 static gpointer
 profiler_realloc (gpointer mem,
-		  gsize    n_bytes)
+                  gsize    n_bytes)
 {
     mem = profiler_try_realloc(mem, n_bytes);
 
