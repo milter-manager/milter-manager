@@ -89,7 +89,8 @@ libmilter_core_la_SOURCES =		\
 	milter-session-result.c		\
 	milter-memory-profile.c		\
 	milter-event-loop.c		\
-	milter-glib-event-loop.c
+	milter-glib-event-loop.c	\
+	milter-glib-compatible.h
 
 libmilter_core_la_LIBADD =		\
 	$(MILTER_CORE_LIBS)
