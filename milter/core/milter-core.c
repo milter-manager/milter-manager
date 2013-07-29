@@ -74,10 +74,12 @@ milter_init (void)
         milter_memory_profile_enable();
     }
 
+#if !GLIB_CHECK_VERSION(2, 32, 0)
     if (!g_thread_supported())
         g_thread_init(NULL);
 
     g_type_init();
+#endif
 
     delegate_glib_log_handlers();
     milter_core_log_handler_id = MILTER_GLIB_LOG_DELEGATE("milter-core");
