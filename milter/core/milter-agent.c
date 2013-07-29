@@ -30,6 +30,7 @@
 #include "milter-utils.h"
 #include "milter-logger.h"
 #include "milter-core-internal.h"
+#include "milter-glib-compatible.h"
 
 #define MILTER_AGENT_GET_PRIVATE(obj)                          \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                        \
@@ -68,7 +69,7 @@ enum
 
 static gint signals[LAST_SIGNAL] = {0};
 
-static GStaticMutex auto_tag_mutex = G_STATIC_MUTEX_INIT;
+static GMutex *auto_tag_mutex = NULL;
 static guint auto_tag = 0;
 
 static void         finished           (MilterFinishedEmittable *emittable);
@@ -101,11 +102,13 @@ static gboolean flush      (MilterAgent     *agent,
 void
 milter_agent_internal_init (void)
 {
+    auto_tag_mutex = g_mutex_new();
 }
 
 void
 milter_agent_internal_quit (void)
 {
+    g_mutex_free(auto_tag_mutex);
 }
 
 
@@ -214,11 +217,11 @@ constructor (GType type, guint n_props, GObjectConstructParam *props)
     if (agent_class->encoder_new)
         priv->encoder = agent_class->encoder_new(agent);
     if (priv->tag == 0) {
-        g_static_mutex_lock(&auto_tag_mutex);
+        g_mutex_lock(auto_tag_mutex);
         priv->tag = auto_tag++;
         if (priv->tag == 0)
             priv->tag = auto_tag++;
-        g_static_mutex_unlock(&auto_tag_mutex);
+        g_mutex_unlock(auto_tag_mutex);
     }
     apply_tag(priv);
 

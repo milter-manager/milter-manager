@@ -90,6 +90,7 @@ libmilter_core_la_SOURCES =		\
 	milter-memory-profile.c		\
 	milter-event-loop.c		\
 	milter-glib-event-loop.c	\
+	milter-glib-compatible.c	\
 	milter-glib-compatible.h	\
 	milter-core-internal.h
 
