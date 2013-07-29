@@ -22,6 +22,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include <milter/core.h>
+#include <milter/core/milter-core-internal.h>
 
 static gboolean initialized = FALSE;
 
@@ -81,6 +82,8 @@ milter_init (void)
     g_type_init();
 #endif
 
+    milter_agent_internal_init();
+
     delegate_glib_log_handlers();
     milter_core_log_handler_id = MILTER_GLIB_LOG_DELEGATE("milter-core");
 }
@@ -90,6 +93,8 @@ milter_quit (void)
 {
     if (!initialized)
         return;
+
+    milter_agent_internal_quit();
 
     remove_glib_log_handlers();
     g_log_remove_handler("milter-core", milter_core_log_handler_id);

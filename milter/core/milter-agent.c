@@ -29,6 +29,7 @@
 #include "milter-enum-types.h"
 #include "milter-utils.h"
 #include "milter-logger.h"
+#include "milter-core-internal.h"
 
 #define MILTER_AGENT_GET_PRIVATE(obj)                          \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                        \
@@ -96,6 +97,17 @@ static void get_property   (GObject         *object,
 
 static gboolean flush      (MilterAgent     *agent,
                             GError         **error);
+
+void
+milter_agent_internal_init (void)
+{
+}
+
+void
+milter_agent_internal_quit (void)
+{
+}
+
 
 static void
 milter_agent_class_init (MilterAgentClass *klass)
