@@ -2906,7 +2906,7 @@ void
 milter_client_start_syslog (MilterClient *client)
 {
     MilterClientPrivate *priv;
-    gchar *identify;
+    const gchar *identify;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
