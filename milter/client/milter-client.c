@@ -1484,8 +1484,10 @@ single_thread_start_accept (MilterClient *client, GError **error)
     GError *local_error = NULL;
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
-    thread = g_thread_create(single_thread_accept_thread, client, TRUE,
-                             &local_error);
+    thread = g_thread_try_new("single_thread_accept_thread",
+                              single_thread_accept_thread,
+                              client,
+                              &local_error);
     if (!thread) {
         milter_error("[client][single-thread][accept][start][error] %s",
                      local_error->message);
