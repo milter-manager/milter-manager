@@ -40,6 +40,7 @@
 
 #include <milter/server.h>
 #include <milter/core.h>
+#include <milter/core/milter-glib-compatible.h>
 
 #define DEFAULT_NEGOTIATE_VERSION 6
 
@@ -2339,7 +2340,10 @@ main (int argc, char *argv[])
         process_data = g_new0(ProcessData, n_threads);
         for (i = 0; i < n_threads; i++) {
             init_process_data(&process_data[i]);
-            threads[i] = g_thread_create(test_server_thread, &process_data[i], TRUE, NULL);
+            threads[i] = g_thread_try_new("test_server_thread",
+                                          test_server_thread,
+                                          &process_data[i],
+                                          NULL);
         }
 
         for (i = 0; i < n_threads; i++) {
