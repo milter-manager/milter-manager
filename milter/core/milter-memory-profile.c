@@ -32,6 +32,7 @@
 
 #include "milter-memory-profile.h"
 #include "milter-logger.h"
+#include "milter-glib-compatible.h"
 
 #define MEM_PROFILE_TABLE_SIZE 4096
 #define PROFILE_TABLE(f1, f2, f3) \
@@ -51,14 +52,14 @@ static guint profile_data[N_PROFILE_DATA];
 static gsize profile_allocs = 0;
 static gsize profile_zinit = 0;
 static gsize profile_frees = 0;
-static GStaticMutex profile_mutex = G_STATIC_MUTEX_INIT;
+static GMutex *profile_mutex = NULL;
 
 static void
 profiler_log (ProfilerJob job,
               gsize       n_bytes,
               gboolean    success)
 {
-    g_static_mutex_lock(&profile_mutex);
+    g_mutex_lock(profile_mutex);
 
     if (n_bytes < MEM_PROFILE_TABLE_SIZE) {
         profile_data[n_bytes + PROFILE_TABLE((job & PROFILER_ALLOC) != 0,
@@ -81,7 +82,7 @@ profiler_log (ProfilerJob job,
         }
     }
 
-    g_static_mutex_unlock(&profile_mutex);
+    g_mutex_unlock(profile_mutex);
 }
 
 static void
@@ -132,12 +133,12 @@ milter_memory_profile_report (void)
     if (!profile_enabled)
         return;
 
-    g_static_mutex_lock(&profile_mutex);
+    g_mutex_lock(profile_mutex);
     local_allocs = profile_allocs;
     local_zinit = profile_zinit;
     local_frees = profile_frees;
     memcpy(local_data, profile_data, N_PROFILE_DATA);
-    g_static_mutex_unlock(&profile_mutex);
+    g_mutex_unlock(profile_mutex);
 
     if (profile_verbose) {
         milter_profile("Memory statistics (successful operations):");
@@ -165,11 +166,11 @@ milter_memory_profile_get_data (gsize *n_allocates,
     if (!profile_enabled)
         return FALSE;
 
-    g_static_mutex_lock(&profile_mutex);
+    g_mutex_lock(profile_mutex);
     *n_allocates = profile_allocs;
     *n_zero_initializes = profile_zinit;
     *n_frees = profile_frees;
-    g_static_mutex_unlock(&profile_mutex);
+    g_mutex_unlock(profile_mutex);
 
     return TRUE;
 }
@@ -281,12 +282,14 @@ static GMemVTable profiler_table = {
 void
 milter_memory_profile_init (void)
 {
+    profile_mutex = g_mutex_new();
     memset(profile_data, 0, N_PROFILE_DATA);
 }
 
 void
 milter_memory_profile_quit (void)
 {
+    g_mutex_free(profile_mutex);
 }
 
 void
