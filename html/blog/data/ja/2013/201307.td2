@@ -5,7 +5,7 @@ Last-Modified: 1375092624
 Visible: true
 Format: RD
 
-== milter manager 2.0.0
+= milter manager 2.0.0
 
 約2年ぶりのメジャーバージョンアップリリースです！
 
@@ -38,6 +38,12 @@ Ruby/milterはかなり安定しました。Rubyでmilterを実装する機会�
 
 2.0.0は1.8.0よりも確実によくなっていると自信を持って言えます。これまで
 milter managerを使ったことがなかったみなさんもぜひ試してみてください！
+
+== 変更点
+
+詳しい変更点は以下を参照してください。
+
+  * ((<1.8.9から2.0.0への変更点|URL:http://milter-manager.sourceforge.net/reference/ja/news.html#news.release-2-0-0>))
 
 == テスト用メールを共有するプロジェクトを始めました
 
