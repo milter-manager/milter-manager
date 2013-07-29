@@ -35,6 +35,7 @@
 #include <milter/core/milter-marshalers.h>
 #include "../client.h"
 #include "milter-client-private.h"
+#include "../core/milter-glib-compatible.h"
 
 enum
 {
