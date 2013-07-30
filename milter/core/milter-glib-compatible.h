@@ -23,7 +23,7 @@
 #include <glib.h>
 
 #if !GLIB_CHECK_VERSION(2, 32, 0)
-#define g_thread_try_new(name, func, data, error) \
+#  define g_thread_try_new(name, func, data, error) \
     g_thread_create((func), (data), TRUE, (error))
 #else
 #  define g_mutex_new()             milter_glib_compatible_mutex_new()
