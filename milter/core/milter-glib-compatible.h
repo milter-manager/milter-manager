@@ -22,15 +22,15 @@
 
 #include <glib.h>
 
-#if !GLIB_CHECK_VERSION(2, 32, 0)
-#  define g_thread_try_new(name, func, data, error) \
-    g_thread_create((func), (data), TRUE, (error))
-#else
+#if GLIB_CHECK_VERSION(2, 32, 0)
 #  define g_mutex_new()             milter_glib_compatible_mutex_new()
 #  define g_mutex_free(mutex)       milter_glib_compatible_mutex_free(mutex)
 
 GMutex *milter_glib_compatible_mutex_new (void);
 void    milter_glib_compatible_mutex_free(GMutex *mutex);
+#else
+#  define g_thread_try_new(name, func, data, error) \
+    g_thread_create((func), (data), TRUE, (error))
 #endif
 
 #endif
