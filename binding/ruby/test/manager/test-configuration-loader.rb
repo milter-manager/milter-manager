@@ -510,7 +510,7 @@ EOX
       "--event-loop-backend=glib",
       "--n-workers 4"
     ]
-    @loader.define_milter("milter1") do |milter|
+    @loader.define_milter("milter") do |milter|
       milter.command = "/usr/bin/ruby /path/to/some-milter.rb"
       milter.command_options = command_options
     end
