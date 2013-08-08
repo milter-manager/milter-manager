@@ -457,6 +457,7 @@ EOX
                    end)
     end
 
+    class TestFallbackStatus < self
     def test_fallback_status
       @loader.define_milter("milter") do |milter|
         assert_equal("accept", milter.fallback_status)
@@ -471,6 +472,7 @@ EOX
           milter.fallback_status = "default"
         end
       end
+    end
     end
 
     def test_command_options
