@@ -382,112 +382,112 @@ EOX
   end
 
   class TestDefineMilter < self
-  def test_define_milter_again
-    @loader.define_milter("milter1") do |milter|
-      milter.description = "description"
-      milter.enabled = true
-    end
-    assert_equal([["milter1", true, "description"]],
-                 @configuration.eggs.collect do |egg|
-                   [egg.name, egg.enabled?, egg.description]
-                 end)
+    def test_define_milter_again
+      @loader.define_milter("milter1") do |milter|
+        milter.description = "description"
+        milter.enabled = true
+      end
+      assert_equal([["milter1", true, "description"]],
+                   @configuration.eggs.collect do |egg|
+                     [egg.name, egg.enabled?, egg.description]
+                   end)
 
-    @loader.define_milter("milter1") do |milter|
-    end
-    assert_equal([["milter1", true, "description"]],
-                 @configuration.eggs.collect do |egg|
-                   [egg.name, egg.enabled?, egg.description]
-                 end)
+      @loader.define_milter("milter1") do |milter|
+      end
+      assert_equal([["milter1", true, "description"]],
+                   @configuration.eggs.collect do |egg|
+                     [egg.name, egg.enabled?, egg.description]
+                   end)
 
-    @loader.define_milter("milter1") do |milter|
-      milter.description = "new description"
-      milter.enabled = false
-    end
-    assert_equal([["milter1", false, "new description"]],
-                 @configuration.eggs.collect do |egg|
-                   [egg.name, egg.enabled?, egg.description]
-                 end)
-  end
-
-  def test_define_milter_set_applicable_conditions
-    @loader.define_applicable_condition("S25R") do |condition|
-      condition.description = "Selective SMTP Rejection."
-    end
-    @loader.define_applicable_condition("Remote Network") do |condition|
-      condition.description = "Only works for remote network."
+      @loader.define_milter("milter1") do |milter|
+        milter.description = "new description"
+        milter.enabled = false
+      end
+      assert_equal([["milter1", false, "new description"]],
+                   @configuration.eggs.collect do |egg|
+                     [egg.name, egg.enabled?, egg.description]
+                   end)
     end
 
-    @loader.define_milter("milter1") do |milter|
-      milter.applicable_conditions = ["S25R", "Remote Network"]
-    end
-    assert_equal([["milter1", ["S25R", "Remote Network"]]],
-                 @configuration.eggs.collect do |egg|
-                   [egg.name,
-                    egg.applicable_conditions.collect {|cond| cond.name}]
-                 end)
+    def test_define_milter_set_applicable_conditions
+      @loader.define_applicable_condition("S25R") do |condition|
+        condition.description = "Selective SMTP Rejection."
+      end
+      @loader.define_applicable_condition("Remote Network") do |condition|
+        condition.description = "Only works for remote network."
+      end
 
-    @loader.define_milter("milter2") do |milter|
-      milter.applicable_conditions = ["S25R", "Remote Network"]
-      milter.applicable_conditions = ["S25R"]
-    end
-    assert_equal([["milter1", ["S25R", "Remote Network"]],
-                  ["milter2", ["S25R"]]],
-                 @configuration.eggs.collect do |egg|
-                   [egg.name,
-                    egg.applicable_conditions.collect {|cond| cond.name}]
-                 end)
-  end
+      @loader.define_milter("milter1") do |milter|
+        milter.applicable_conditions = ["S25R", "Remote Network"]
+      end
+      assert_equal([["milter1", ["S25R", "Remote Network"]]],
+                   @configuration.eggs.collect do |egg|
+                     [egg.name,
+                      egg.applicable_conditions.collect {|cond| cond.name}]
+                   end)
 
-  def test_define_milter_add_applicable_condition
-    @loader.define_applicable_condition("S25R") do |condition|
-      condition.description = "Selective SMTP Rejection."
-    end
-    @loader.define_applicable_condition("Remote Network") do |condition|
-      condition.description = "Only works for remote network."
+      @loader.define_milter("milter2") do |milter|
+        milter.applicable_conditions = ["S25R", "Remote Network"]
+        milter.applicable_conditions = ["S25R"]
+      end
+      assert_equal([["milter1", ["S25R", "Remote Network"]],
+                    ["milter2", ["S25R"]]],
+                   @configuration.eggs.collect do |egg|
+                     [egg.name,
+                      egg.applicable_conditions.collect {|cond| cond.name}]
+                   end)
     end
 
-    @loader.define_milter("milter1") do |milter|
-      milter.applicable_conditions = ["S25R"]
-      milter.applicable_conditions += ["Remote Network"]
-    end
-    assert_equal([["milter1", ["S25R", "Remote Network"]]],
-                 @configuration.eggs.collect do |egg|
-                   [egg.name,
-                    egg.applicable_conditions.collect {|cond| cond.name}]
-                 end)
-  end
+    def test_define_milter_add_applicable_condition
+      @loader.define_applicable_condition("S25R") do |condition|
+        condition.description = "Selective SMTP Rejection."
+      end
+      @loader.define_applicable_condition("Remote Network") do |condition|
+        condition.description = "Only works for remote network."
+      end
 
-  def test_define_milter_fallback_status
-    @loader.define_milter("milter") do |milter|
-      assert_equal("accept", milter.fallback_status)
-      milter.fallback_status = "temporary_failure"
-      assert_equal("temporary-failure", milter.fallback_status)
+      @loader.define_milter("milter1") do |milter|
+        milter.applicable_conditions = ["S25R"]
+        milter.applicable_conditions += ["Remote Network"]
+      end
+      assert_equal([["milter1", ["S25R", "Remote Network"]]],
+                   @configuration.eggs.collect do |egg|
+                     [egg.name,
+                      egg.applicable_conditions.collect {|cond| cond.name}]
+                   end)
     end
-  end
 
-  def test_define_milter_invalid_fallback_status
-    @loader.define_milter("milter") do |milter|
-      assert_raise(Milter::Manager::ConfigurationLoader::InvalidValue) do
-        milter.fallback_status = "default"
+    def test_define_milter_fallback_status
+      @loader.define_milter("milter") do |milter|
+        assert_equal("accept", milter.fallback_status)
+        milter.fallback_status = "temporary_failure"
+        assert_equal("temporary-failure", milter.fallback_status)
       end
     end
-  end
 
-  def test_define_milter_command_options
-    command_options = [
-      "--connection-spec=inet:20001",
-      "--daemon",
-      "--pid-file=/tmp/some-milter.pid",
-      "--event-loop-backend=glib",
-      "--n-workers 4"
-    ]
-    @loader.define_milter("milter") do |milter|
-      milter.command = "milter-test-client"
-      milter.command_options = command_options
+    def test_define_milter_invalid_fallback_status
+      @loader.define_milter("milter") do |milter|
+        assert_raise(Milter::Manager::ConfigurationLoader::InvalidValue) do
+          milter.fallback_status = "default"
+        end
+      end
     end
-    egg = @configuration.eggs.first
-    assert_equal(command_options, Shellwords.split(egg.command_options))
-  end
+
+    def test_define_milter_command_options
+      command_options = [
+        "--connection-spec=inet:20001",
+        "--daemon",
+        "--pid-file=/tmp/some-milter.pid",
+        "--event-loop-backend=glib",
+        "--n-workers 4"
+      ]
+      @loader.define_milter("milter") do |milter|
+        milter.command = "milter-test-client"
+        milter.command_options = command_options
+      end
+      egg = @configuration.eggs.first
+      assert_equal(command_options, Shellwords.split(egg.command_options))
+    end
   end
 
   def test_remove_milter
