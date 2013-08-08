@@ -240,6 +240,23 @@ class TestConfiguration < Test::Unit::TestCase
     assert_equal([], @configuration.load_paths)
   end
 
+  def test_load_command_options
+    loader = Milter::Manager::ConfigurationLoader.new(@configuration)
+    command_options = [
+                       "--connection-spec=inet:20001",
+                       "--daemon",
+                       "--pid-file=/tmp/some-milter.pid",
+                       "--event-loop-backend=glib",
+                       "--n-workers 4"
+                      ]
+    loader.define_milter("milter1") do |milter|
+      milter.command = "/usr/bin/ruby /path/to/some-milter.rb"
+      milter.command_options = command_options
+    end
+    egg = @configuration.eggs.first
+    assert_equal(command_options, Shellwords.split(egg.command_options))
+  end
+
   def test_dump
     assert_equal(<<-EOD.strip,
 # default
