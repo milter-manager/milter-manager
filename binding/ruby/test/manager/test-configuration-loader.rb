@@ -511,7 +511,7 @@ EOX
       "--n-workers 4"
     ]
     @loader.define_milter("milter") do |milter|
-      milter.command = "/usr/bin/ruby /path/to/some-milter.rb"
+      milter.command = "milter-test-client"
       milter.command_options = command_options
     end
     egg = @configuration.eggs.first
