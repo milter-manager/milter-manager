@@ -502,6 +502,22 @@ EOX
     end
   end
 
+  def test_define_milter_command_options
+    command_options = [
+                       "--connection-spec=inet:20001",
+                       "--daemon",
+                       "--pid-file=/tmp/some-milter.pid",
+                       "--event-loop-backend=glib",
+                       "--n-workers 4"
+                      ]
+    @loader.define_milter("milter1") do |milter|
+      milter.command = "/usr/bin/ruby /path/to/some-milter.rb"
+      milter.command_options = command_options
+    end
+    egg = @configuration.eggs.first
+    assert_equal(command_options, Shellwords.split(egg.command_options))
+  end
+
   def test_define_applicable_condition_again
     @loader.define_applicable_condition("S25R") do |condition|
       condition.description = "Selective SMTP Rejection."
