@@ -476,6 +476,16 @@ EOX
     end
 
     class TestCommandOptions < self
+      def test_string_style
+        command_options = "--connection-spec=inet:20001 --daemon"
+        @loader.define_milter("milter") do |milter|
+          milter.command = "milter-test-client"
+          milter.command_options = command_options
+        end
+        egg = @configuration.eggs.first
+        assert_equal(command_options, egg.command_options)
+      end
+
       def test_command_options
         command_options = [
           "--connection-spec=inet:20001",
