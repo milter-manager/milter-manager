@@ -504,12 +504,12 @@ EOX
 
   def test_define_milter_command_options
     command_options = [
-                       "--connection-spec=inet:20001",
-                       "--daemon",
-                       "--pid-file=/tmp/some-milter.pid",
-                       "--event-loop-backend=glib",
-                       "--n-workers 4"
-                      ]
+      "--connection-spec=inet:20001",
+      "--daemon",
+      "--pid-file=/tmp/some-milter.pid",
+      "--event-loop-backend=glib",
+      "--n-workers 4"
+    ]
     @loader.define_milter("milter1") do |milter|
       milter.command = "/usr/bin/ruby /path/to/some-milter.rb"
       milter.command_options = command_options
