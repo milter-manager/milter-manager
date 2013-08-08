@@ -494,6 +494,8 @@ cut_teardown (void)
         g_object_unref(encoder);
     if (command)
         g_array_free(command, TRUE);
+    if (server)
+        g_object_unref(server);
 
     if (output_string)
         g_string_free(output_string, TRUE);
