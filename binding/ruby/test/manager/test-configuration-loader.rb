@@ -495,6 +495,11 @@ EOX
             "--event-loop-backend=glib",
             "--n-workers 4"
           ]
+          assert_command_options(command_options)
+        end
+
+        private
+        def assert_command_options(command_options)
           @loader.define_milter("milter") do |milter|
             milter.command = "milter-test-client"
             milter.command_options = command_options
