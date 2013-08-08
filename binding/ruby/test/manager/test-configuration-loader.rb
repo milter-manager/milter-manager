@@ -381,6 +381,7 @@ EOX
                  @configuration.to_xml)
   end
 
+  class TestDefineMilter < self
   def test_define_milter_again
     @loader.define_milter("milter1") do |milter|
       milter.description = "description"
@@ -406,14 +407,6 @@ EOX
                  @configuration.eggs.collect do |egg|
                    [egg.name, egg.enabled?, egg.description]
                  end)
-  end
-
-  def test_remove_milter
-    assert_equal([], @loader.defined_milters)
-    @loader.define_milter("milter1") {}
-    assert_equal(["milter1"], @loader.defined_milters)
-    @loader.remove_milter("milter1")
-    assert_equal([], @loader.defined_milters)
   end
 
   def test_defined_milters
@@ -516,6 +509,15 @@ EOX
     end
     egg = @configuration.eggs.first
     assert_equal(command_options, Shellwords.split(egg.command_options))
+  end
+  end
+
+  def test_remove_milter
+    assert_equal([], @loader.defined_milters)
+    @loader.define_milter("milter1") {}
+    assert_equal(["milter1"], @loader.defined_milters)
+    @loader.remove_milter("milter1")
+    assert_equal([], @loader.defined_milters)
   end
 
   def test_define_applicable_condition_again
