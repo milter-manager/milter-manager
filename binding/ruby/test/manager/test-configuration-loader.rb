@@ -458,7 +458,7 @@ EOX
     end
 
     class TestFallbackStatus < self
-      def test_fallback_status
+      def test_valid
         @loader.define_milter("milter") do |milter|
           assert_equal("accept", milter.fallback_status)
           milter.fallback_status = "temporary_failure"
@@ -466,7 +466,7 @@ EOX
         end
       end
 
-      def test_invalid_fallback_status
+      def test_invalid
         @loader.define_milter("milter") do |milter|
           assert_raise(Milter::Manager::ConfigurationLoader::InvalidValue) do
             milter.fallback_status = "default"
