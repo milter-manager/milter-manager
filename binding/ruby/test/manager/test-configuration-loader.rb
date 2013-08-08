@@ -382,7 +382,7 @@ EOX
   end
 
   class TestDefineMilter < self
-    def test_define_milter_again
+    def test_again
       @loader.define_milter("milter1") do |milter|
         milter.description = "description"
         milter.enabled = true
@@ -409,7 +409,7 @@ EOX
                    end)
     end
 
-    def test_define_milter_set_applicable_conditions
+    def test_set_applicable_conditions
       @loader.define_applicable_condition("S25R") do |condition|
         condition.description = "Selective SMTP Rejection."
       end
@@ -438,7 +438,7 @@ EOX
                    end)
     end
 
-    def test_define_milter_add_applicable_condition
+    def test_add_applicable_condition
       @loader.define_applicable_condition("S25R") do |condition|
         condition.description = "Selective SMTP Rejection."
       end
@@ -457,7 +457,7 @@ EOX
                    end)
     end
 
-    def test_define_milter_fallback_status
+    def test_fallback_status
       @loader.define_milter("milter") do |milter|
         assert_equal("accept", milter.fallback_status)
         milter.fallback_status = "temporary_failure"
@@ -465,7 +465,7 @@ EOX
       end
     end
 
-    def test_define_milter_invalid_fallback_status
+    def test_invalid_fallback_status
       @loader.define_milter("milter") do |milter|
         assert_raise(Milter::Manager::ConfigurationLoader::InvalidValue) do
           milter.fallback_status = "default"
@@ -473,7 +473,7 @@ EOX
       end
     end
 
-    def test_define_milter_command_options
+    def test_command_options
       command_options = [
         "--connection-spec=inet:20001",
         "--daemon",
