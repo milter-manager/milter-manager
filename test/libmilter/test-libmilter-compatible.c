@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -232,6 +232,7 @@ void
 test_stop (void)
 {
     const gchar *socket_path;
+    int succeeded;
     gboolean stopped = FALSE;
 
     milter_assert_success(smfi_register(smfilter));
@@ -241,7 +242,9 @@ test_stop (void)
 
     idle_id = milter_event_loop_add_idle(loop, cb_idle_stop, &stopped);
 
-    milter_assert_success(smfi_main());
+    succeeded = smfi_main();
+    milter_init();
+    milter_assert_success(succeeded);
     cut_assert_true(stopped);
 }
 
