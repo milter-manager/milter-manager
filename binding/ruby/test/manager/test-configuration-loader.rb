@@ -487,14 +487,17 @@ EOX
       end
 
       class TestArrayStyle < self
-        def test_command_options
+        def test_normal_characters
           command_options = [
-            "--connection-spec=inet:20001",
+            "--verbose",
             "--daemon",
-            "--pid-file=/tmp/some-milter.pid",
-            "--event-loop-backend=glib",
-            "--n-workers 4"
           ]
+          assert_command_options(command_options)
+        end
+
+        data("=",     ["--connection-spec=inet:20001"])
+        data("space", ["--n-workers 4"])
+        def test_shell_special_characters(command_options)
           assert_command_options(command_options)
         end
 
