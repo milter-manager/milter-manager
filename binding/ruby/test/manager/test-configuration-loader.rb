@@ -475,6 +475,7 @@ EOX
       end
     end
 
+    class TestCommandOptions < self
     def test_command_options
       command_options = [
         "--connection-spec=inet:20001",
@@ -489,6 +490,7 @@ EOX
       end
       egg = @configuration.eggs.first
       assert_equal(command_options, Shellwords.split(egg.command_options))
+    end
     end
   end
 
