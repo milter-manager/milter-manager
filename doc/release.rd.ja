@@ -403,3 +403,40 @@ CGI で動かすよりも Rack で動かした方が便利なのでそうする�
 
 アカウントが無い場合は作成してプロジェクト管理者に連絡する。
 
+== メジャーバージョンリリース時の追加作業
+
+メジャーバージョンリリースというプロジェクトとしての大きなイベントを利
+用して、既存のmilter managerユーザーだけではなく、「名前を聞いたことが
+あるだけの人」や「そもそも知らなかったメール関係者」にも周知することを
+目的として以下の作業を実施する。
+
+=== 各種MLにアナウンス
+
+各種MLにアナウンスするが、全く同じ文面にせず、MLごとに少しアレンジする。
+
+また、ハイライトには前回メジャーリリースからの主な変更点や安定性が向上
+したなどのアピールポイントを書く。多少、大げさに書いても問題はないので
+しっかりアピールする。
+
+  * 参考: 2.0.0リリースのときのリリースアナウンスのメール
+    * http://sourceforge.net/mailarchive/message.php?msg_id=31226867
+    * http://www.postfix-jp.info/ML/arc-2.5/msg00236.html
+    * http://www.apache.jp/pipermail/spamassassin-jp/2013-July/000744.html
+    * http://sourceforge.net/mailarchive/message.php?msg_id=31226848
+    * http://thread.gmane.org/gmane.mail.postfix.user/238317
+  * 日本語ML
+    * milter-manager-users-ja
+    * ((<Postfixの日本語のメーリングリスト|URL:http://lists.sourceforge.jp/mailman/listinfo/postfix-jp-list>>))
+    * ((<SpamAssassinの日本語のメーリングリスト|URL:http://www.apache.jp/mailman/listinfo/spamassassin-jp>))
+  * 英語ML
+    * milter-manager-users-en
+    * ((<"Postfixのメーリングリスト postfix-users@postfix.org"|URL:http://www.postfix.org/lists.html>))
+
+=== ブログに記事を書く
+
+milter manager のブログだけでなく、ククログにも記事を書く。ククログに記
+事を書く場合は、その前にククログに milter manager の記事を書いた時期を
+考慮して milter manager の説明を最初に入れるかどうかを検討する。期間が
+一年以上、空いているようであれば milter manager の説明を入れるとよい。
+
+参考: ((<"milter manager 2.0.0 リリース - ククログ(2013-07-31)"|URL:http://www.clear-code.com/blog/2013/7/31.html>))
