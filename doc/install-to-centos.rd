@@ -167,21 +167,25 @@ configurations:
   such as SpamAssassin. milter manager helps constructing
   mail system that combines some anti-spam techniques.
 
-# For newer milter-greylist:
-#  socket "/var/milter-greylist/milter-greylist.sock"
-#  # ...
-#
-#  socket "/var/milter-greylist/milter-greylist.sock" 666
-#  # ...
-
 Before:
+  socket "/var/run/milter-greylist/milter-greylist.sock"
+  # ...
   racl whitelist default
 
 After:
+  socket "/var/run/milter-greylist/milter-greylist.sock" 660
+  # ...
   subnetmatch /24
   greylist 10m
   autowhite 1w
   racl greylist default
+
+"grmilter", the effective user of milter-grylist, only can access
+/var/run/milter-greylist/ directory. To access the socket file in
+/var/run/milter-greylist/ directory by milter-manager, add permission
+to the directory:
+
+  % sudo chmod +rx /var/run/milter-greylist/
 
 Start milter-greylist on startup:
 
@@ -198,10 +202,10 @@ clamav-milter's socket:
 
   % sudo usermod -G clamav -a milter-manager
 
-Add 'milter-manager' user to 'smmsp' group to access
+Add 'milter-manager' user to 'grmilter' group to access
 milter-greylist's socket:
 
-  % sudo usermod -G smmsp -a milter-manager
+  % sudo usermod -G grmilter -a milter-manager
 
 milter manager detects milters that installed in system.
 You can confirm spamass-milter, clamav-milter and

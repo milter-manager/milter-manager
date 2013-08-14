@@ -166,12 +166,12 @@ clamav-milterを起動します。
   築を支援します。
 
 変更前:
-  socket "/var/milter-greylist/milter-greylist.sock"
+  socket "/var/run/milter-greylist/milter-greylist.sock"
   # ...
   racl whitelist default
 
 変更後:
-  socket "/var/milter-greylist/milter-greylist.sock" 660
+  socket "/var/run/milter-greylist/milter-greylist.sock" 660
   # ...
   subnetmatch /24
   greylist 10m
@@ -183,6 +183,13 @@ clamav-milterを起動します。
 # sm_macro "trusted_domain" "{trusted_domain}" "yes"
 # racl whitelist sm_macro "trusted_domain" spf pass
 # racl greylist sm_macro "trusted_domain" not spf pass
+
+/var/run/milter-greylist/ディレクトリはmilter-greylistの実行ユーザーで
+あるgrmilterユーザーのみがアクセスできるようになっています。
+milter-managerも/var/run/milter-greylist/以下にあるソケットファイルにア
+クセスできるようにします。
+
+  % sudo chmod +rx /var/run/milter-greylist/
 
 システム起動時にmilter-greylistを起動するようにします。
 
@@ -200,9 +207,9 @@ milter-managerをclamavグループに加えます。
   % sudo usermod -G clamav -a milter-manager
 
 同様に、milter-greylistのソケットにアクセスできるように
-milter-managerをsmmspグループに加えます。
+milter-managerをgrmilterグループに加えます。
 
-  % sudo usermod -G smmsp -a milter-manager
+  % sudo usermod -G grmilter -a milter-manager
 
 milter-managerはシステムにインストールされているmilterを検出
 します。以下のコマンドでspamass-milter、clamav-milter、
