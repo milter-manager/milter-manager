@@ -173,3 +173,133 @@ followings. Tag includes object name.
 
    Error occurs when automatic flashing while switching output destination.
 
+=== client
+
+This is the log list of client module.
+
+There is no "session_id" in log not related to session.
+
+: error: [client][connection-spec][default][error]
+
+   Failure to set default connection information.
+
+: error: [client][error][write]
+
+   Error occurs while writing output data.
+
+: error: [client][error][buffered-packets][write]
+
+   Error occurs while writing buffered output data.
+
+: error: [client][error][reply-on-end-of-message][flush]
+
+   Error occurs while automatic flashing when response of end-of-message event.
+
+: error: [client][error][unix]
+
+   Error occurs while initializing UNIX domain socket.
+
+: error: [client][unix][error]
+
+   Error occurs while finishing UNIX domain socket.
+
+: error: [client][single-thread][start][error]
+
+   Error occurs when start main loop in single-thread mode.
+
+: error: [client][multi-thread][start][error]
+
+   Error occurs when start main loop in multi-thread mode.
+
+: error: [client][main][error]
+
+   Error occurs when start processing.
+
+: warning: [client][accept][suspend]
+
+   Client interrupts the connection acceptance temporarily because
+   there to many concurrent connections (shortage of RLIMIT_NOFILE)
+
+: warning: [client][accept][resume]
+
+   Client resumes the connection acceptance.
+
+: warning: [client][error][accept]
+
+   Failure to accept connection.
+
+: error: [client][single-thread][accept][start][error]
+
+   Failure to start connection acceptance in single-thread mode.
+
+: error: [client][multi-thread][accept][error]
+
+   Failure to start connection acceptance in multi-thread mode.
+
+: error: [client][multi-thread][error]
+
+   Error occurs while adding thread to thread pool.
+
+: error: [client][watch][error]
+
+   Error occurs on the socket is listening.
+
+: error: [client][prepare][error]
+
+   Error occurs while preparing.
+
+: error: [client][prepare][listen][error]
+
+   Failure to listen(2).
+
+: error: [client][pid-file][error][remove]
+
+   Error occurs while removing PID file.
+
+: error: [client][pid-file][save][error]
+
+   Error occurs while saving PID file.
+
+: error: [client][run][success][cleanup][error]
+
+   Error occurs when cleanup after successful completion.
+
+: error: [client][run][fail][cleanup][error]
+
+   Error occurs when cleanup after abnormal termination.
+
+: error: [client][master][run][error]
+
+   Error occurs when start processing of master process.
+
+: error: [client][worker][run][error]
+
+   Error occurs when start processing of worker process.
+   
+
+: error: [client][worker][run][listen][error]
+
+   Error occurs when listen(2) of worker process in multi-worker mode.
+
+: error: [client][workers][run][listen][error]
+
+   Error occurs when listen(2) of master process in multi-worker mode.
+
+: warning: [client][option][deprecated]
+
+   Specify deprecated option(s).
+
+: statistics: [sessions][finished]
+
+   Output statistics as message when finish session.
+
+     #{total processed sessions}(+#{processed sessions since previous log}) #{processing sessions}
+
+  Example message:
+
+     29(+2) 3
+
+: statistics: [reply][end-of-message][quarantine]
+
+   Return quarantine response.
+
