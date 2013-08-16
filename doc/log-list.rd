@@ -421,3 +421,52 @@ In addition, there is no "session_id" in log not related to session.
    "state" and "response" are same as "[server][error][#{response}][state][invalid][#{state}]".
    No problem if there are no error log after this log.
 
+=== manager
+
+This is log list of manager module.
+
+There is no "session_id" in log not related to session.
+
+==== submodule
+
+First tag is submodule name in manager module. However, there is no
+tag when milter-manager crashes in manger module and when
+milter-manager is booting.
+
+Submodules are 8 items as following:
+
+  * manager
+  * configuration
+  * launcher
+  * process-launcher
+  * controller
+  * leader
+  * children
+  * egg
+
+: manager
+   This submodule implements milter-manager command using each submodules.
+
+: configuration
+   This submodule loads configuration file.
+
+: launcher
+   This submodule launches child-milter.
+
+: process-launcher
+   This submodule launches launcher submodule in milter-manager command.
+
+: controller
+   This submodule operates milter-manager process from the outside.
+
+: leader
+   This submodule returns result that children module collect all
+   child-milters' result to MTA.
+
+: children
+   This submodule collect and summarize multiple child-milters' result.
+
+: egg
+   This module manages information of one child-milter.
+
+Describe for each submodule.
