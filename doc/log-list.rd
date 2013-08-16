@@ -632,3 +632,158 @@ Describe for each submodule.
 : error: [leader][error][replace-body]
 
    Error occurs when replace body.
+
+==== submodule: children
+
+: error: [children][error][negotiate]
+
+   This module receives response though this module does not send
+   request to start negotiation. Milter may violate milter protocol.
+
+: error: [children][error][pending-message-request]
+
+   A request to child-milter has a problem when milter-manager process
+   delays it. If you find this log, milter manager has a bug.
+
+: error: [children][error][body][read][seek]
+
+   Error occurs when seek position to read body.
+
+: error: [children][error][body][read]
+
+   Error occurs while reading body.
+
+: error: [children][error][invalid-state][temporary-failure]
+
+   Milter respond "temporary-failure" response at unexpected timing in
+   milter protocol. Milter may violate milter protocol.
+
+: error: [children][error][invalid-state][reject]
+
+   Milter respond "reject" response at unexpected timing in
+   milter protocol. Milter may violate milter protocol.
+
+: error: [children][error][invalid-state][accept]
+
+   Milter respond "accept" response at unexpected timing in
+   milter protocol. Milter may violate milter protocol.
+
+: error: [children][error][invalid-state][discard]
+
+   Milter respond "discard" response at unexpected timing in
+   milter protocol. Milter may violate milter protocol.
+
+: error: [children][error][invalid-state][stopped]
+
+   milter-manager process stops child-milter at unexpected timing in
+   milter protocol. Probably this is milter manager's bug.
+
+: error: [children][error][invalid-state][#{response}][#{state}]
+
+   Milter can return "#{response}" at state of "end-of-message". However milter
+   returns "#{response}" at state of "#{state}".
+   Milter may violate milter protocol.
+
+   "#{response}" is as following:
+
+   : add-header
+      Response represents to append header.
+   : insert-header
+      Response represents to insert header into any position.
+   : change-header
+      Response represents to change header.
+   : delete-header
+      Response represents to delete header.
+   : change-from
+      Response represents to change from.
+   : add-recipient
+      Response represents to add recipient.
+   : delete-recipient
+      Response represents to delete recipient.
+   : replace-body
+      Response represents to replace body.
+   : progress
+      Response represents process is in progress.
+   : quarantine
+      Response represents to quarantine a mail.
+
+   "#{state}" is same as "[server][error][#{response}][state][invalid][#{state}]".
+
+: error: [children][timeout][writing]
+
+   Writing timeout.
+
+: error: [children][timeout][reading]
+
+   Reading timeout.
+
+: error: [children][timeout][end-of-message]
+
+   Response timeout when "end-of-message".
+
+: error: [children][error][#{state}][#{fallback_status}]
+
+   Error occurs in server module that is used communication with child-milter.
+   See ((<milter.fallback_status|configuration.rd#milter.fallback_status>)) about child-milter result.
+   See "[server][error][#{response}][state][invalid][#{state}]" abount "#{state}".
+
+: error: [children][error][start-child][write]
+
+   Error occurs when this module requests launcer submodule to lauch
+   child-milter.
+
+: error: [children][error][start-child][flush]
+
+   Error occurs when this module flashes request that starts
+   child-milter to launcher submodule.
+
+: error: [children][error][negotiate][not-started]
+
+   This module executes process of negotiation response but MTA does
+   not start negotiation. Probably milter manager has a bug if you
+   find this log.
+
+: error: [children][error][negotiate][no-response]
+
+   All milters do not respond to negotiation. Probably child-milter
+   has some problems if you find this log.
+
+: error: [children][timeout][connection]
+
+   Connection timeout.
+
+: error: [children][error][connection]
+
+   Error occurs while processing connection.
+
+: error: [children][error][alive]
+
+   MTA send requests to this module though all child-milter have
+   finished.
+
+: error: [children][error][message-processing]
+
+   MTA send request that process mail to this module though no
+   child-milter processes data which is sent via SMTP DATA.
+
+: error: [children][error][body][open]
+
+   Fail to create temporary file to save large mail body.
+
+: error: [children][error][body][encoding]
+
+   Fail to set encoding to read/write temporary file to save large
+   mail body.
+
+: error: [children][error][body][write]
+
+   Fail to write data to temporary file to save large mail body.
+
+: error: [children][error][body][send][seek]
+
+   Fail to seek position in temporary file to save large mail body.
+
+: error: [children][error][body][send]
+
+   Fail to read data from temporary file to save large mail body.
+
