@@ -534,3 +534,13 @@ Describe for each submodule.
 : error: [launcher][error][write]
 
    Error occurs when this module writes response whether success or not.
+
+==== submodule: process-launcher
+
+: error: [process-launcher][error][start]
+
+   Error occurs when this module start connecting with launcher module.
+
+: error: [process-launcher][error]
+
+   Fail to detach file descriptors from forked launcher module.
