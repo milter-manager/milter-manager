@@ -434,7 +434,7 @@ serverモジュールは同時に複数のmilterと通信する用途を想定�
    : add-header
       ヘッダーを末尾に追加するレスポンス。
    : insert-header
-      ヘッダーを任意の位置に追加するレスポンス。
+      ヘッダーを任意の位置に挿入するレスポンス。
    : change-header
       ヘッダーを変更するレスポンス。
    : add-recipient
