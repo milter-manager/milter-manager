@@ -477,3 +477,38 @@ Describe for each submodule.
 
    Error occurs while reloading configuration requested by SIGHUP signal.
 
+==== submodule: configuration
+
+: error: [configuration][dispose][clear][error]
+
+   Fail to clear configuration while disposing.
+
+: error: [configuration][new][clear][error]
+
+   Fail to clear configuration at the first time.
+
+: error: [configuration][load][clear][error]
+
+   Fail to clear configuration before reload configuration.
+
+: error: [configuration][load][error]
+
+   Fail to load milter-manager.conf.
+
+: error: [configuration][load][custom][error]
+
+   Fail to load milter-manager.custom.conf.
+   
+: error: [configuration][clear][custom][error]
+
+   Fail to clear configuration using Ruby.
+
+: error: [configuration][maintain][error]
+
+   Error occurs while processing of maintenance every maitenance_interval seconds.
+   See ((<manager.maintenance_interval|configuration.rd.ja#manager.maintenance_interval>)).
+
+: error: [configuration][event-loop-created][error]
+
+   Error occurs after create event loop.
+
