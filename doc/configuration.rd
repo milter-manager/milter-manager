@@ -1422,6 +1422,26 @@ by the following configurations.
      # 2001:2f8:c2:201::/64 network.
      remote_network.add_local_address("2001:2f8:c2:201::/64")
 
+: remote_network.add_remote_address(address)
+
+   Adds the specified IPv4/IPv6 address or IPv4/IPv6 network
+   to remote network. Child milter is applied to SMTP
+   clients connected from remote network.
+
+   Example:
+
+     # Apply child milters connections from 160.29.167.10.
+     remote_network.add_remote_address("160.29.167.10")
+     # Apply child milters connections from
+     # 160.29.167.0/24 network.
+     remote_network.add_remote_address("160.29.167.0/24")
+     # Apply child milters connections from
+     # 2001:2f8:c2:201::fff0.
+     remote_network.add_remote_address("2001:2f8:c2:201::fff0")
+     # Apply child milters connections from
+     # 2001:2f8:c2:201::/64 network.
+     remote_network.add_remote_address("2001:2f8:c2:201::/64")
+
 === [authentication] Authentication
 
 This applicable condition applies a child milter to

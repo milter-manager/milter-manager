@@ -1399,6 +1399,23 @@ SMTPクライアントにのみ子milterを適用します。
      # 2001:2f8:c2:201::/64からのアクセスは子milterを適用しない
      remote_network.add_local_address("2001:2f8:c2:201::/64")
 
+: remote_network.add_remote_address(address)
+
+   指定したIPv4/IPv6アドレスまたはIPv4/IPv6ネットワークをリモ
+   ートネットワークに追加します。リモートネットワークに追加したア
+   ドレス・ネットワークには子milterを適用します。
+
+   使用例:
+
+     # 160.29.167.10からのアクセスは子milterを適用する
+     remote_network.add_remote_address("160.29.167.10")
+     # 160.29.167.0/24のネットワークからのアクセスは子milterを適用する
+     remote_network.add_remote_address("160.29.167.0/24")
+     # 2001:2f8:c2:201::fff0からのアクセスは子milterを適用する
+     remote_network.add_remote_address("2001:2f8:c2:201::fff0")
+     # 2001:2f8:c2:201::/64からのアクセスは子milterを適用する
+     remote_network.add_remote_address("2001:2f8:c2:201::/64")
+
 === [authentication] Authentication
 
 SMTP Authで認証済みのSMTPクライアントにのみ子milterを適用しま
