@@ -459,5 +459,7 @@ body is BASE64 encoded.
 ((<Mail|URL:http://github.com/mikel/mail>)) is useful library that
 handle mails.
 
+== Conclusion
 
-
+This document describes how to write milter in Ruby. It is easy to
+write milter in Ruby. Let's try to write milter in Ruby!!
