@@ -19,11 +19,11 @@ Rubyでmilterを開発する場合はconfigure時に--enable-ruby-milterオ
 
 Debian GNU/Linux、Ubuntuの場合:
 
-  % sudo aptitude -V -D -y install libmilter-toolkit-ruby1.8
+  % sudo aptitude -V -D -y install ruby-milter-core ruby-milter-client ruby-milter-server
 
 CentOSの場合:
 
-  % sudo yum install -y ruby-milter-toolkit
+  % sudo yum install -y ruby-milter-core ruby-milter-client ruby-milter-server
 
 パッケージがない環境では以下のように
 configureに--enable-ruby-milterオプションを指定してください。
