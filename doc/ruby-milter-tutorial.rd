@@ -38,3 +38,30 @@ You can confirm installed library version.
 You have succeeded to install ruby-milter if you can see version
 information.
 
+== Summary
+
+Milter written in Ruby is followings:
+
+  require 'milter/client'
+
+  class Session < Milter::ClientSession
+    def initialize(context)
+      super(context)
+      # Initialize
+    end
+
+    def connect(host, address)
+      # ...
+    end
+
+    # Other callback definitions
+  end
+
+  command_line = Milter::Client::CommandLine.new
+  command_line.run do |client, _options|
+    client.register(Session)
+  end
+
+Let's write the milter that can reject a mail includes specified
+regular expression.
+
