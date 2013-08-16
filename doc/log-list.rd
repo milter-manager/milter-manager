@@ -275,7 +275,6 @@ There is no "session_id" in log not related to session.
 : error: [client][worker][run][error]
 
    Error occurs when start processing of worker process.
-   
 
 : error: [client][worker][run][listen][error]
 
@@ -498,7 +497,7 @@ Describe for each submodule.
 : error: [configuration][load][custom][error]
 
    Fail to load milter-manager.custom.conf.
-   
+
 : error: [configuration][clear][custom][error]
 
    Fail to clear configuration using Ruby.
