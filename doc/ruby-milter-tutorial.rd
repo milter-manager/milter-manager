@@ -214,7 +214,7 @@ callback and body callback. Template is as following.
     end
 
     def header(name, value)
-      # ... Check subject
+      # ... Check subject header
     end
 
     def body(chunk)
