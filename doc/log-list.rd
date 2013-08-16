@@ -591,3 +591,44 @@ Describe for each submodule.
 
    Fail to call listen(2).
 
+==== submodule: leader
+
+: error: [leader][error][invalid-state]
+
+   Detect invalid state transition. Probably this is milter manager's bug.
+
+: error: [leader][error]
+
+   Error occurs in children module.
+
+: error: [leader][error][reply-code]
+
+   Fail to specify SMTP response code. Milter may send invalid response code.
+
+: error: [leader][error][add-header]
+
+   Error occurs when append header.
+
+: error: [leader][error][insert-header]
+
+   Error occurs when insert header into any position.
+
+: error: [leader][error][delete-header]
+
+   Error occurs when delete header.
+
+: error: [leader][error][change-from]
+
+   Error occurs when change recipient.
+
+: error: [leader][error][add-recipient]
+
+   Error occurs when add recipient.
+
+: error: [leader][error][delete-recipient]
+
+   Error occurs when delete recipient.
+
+: error: [leader][error][replace-body]
+
+   Error occurs when replace body.
