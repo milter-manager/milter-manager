@@ -797,3 +797,126 @@ Describe for each submodule.
 : error: [egg][error][set-spec]
 
    Set invalid connection spec to child-milter.
+
+==== other: logs when crashed
+
+: critical: [#{signal}] unable to open pipe for collecting stack trace
+
+   Unable to open pipe for collecting stack trace.
+   Signal is SEGV or ABORT.
+
+: critical: #{stack_trace}
+
+   No tags. Display stack trace for each line.
+
+==== other: starting milter-manager command
+
+: error: failed to create pipe for launcher command
+
+   Failed to create pipe for launcher command.
+
+: error: failed to create pipe for launcher reply
+
+   Failed to create pipe for launcher reply.
+
+: error: failed to fork process launcher process
+
+   Failed to fork process launcher process.
+
+: error: failed to find password entry for effective user
+
+   Failed to find password entry for effective user.
+
+: error: failed to get password entry for effective user
+
+   Failed to get password entry for effective user.
+
+: error: failed to get limit for RLIMIT_NOFILE
+
+   Failed to get limit for RLIMIT_NOFILE.
+
+: error: failed to set limit for RLIMIT_NOFILE
+
+   Failed to set limit for RLIMIT_NOFILE.
+
+: error: failed to create custom configuration directory
+
+   Failed to create custom configuration directory.
+
+: error: failed to change owner and group of configuration directory
+
+   Failed to change owner and group of configuration directory
+
+: error: failed to listen
+
+   Failed to listen(2).
+
+: error: failed to drop privilege
+
+   Failed to drop root privilege.
+
+: error: failed to listen controller socket:
+
+   Failed to listen(2) controller socket.
+
+: error: failed to daemonize:
+
+   Failed to daemonize.
+
+: error: failed to start milter-manager process:
+
+   Failed to start milter-manager process.
+
+: error: [manager][reload][custom-load-path][error]
+
+   Failed to reload configuration.
+
+: error: [manager][configuration][reload][command-line-load-path][error]
+
+   Failed to load configuration from load path specified by command line.
+
+
+==== other: statistics
+
+: statistics: [milter][header][add]
+
+   Child-milter adds header.
+
+: statistics: [milter][end][#{last_state}][#{status}][#{elapsed}]
+
+   One child-milter has finished.
+
+   "[#{last_state}]" represents state that it has finished.
+   See "#{state}" of "[server][error][#{response}][state][invalid][#{state}]".
+
+   "#{status}" is response from child-milter. Response is as following.
+
+   : reject
+      Response represents to reject.
+   : discard
+      Response represents to discard.
+   : accept
+      Response represents to accept.
+   : temporary-failure
+      Response represents temporary failure.
+   : pass
+      Response represents to pass implicitly.
+   : stop
+      Response represents to stop process in progress..
+
+   "[#{elapsed}]" represents elapsed time since connection start.
+
+: statistics: [session][end][#{last_state}][#{status}][#{elapsed}]
+
+   One milter session has finished.
+   See "[milter][end][#{last_state}][#{status}][#{elapsed}]".
+
+: statistics: [session][disconnected][#{elapsed}]
+
+   SMTP client has disconnected the session in progress.
+
+   "[#{elapsed}]" represents elapsed time since connection start.
+
+: statistics: [session][header][add]
+
+   Add header as response of whole milter session.
