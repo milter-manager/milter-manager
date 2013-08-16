@@ -385,4 +385,79 @@ option.
 It is expected result because you can see "status: reject" in your
 terminal.
 
+== Problems
+
+There are some problems in this milter because this milter simplify
+for this tutorial.
+
+
+  (1) Include MIME encoded header.
+      Decoded "=?ISO-2022-JP?B?GyRCJVAlJCUiJTAlaRsoQnZpYWdyYQ==?="
+      includes "viagra", but original header value does not match
+      against specified regular expression. And milter does not reject
+      this mail
+  (2) The word splitted by chunk in message body.
+      For exapmle, Specified regular expression does not match if
+      first chunk has "via" and second one has "gra". And milter does
+      not reject this mail.
+
+You can solve problems about header if you use NKF library as following.
+
+  require 'nkf'
+
+  class MilterRegexp < Milter::ClientSession
+    # ...
+    def header(name, value)
+      case name
+      when /\ASubject\z/i
+        if @regexp =~ NKF.nkf("-w", value)
+          reject
+        end
+      end
+    end
+    # ...
+  end
+
+You can solve problems about message body if milter check message body
+when milter receives all chunks.
+
+  class MilterRegexp < Milter::ClientSession
+    ...
+    def initialize(context, regexp)
+      super(context)
+      @regexp = regexp
+      @body = ""
+    end
+
+    def body(chunk)
+      if @regexp =~ chunk
+        reject
+      end
+      @body << chunk
+    end
+
+    def end_of_mesasge
+      if @regexp =~ @body
+        reject
+      end
+    end
+    ...
+  end
+
+You can test multiple chunks as following.
+
+  % milter-test-server -s inet:20025 --body 'Buy via' --body 'gra!!!'
+  status: reject
+  elapsed-time: 0.00379063 seconds
+
+Mails are rejected if it includes multiple chunks.
+
+However, in this case, all messages place on memory. This is
+performance problem. In addition, this milter does not work if message
+body is BASE64 encoded.
+
+((<Mail|URL:http://github.com/mikel/mail>)) is useful library that
+handle mails.
+
+
 
