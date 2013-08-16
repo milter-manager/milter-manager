@@ -1424,6 +1424,8 @@ by the following configurations.
 
 : remote_network.add_remote_address(address)
 
+   Since 1.5.0.
+
    Adds the specified IPv4/IPv6 address or IPv4/IPv6 network
    to remote network. Child milter is applied to SMTP
    clients connected from remote network.
