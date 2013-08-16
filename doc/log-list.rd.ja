@@ -395,7 +395,7 @@ serverモジュールは同時に複数のmilterと通信する用途を想定�
       SMTPのMAIL FROMコマンドに対応するmilterプロトコルを処
       理している状態。
    : envelope-recipient
-      SMTPのRCPT TOコマンドに対応するmilterプロトコルを処
+      SMTPのRCPTコマンドに対応するmilterプロトコルを処
       理している状態。
    : data
       SMTPのDATAコマンドに対応するmilterプロトコルを処
