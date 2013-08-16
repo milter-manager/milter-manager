@@ -787,3 +787,13 @@ Describe for each submodule.
 
    Fail to read data from temporary file to save large mail body.
 
+==== submodule: egg
+
+: error: [egg][error]
+
+   Detect invalid connection spec is specified when this module
+   connect to child-milter.
+
+: error: [egg][error][set-spec]
+
+   Set invalid connection spec to child-milter.
