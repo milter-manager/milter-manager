@@ -512,3 +512,25 @@ Describe for each submodule.
 
    Error occurs after create event loop.
 
+==== submodule: launcher
+
+: error: [launcher][error][child][authority][group]
+
+   Fail to change execution privilege to specified group when launch
+   child-milter.
+
+: error: [launcher][error][child][authority][groups]
+
+   Fail to initialize specified additional group when launch child-milter.
+
+: error: [launcher][error][child][authority][user]
+
+   Fail to change execution privilege to specified user when launch child-milter.
+
+: error: [launcher][error][launch]
+
+   Fail to launch child-milter.
+
+: error: [launcher][error][write]
+
+   Error occurs when this module writes response whether success or not.
