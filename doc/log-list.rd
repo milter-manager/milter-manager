@@ -303,3 +303,121 @@ There is no "session_id" in log not related to session.
 
    Return quarantine response.
 
+=== server
+
+This is log list of server module.
+
+This module's log includes partner milter name because this module
+communicate with multiple milters at the same time.
+
+  [#{session_id}] [#{tag1}][#{tag2}][...] [#{milter name}] #{message}
+
+In addition, there is no "session_id" in log not related to session.
+
+
+: error: [server][dispose][body][remained]
+
+   Remain unsent message body after the session.
+   The milter may close connection forcibly.
+
+: error: [server][flushed][error][next-state][invalid]
+
+   Detect invalid state transition while writing data asynchronously.
+   The milter may violate milter protocol.
+
+: error: [server][error]
+
+   Unexpected error occurs. You can read message as description.
+
+: error: [server][error][write]
+
+   Error occurs while writing.
+
+: error: [server][error][#{response}][state][invalid][#{state}]
+
+   The milter returns unexpected response when the milter state is "state".
+   The message includes expected response list. The milter may violate
+   milter protocol.
+
+   "state" list is as followings:
+
+   : invalid
+      Invalid state. Usually, the server should not be in this state.
+   : start
+      State immediately after the server starts a conversation.
+   : define-macro
+      State that is communicating the macro definition.
+   : negotiate
+      State that is negotiating exchange method in the session between server and milter.
+   : connect
+      State that is establishing connection with milter after negotiation state.
+   : helo
+      State that is processing the milter protocol corresponding to SMTP HELO.
+   : envelope-from
+      State that is processing the milter protocol corresponding to SMTP FROM.
+   : envelope-recipient
+      State that is processing the milter protocol corresponding to SMTP RCPT.
+   : data
+      State that is processing the milter protocol corresponding to SMTP DATA.
+   : unknown
+      State that is processing the milter protocol corresponding to SMTP unknown command.
+   : header
+      State that is processing mail header sent via SMTP DATA by the milter protocol.
+   : end-of-header
+      State that is processing notification that has finished processing mail header.
+   : body
+      State that is processing mail body sent via SMTP DATA by the milter protocol.
+   : end-of-message
+      State that is processing notification that has finished processing mail body.
+   : quit
+      State that is processing the milter protocol quitting.
+   : abort
+      State that is processing the milter protocol aborting.
+
+   Response from the milter is as following.
+   Each item is corresponding to milter protocol response.
+
+   : negotiate-reply
+      Response negotiate.
+   : continue
+      Response that represents the continuation of the process.
+   : reply-code
+      Response that represents to specify SMTP response code.
+   : add-header
+      Response that represents to append header.
+   : insert-header
+      Response that represents to insert header into any position.
+   : change-header
+      Response that represents to change header.
+   : add-recipient
+      Response that represents to change recipient.
+   : delete-recipient
+      Response that represents to delte recipient.
+   : replace-body
+      Response that represents to replace body.
+   : progress
+      Response that represents to be in progress.
+      This response is used to increase the timeout.
+   : quarantine
+      Response that represents to quarantine the mail.
+   : skip
+      Response that represents to skip receiving body.
+
+: error: [server][timeout][connection]
+
+   Connection timeout.
+
+: error: [server][error][connect]
+
+   Connection error.
+
+: error: [server][error][connected][start]
+
+   Error occurs while initializing to start connecting.
+
+: warning: [server][reply][quitted][#{state}][#{response}]
+
+   Server receives a response after finished milter protocol.
+   "state" and "response" are same as "[server][error][#{response}][state][invalid][#{state}]".
+   No problem if there are no error log after this log.
+
