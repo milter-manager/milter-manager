@@ -106,10 +106,10 @@ Rubyで開発したmilterは以下のようになります。
 
 : envelope_from(from)
 
-   SMTPクライアントがMAIL FROMコマンドを送ったときに呼ばれま
+   SMTPクライアントがMAILコマンドを送ったときに呼ばれま
    す。
 
-   ((|from|))はMAIL FROMで報告した送信元アドレスです。
+   ((|from|))はMAILで報告した送信元アドレスです。
 
    例えば、「MAIL FROM: <user@example.com>」とした場合は以下
    のようになります。
@@ -119,10 +119,10 @@ Rubyで開発したmilterは以下のようになります。
 
 : envelope_recipient(to)
 
-   SMTPクライアントがRCPT TOコマンドを送ったときに呼ばれます。
-   複数回RCPT TOコマンドを送った場合は複数回呼ばれます。
+   SMTPクライアントがRCPTコマンドを送ったときに呼ばれます。
+   複数回RCPTコマンドを送った場合は複数回呼ばれます。
 
-   ((|to|))はRCPT TOで報告した送信先アドレスです。
+   ((|to|))はRCPTで報告した送信先アドレスです。
 
    例えば、「RCPT TO: <user@example.com>」とした場合は以下
    のようになります。
