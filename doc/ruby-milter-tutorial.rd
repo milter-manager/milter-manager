@@ -248,4 +248,116 @@ First, let's check subject header.
 Reject mails if header name is matched "subject" and its value matches
 against specified regular expression.
 
+== Operation check
+
+Let's try to execute this milter.
+
+Now, your milter is as following.
+
+  require 'milter/client'
+
+  class MilterRegexp < Milter::ClientSession
+    def initialize(context, regexp)
+      super(context)
+      @regexp = regexp
+    end
+
+    def header(name, value)
+      case name
+      when /\ASubject\z/i
+        if @regexp =~ value
+          reject
+        end
+      end
+    end
+
+    def body(chunk)
+      # Check cunk
+    end
+  end
+
+  command_line = Milter::Client::CommandLine.new
+  command_line.run do |client, _options|
+    # We want to reject mails include "viagra"
+    client.register(MilterRegexp, /viagra/i)
+  end
+
+You can execute this file as milter below command if you save this
+file as "milter-regexp.rb". We add "-v" option because it is easy
+to check operation.
+
+  % ruby milter-regexp.rb -v
+
+In this case (default), milter run in foreground. You can check
+operation via other terminal.
+
+((<milter-test-server>)) is very useful to test milter.
+Milter which is written in Ruby is launched on "inet:20025@localhost".
+
+  % milter-test-server -s inet:20025
+  status: pass
+  elapsed-time: 0.00254348 seconds
+
+You can see "status: pass" in your terminal if you can connect properly.
+Let's check another terminal.
+
+  [2010-08-01T05:44:34.157419Z]: [client][accept] 10:inet:55651@127.0.0.1
+  [2010-08-01T05:44:34.157748Z]: [1] [client][start]
+  [2010-08-01T05:44:34.157812Z]: [1] [reader][watch] 4
+  [2010-08-01T05:44:34.157839Z]: [1] [writer][watch] 5
+  [2010-08-01T05:44:34.158050Z]: [1] [reader] reading from io channel...
+  [2010-08-01T05:44:34.158140Z]: [1] [command-decoder][negotiate]
+  [2010-08-01T05:44:34.158485Z]: [1] [client][reply][negotiate] #<MilterOption version=<6> action=<add-headers|change-body|add-envelope-recipient|delete-envelope-recipient|change-headers|quarantine|change-envelope-from|add-envelope-recipient-with-parameters|set-symbol-list> step=<no-connect|no-helo|no-envelope-from|no-envelope-recipient|no-end-of-header|no-unknown|no-data|skip|envelope-recipient-rejected>>
+  [2010-08-01T05:44:34.158605Z]: [1] [client][reply][negotiate][continue]
+  [2010-08-01T05:44:34.158895Z]: [1] [reader] reading from io channel...
+  [2010-08-01T05:44:34.158970Z]: [1] [command-decoder][header] <From>=<<kou+send@example.com>>
+  [2010-08-01T05:44:34.159092Z]: [1] [client][reply][header][continue]
+  [2010-08-01T05:44:34.159207Z]: [1] [reader] reading from io channel...
+  [2010-08-01T05:44:34.159269Z]: [1] [command-decoder][header] <To>=<<kou+receive@example.com>>
+  [2010-08-01T05:44:34.159373Z]: [1] [client][reply][header][continue]
+  [2010-08-01T05:44:34.159485Z]: [1] [reader] reading from io channel...
+  [2010-08-01T05:44:34.159544Z]: [1] [command-decoder][body] <71>
+  [2010-08-01T05:44:34.159656Z]: [1] [client][reply][body][continue]
+  [2010-08-01T05:44:34.159774Z]: [1] [reader] reading from io channel...
+  [2010-08-01T05:44:34.159842Z]: [1] [command-decoder][define-macro] <E>
+  [2010-08-01T05:44:34.159882Z]: [1] [command-decoder][end-of-message] <0>
+  [2010-08-01T05:44:34.159941Z]: [1] [client][reply][end-of-message][continue]
+  [2010-08-01T05:44:34.160034Z]: [1] [command-decoder][quit]
+  [2010-08-01T05:44:34.160081Z]: [1] [agent][shutdown]
+  [2010-08-01T05:44:34.160118Z]: [1] [agent][shutdown][reader]
+  [2010-08-01T05:44:34.160162Z]: [1] [reader][eof]
+  [2010-08-01T05:44:34.160199Z]: [1] [reader] shutdown requested.
+  [2010-08-01T05:44:34.160231Z]: [1] [reader] removing reader watcher.
+  [2010-08-01T05:44:34.160299Z]: [1] [writer][shutdown]
+  [2010-08-01T05:44:34.160393Z]: [0] [reader][dispose]
+  [2010-08-01T05:44:34.160452Z]: [client][finisher][run]
+  [2010-08-01T05:44:34.160492Z]: [1] [client][finish]
+  [2010-08-01T05:44:34.160536Z]: [1] [client][rest] []
+  [2010-08-01T05:44:34.160578Z]: [sessions][finished] 1(+1) 0
+
+You cannot connect to milter if you can see nothing in this terminal.
+Please check to launch milter or to specify correct address to
+milter-test-server.
+
+Let's check operation when milter process a mail included "viagra" in subject.
+You can reproduce the mail as following command.
+
+  % milter-test-server -s inet:20025 --header 'Subject:Buy viagra!!!'
+  status: reject
+  elapsed-time: 0.00144477 seconds
+
+You can check expected result because you can see "status: reject" in
+you terminal.
+
+In another terminal, you can see log as followings.
+
+  ...
+  [2010-08-01T05:49:49.275257Z]: [2] [command-decoder][header] <Subject>=<Buy viagra!!!>
+  [2010-08-01T05:49:49.275405Z]: [2] [client][reply][header][reject]
+  ...
+
+The mitler reject the mail when process subject header.
+
+milter manager provides usuful tools and libraries.
+
 
