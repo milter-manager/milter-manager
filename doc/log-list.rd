@@ -506,7 +506,7 @@ Describe for each submodule.
 : error: [configuration][maintain][error]
 
    Error occurs while processing of maintenance every maitenance_interval seconds.
-   See ((<manager.maintenance_interval|configuration.rd.ja#manager.maintenance_interval>)).
+   See ((<manager.maintenance_interval|configuration.rd#manager.maintenance_interval>)).
 
 : error: [configuration][event-loop-created][error]
 
