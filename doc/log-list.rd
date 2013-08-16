@@ -470,3 +470,10 @@ Submodules are 8 items as following:
    This module manages information of one child-milter.
 
 Describe for each submodule.
+
+==== submodule: manager
+
+: error: [manager][reload][signal][error]
+
+   Error occurs while reloading configuration requested by SIGHUP signal.
+
