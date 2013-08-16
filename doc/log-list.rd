@@ -544,3 +544,51 @@ Describe for each submodule.
 : error: [process-launcher][error]
 
    Fail to detach file descriptors from forked launcher module.
+
+==== submodule: controller
+
+: error: [controller][error][write][success]
+
+   Error occurs when this module writes successful response.
+
+: error: [controller][error][write][error]
+
+   Error occurs when this module writes error response.
+
+: error: [controller][error][save]
+
+   Error occurs when this module saves configuration file.
+
+: error: [controller][error][write][configuration]
+
+   Error occurs when this module writes configuration file.
+
+: error: [controller][reload][error]
+
+   Error occurs when this module reloads configuration.
+
+: error: [controller][error][write][status]
+
+   Error occurs when this module writes status response.
+
+: error: [controller][error][unix]
+
+   Error occurs when this module deletes UNIX domain socket if enabled remove_unix_socket_on_create.
+   See ((<controller.remove_unix_socket_on_create|configuration.rd#controller.remove_unix_socket_on_create>)).
+
+: error: [controller][error][start]
+
+   Fail to start communication.
+
+: error: [controller][error][accept]
+
+   Fail to accept connection.
+
+: error: [controller][error][watch]
+
+   Error occurs while communicating.
+
+: error: [controller][error][listen]
+
+   Fail to call listen(2).
+
