@@ -360,4 +360,29 @@ The mitler reject the mail when process subject header.
 
 milter manager provides usuful tools and libraries.
 
+== Check message body
+
+Let's check message body.
+
+  class MilterRegexp < Milter::ClientSession
+    def body(chunk)
+      if @regexp =~ chunk
+        reject
+      end
+    end
+  end
+
+Reject mails if message body chunk matches against specified regular
+expression.
+
+Let's try. milter-test-server can specify message body via "--body"
+option.
+
+  % tool/milter-test-server -s inet:20025 --body 'Buy viagra!!!'
+  status: reject
+  elapsed-time: 0.00195496 seconds
+
+It is expected result because you can see "status: reject" in your
+terminal.
+
 
