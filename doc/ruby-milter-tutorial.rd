@@ -228,4 +228,24 @@ callback and body callback. Template is as following.
     client.register(MilterRegexp, /viagra/i)
   end
 
+== Check subject header
+
+First, let's check subject header.
+
+  class MilterRegexp < Milter::ClientSession
+    # ...
+    def header(name, value)
+      case name
+      when /\ASubject\z/i
+        if @regexp =~ value
+          reject
+        end
+      end
+    end
+    # ...
+  end
+
+Reject mails if header name is matched "subject" and its value matches
+against specified regular expression.
+
 
