@@ -198,3 +198,34 @@ This is the list of callback methods and parameters.
    This method is called when completed milter protocol.
    TODO: write about timing
 
+== Using callbacks
+
+We want to write the milter which will reject mails match against
+specified regular expression. The regular expression matches against
+subject and message body. It is necessary for us to select header
+callback and body callback. Template is as following.
+
+  require 'milter/client'
+
+  class MilterRegexp < Milter::ClientSession
+    def initialize(context, regexp)
+      super(context)
+      @regexp = regexp
+    end
+
+    def header(name, value)
+      # ... Check subject
+    end
+
+    def body(chunk)
+      # check chunk
+    end
+  end
+
+  command_line = Milter::Client::CommandLine.new
+  command_line.run do |client, _options|
+    # We want to reject mails include "viagra"
+    client.register(MilterRegexp, /viagra/i)
+  end
+
+
