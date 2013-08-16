@@ -178,8 +178,8 @@ clamav-milterを起動します。
   autowhite 1w
   racl greylist default
 
-# TODO: libspf2サポートつきのmilter-greylistがRepoforgeで使えるようになっ
-# たらこの設定を追加する。
+# TODO: libspf2サポートつきのmilter-greylistがEPELで使えるようになっ
+# たらこの設定を追加する。milter-greylist-4.5.1 時点ではまだ使えない。
 # sm_macro "trusted_domain" "{trusted_domain}" "yes"
 # racl whitelist sm_macro "trusted_domain" spf pass
 # racl greylist sm_macro "trusted_domain" not spf pass
