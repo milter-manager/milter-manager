@@ -1027,6 +1027,7 @@ echo "  Ruby                    : $RUBY"
 echo "  Ruby/GLib2              : $RUBY_GLIB2_CFLAGS"
 echo "  Ruby milter PATH        : $ruby_milterdir"
 echo
+echo "  rd2                     : $RD2"
 echo "  GTK-Doc                 : $enable_gtk_doc"
 echo
 echo "  Cutter                  : $CUTTER"
