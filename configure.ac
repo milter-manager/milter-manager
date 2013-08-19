@@ -544,19 +544,24 @@ AM_CONDITIONAL([WITH_RUBY_MILTER], [test -n "$ruby_milterdir"])
 dnl **************************************************************
 dnl Checks for RD2
 dnl **************************************************************
-
-AC_PATH_PROG(RD2, rd2, rd2-not-found)
-AM_CONDITIONAL([WITH_RD2], [test "$RD2" != "rd2-not-found"])
-if test "$RD2" != "rd2-not-found"; then
-    RD2RUBY=`sed -e '1!{' -e 's/.*//' -e q -e '}' -e '/^@%:@! */!d' -e 's///' -e 's|^/usr/bin/env *||' -e q $RD2`
-    if test -z "$RD2RUBY"; then
-	RD2RUBY='$(RUBY)'
-    fi
-    if test "$RD2RUBY" = "ruby_noexec_wrapper"; then
-	RD2RUBY='$(RUBY)'
-    fi
-    AC_SUBST(RD2RUBY)
+rd2_available="no"
+AC_ARG_WITH([rd2],
+            AS_HELP_STRING([--with-rd2=PATH],
+                           [rd2 command path. (default: auto-detect)]),
+            [RD2="$withval"])
+if test "$RD2" = "no"; then
+  : # ignore
+elif test "$RD2" = ""; then
+  AC_PATH_PROG(RD2, rd2, rd2-not-found)
+  if test "$RD2" != "rd2-not-found"; then
+    rd2_available="yes"
+  fi
+else
+  AC_CHECK_FILE([$RD2],
+                [rd2_available="yes"],
+                [AC_MSG_WARN([$RD2 is not found.])])
 fi
+AM_CONDITIONAL([WITH_RD2], [test "$rd2_available" = "yes"])
 
 dnl **************************************************************
 dnl Configure for maintainer mode.
