@@ -3,9 +3,9 @@
 set -e
 
 if [ "$1" = "purge" ]; then
-	rm /etc/munin/plugins/milter_manager_* > /dev/null 2>&1
-	rm /etc/munin/plugins/postfix_processes > /dev/null 2>&1
-	rm /etc/munin/plugins/sendmail_processes > /dev/null 2>&1
+	rm -f /etc/munin/plugins/milter_manager_* > /dev/null 2>&1
+	rm -f /etc/munin/plugins/postfix_processes > /dev/null 2>&1
+	rm -f /etc/munin/plugins/sendmail_processes > /dev/null 2>&1
 	invoke-rc.d munin-node restart
 fi
 
