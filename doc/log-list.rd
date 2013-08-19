@@ -429,7 +429,7 @@ There is no "session_id" in log not related to session.
 ==== submodule
 
 First tag is submodule name in manager module. However, there is no
-tag when milter-manager crashes in manger module and when
+tag when milter-manager crashes in manager module and when
 milter-manager is booting.
 
 Submodules are 8 items as following:
