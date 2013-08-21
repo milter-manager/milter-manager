@@ -294,7 +294,7 @@ There is no "session_id" in log not related to session.
 
      #{total processed sessions}(+#{processed sessions since previous log}) #{processing sessions}
 
-  Example message:
+   Example message:
 
      29(+2) 3
 
