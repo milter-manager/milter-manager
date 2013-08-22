@@ -184,7 +184,7 @@ This is the list of callback methods and parameters.
 
    This method is called when initialize and finish mail transaction.
 
-   ((<"mail transaction"|URL:http://tools.ietf.org/html/rfc5321#section-3.3>))
+   ((<mail transaction|URL:http://tools.ietf.org/html/rfc5321#section-3.3>))
    has finished at:
 
      * Called (({abort})) callback.
