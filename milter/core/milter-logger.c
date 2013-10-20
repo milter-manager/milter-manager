@@ -627,7 +627,6 @@ milter_logger_get_target_item (MilterLogger *logger)
     return MILTER_LOGGER_GET_PRIVATE(logger)->target_item;
 }
 
-
 void
 milter_logger_set_target_item (MilterLogger *logger,
                                MilterLogItemFlags item)
