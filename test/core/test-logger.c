@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -18,6 +18,10 @@
  */
 
 #include <gcutter.h>
+
+#include <glib/gstdio.h>
+
+#include <errno.h>
 #include <unistd.h>
 
 #define shutdown inet_shutdown
@@ -39,6 +43,9 @@ void test_info (void);
 void test_console_output (void);
 void test_target_level (void);
 void test_interesting_level (void);
+void test_path_success (void);
+void test_path_null (void);
+void test_path_nonexistent (void);
 
 static MilterLogger *logger;
 
@@ -55,6 +62,11 @@ static MilterLogLevelFlags original_log_level;
 static GPrintFunc original_print_hander;
 
 static gboolean default_handler_disconnected;
+
+static GError *expected_error;
+static GError *actual_error;
+
+static gchar *tmp_dir;
 
 static void
 cb_log (MilterLogger *logger,
@@ -91,6 +103,16 @@ setup (void)
     milter_set_log_level(MILTER_LOG_LEVEL_ALL);
     default_handler_disconnected = FALSE;
 
+    expected_error = NULL;
+    actual_error = NULL;
+
+    tmp_dir = g_build_filename(milter_test_get_base_dir(),
+                               "tmp",
+                               NULL);
+    cut_remove_path(tmp_dir, NULL);
+    if (g_mkdir_with_parents(tmp_dir, 0700) == -1)
+        cut_assert_errno();
+
     g_signal_connect(milter_logger(), "log", G_CALLBACK(cb_log), NULL);
 }
 
@@ -101,6 +123,7 @@ teardown (void)
         g_object_unref(logger);
 
     milter_set_log_level(original_log_level);
+
     if (default_handler_disconnected)
         milter_logger_connect_default_handler(milter_logger());
 
@@ -110,6 +133,17 @@ teardown (void)
     g_signal_handlers_disconnect_by_func(milter_logger(),
                                          G_CALLBACK(cb_log), NULL);
     g_string_free(stdout_string, TRUE);
+
+    if (expected_error)
+        g_error_free(expected_error);
+    if (actual_error)
+        g_error_free(actual_error);
+
+    if (tmp_dir) {
+        g_chmod(tmp_dir, 0755);
+        cut_remove_path(tmp_dir, NULL);
+        g_free(tmp_dir);
+    }
 }
 
 void
@@ -314,6 +348,56 @@ test_interesting_level (void)
                             MILTER_LOG_LEVEL_DEBUG |
                             MILTER_LOG_LEVEL_STATISTICS,
                             milter_logger_get_interesting_level(logger));
+}
+
+void
+test_path_success (void)
+{
+    const gchar *path;
+    GError *error = NULL;
+
+    logger = milter_logger_new();
+
+    path = cut_build_path(tmp_dir, "output.log", NULL);
+    cut_assert_path_not_exist(path);
+    cut_assert_true(milter_logger_set_path(logger, path, &error));
+    gcut_assert_error(error);
+
+    cut_assert_equal_string(path, milter_logger_get_path(logger));
+    cut_assert_path_exist(path);
+}
+
+void
+test_path_null (void)
+{
+    GError *error = NULL;
+
+    logger = milter_logger_new();
+
+    cut_assert_true(milter_logger_set_path(logger, NULL, &error));
+    gcut_assert_error(error);
+
+    cut_assert_equal_string(NULL, milter_logger_get_path(logger));
+}
+
+void
+test_path_nonexistent (void)
+{
+    const gchar *path;
+
+    logger = milter_logger_new();
+
+    path = cut_build_path(tmp_dir, "nonexistent-dir", "output.log", NULL);
+    cut_assert_path_not_exist(path);
+    cut_assert_false(milter_logger_set_path(logger, path, &actual_error));
+    g_set_error(&expected_error,
+                G_FILE_ERROR,
+                G_FILE_ERROR_NOENT,
+                "failed to set log output path: <%s>: %s",
+                path, g_strerror(ENOENT));
+    gcut_assert_equal_error(expected_error,
+                            actual_error);
+    cut_assert_equal_string(NULL, milter_logger_get_path(logger));
 }
 
 /*

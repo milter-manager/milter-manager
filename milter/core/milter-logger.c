@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -21,6 +21,8 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -70,6 +72,8 @@ struct _MilterLoggerPrivate
     MilterLogItemFlags target_item;
     GHashTable *interesting_levels;
     MilterLogLevelFlags interesting_level;
+    gchar *path;
+    FILE *output;
 };
 
 enum
@@ -77,7 +81,8 @@ enum
     PROP_0,
     PROP_TARGET_LEVEL,
     PROP_TARGET_ITEM,
-    PROP_INTERESTING_LEVEL
+    PROP_INTERESTING_LEVEL,
+    PROP_PATH
 };
 
 enum
@@ -138,6 +143,13 @@ milter_logger_class_init (MilterLoggerClass *klass)
                               G_PARAM_READABLE);
     g_object_class_install_property(gobject_class, PROP_INTERESTING_LEVEL, spec);
 
+    spec = g_param_spec_string("path",
+                               "Log output path",
+                               "The log output path",
+                               NULL,
+                               G_PARAM_READABLE);
+    g_object_class_install_property(gobject_class, PROP_PATH, spec);
+
     signals[LOG] =
         g_signal_new("log",
                      G_TYPE_FROM_CLASS(klass),
@@ -165,6 +177,19 @@ milter_logger_init (MilterLogger *logger)
     g_hash_table_insert(priv->interesting_levels,
                         g_strdup(DEFAULT_KEY),
                         GUINT_TO_POINTER(priv->interesting_level));
+    priv->path = NULL;
+    priv->output = NULL;
+}
+
+static void
+dispose_path (MilterLoggerPrivate *priv)
+{
+    if (priv->path) {
+        g_free(priv->path);
+        priv->path = NULL;
+        fclose(priv->output);
+        priv->output = NULL;
+    }
 }
 
 static void
@@ -178,6 +203,8 @@ dispose (GObject *object)
         g_hash_table_unref(priv->interesting_levels);
         priv->interesting_levels = NULL;
     }
+
+    dispose_path(priv);
 
     G_OBJECT_CLASS(milter_logger_parent_class)->dispose(object);
 }
@@ -222,6 +249,9 @@ get_property (GObject    *object,
         break;
     case PROP_INTERESTING_LEVEL:
         g_value_set_flags(value, priv->interesting_level);
+        break;
+    case PROP_PATH:
+        g_value_set_string(value, priv->path);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -464,7 +494,11 @@ milter_logger_default_log_handler (MilterLogger *logger, const gchar *domain,
 
     log_message(log, level, message);
     g_string_append(log, "\n");
-    g_print("%s", log->str);
+    if (priv->output) {
+        fputs(log->str, priv->output);
+    } else {
+        g_print("%s", log->str);
+    }
     g_string_free(log, TRUE);
 }
 
@@ -476,6 +510,14 @@ milter_logger (void)
 
         singleton_milter_logger = milter_logger_new();
         milter_logger_connect_default_handler(singleton_milter_logger);
+        if (!milter_logger_set_path(singleton_milter_logger,
+                                    g_getenv("MILTER_LOG_PATH"),
+                                    &error)) {
+            INTERNAL_LOG(MILTER_LOG_LEVEL_WARNING,
+                         "[logger][path][set][warning] %s", error->message);
+            g_error_free(error);
+            error = NULL;
+        }
         if (!milter_logger_set_target_level_by_string(singleton_milter_logger,
                                                       g_getenv("MILTER_LOG_LEVEL"),
                                                       &error)) {
@@ -657,6 +699,40 @@ milter_logger_set_target_item_by_string (MilterLogger *logger,
     }
     milter_logger_set_target_item(logger, item);
     return TRUE;
+}
+
+const gchar *
+milter_logger_get_path (MilterLogger *logger)
+{
+    return MILTER_LOGGER_GET_PRIVATE(logger)->path;
+}
+
+gboolean
+milter_logger_set_path (MilterLogger *logger, const gchar *path, GError **error)
+{
+    MilterLoggerPrivate *priv;
+
+    priv = MILTER_LOGGER_GET_PRIVATE(logger);
+
+    dispose_path(priv);
+
+    if (path && strcmp(path, "-") == 0)
+        path = NULL;
+    if (!path)
+        return TRUE;
+
+    priv->output = fopen(path, "a");
+    if (priv->output) {
+        priv->path = g_strdup(path);
+        return TRUE;
+    } else {
+        g_set_error(error,
+                    G_FILE_ERROR,
+                    g_file_error_from_errno(errno),
+                    "failed to set log output path: <%s>: %s",
+                    path, g_strerror(errno));
+        return FALSE;
+    }
 }
 
 void

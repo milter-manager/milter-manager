@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -237,6 +237,11 @@ void             milter_logger_set_target_item
 gboolean         milter_logger_set_target_item_by_string
                                               (MilterLogger        *logger,
                                                const gchar         *item_name,
+                                               GError             **error);
+
+const gchar     *milter_logger_get_path       (MilterLogger        *logger);
+gboolean         milter_logger_set_path       (MilterLogger        *logger,
+                                               const gchar         *path,
                                                GError             **error);
 
 void             milter_logger_connect_default_handler
