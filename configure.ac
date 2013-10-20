@@ -267,6 +267,7 @@ if test "$ruby_available" = "yes"; then
   for var_name in archdir sitearchdir vendorarchdir arch \
       	       	  libdir sitelibdir vendorlibdir \
       	       	  CFLAGS LIBRUBYARG LIBS RUBY_SO_NAME \
+                  rubyarchhdrdir sitearchhdrdir vendorarchhdrdir \
                   rubyhdrdir sitehdrdir vendorhdrdir; do
     rbconfig_value=`$rbconfig "print Shellwords.shellwords(RbConfig::CONFIG['$var_name'] || '').join(' ')"`
     eval "rbconfig_$var_name=\"$rbconfig_value\""
@@ -284,6 +285,15 @@ if test "$ruby_available" = "yes"; then
     fi
     RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_archdir"
   else
+    if test -d "$rbconfig_sitearchhdrdir"; then
+      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitearchhdrdir"
+    fi
+    if test -d "$rbconfig_vendorarchhdrdir"; then
+      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorarchhdrdir"
+    fi
+    if test -d "$rbconfig_rubyarchhdrdir"; then
+      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_rubyarchhdrdir"
+    fi
     if test -d "$rbconfig_sitehdrdir"; then
       RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitehdrdir/$rbconfig_arch"
       RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitehdrdir"
