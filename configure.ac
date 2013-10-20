@@ -359,7 +359,7 @@ if test "$ruby_available" = "yes"; then
         rescue LoadError
           ruby_glib2_gem = nil
         else
-          ruby_glib2_gem = Gem.source_index.find_name("glib2").first
+          ruby_glib2_gem = Gem::Specification.find_by_name("glib2")
         end
 	if ruby_glib2_gem.nil?
 	  begin
