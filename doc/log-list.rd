@@ -36,16 +36,16 @@ all modules' log because it uses all modules.
 You can specify multiple log levels if you want to output multiple log
 level information.
 
-  * default: Output critical, error and warning.
+  * default: Output critical, error and warning information.
   * none: Output nothing.
-  * critical: Output critial only.
-  * error: Output error only.
-  * warning: Output warning only.
-  * info: Output info only.
-  * debug: Output debug only.
-  * statistics: Output statistics only.
-  * profile: Output profile only.
-  * all: Output all log levels.
+  * critical: Output only critial information.
+  * error: Output only error information.
+  * warning: Output only warning information.
+  * info: Output only additional information.
+  * debug: Output only debug information.
+  * statistics: Output only statistics information.
+  * profile: Output only profile information.
+  * all: Output all log information.
 
 == Format
 
