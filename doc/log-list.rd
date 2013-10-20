@@ -44,6 +44,7 @@ level information.
   * info: Output info only.
   * debug: Output debug only.
   * statistics: Output statistics only.
+  * profile: Output profile only.
   * all: Output all log levels.
 
 == Format
