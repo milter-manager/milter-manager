@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -449,10 +449,10 @@ main (int argc, char *argv[])
     }
     g_object_unref(client);
 
+    g_option_context_free(option_context);
+
     milter_client_quit();
     milter_quit();
-
-    g_option_context_free(option_context);
 
     exit(success ? EXIT_SUCCESS : EXIT_FAILURE);
 }

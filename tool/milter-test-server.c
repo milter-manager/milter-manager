@@ -2361,10 +2361,11 @@ main (int argc, char *argv[])
     }
 
 
-    milter_server_quit();
-    milter_quit();
     g_option_context_free(option_context);
     free_option_values();
+
+    milter_server_quit();
+    milter_quit();
 
     exit(success ? EXIT_SUCCESS : EXIT_FAILURE);
 }
