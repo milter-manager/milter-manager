@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -116,6 +116,29 @@ parse_log_level (const gchar *option_name,
                     option_name,
                     log_level_error->message);
         g_error_free(log_level_error);
+    }
+
+    return success;
+}
+
+static gboolean
+parse_log_path (const gchar *option_name,
+                const gchar *value,
+                gpointer data,
+                GError **error)
+{
+    GError *log_path_error = NULL;
+    gboolean success;
+
+    success = milter_logger_set_path(milter_logger(), value, &log_path_error);
+    if (!success) {
+        g_set_error(error,
+                    G_OPTION_ERROR,
+                    G_OPTION_ERROR_BAD_VALUE,
+                    "%s: %s",
+                    option_name,
+                    log_path_error->message);
+        g_error_free(log_path_error);
     }
 
     return success;
@@ -582,6 +605,10 @@ static const GOptionEntry option_entries[] =
      N_("Set log level to LEVEL. LEVEL can be combined them with '|': "
         "(all|default|none|critical|error|warning|message|"
         "info|debug|statistics|profile): e.g.: error|warning"), "LEVEL"},
+    {"log-path", 0, 0, G_OPTION_ARG_CALLBACK, parse_log_path,
+     N_("Set log output path to PATH. "
+        "If PATH is '-', the standard output is used."),
+     "PATH"},
     {"verbose", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, parse_verbose,
      N_("Be verbose"), NULL},
     {"quiet", 'q', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, parse_quiet,

@@ -56,6 +56,12 @@ tool for looking into the problems.
 
    See ((<Log list - Level|log-list.rd#level>)) for available levels.
 
+: --log-path=PATH
+
+   Specifies log output path. If you don't specify this option, log
+   output is the standard output. You can use "-" to output to the
+   standard output.
+
 : --verbose
 
    Logs verbosely.
