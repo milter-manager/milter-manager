@@ -278,25 +278,25 @@ if test "$ruby_available" = "yes"; then
   ruby_version="${ruby_major_version}${ruby_minor_version}${ruby_micro_version}"
 
   if test "$rbconfig_rubyhdrdir" = ""; then
-    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitearchdir "
+    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitearchdir"
     if test "$rbconfig_vendorarchdir" != ""; then
-      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorarchdir "
+      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorarchdir"
     fi
-    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_archdir "
+    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_archdir"
   else
     if test -d "$rbconfig_sitehdrdir"; then
-      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitehdrdir/$rbconfig_arch "
-      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitehdrdir "
+      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitehdrdir/$rbconfig_arch"
+      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitehdrdir"
     fi
     if test -d "$rbconfig_vendorhdrdir"; then
-      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorhdrdir/$rbconfig_arch "
-      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorhdrdir "
+      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorhdrdir/$rbconfig_arch"
+      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorhdrdir"
     fi
-    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_rubyhdrdir/$rbconfig_arch "
-    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_rubyhdrdir "
+    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_rubyhdrdir/$rbconfig_arch"
+    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_rubyhdrdir"
   fi
 
-  RUBY_CFLAGS="$RUBY_CFLAGS $rbconfig_CFLAGS "
+  RUBY_CFLAGS="$RUBY_CFLAGS $rbconfig_CFLAGS"
   RUBY_LIBS="$rbconfig_LIBRUBYARG $rbconfig_LIBS"
   RUBY_LDFLAGS="-L$rbconfig_libdir"
 
