@@ -30,6 +30,7 @@
 #include <glib.h>
 
 #include "milter-logger.h"
+#include "milter-core-internal.h"
 #include "milter-utils.h"
 #include "milter-marshalers.h"
 #include "milter-enum-types.h"
@@ -106,6 +107,46 @@ static void get_property   (GObject         *object,
                             guint            prop_id,
                             GValue          *value,
                             GParamSpec      *pspec);
+
+void
+milter_logger_internal_init (void)
+{
+    GError *error = NULL;
+
+    singleton_milter_logger = milter_logger_new();
+    milter_logger_connect_default_handler(singleton_milter_logger);
+    if (!milter_logger_set_path(singleton_milter_logger,
+                                g_getenv("MILTER_LOG_PATH"),
+                                &error)) {
+        INTERNAL_LOG(MILTER_LOG_LEVEL_WARNING,
+                     "[logger][path][set][warning] %s", error->message);
+        g_error_free(error);
+        error = NULL;
+    }
+    if (!milter_logger_set_target_level_by_string(singleton_milter_logger,
+                                                  g_getenv("MILTER_LOG_LEVEL"),
+                                                  &error)) {
+        INTERNAL_LOG(MILTER_LOG_LEVEL_WARNING,
+                     "[logger][level][set][warning] %s", error->message);
+        g_error_free(error);
+        error = NULL;
+    }
+    if (!milter_logger_set_target_item_by_string(singleton_milter_logger,
+                                                 g_getenv("MILTER_LOG_ITEM"),
+                                                 &error)) {
+        INTERNAL_LOG(MILTER_LOG_LEVEL_WARNING,
+                     "[logger][item][set][warning] %s", error->message);
+        g_error_free(error);
+        error = NULL;
+    }
+}
+
+void
+milter_logger_internal_quit (void)
+{
+    g_object_unref(singleton_milter_logger);
+    singleton_milter_logger = NULL;
+}
 
 static void
 milter_logger_class_init (MilterLoggerClass *klass)
@@ -505,37 +546,6 @@ milter_logger_default_log_handler (MilterLogger *logger, const gchar *domain,
 MilterLogger *
 milter_logger (void)
 {
-    if (!singleton_milter_logger) {
-        GError *error = NULL;
-
-        singleton_milter_logger = milter_logger_new();
-        milter_logger_connect_default_handler(singleton_milter_logger);
-        if (!milter_logger_set_path(singleton_milter_logger,
-                                    g_getenv("MILTER_LOG_PATH"),
-                                    &error)) {
-            INTERNAL_LOG(MILTER_LOG_LEVEL_WARNING,
-                         "[logger][path][set][warning] %s", error->message);
-            g_error_free(error);
-            error = NULL;
-        }
-        if (!milter_logger_set_target_level_by_string(singleton_milter_logger,
-                                                      g_getenv("MILTER_LOG_LEVEL"),
-                                                      &error)) {
-            INTERNAL_LOG(MILTER_LOG_LEVEL_WARNING,
-                         "[logger][level][set][warning] %s", error->message);
-            g_error_free(error);
-            error = NULL;
-        }
-        if (!milter_logger_set_target_item_by_string(singleton_milter_logger,
-                                                     g_getenv("MILTER_LOG_ITEM"),
-                                                     &error)) {
-            INTERNAL_LOG(MILTER_LOG_LEVEL_WARNING,
-                         "[logger][item][set][warning] %s", error->message);
-            g_error_free(error);
-            error = NULL;
-        }
-    }
-
     return singleton_milter_logger;
 }
 

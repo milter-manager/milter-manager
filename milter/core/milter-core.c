@@ -84,6 +84,8 @@ milter_init (void)
     g_type_init();
 #endif
 
+    milter_logger_internal_init();
+
     milter_agent_internal_init();
 
     delegate_glib_log_handlers();
@@ -100,6 +102,8 @@ milter_quit (void)
 
     remove_glib_log_handlers();
     g_log_remove_handler("milter-core", milter_core_log_handler_id);
+
+    milter_logger_internal_quit();
 
     milter_memory_profile_quit();
 

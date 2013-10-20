@@ -24,6 +24,8 @@
 
 G_BEGIN_DECLS
 
+void milter_logger_internal_init     (void);
+void milter_logger_internal_quit     (void);
 void milter_agent_internal_init      (void);
 void milter_agent_internal_quit      (void);
 
