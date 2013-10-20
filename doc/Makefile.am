@@ -84,13 +84,20 @@ EXTRA_DIST =						\
 	log-list.rd					\
 	log-list.rd.ja
 
-dist_man1_MANS =			\
+en_mans =				\
 	milter-manager.man		\
 	milter-test-server.man		\
 	milter-test-client.man		\
 	milter-performance-check.man	\
 	milter-report-statistics.man	\
 	milter-manager-log-analyzer.man
+
+dist_man1_MANS =
+if ENABLE_GTK_DOC
+dist_man1_MANS += $(en_mans)
+else
+EXTRA_DIST += $(en_mans)
+endif
 
 ja_man1dir = $(mandir)/ja/man1
 dist_ja_man1_mans =				\
