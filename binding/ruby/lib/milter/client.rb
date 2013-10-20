@@ -187,7 +187,7 @@ module Milter
       extended_code = options[:extended_code]
       reason = options[:reason]
       if code or extended_code or reason
-	# TODO: validate parameters.
+        # TODO: validate parameters.
         code ||= 550
         extended_code ||= "5.7.1"
         reason ||= "Command rejected"
@@ -203,7 +203,7 @@ module Milter
       extended_code = options[:extended_code]
       reason = options[:reason]
       if code or extended_code or reason
-	# TODO: validate parameters.
+        # TODO: validate parameters.
         code ||= 451
         extended_code ||= "4.7.1"
         reason ||= "Service unavailable - try again later"
