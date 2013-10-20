@@ -93,7 +93,7 @@ dist_man1_MANS =			\
 	milter-manager-log-analyzer.man
 
 ja_man1dir = $(mandir)/ja/man1
-dist_ja_man1_mans = 				\
+dist_ja_man1_mans =				\
 	milter-manager.jman			\
 	milter-test-server.jman			\
 	milter-test-client.jman			\
