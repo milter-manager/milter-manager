@@ -454,7 +454,7 @@ main (int argc, char *argv[])
     milter_client_quit();
     milter_quit();
 
-    exit(success ? EXIT_SUCCESS : EXIT_FAILURE);
+    return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 /*
