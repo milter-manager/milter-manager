@@ -49,12 +49,18 @@ tool for looking into the problems.
      * inet6:10025@localhost
      * inet6:10025@[::1]
 
+: --log-level=LEVEL
+
+   Specifies log output items. You can specify multiple items by separating
+   items with "|" like "error|warning|message".
+
+   See ((<Log list - Level|log-list.rd#level>)) for available levels.
+
 : --verbose
 
    Logs verbosely.
 
-   "MILTER_LOG_LEVEL=all" environment variable configuration
-   has the same effect.
+   "--log-level=all" option has the same effect.
 
 : --syslog
 

@@ -31,7 +31,7 @@ Milter which is implemented with libmilter-client outputs core's log
 and client's log because it uses client module. Milter manager outputs
 all modules' log because it uses all modules.
 
-== Level
+== [level] Level
 
 You can specify multiple log levels if you want to output multiple log
 level information.

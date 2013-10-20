@@ -39,7 +39,7 @@ libmilter-clientを利用して実装したmilterはclientモジュールを
 managerはmanagerモジュールを利用しているため、core, client,
 server, managerすべてのモジュールのログが出力されます。
 
-== 出力レベル
+== [level] 出力レベル
 
 以下の出力レベルがあり、必要な情報のみログ出力することができ
 ます。複数の情報を出力したい場合は複数の出力レベルを指定しま

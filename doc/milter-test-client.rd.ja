@@ -49,12 +49,19 @@ milter-test-clientが役立つでしょう。
      * inet6:10025@localhost
      * inet6:10025@[::1]
 
+: --log-level=LEVEL
+
+   ログに出力する項目を指定します。複数の項目を指定する場合は「|」で区
+   切って「error|warning|message」というようにします。
+
+   LEVELに指定できる項目は((<ログ一覧 - 出力レベル
+   |log-list.rd.ja#level>))を参照してください。
+
 : --verbose
 
    実行時のログをより詳細に出力します。
 
-   「milter_log_level=all」というように環境変数を設定している
-   場合と同じ効果があります。
+   「--log-level=all」を指定した場合と同じ効果があります。
 
 : --syslog
 
