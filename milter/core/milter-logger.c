@@ -588,6 +588,28 @@ milter_logger_log_va_list (MilterLogger *logger,
     g_free(message);
 }
 
+void
+milter_logger_reopen (MilterLogger *logger)
+{
+    MilterLoggerPrivate *priv;
+
+    priv = MILTER_LOGGER_GET_PRIVATE(logger);
+
+    if (!priv->path)
+        return;
+
+    milter_info("[logger][reopen][close]");
+    fclose(priv->output);
+    priv->output = fopen(priv->path, "a");
+    if (!priv->output) {
+        milter_warning("[logger][reopen][open][warning] <%s>: %s",
+                       priv->path, g_strerror(errno));
+        g_free(priv->path);
+        priv->path = NULL;
+    }
+    milter_info("[logger][reopen][open]");
+}
+
 MilterLogLevelFlags
 milter_logger_get_target_level (MilterLogger *logger)
 {

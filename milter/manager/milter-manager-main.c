@@ -55,12 +55,14 @@ static struct sigaction default_sigabort_action;
 static struct sigaction default_sigint_action;
 static struct sigaction default_sigterm_action;
 static struct sigaction default_sighup_action;
+static struct sigaction default_sigusr1_action;
 
 static gboolean set_sigsegv_action = TRUE;
 static gboolean set_sigabort_action = TRUE;
 static gboolean set_sigint_action = TRUE;
 static gboolean set_sigterm_action = TRUE;
 static gboolean set_sighup_action = TRUE;
+static gboolean set_sigusr1_action = TRUE;
 
 #define milter_manager_error(...) G_STMT_START  \
 {                                               \
@@ -227,6 +229,12 @@ reload_configuration_request (int signum)
                                         NULL,
                                         NULL);
     }
+}
+
+static void
+reopen_log (int signum)
+{
+    milter_logger_reopen(milter_logger());
 }
 
 static void
@@ -635,6 +643,7 @@ milter_manager_main (void)
     struct sigaction report_stack_trace_action;
     struct sigaction shutdown_client_action;
     struct sigaction reload_configuration_request_action;
+    struct sigaction reopen_log_action;
 
     manager = the_manager;
     config = milter_manager_get_configuration(manager);
@@ -729,6 +738,7 @@ milter_manager_main (void)
     SETUP_SIGNAL_ACTION(report_stack_trace);
     SETUP_SIGNAL_ACTION(shutdown_client);
     SETUP_SIGNAL_ACTION(reload_configuration_request);
+    SETUP_SIGNAL_ACTION(reopen_log);
 #undef SETUP_SIGNAL_ACTION
 
 #define SET_SIGNAL_ACTION(SIGNAL, signal, action)               \
@@ -742,6 +752,7 @@ milter_manager_main (void)
     SET_SIGNAL_ACTION(INT, int, shutdown_client_action);
     SET_SIGNAL_ACTION(TERM, term, shutdown_client_action);
     SET_SIGNAL_ACTION(HUP, hup, reload_configuration_request_action);
+    SET_SIGNAL_ACTION(USR1, usr1, reopen_log_action);
 #undef SET_SIGNAL_ACTION
 
     if (!milter_client_run(client, &error)) {
@@ -759,6 +770,7 @@ milter_manager_main (void)
     UNSET_SIGNAL_ACTION(INT, int);
     UNSET_SIGNAL_ACTION(TERM, term);
     UNSET_SIGNAL_ACTION(HUP, hup);
+    UNSET_SIGNAL_ACTION(USR1, usr1);
 #undef UNSET_SIGNAL_ACTION
 
     if (controller)

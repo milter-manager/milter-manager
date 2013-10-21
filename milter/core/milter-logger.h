@@ -208,6 +208,9 @@ void             milter_logger_log_va_list    (MilterLogger        *logger,
                                                const gchar         *function,
                                                const gchar         *format,
                                                va_list              args);
+
+void             milter_logger_reopen         (MilterLogger        *logger);
+
 MilterLogLevelFlags
                  milter_logger_get_target_level
                                               (MilterLogger        *logger);

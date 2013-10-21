@@ -158,6 +158,18 @@ so on.
 
    The default configuration file.
 
+== SIGNALS
+
+Milter-manager processes the following signals:
+
+: SIGHUP
+
+   Milter-manager reloads its configuration file.
+
+: SIGUSR1
+
+   Milter-manager reopenes log file.
+
 == EXAMPLE
 
 The following example is good for debugging milter-manager
