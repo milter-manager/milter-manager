@@ -537,6 +537,7 @@ milter_logger_default_log_handler (MilterLogger *logger, const gchar *domain,
     g_string_append(log, "\n");
     if (priv->output) {
         fputs(log->str, priv->output);
+        fflush(priv->output);
     } else {
         g_print("%s", log->str);
     }
