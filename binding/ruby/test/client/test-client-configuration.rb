@@ -138,12 +138,30 @@ class TestClientConfiguration
       @log_config = @configuration.log
     end
 
+    setup
+    def setup_logger
+      @temporary_log_file = Tempfile.new("log")
+      ::Milter::Logger.default.path = nil
+    end
+
+    setup
+    def teardown_logger
+      ::Milter::Logger.default.path = nil
+      @temporary_log_file.close!
+    end
+
     def test_use_syslog
       assert_not_predicate(@log_config, :use_syslog?)
       assert_not_predicate(@loader.log, :use_syslog?)
       @loader.log.use_syslog = true
       assert_predicate(@loader.log, :use_syslog?)
       assert_predicate(@log_config, :use_syslog?)
+    end
+
+    def test_path
+      assert_nil(::Milter::Logger.default.path)
+      @loader.log.path = @temporary_log_file.path
+      assert_equal(@temporary_log_file.path, ::Milter::Logger.default.path)
     end
   end
 

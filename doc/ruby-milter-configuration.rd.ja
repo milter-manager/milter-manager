@@ -58,6 +58,10 @@ Rubyで作成したmilterはmilter-managerと同じ書式の設定ファイル
 
    ((<log.level|configuration.rd.ja#log.level>))と同じ。
 
+: log.path
+
+   ((<log.path|configuration.rd.ja#log.path>))と同じ。
+
 : log.use_syslog
 
    ((<log.use_syslog|configuration.rd.ja#log.use_syslog>))と

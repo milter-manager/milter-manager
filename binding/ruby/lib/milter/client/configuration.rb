@@ -737,6 +737,15 @@ module Milter
           @configuration.level = level
         end
 
+        def path
+          @configuration.path
+        end
+
+        def path=(path)
+          update_location("path", path.nil?)
+          @configuration.path = path
+        end
+
         private
         def update_location(key, reset, deep_level=2)
           full_key = "log.#{key}"

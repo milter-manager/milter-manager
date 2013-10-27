@@ -59,6 +59,7 @@ current configuration is shown.
   security.effective_group = nil
 
   log.level = "default"
+  log.path = nil
   log.use_syslog = true
   log.syslog_facility = "mail"
 
@@ -257,6 +258,19 @@ Since 1.6.6.
 
    Default:
      log.level = "default"
+
+: log.path
+
+   Specifies the log output file path.
+
+   If the value is nil, log is outputted to the standard output.
+
+   Example:
+     log.path = nil                            # Output to the standard output
+     log.path = "/var/log/milter-manager.log"  # Output to the file
+
+   Default:
+     log.path = nil
 
 : log.use_syslog
 

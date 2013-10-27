@@ -59,6 +59,10 @@ for details.
 
    See ((<log.level|configuration.rd#log.level>)).
 
+: log.path
+
+   See ((<log.path|configuration.rd#log.path>)).
+
 : log.use_syslog
 
    See ((<log.use_syslog|configuration.rd#log.use_syslog>)).

@@ -65,6 +65,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
   security.effective_group = nil
 
   log.level = "default"
+  log.path = nil
   log.use_syslog = true
   log.syslog_facility = "mail"
 
@@ -258,6 +259,19 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
 
    既定値:
      log.level = "default"
+
+: log.path
+
+   ログの出力先のパスを指定します。
+
+   nilを指定すると標準出力に出力します。
+
+   例:
+     log.path = nil                            # 標準出力に出力
+     log.path = "/var/log/milter-manager.log"  # ファイルに出力
+
+   既定値:
+     log.path = nil
 
 : log.use_syslog
 

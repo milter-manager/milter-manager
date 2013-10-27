@@ -257,6 +257,8 @@ security.effective_group = nil
 # default
 log.level = "none"
 # default
+log.path = nil
+# default
 log.use_syslog = true
 # default
 log.syslog_facility = nil
@@ -399,6 +401,8 @@ security.effective_group = "nogroup"
 
 # default
 log.level = "none"
+# default
+log.path = nil
 # default
 log.use_syslog = true
 # default

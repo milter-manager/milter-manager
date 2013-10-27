@@ -165,8 +165,10 @@ module Milter
             level_names << value.nick
           end
         end
+        path = Milter::Logger.default.path
         level_names << "default" if level_names.empty?
         dump_item("log.level", level_names.join("|").inspect)
+        dump_item("log.path", path.inspect)
         dump_item("log.use_syslog", c.use_syslog?)
         dump_item("log.syslog_facility", c.syslog_facility.inspect)
         @result << "\n"
