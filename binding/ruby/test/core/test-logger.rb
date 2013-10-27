@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2013  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -49,5 +49,35 @@ class TestLogger < Test::Unit::TestCase
 
   def test_log_level_from_string
     assert_equal(Milter::LOG_LEVEL_ALL, Milter::LogLevelFlags.from_string("all"))
+  end
+
+  class Path < self
+    def setup
+      super
+      @temporary_log_file = Tempfile.new("log")
+      @logger.path = nil
+    end
+
+    def teardown
+      super
+      @logger.path = nil
+      @temporary_log_file.close!
+    end
+
+    def test_nil
+      @logger.path = nil
+      assert_nil(@logger.path)
+    end
+
+    def test_existent
+      @logger.path = @temporary_log_file.path
+      assert_equal(@temporary_log_file.path, @logger.path)
+    end
+
+    def test_not_creatable
+      assert_raise(GLib::FileError) do
+        @logger.path = File.join(@temporary_log_file.path, "not-creatble")
+      end
+    end
   end
 end
