@@ -155,6 +155,7 @@ options = command_line.options
 options.report_request = true
 
 option_parser = command_line.option_parser
+option_parser.version = Milter::VERSION.join(".")
 option_parser.separator ""
 option_parser.separator "milter-test-client specific options"
 option_parser.on("--no-report-request",
