@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2009-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2009-2013  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -38,12 +38,12 @@ s_from_string (int argc, VALUE *argv, VALUE self)
     rb_scan_args(argc, argv, "11", &rb_string, &rb_base_level);
     string = RVAL2CSTR(rb_string);
     if (!NIL_P(rb_base_level)) {
-	base_level = RVAL2LOG_LEVEL(rb_base_level);
+        base_level = RVAL2LOG_LEVEL(rb_base_level);
     }
 
     level = milter_log_level_flags_from_string(string, base_level, &error);
     if (error)
-	RAISE_GERROR(error);
+        RAISE_GERROR(error);
     return LOG_LEVEL2RVAL(level);
 }
 
@@ -55,16 +55,16 @@ s_default (VALUE self)
 
 static VALUE
 log_full (VALUE self, VALUE domain, VALUE level, VALUE file, VALUE line,
-	  VALUE function, VALUE message)
+          VALUE function, VALUE message)
 {
     milter_logger_log(SELF(self),
-		      RVAL2CSTR(domain),
-		      RVAL2LOG_LEVEL(level),
-		      RVAL2CSTR(file),
-		      NUM2UINT(line),
-		      RVAL2CSTR(function),
-		      "%s",
-		      RVAL2CSTR(message));
+                      RVAL2CSTR(domain),
+                      RVAL2LOG_LEVEL(level),
+                      RVAL2CSTR(file),
+                      NUM2UINT(line),
+                      RVAL2CSTR(function),
+                      "%s",
+                      RVAL2CSTR(message));
     return self;
 }
 
@@ -75,21 +75,21 @@ set_target_level (VALUE self, VALUE rb_level)
 
     logger = SELF(self);
     if (RVAL2CBOOL(rb_obj_is_kind_of(rb_level, rb_cMilterLogLevelFlags))) {
-	milter_logger_set_target_level(logger, RVAL2LOG_LEVEL(rb_level));
+        milter_logger_set_target_level(logger, RVAL2LOG_LEVEL(rb_level));
     } else if (RVAL2CBOOL(rb_obj_is_kind_of(rb_level, rb_cNumeric))) {
-	milter_logger_set_target_level(logger, NUM2INT(rb_level));
+        milter_logger_set_target_level(logger, NUM2INT(rb_level));
     } else {
-	GError *error = NULL;
-	const char *level;
-	if (NIL_P(rb_level)) {
-	    level = NULL;
-	} else {
-	    rb_level = rb_str_to_str(rb_level);
-	    level = StringValueCStr(rb_level);
-	}
-	if (!milter_logger_set_target_level_by_string(logger, level, &error)) {
-	    RAISE_GERROR(error);
-	}
+        GError *error = NULL;
+        const char *level;
+        if (NIL_P(rb_level)) {
+            level = NULL;
+        } else {
+            rb_level = rb_str_to_str(rb_level);
+            level = StringValueCStr(rb_level);
+        }
+        if (!milter_logger_set_target_level_by_string(logger, level, &error)) {
+            RAISE_GERROR(error);
+        }
     }
     return self;
 }
@@ -103,9 +103,9 @@ Init_milter_logger (void)
     rb_cMilterLogger = G_DEF_CLASS(MILTER_TYPE_LOGGER, "Logger", rb_mMilter);
 
     rb_cMilterLogLevelFlags =
-	G_DEF_CLASS(MILTER_TYPE_LOG_LEVEL_FLAGS, "LogLevelFlags", rb_mMilter);
+        G_DEF_CLASS(MILTER_TYPE_LOG_LEVEL_FLAGS, "LogLevelFlags", rb_mMilter);
     rb_cMilterLogItemFlags =
-	G_DEF_CLASS(MILTER_TYPE_LOG_ITEM_FLAGS, "LogItemFlags", rb_mMilter);
+        G_DEF_CLASS(MILTER_TYPE_LOG_ITEM_FLAGS, "LogItemFlags", rb_mMilter);
     G_DEF_CLASS(MILTER_TYPE_LOG_COLORIZE, "LogColorize", rb_mMilter);
 
     G_DEF_CONSTANTS(rb_mMilter, MILTER_TYPE_LOG_LEVEL_FLAGS, "MILTER_");
@@ -113,20 +113,20 @@ Init_milter_logger (void)
     G_DEF_CONSTANTS(rb_mMilter, MILTER_TYPE_LOG_COLORIZE, "MILTER_");
 
     rb_define_const(rb_cMilterLogLevelFlags,
-		    "ALL",
-		    LOG_LEVEL2RVAL(MILTER_LOG_LEVEL_ALL));
+                    "ALL",
+                    LOG_LEVEL2RVAL(MILTER_LOG_LEVEL_ALL));
     rb_define_const(rb_mMilter,
-		    "LOG_LEVEL_ALL",
-		    LOG_LEVEL2RVAL(MILTER_LOG_LEVEL_ALL));
+                    "LOG_LEVEL_ALL",
+                    LOG_LEVEL2RVAL(MILTER_LOG_LEVEL_ALL));
     rb_define_const(rb_cMilterLogItemFlags,
-		    "ALL",
-		    LOG_ITEM2RVAL(MILTER_LOG_ITEM_ALL));
+                    "ALL",
+                    LOG_ITEM2RVAL(MILTER_LOG_ITEM_ALL));
     rb_define_const(rb_mMilter,
-		    "LOG_ITEM_ALL",
-		    LOG_ITEM2RVAL(MILTER_LOG_ITEM_ALL));
+                    "LOG_ITEM_ALL",
+                    LOG_ITEM2RVAL(MILTER_LOG_ITEM_ALL));
 
     rb_define_singleton_method(rb_cMilterLogLevelFlags, "from_string",
-			       s_from_string, -1);
+                               s_from_string, -1);
 
     rb_define_singleton_method(rb_cMilterLogger, "default", s_default, 0);
 
