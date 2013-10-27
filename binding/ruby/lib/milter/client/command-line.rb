@@ -278,14 +278,35 @@ module Milter
       end
 
       def setup_signal_handler(client)
-        trap(:HUP) {client.reload}
-        default_sigint_handler = trap(:INT) do
-          client.shutdown
-          trap(:INT, default_sigint_handler)
+        add_signal_handler(client, :HUP) {client.reload}
+        add_signal_handler(client, :INT,  :once => true) {client.shutdown}
+        add_signal_handler(client, :TERM, :once => true) {client.shutdown}
+      end
+
+      def add_signal_handler(client, signal, options={})
+        notification_message = "N"
+        notification_in, notification_out = IO.pipe
+        notification_in_channel = GLib::IOChannel.new(notification_in)
+
+        event_loop = client.event_loop
+        event_loop.watch_io(notification_in_channel, GLib::IOCondition::IN) do
+          notification_in.read(notification_message.size)
+          yield
+          if options[:once]
+            notification_in_channel.close
+            notification_in.close
+            notification_out.close
+            continue_p = false
+          else
+            continue_p = true
+          end
+          continue_p
         end
-        default_sigterm_handler = trap(:TERM) do
-          client.shutdown
-          trap(:TERM, default_sigterm_handler)
+
+        default_handler = trap(signal) do
+          notification_out.write(notification_message)
+          notification_out.flush
+          trap(signal, default_handler) if options[:once]
         end
       end
     end
