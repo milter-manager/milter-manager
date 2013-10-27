@@ -155,7 +155,6 @@ Init_milter_logger (void)
     rb_undef_method(rb_cMilterLogger, "set_target_level");
     rb_undef_method(rb_cMilterLogger, "target_level=");
     rb_define_method(rb_cMilterLogger, "set_target_level", set_target_level, 1);
-
     rb_define_method(rb_cMilterLogger, "set_path", set_path, 1);
 
     rb_define_method(rb_cMilterLogger, "reopen", reopen, 0);
