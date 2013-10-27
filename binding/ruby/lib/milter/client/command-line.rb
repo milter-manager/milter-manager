@@ -251,6 +251,13 @@ module Milter
           log_conf.level = level
         end
 
+        @option_parser.on("--log-path=PATH",
+                          "Specify log output path to PATH.",
+                          "If PATH is '-', the standard output is used",
+                          "(The standard output)") do |path|
+          log_conf.path = path
+        end
+
         @option_parser.on("--[no-]syslog",
                           "Use syslog",
                           "(#{log_conf.use_syslog?})") do |bool|

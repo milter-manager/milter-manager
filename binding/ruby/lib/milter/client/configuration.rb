@@ -219,6 +219,14 @@ module Milter
           false
         end
 
+        def path
+          Milter::Logger.default.path
+        end
+
+        def path=(path)
+          Milter::Logger.default.path = path
+        end
+
         def clear
           @use_syslog = false
           @syslog_facility = "mail"
