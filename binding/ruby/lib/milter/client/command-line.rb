@@ -97,7 +97,7 @@ module Milter
 
         @option_parser.on("--library-version",
                           "Show milter library version.") do
-          puts Milter::TOOLKIT_VERSION.join(".")
+          puts Milter::VERSION.join(".")
           exit(true)
         end
 
