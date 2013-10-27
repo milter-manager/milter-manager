@@ -286,6 +286,7 @@ module Milter
 
       def setup_signal_handler(client)
         add_signal_handler(client, :HUP) {client.reload}
+        add_signal_handler(client, :USR1) {Milter::Logger.default.reopen}
         add_signal_handler(client, :INT,  :once => true) {client.shutdown}
         add_signal_handler(client, :TERM, :once => true) {client.shutdown}
       end
