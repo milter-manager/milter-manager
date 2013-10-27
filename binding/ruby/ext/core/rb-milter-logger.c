@@ -102,7 +102,7 @@ set_path (VALUE self, VALUE rb_path)
 
     logger = SELF(self);
     if (!milter_logger_set_path(logger, RVAL2CSTR_ACCEPT_NIL(rb_path), &error)) {
-	RAISE_GERROR(error);
+        RAISE_GERROR(error);
     }
 
     return self;
