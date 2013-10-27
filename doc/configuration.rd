@@ -262,7 +262,7 @@ Since 1.6.6.
 
    Specifies whether syslog is also used.
 
-   It's set true for using syslog, false otherwise.
+   Set true for using syslog, false otherwise.
 
    Example:
      log.use_syslog = false   # Syslog isn't used.
