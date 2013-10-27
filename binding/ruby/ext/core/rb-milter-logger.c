@@ -108,6 +108,13 @@ set_path (VALUE self, VALUE rb_path)
     return self;
 }
 
+static VALUE
+reopen (VALUE self)
+{
+    milter_logger_reopen(SELF(self));
+    return self;
+}
+
 void
 Init_milter_logger (void)
 {
@@ -150,6 +157,8 @@ Init_milter_logger (void)
     rb_define_method(rb_cMilterLogger, "set_target_level", set_target_level, 1);
 
     rb_define_method(rb_cMilterLogger, "set_path", set_path, 1);
+
+    rb_define_method(rb_cMilterLogger, "reopen", reopen, 0);
 
     G_DEF_SETTERS(rb_cMilterLogger);
 }

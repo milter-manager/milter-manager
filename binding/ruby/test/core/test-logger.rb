@@ -80,4 +80,26 @@ class TestLogger < Test::Unit::TestCase
       end
     end
   end
+
+  class Reopen < self
+    def setup
+      super
+      @temporary_log_file = Tempfile.new("log")
+      @logger.path = @temporary_log_file.path
+    end
+
+    def teardown
+      super
+      @logger.path = nil
+      @temporary_log_file.close!
+    end
+
+    def test_recreate
+      path = @temporary_log_file.path
+      FileUtils.rm_f(path)
+      assert_false(File.exist?(path))
+      @logger.reopen
+      assert_true(File.exist?(path))
+    end
+  end
 end
