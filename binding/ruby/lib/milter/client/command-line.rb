@@ -301,7 +301,6 @@ module Milter
           notification_in.read(notification_message.size)
           yield
           if options[:once]
-            notification_in_channel.close
             notification_in.close
             notification_out.close
             continue_p = false
