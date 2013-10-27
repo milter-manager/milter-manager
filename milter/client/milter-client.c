@@ -907,7 +907,7 @@ get_property (GObject    *object,
         g_value_set_uint(value, priv->workers.id);
         break;
     case PROP_EVENT_LOOP:
-        g_value_set_object(value, priv->event_loop);
+        g_value_set_object(value, milter_client_get_event_loop(client));
         break;
     case PROP_PID_FILE:
         g_value_set_string(value, milter_client_get_pid_file(client));
