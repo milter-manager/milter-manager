@@ -94,6 +94,20 @@ set_target_level (VALUE self, VALUE rb_level)
     return self;
 }
 
+static VALUE
+set_path (VALUE self, VALUE rb_path)
+{
+    MilterLogger *logger;
+    GError *error = NULL;
+
+    logger = SELF(self);
+    if (!milter_logger_set_path(logger, RVAL2CSTR_ACCEPT_NIL(rb_path), &error)) {
+	RAISE_GERROR(error);
+    }
+
+    return self;
+}
+
 void
 Init_milter_logger (void)
 {
@@ -134,6 +148,8 @@ Init_milter_logger (void)
     rb_undef_method(rb_cMilterLogger, "set_target_level");
     rb_undef_method(rb_cMilterLogger, "target_level=");
     rb_define_method(rb_cMilterLogger, "set_target_level", set_target_level, 1);
+
+    rb_define_method(rb_cMilterLogger, "set_path", set_path, 1);
 
     G_DEF_SETTERS(rb_cMilterLogger);
 }
