@@ -37,7 +37,12 @@ module Milter
 
     def register(session_class, *new_arguments)
       signal_connect("connection-established") do |_client, context|
-        setup_session(context, session_class, new_arguments)
+        begin
+          setup_session(context, session_class, new_arguments)
+        rescue Exception
+          Milter::Logger.error($!)
+          setup_session(context, ClientFallbackSession, [fallback_status])
+        end
       end
     end
 
@@ -289,6 +294,17 @@ module Milter
 
     def worker_id
       @context.client.worker_id
+    end
+  end
+
+  class ClientFallbackSession < ClientSession
+    def initialize(context, fallback_status)
+      super(context)
+      @fallback_status = fallback_status
+    end
+
+    def connect(host, address)
+      @context.status = @fallback_status
     end
   end
 
