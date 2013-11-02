@@ -1,3 +1,5 @@
+*-enum-types.*
+*-marshalers.*
 *.gcda
 *.gcno
 *.la
@@ -30,6 +32,7 @@
 /binding/ruby/ruby-milter/milter/client.rb
 /binding/ruby/ruby-milter/milter/core.rb
 /binding/ruby/ruby-milter/milter/server.rb
+/binding/ruby/test-unit/
 /build
 /config
 /config.h
@@ -136,6 +139,7 @@
 /milter-manager-*.tar.gz
 /milter-manager.pc
 /milter-server.pc
+/milter/core/milter-version.h
 /misc
 /package/apt/debian/
 /package/apt/ubuntu/
@@ -151,7 +155,11 @@
 /ruby-milter-core.pc
 /ruby-milter-server.pc
 /ruby-milter.pc
+/src/milter-manager
 /stamp-h1
+/tool/milter-test-client
 /tool/milter-test-client-libmilter
+/tool/milter-test-server
 Makefile
 Makefile.in
+stamp-*-enum-types-*
