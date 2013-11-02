@@ -1,8 +1,8 @@
-AM_CPPFLAGS = 			\
+AM_CPPFLAGS =			\
 	 -I$(top_builddir)	\
 	 -I$(top_srcdir)
 
-AM_CFLAGS = 					\
+AM_CFLAGS =					\
 	-DLOCALEDIR=\""$(localedir)"\"		\
 	-DMILTER_LOG_DOMAIN=\""milter-core"\"	\
 	$(GLIB_CFLAGS)				\
@@ -13,8 +13,8 @@ MAINTAINERCLEANFILES =
 BUILT_SOURCES =
 
 milter_core_public_headers =		\
-	milter-protocol.h  		\
-	milter-decoder.h    		\
+	milter-protocol.h		\
+	milter-decoder.h		\
 	milter-command-decoder.h	\
 	milter-reply-decoder.h		\
 	milter-encoder.h		\
@@ -63,7 +63,7 @@ libmilter_core_la_SOURCES =		\
 	milter-marshalers.c		\
 	milter-marshalers.h		\
 	milter-core.c			\
-	milter-protocol.c  		\
+	milter-protocol.c		\
 	milter-decoder.c		\
 	milter-command-decoder.c	\
 	milter-reply-decoder.c		\
