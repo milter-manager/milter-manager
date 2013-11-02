@@ -6,16 +6,22 @@ BUILT_SOURCES +=				\
 	stamp-$(enum_source_prefix)-c		\
 	stamp-$(enum_source_prefix)-h
 
+EXTRA_DIST +=					\
+	stamp-$(enum_source_prefix)-c		\
+	stamp-$(enum_source_prefix)-h
+
 MAINTAINERCLEANFILES +=				\
 	$(enum_source_prefix).c			\
 	$(enum_source_prefix).h			\
 	stamp-$(enum_source_prefix)-c		\
 	stamp-$(enum_source_prefix)-h
 
+enum_types_mk = $(top_srcdir)/build/enum-types.mk
+
 $(enum_source_prefix).c: stamp-$(enum_source_prefix)-c $(enum_source_prefix).h
 	@true
 
-stamp-$(enum_source_prefix)-c: $(enum_sources_h) Makefile
+stamp-$(enum_source_prefix)-c: $(enum_sources_h) $(enum_types_mk)
 	$(AM_V_GEN) \
 	(cd $(srcdir) && \
 	  include_headers="" && \
@@ -37,7 +43,7 @@ stamp-$(enum_source_prefix)-c: $(enum_sources_h) Makefile
 $(enum_source_prefix).h: stamp-$(enum_source_prefix)-h
 	@true
 
-stamp-$(enum_source_prefix)-h: $(enum_sources_h) Makefile
+stamp-$(enum_source_prefix)-h: $(enum_sources_h) $(enum_types_mk)
 	$(AM_V_GEN) (cd $(srcdir) && \
 	  mark="__`echo $(enum_source_prefix) | sed -e 's/-/_/g' | tr a-z A-Z`_H__" && \
 	  $(GLIB_MKENUMS) \

@@ -10,6 +10,7 @@ dist_noinst_SCRIPTS =		\
 
 MAINTAINERCLEANFILES =
 BUILT_SOURCES =
+EXTRA_DIST =
 
 enum_source_prefix = milter-test-enum-types
 enum_sources_h =			\
