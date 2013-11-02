@@ -581,8 +581,6 @@ ruby_glib2_latest_files =						\
 	glib-2.0.2/TODO							\
 	glib-2.0.2/ext/glib2/depend					\
 	glib-2.0.2/ext/glib2/extconf.rb					\
-	glib-2.0.2/ext/glib2/glib-enum-types.c				\
-	glib-2.0.2/ext/glib2/glib-enum-types.h				\
 	glib-2.0.2/ext/glib2/glib2.def					\
 	glib-2.0.2/ext/glib2/rbgcompat.h				\
 	glib-2.0.2/ext/glib2/rbglib.c					\
