@@ -30,6 +30,12 @@ EXTRA_DIST =					\
 	$(ruby_glib2_1_2_6_files)		\
 	$(ruby_glib2_latest_files)
 
+DISTCLEANFILES =				\
+	glib-0.16.0/Makefile			\
+	glib-0.90.8/Makefile			\
+	glib-1.2.6/Makefile			\
+	glib-2.0.2/Makefile
+
 echo-abs-top-builddir:
 	@echo $(abs_top_builddir)
 
