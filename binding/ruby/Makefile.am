@@ -576,12 +576,9 @@ ruby_glib2_1_2_6_files =						\
 # find glib-2.0.2 -type f | sort
 ruby_glib2_latest_files =						\
 	glib-2.0.2/COPYING.LIB						\
-	glib-2.0.2/Makefile						\
-	glib-2.0.2/Makefile.lib						\
 	glib-2.0.2/README						\
 	glib-2.0.2/Rakefile						\
 	glib-2.0.2/TODO							\
-	glib-2.0.2/ext/glib2/Makefile					\
 	glib-2.0.2/ext/glib2/depend					\
 	glib-2.0.2/ext/glib2/extconf.rb					\
 	glib-2.0.2/ext/glib2/glib-enum-types.c				\
