@@ -646,7 +646,6 @@ ruby_glib2_latest_files =						\
 	glib-2.0.2/ext/glib2/rbgutil_list.h				\
 	glib-2.0.2/ext/glib2/rbgutildeprecated.c			\
 	glib-2.0.2/ext/glib2/rbgutildeprecated.h			\
-	glib-2.0.2/ext/glib2/ruby-glib2.pc				\
 	glib-2.0.2/extconf.rb						\
 	glib-2.0.2/lib/glib-mkenums.rb					\
 	glib-2.0.2/lib/glib2.rb						\
