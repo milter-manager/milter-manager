@@ -53,6 +53,9 @@ if test "$USE_RPMFORGE" = "yes"; then
                 ;;
         esac
         if test -n "$rpmforge_rpm_base"; then
+            run yum update ${yum_options} -y
+            run yum install ${yum_options} -y wget
+            run yum ${yum_options} clean packages
             wget $rpmforge_url/$rpmforge_rpm_base
             run rpm -Uvh $rpmforge_rpm_base
             rm $rpmforge_rpm_base
@@ -96,6 +99,9 @@ if test "$USE_EPEL" = "yes"; then
                 ;;
         esac
         if test -n "$epel_url"; then
+            run yum update ${yum_options} -y
+            run yum install ${yum_options} -y wget
+            run yum ${yum_options} clean packages
             run wget $epel_url
             run rpm -Uvh $(basename $epel_url)
             run rm $(basename $epel_url)
