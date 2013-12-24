@@ -56,8 +56,10 @@ static gsize profile_frees = 0;
 static GMutex profile_mutex;
 #else
 static GStaticMutex profile_mutex = G_STATIC_MUTEX_INIT;
+#  if GLIB_CHECK_VERSION(2, 31, 0)
 #  define g_mutex_lock(mutex)   g_static_mutex_lock(mutex)
 #  define g_mutex_unlock(mutex) g_static_mutex_unlock(mutex)
+#  endif
 #endif
 
 static void
