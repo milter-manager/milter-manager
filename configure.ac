@@ -577,7 +577,6 @@ else
                 [rd2_available="yes"],
                 [AC_MSG_WARN([$RD2 is not found.])])
 fi
-AM_CONDITIONAL([WITH_RD2], [test "$rd2_available" = "yes"])
 
 if test "$rd2_available" = "yes" -o -f "$srcdir/doc/man-build.stamp"; then
   man_available=yes
