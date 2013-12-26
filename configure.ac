@@ -579,6 +579,13 @@ else
 fi
 AM_CONDITIONAL([WITH_RD2], [test "$rd2_available" = "yes"])
 
+if test "$rd2_available" = "yes" -o -f "$srcdir/doc/man-build.stamp"; then
+  man_available=yes
+else
+  man_available=no
+fi
+AM_CONDITIONAL([MAN_AVAILABLE], [test "$man_available" = "yes"])
+
 dnl **************************************************************
 dnl Configure for maintainer mode.
 dnl **************************************************************

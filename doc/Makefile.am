@@ -84,16 +84,14 @@ EXTRA_DIST =						\
 	log-list.rd					\
 	log-list.rd.ja
 
-en_mans =				\
+if MAN_AVAILABLE
+dist_man1_MANS =			\
 	milter-manager.man		\
 	milter-test-server.man		\
 	milter-test-client.man		\
 	milter-performance-check.man	\
 	milter-report-statistics.man	\
 	milter-manager-log-analyzer.man
-
-dist_man1_MANS = $(en_mans)
-EXTRA_DIST += $(en_mans)
 
 ja_man1dir = $(mandir)/ja/man1
 dist_ja_man1_mans =				\
@@ -104,13 +102,21 @@ dist_ja_man1_mans =				\
 	milter-report-statistics.jman		\
 	milter-manager-log-analyzer.jman
 
-EXTRA_DIST += $(dist_ja_man1_mans)
+man_build_stamp = man-build.stamp
 
-if WITH_RD2
-install-data-local: $(dist_ja_man1_mans)
-else
-install-data-local:
+EXTRA_DIST += 			\
+	$(dist_ja_man1_mans) 	\
+	$(man_build_stamp)
+
+man-build.stamp: $(dist_ja_man1_mans)
+	@touch $@
 endif
+
+.PHONY: jman
+
+jman: $(man_build_stamp)
+
+install-data-local: jman
 	test -z "$(DESTDIR)$(ja_man1dir)" || $(mkdir_p) "$(DESTDIR)$(ja_man1dir)"
 	@for jman in $(dist_ja_man1_mans); do			\
 	  test -f "$${jman}" || break;				\
