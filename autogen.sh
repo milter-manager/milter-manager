@@ -11,20 +11,6 @@ run()
     fi
 }
 
-svn_update()
-{
-    local repository="$1"
-    local dir="${2-`basename $repository`}"
-    if [ $update != yes -a -d "$dir" ]; then
-	return
-    fi
-    if test -d "$dir/.svn"; then
-	svn update "$dir"
-    else
-	svn export --force "$repository" "$dir"
-    fi
-}
-
 git_update()
 {
     local repository="$1"
@@ -50,8 +36,8 @@ if [ x"$1" = x--no-update ]; then
     update=no
 fi
 
-clear_code_repository=http://www.clear-code.com/repos/svn
-run svn_update ${clear_code_repository}/tdiary html/blog/clear-code
+clear_code_tdiary_repository=https://github.com/clear-code/tdiary
+run git_update ${clear_code_tdiary_repository} html/blog/clear-code
 
 test_unit_repository=https://github.com/test-unit/test-unit.git
 run git_update ${test_unit_repository} binding/ruby/test-unit
