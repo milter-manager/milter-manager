@@ -42,7 +42,22 @@ build_chroot()
     architecture=$1
     code_name=$2
 
-    run_sudo debootstrap --arch $architecture $code_name $base_dir
+    case $code_name in
+        lucid)
+            case $architecture in
+                i386)
+                    machine=i386
+                    ;;
+                amd64)
+                    machine=x86_64
+                    ;;
+            esac
+            run_sudo setarch $machine --uname-2.6 debootstrap --arch $architecture $code_name $base_dir http://jp.archive.ubuntu.com/ubuntu
+            ;;
+        *)
+            run_sudo debootstrap --arch $architecture $code_name $base_dir
+            ;;
+    esac
 
     case $code_name in
         squeeze|wheezy|jessie|unstable)
@@ -123,7 +138,22 @@ build()
     run cp ${script_base_dir}/build-deb.sh \
         ${CHROOT_BASE}/$target/tmp/
     run_sudo rm -rf $build_dir
-    run_sudo su -c "/usr/sbin/chroot ${CHROOT_BASE}/$target /tmp/build-deb.sh"
+    case $code_name in
+        lucid)
+            case $architecture in
+                i386)
+                    machine=i386
+                    ;;
+                amd64)
+                    machine=x86_64
+                    ;;
+            esac
+            run_sudo su -c "setarch $machine --uname-2.6 /usr/sbin/chroot ${CHROOT_BASE}/$target /tmp/build-deb.sh"
+            ;;
+        *)
+            run_sudo su -c "/usr/sbin/chroot ${CHROOT_BASE}/$target /tmp/build-deb.sh"
+            ;;
+    esac
     run mkdir -p $pool_dir
     run echo 'Options +Indexes' > ${script_base_dir}/${distribution}/.htaccess
     for path in $build_dir/*; do
