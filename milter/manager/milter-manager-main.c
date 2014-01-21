@@ -571,65 +571,6 @@ load_configuration (MilterManager *manager)
     }
 }
 
-static gchar report_stack_trace_window[4096];
-static void
-report_stack_trace (int signum)
-{
-    int fds[2];
-    int in_fd;
-    const char *label = "unknown";
-    int original_stdout_fileno;
-    gssize i, last_new_line, size;
-
-    switch (signum) {
-    case SIGSEGV:
-        label = "SEGV";
-        if (sigaction(SIGSEGV, &default_sigsegv_action, NULL) != -1)
-            set_sigsegv_action = FALSE;
-        break;
-    case SIGABRT:
-        label = "ABORT";
-        if (sigaction(SIGABRT, &default_sigabort_action, NULL) != -1)
-            set_sigabort_action = FALSE;
-        break;
-    }
-
-    if (pipe(fds) == -1) {
-        milter_critical("[%s] unable to open pipe for collecting stack trace",
-                        label);
-        return;
-    }
-
-    original_stdout_fileno = dup(STDOUT_FILENO);
-    dup2(fds[1], STDOUT_FILENO);
-    g_on_error_stack_trace(g_get_prgname());
-    dup2(original_stdout_fileno, STDOUT_FILENO);
-    close(original_stdout_fileno);
-    close(fds[1]);
-
-    in_fd = fds[0];
-    while ((size = read(in_fd,
-                        report_stack_trace_window,
-                        sizeof(report_stack_trace_window))) > 0) {
-        last_new_line = 0;
-        for (i = 0; i < size; i++) {
-            if (report_stack_trace_window[i] == '\n') {
-                report_stack_trace_window[i] = '\0';
-                milter_critical("%s", report_stack_trace_window + last_new_line);
-                last_new_line = i + 1;
-            }
-        }
-        if (last_new_line < size) {
-            report_stack_trace_window[size] = '\0';
-            milter_critical("%s", report_stack_trace_window + last_new_line);
-        }
-    }
-
-    close(fds[0]);
-
-    shutdown_client(SIGINT);
-}
-
 gboolean
 milter_manager_main (void)
 {
@@ -640,7 +581,6 @@ milter_manager_main (void)
     MilterEventLoop *loop;
     gboolean remove_socket, daemon;
     GError *error = NULL;
-    struct sigaction report_stack_trace_action;
     struct sigaction shutdown_client_action;
     struct sigaction reload_configuration_request_action;
     struct sigaction reopen_log_action;
@@ -735,7 +675,6 @@ milter_manager_main (void)
     sigemptyset(&handler ## _action.sa_mask);   \
     handler ## _action.sa_flags = 0
 
-    SETUP_SIGNAL_ACTION(report_stack_trace);
     SETUP_SIGNAL_ACTION(shutdown_client);
     SETUP_SIGNAL_ACTION(reload_configuration_request);
     SETUP_SIGNAL_ACTION(reopen_log);
@@ -747,8 +686,6 @@ milter_manager_main (void)
                   &default_sig ## signal ## _action) == -1)     \
         set_sig ## signal ## _action = FALSE
 
-    SET_SIGNAL_ACTION(SEGV, segv, report_stack_trace_action);
-    SET_SIGNAL_ACTION(ABRT, abort, report_stack_trace_action);
     SET_SIGNAL_ACTION(INT, int, shutdown_client_action);
     SET_SIGNAL_ACTION(TERM, term, shutdown_client_action);
     SET_SIGNAL_ACTION(HUP, hup, reload_configuration_request_action);
