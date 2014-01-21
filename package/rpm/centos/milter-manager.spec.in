@@ -14,7 +14,7 @@
 Summary: A milter to use milters effectively
 Name: milter-manager
 Version: @VERSION@
-Release: 0%{?dist}
+Release: 1%{?dist}
 License: GPLv3+, LGPL3+, AGPL3+, GFDL, Public Domain
 URL: http://milter-manager.sourceforge.net/
 Group: System Environment/Daemons
@@ -449,6 +449,9 @@ fi
 %{_sysconfdir}/cron.d/
 
 %changelog
+* Fri Jan 24 2014 Kenji Okimoto <okimoto@clear-code.com> - 2.0.1-1
+- new upstream release.
+
 * Thu Jul 25 2013 Kenji Okimoto <okimoto@clear-code.com> - 2.0.0-1
 - new upstream release.
 
