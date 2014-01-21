@@ -2,6 +2,60 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-2-0-1] 2.0.1: 2014-01-24
+
+2.0.0 のバグフィックスリリースです。
+
+=== milter manager
+
+==== Improvements
+
+  * SIGUSR1 シグナルを受け取るとログファイルを開き直すようにしました。
+
+==== Fixes
+
+  * 全てのユーザーにとって安全ではないため、クラッシュしたときに
+    スタックトレースを表示する機能を廃止しました。 [GitHub #38]
+
+=== milter-core
+
+==== Improvements
+
+  * 環境変数 MILTER_LOG_PATH でログファイルのパスを変更できるようにしました。
+
+=== milter-client
+
+==== Improvements
+
+  * --log-path オプションを追加しました。
+
+=== Ruby milter
+
+==== Improvements
+
+  * --log-path オプションを追加しました。
+  * SIGUSR1 シグナルを受け取るとログファイルを開き直すようにしました。
+
+=== Package
+
+==== Improvements
+
+  * Ubuntu Lucid (10.04) のサポートをやめました。
+  * Ubuntu Saucy (13.10) のサポートを追加しました。
+  * deb: Debian 上で Ruby 2.0.0 を検出できるようにしました。
+  * rpm: CentOS6 向けの Ruby を Ruby1.9.3-p484 に更新しました。
+  * 自動生成するファイルを配布用アーカイブから削除しました。
+    [佐々木洋平さんが報告][milter-manager-users-ja:00225]
+
+=== Document
+
+==== Improvements
+
+  * 最新の milter-greylist の RPM パッケージを使うようにしました。
+    [Reported by ishizaka tadanoriさん][milter-manager-users-ja:00220]
+  * 英語版のドキュメントを改善しました。
+    [GitHub #17]
+
 == [release-2-0-0] 2.0.0: 2013-07-25
 
 約2年ぶりのメジャーバージョンアップリリースです！
