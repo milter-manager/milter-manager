@@ -8,37 +8,37 @@
 
 === milter manager
 
-==== Improvements
+==== 改善
 
   * SIGUSR1 シグナルを受け取るとログファイルを開き直すようにしました。
 
-==== Fixes
+==== 修正
 
   * 全てのユーザーにとって安全ではないため、クラッシュしたときに
     スタックトレースを表示する機能を廃止しました。 [GitHub #38]
 
 === milter-core
 
-==== Improvements
+==== 改善
 
   * 環境変数 MILTER_LOG_PATH でログファイルのパスを変更できるようにしました。
 
 === milter-client
 
-==== Improvements
+==== 改善
 
   * --log-path オプションを追加しました。
 
 === Ruby milter
 
-==== Improvements
+==== 改善
 
   * --log-path オプションを追加しました。
   * SIGUSR1 シグナルを受け取るとログファイルを開き直すようにしました。
 
-=== Package
+=== パッケージ
 
-==== Improvements
+==== 改善
 
   * Ubuntu Lucid (10.04) のサポートをやめました。
   * Ubuntu Saucy (13.10) のサポートを追加しました。
@@ -47,9 +47,9 @@
   * 自動生成するファイルを配布用アーカイブから削除しました。
     [佐々木洋平さんが報告][milter-manager-users-ja:00225]
 
-=== Document
+=== ドキュメント
 
-==== Improvements
+==== 改善
 
   * 最新の milter-greylist の RPM パッケージを使うようにしました。
     [Reported by ishizaka tadanoriさん][milter-manager-users-ja:00220]
