@@ -7,10 +7,9 @@
 ので無ければ入れておく。sf_user_name には sourceforge.net のアカウント
 名を指定する。
 
-rbenv を使用している場合は、以下のように --with-rd2 オプションを使用し
-て rd2 コマンドのパスを指定する。rbenv を使用していない場合は
---with-rd2 オプションは使用しなくても rd2 コマンドのパスを自動検出する
-ようになっている。
+rbenv を使用している場合は、以下のように ruby コマンドと rd2 コマンドの
+パスを指定する。rbenv を使用していない場合は各コマンドのパスを自動検出
+するようになっている。
 
   % gem install rdtool rttool gettext fast_gettext rr mechanize
   % ./autogen.sh --no-update
@@ -18,6 +17,7 @@ rbenv を使用している場合は、以下のように --with-rd2 オプシ�
     --enable-ruby-milter --enable-gtk-doc --enable-coverage \
     --with-sf-user=sf_user_name \
     --with-cutter-source-path=/path/to/cutter/source \
+    --with-ruby=$(rbenv which ruby) \
     --with-rd2=$(rbenv which rd2)
   % make
   % make check
