@@ -40,11 +40,11 @@ def main
     git: {
       head: {
         id: `git log --format=%H`,
-        committer_email: `git log --format=%ce`,
-        committer_name: `git log --format=%cN`,
-        author_email: `git log --format=%ae`,
-        author_name: `git log --format=%aN`,
-        message: `git log --format=%s`,
+        committer_email: `git log -1 --format=%ce`,
+        committer_name: `git log -1 --format=%cN`,
+        author_email: `git log -1 --format=%ae`,
+        author_name: `git log -1 --format=%aN`,
+        message: `git log -1 --format=%s`,
       },
       remotes: [], # FIXME
       branch: `git rev-parse --abbrev-ref HEAD`,
