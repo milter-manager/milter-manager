@@ -379,7 +379,7 @@ CGI で動かすよりも Rack で動かした方が便利なのでそうする�
   % tar xf tdiary-full-3.1.1.tar.gz
   % ln -s tdiary-full-3.1.1 tdiary
   % cd tdiary
-  % echo "tdiary-style-rd" >> Gemfile.local
+  % echo "gem \"tdiary-style-rd\"" >> Gemfile.local
   % bundle install --path vendor/bundle
   % ln -s ~/wc/milter-manager/html/blog/tdiary.conf tdiary.conf
   % ln -s ~/wc/milter-manager/html/blog/clear-code clear-code/public
