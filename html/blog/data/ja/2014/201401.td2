@@ -1,7 +1,7 @@
 TDIARY2.01.00
 Date: 20140124
 Title: 
-Last-Modified: 1390532573
+Last-Modified: 1390532614
 Visible: true
 Format: RD
 
@@ -11,10 +11,7 @@ milter manager 2.0.1 をリリースしました。
 
 == 変更点
 
-Ubuntu Saucy (13.10) に対応し、Ubuntu Licid (10.04) のサポートをやめま
-した。また、milter manager がクラッシュしたときに、スタックトレースを出
-力する機能があったのですが、危険であることがわかったため、その機能を削
-除しました。
+Ubuntu Saucy (13.10) に対応し、Ubuntu Licid (10.04) のサポートをやめました。また、milter manager がクラッシュしたときに、スタックトレースを出力する機能があったのですが、危険であることがわかったため、その機能を削除しました。
 
 詳しい変更点は、以下を参照してください。
 
