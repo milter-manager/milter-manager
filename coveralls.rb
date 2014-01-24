@@ -35,21 +35,21 @@ def main
 
   # Add repo_token and server_job_id to run from local machine
   payload = {
-    service_name: "travis-ci",
-    service_job_id: ENV["TRAVIS_JOB_ID"],
-    git: {
+    :service_name => "travis-ci",
+    :service_job_id => ENV["TRAVIS_JOB_ID"],
+    :git => {
       head: {
-        id: `git log --format=%H`,
-        committer_email: `git log -1 --format=%ce`,
-        committer_name: `git log -1 --format=%cN`,
-        author_email: `git log -1 --format=%ae`,
-        author_name: `git log -1 --format=%aN`,
-        message: `git log -1 --format=%s`,
+        :id => `git log --format=%H`,
+        :committer_email => `git log -1 --format=%ce`,
+        :committer_name => `git log -1 --format=%cN`,
+        :author_email => `git log -1 --format=%ae`,
+        :author_name => `git log -1 --format=%aN`,
+        :message => `git log -1 --format=%s`,
       },
-      remotes: [], # FIXME
-      branch: `git rev-parse --abbrev-ref HEAD`,
+      :remotes => [], # FIXME
+      :branch => `git rev-parse --abbrev-ref HEAD`,
     },
-    source_files: source_files,
+    :source_files => source_files,
   }.to_json
 
   puts payload if dump
@@ -83,9 +83,9 @@ def generate_source_file(filename, info)
   end
   top_src_dir = Dir.pwd
   {
-    name: filename.sub(%r!#{top_src_dir}/!, ""),
-    source: source,
-    coverage: coverage,
+    :name => filename.sub(%r!#{top_src_dir}/!, ""),
+    :source => source,
+    :coverage => coverage,
   }
 end
 
