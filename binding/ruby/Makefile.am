@@ -91,7 +91,7 @@ test_unit_files =						\
 	test-unit/doc/text/news.textile				\
 	test-unit/lib/test-unit.rb				\
 	test-unit/lib/test/unit.rb				\
-	test-unit/lib/test/unit/assertionfailederror.rb		\
+	test-unit/lib/test/unit/assertion-failed-error.rb	\
 	test-unit/lib/test/unit/assertions.rb			\
 	test-unit/lib/test/unit/attribute-matcher.rb		\
 	test-unit/lib/test/unit/attribute.rb			\
@@ -108,7 +108,7 @@ test_unit_files =						\
 	test-unit/lib/test/unit/data.rb				\
 	test-unit/lib/test/unit/diff.rb				\
 	test-unit/lib/test/unit/error.rb			\
-	test-unit/lib/test/unit/exceptionhandler.rb		\
+	test-unit/lib/test/unit/exception-handler.rb		\
 	test-unit/lib/test/unit/failure.rb			\
 	test-unit/lib/test/unit/fault-location-detector.rb	\
 	test-unit/lib/test/unit/fixture.rb			\
@@ -119,10 +119,10 @@ test_unit_files =						\
 	test-unit/lib/test/unit/runner/console.rb		\
 	test-unit/lib/test/unit/runner/emacs.rb			\
 	test-unit/lib/test/unit/runner/xml.rb			\
+	test-unit/lib/test/unit/test-suite-creator.rb		\
 	test-unit/lib/test/unit/testcase.rb			\
 	test-unit/lib/test/unit/testresult.rb			\
 	test-unit/lib/test/unit/testsuite.rb			\
-	test-unit/lib/test/unit/testsuitecreator.rb		\
 	test-unit/lib/test/unit/ui/console/outputlevel.rb	\
 	test-unit/lib/test/unit/ui/console/testrunner.rb	\
 	test-unit/lib/test/unit/ui/emacs/testrunner.rb		\
@@ -163,17 +163,18 @@ test_unit_files =						\
 	test-unit/test/test-data.rb				\
 	test-unit/test/test-diff.rb				\
 	test-unit/test/test-emacs-runner.rb			\
+	test-unit/test/test-error.rb				\
+	test-unit/test/test-failure.rb				\
 	test-unit/test/test-fault-location-detector.rb		\
 	test-unit/test/test-fixture.rb				\
 	test-unit/test/test-notification.rb			\
 	test-unit/test/test-omission.rb				\
 	test-unit/test/test-pending.rb				\
 	test-unit/test/test-priority.rb				\
-	test-unit/test/test-testcase.rb				\
-	test-unit/test/test_error.rb				\
-	test-unit/test/test_failure.rb				\
-	test-unit/test/test_testresult.rb			\
-	test-unit/test/test_testsuite.rb			\
+	test-unit/test/test-test-case.rb			\
+	test-unit/test/test-test-result.rb			\
+	test-unit/test/test-test-suite-creator.rb		\
+	test-unit/test/test-test-suite.rb			\
 	test-unit/test/testunit-test-util.rb			\
 	test-unit/test/ui/test_testrunmediator.rb		\
 	test-unit/test/util/test-method-owner-finder.rb		\
