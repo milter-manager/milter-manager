@@ -11,6 +11,7 @@ env:
 install:
   - curl https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh
   - sudo apt-get install -y autotools-dev intltool libglib2.0-dev ruby1.8-dev ruby1.9.1-dev cutter-testing-framework subversion lcov
+  - gem install coveralls-lcov
 before_script:
   - ./autogen.sh
   - ./configure
@@ -19,4 +20,4 @@ script:
   - binding/ruby/test/run-test.sh -v
 after_success:
   - lcov --compat-libtool --directory . --capture --output-file coverage.info
-  - ruby coveralls.rb --dump coverage.info
+  - coveralls-lcov -v coverage.info
