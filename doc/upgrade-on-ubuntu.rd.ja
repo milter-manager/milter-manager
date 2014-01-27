@@ -26,6 +26,12 @@ sources.list に指定する URI を変更しました。しばらくは以前�
 
 1.8.0 以前からのユーザは早めに source.list を変更してください。
 
+=== Lucid Lynxの場合
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
+  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
+
 === Precise Pangolinの場合
 
 /etc/apt/sources.list.d/milter-manager.list:

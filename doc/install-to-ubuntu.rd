@@ -16,6 +16,19 @@ You put the following content to /etc/apt/sources.list.d/milter-manager.list.
 You also enable the official backports repository to detect the latest
 viruses by the latest ClamAV.
 
+=== For Lucid Lynx
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
+  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
+
+If you don't enable the official backport repository, you need to
+create /etc/apt/sources.list.d/backports.list with the following
+content:
+
+  deb http://archive.ubuntu.com/ubuntu lucid-backports main universe
+
+
 === For Precise Pangolin
 
 /etc/apt/sources.list.d/milter-manager.list:

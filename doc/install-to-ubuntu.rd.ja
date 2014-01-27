@@ -17,6 +17,17 @@ milter managerのサイトでは以下のUbuntu用debパッケージを提供し
 また、最新のClamAVを使ってウィルスチェックできるようにするため、バック
 ポートリポジトリも有効にします。
 
+=== Lucid Lynxの場合
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
+  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
+
+もし、まだバックポートリポジトリを有効にしていない場合は以下のような内
+容の/etc/apt/sources.list.d/backports.listを作成して有効にします。
+
+  deb http://jp.archive.ubuntu.com/ubuntu lucid-backports main universe
+
 === Precise Pangolinの場合
 
 /etc/apt/sources.list.d/milter-manager.list:
