@@ -449,6 +449,9 @@ fi
 %{_sysconfdir}/cron.d/
 
 %changelog
+* Mon Jan 27 2014 Kenji Okimoto <okimoto@clear-code.com> - 2.0.2-1
+- new upstream release.
+
 * Fri Jan 24 2014 Kenji Okimoto <okimoto@clear-code.com> - 2.0.1-1
 - new upstream release.
 

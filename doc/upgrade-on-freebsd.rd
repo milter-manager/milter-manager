@@ -20,9 +20,9 @@ milter-manager.conf, you don't need to backup
 milter-manager.conf.
 
   % cd ~/src/
-  % fetch http://downloads.sourceforge.net/milter-manager/milter-manager-2.0.1.tar.gz
-  % tar xvzf milter-manager-2.0.1.tar.gz
-  % cd milter-manager-2.0.1
+  % fetch http://downloads.sourceforge.net/milter-manager/milter-manager-2.0.2.tar.gz
+  % tar xvzf milter-manager-2.0.2.tar.gz
+  % cd milter-manager-2.0.2
   % ./configure CPPFLAGS="-I/usr/local/include"
   % gmake
   % sudo cp /usr/local/etc/milter-manager/milter-manager.conf{,.`date +%Y%m%d`}
