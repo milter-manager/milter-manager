@@ -60,7 +60,7 @@ milter-manager. We need to do nothing for it.
 
 === Configure spamass-milter
 
-At first, we configure spamd.
+First, we configure spamd.
 
 We create /usr/local/etc/mail/spamassassin/local.cf with the
 following configuration. This configuration is for adding
@@ -93,7 +93,7 @@ Next, we configure spamass-milter. We run spamass-milter
 with 'spamd' user and 'spamd' group.
 
 spamass-milter creates a socket file
-as /var/run/spamass-milter.sock by default. But general user
+as /var/run/spamass-milter.sock by default. But a general user
 can't create a new file in /var/run/. We create
 /var/run/spamass-milter/ directory owned by 'spamd'
 user. spamass-milter creates a socket file in the directory:
@@ -106,7 +106,7 @@ We add the following to /etc/rc.conf:
   spamass_milter_enable="YES"
   spamass_milter_user="spamd"
   spamass_milter_group="spamd"
-  spamass_milter_socket="/var/run/spamss-milter/spamass-milter.sock"
+  spamass_milter_socket="/var/run/spamass-milter/spamass-milter.sock"
   spamass_milter_socket_owner="spamd"
   spamass_milter_socket_group="mail"
   spamass_milter_socket_mode="660"
@@ -118,7 +118,7 @@ spamass-milter should be started:
 
 === Configure clamav-milter
 
-At first, we configure ClamAV.
+First, we configure ClamAV.
 
 We add the following to /etc/rc.conf to enable clamd and
 freshclam:
@@ -273,7 +273,7 @@ The following output shows milters are detected:
   end
   ..
   define_milter("spamass-milter") do |milter|
-    milter.connection_spec = "unix:/var/run/spamss-milter/spamass-milter.sock"
+    milter.connection_spec = "unix:/var/run/spamass-milter/spamass-milter.sock"
     ...
     milter.enabled = true
     ...

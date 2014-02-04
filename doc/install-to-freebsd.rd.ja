@@ -102,15 +102,15 @@ spamdを起動します。
 リの所有者をspamdユーザにします。ソケットファイルはそのディレ
 クトリ以下に作成することにします。
 
-  % sudo mkdir /var/run/spamss-milter/
-  % sudo /usr/sbin/chown spamd:spamd /var/run/spamss-milter
+  % sudo mkdir /var/run/spamass-milter/
+  % sudo /usr/sbin/chown spamd:spamd /var/run/spamass-milter
 
 /etc/rc.confに以下を追加します。
 
   spamass_milter_enable="YES"
   spamass_milter_user="spamd"
   spamass_milter_group="spamd"
-  spamass_milter_socket="/var/run/spamss-milter/spamass-milter.sock"
+  spamass_milter_socket="/var/run/spamass-milter/spamass-milter.sock"
   spamass_milter_socket_owner="spamd"
   spamass_milter_socket_group="mail"
   spamass_milter_socket_mode="660"
