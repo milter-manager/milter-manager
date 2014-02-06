@@ -54,6 +54,7 @@
     <xi:include href="reverse-dictionary.xml"/>
     <xi:include href="users.xml"/>
     <xi:include href="available-milters.xml"/>
+    <xi:include href="maintenance-policy.xml"/>
   </part>
 
   <!--part id="reference">

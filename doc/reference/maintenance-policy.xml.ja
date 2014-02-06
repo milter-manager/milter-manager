@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE refentry 
+  PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<refentry id="maintenance-policy">
+<refmeta>
+  <refentrytitle role='top_of_page' id='maintenance-policy.top_of_page'>メンテナンスポリシー</refentrytitle>
+  <refmiscinfo>milter managerライブラリ</refmiscinfo>
+</refmeta>
+<refnamediv>
+  <refname>メンテナンスポリシー</refname>
+</refnamediv>
+<refsect1>
+  <title>CentOS</title>
+  <para>CentOS でサポートするバージョンは2つまでとする。</para>
+  <para>例えば、CentOS 7 がリリースされたが、CentOS 5 も CentOS プロジェクトが サポートを続けるという場合でも milter manager プロジェクトでは CentOS 5 のサポートは終了し、CentOS 6 と CentOS 7 のみをサポートすることにする。</para>
+</refsect1>
+
+<refsect1>
+  <title>Debian</title>
+  <para>stable, testing, unstable の3つをサポートする。</para>
+  <para>oldstable についてはサポートしない。(パッケージをリリースしない)</para>
+  <para>新しい stable がリリースされたら、一度だけ oldstable でもパッケージをリ リースし、そこで次のリリースからは oldstable のサポートを止めることを明 言する。</para>
+</refsect1>
+
+<refsect1>
+  <title>Ubuntu</title>
+  <para>ディストリビュータによるサポート期間が明記されているので LTS については EOL までサポート対象とする。LTS 以外については、ディストリビュータによ るサポート期間が終了したら、サポート対象から外れる。</para>
+  <para>古い LTS については、サポートが困難になった場合、ディストリビュータによ るサポート期間内であっても、サポート対象から外れることがある。ただし、 その場合は事前に ML で告知する。</para>
+</refsect1>
+</refentry>

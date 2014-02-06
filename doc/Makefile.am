@@ -82,7 +82,9 @@ EXTRA_DIST =						\
 	available-milters.rd				\
 	available-milters.rd.ja				\
 	log-list.rd					\
-	log-list.rd.ja
+	log-list.rd.ja					\
+	maintenance-policy.rd				\
+	maintenance-policy.rd.ja
 
 if MAN_AVAILABLE
 dist_man1_MANS =			\
