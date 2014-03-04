@@ -133,7 +133,7 @@ Here are descriptions of configuration items.
    Platform name should be surrounded with '"' (double quote)
    like "debian".
 
-   NOTE: This item should be change ((*before*)) load_default.
+   NOTE: This item should be changed ((*before*)) load_default.
 
    Example:
      package.platform = "pkgsrc"
@@ -158,7 +158,7 @@ Here are descriptions of configuration items.
    need to specify "prefix=/etc" if you install start-script
    under /etc/rc.d/ directory.
 
-   NOTE: This item should be change ((*before*)) load_default.
+   NOTE: This item should be changed ((*before*)) load_default.
 
    Example:
      package.options = "prefix=/etc,name=value"
