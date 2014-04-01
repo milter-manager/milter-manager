@@ -1051,7 +1051,7 @@ define_milter do ... end内で設定できる項目は以下の通りです。
    評価モードにする場合はtrueを指定します。
 
    false（既定値）の場合は、子milterがrejectを返すとMTAに
-   rejectと返し、処理が終了してします。trueの場合は子milterが
+   rejectと返し、処理が終了します。trueの場合は子milterが
    rejectを返してもMTAにはrejectを返さず、処理が継続します。
    継続している処理の中では「子milterがrejectを返した」とい
    う情報を利用できます。その情報を利用して適用条件を記述する
