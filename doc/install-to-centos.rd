@@ -197,10 +197,10 @@ Start milter-greylist:
 
 === Configure milter manager
 
-Add 'milter-manager' user to 'clamav' group to access
+Add 'milter-manager' user to 'clam' group to access
 clamav-milter's socket:
 
-  % sudo usermod -G clamav -a milter-manager
+  % sudo usermod -G clam -a milter-manager
 
 Add 'milter-manager' user to 'grmilter' group to access
 milter-greylist's socket:

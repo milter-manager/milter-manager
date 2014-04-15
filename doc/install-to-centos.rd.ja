@@ -202,9 +202,9 @@ milter-greylistを起動します。
 === milter-managerの設定
 
 まず、clamav-milterのソケットにアクセスできるように
-milter-managerをclamavグループに加えます。
+milter-managerをclamグループに加えます。
 
-  % sudo usermod -G clamav -a milter-manager
+  % sudo usermod -G clam -a milter-manager
 
 同様に、milter-greylistのソケットにアクセスできるように
 milter-managerをgrmilterグループに加えます。
