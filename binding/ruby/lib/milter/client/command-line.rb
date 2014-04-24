@@ -285,6 +285,14 @@ module Milter
       end
 
       def setup_signal_handler(client)
+        # FIXME: This is just a workaround to handle signals within 0.5 seconds.
+        # We should use more clever approach instead of this.
+        if client.event_loop_backend == Milter::ClientEventLoopBackend::LIBEV
+          client.event_loop.add_timeout(0.5) do
+            true
+          end
+        end
+
         add_signal_handler(client, :HUP) {client.reload}
         add_signal_handler(client, :USR1) {Milter::Logger.default.reopen}
         add_signal_handler(client, :INT,  :once => true) {client.shutdown}
