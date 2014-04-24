@@ -163,3 +163,16 @@
 Makefile
 Makefile.in
 stamp-*-enum-types-*
+/libev-4.15/aclocal.m4
+/libev-4.15/autogen.sh
+/libev-4.15/config.guess
+/libev-4.15/config.h.in
+/libev-4.15/config.sub
+/libev-4.15/configure
+/libev-4.15/configure.ac
+/libev-4.15/depcomp
+/libev-4.15/ev.3
+/libev-4.15/install-sh
+/libev-4.15/ltmain.sh
+/libev-4.15/missing
+/libev-4.15/mkinstalldirs
