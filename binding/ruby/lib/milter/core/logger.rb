@@ -25,45 +25,47 @@ module Milter
         @@domain = domain
       end
 
-      def error(message)
-        default.log(:error, message, 1)
+      def error(message=nil, &block)
+        default.log(:error, message, 1, &block)
       end
 
-      def critical(message)
-        default.log(:critical, message, 1)
+      def critical(message=nil, &block)
+        default.log(:critical, message, 1, &block)
       end
 
-      def message(message)
-        default.log(:message, message, 1)
+      def message(message=nil, &block)
+        default.log(:message, message, 1, &block)
       end
 
-      def warning(message)
-        default.log(:warning, message, 1)
+      def warning(message=nil, &block)
+        default.log(:warning, message, 1, &block)
       end
 
-      def debug(message)
-        default.log(:debug, message, 1)
+      def debug(message=nil, &block)
+        default.log(:debug, message, 1, &block)
       end
 
-      def info(message)
-        default.log(:info, message, 1)
+      def info(message=nil, &block)
+        default.log(:info, message, 1, &block)
       end
 
-      def trace(message)
-        default.log(:trace, message, 1)
+      def trace(message=nil, &block)
+        default.log(:trace, message, 1, &block)
       end
 
-      def statistics(message)
-        default.log(:statistics, message, 1)
+      def statistics(message=nil, &block)
+        default.log(:statistics, message, 1, &block)
       end
     end
 
-    def log(level, message, n_call_depth=nil)
+    def log(level, message, n_call_depth=nil, &block)
       unless level.is_a?(Milter::LogLevelFlags)
         level = Milter::LogLevelFlags.const_get(level.to_s.upcase)
       end
+      return unless interesting_level.__send__("#{level.nick}?")
       n_call_depth ||= 0
       file, line, info = caller[n_call_depth].split(/:(\d+):/, 3)
+      message ||= (block && block.call)
       ensure_message(message).each_line do |one_line_message|
         log_full(self.class.domain, level, file, line.to_i, info.to_s,
                  one_line_message.chomp)
