@@ -58,14 +58,14 @@ module Milter
       end
     end
 
-    def log(level, message, n_call_depth=nil, &block)
+    def log(level, message, n_call_depth=nil)
       unless level.is_a?(Milter::LogLevelFlags)
         level = Milter::LogLevelFlags.const_get(level.to_s.upcase)
       end
       return unless interesting_level.__send__("#{level.nick}?")
       n_call_depth ||= 0
       file, line, info = caller[n_call_depth].split(/:(\d+):/, 3)
-      message ||= (block && block.call)
+      message ||= yield
       ensure_message(message).each_line do |one_line_message|
         log_full(self.class.domain, level, file, line.to_i, info.to_s,
                  one_line_message.chomp)
