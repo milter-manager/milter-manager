@@ -14,7 +14,7 @@
 . /etc/rc.subr
 
 name="milter_manager"
-rcvar=`set_rcvar`
+rcvar="milter_manager_enable"
 extra_commands="reload"
 
 load_rc_config $name
