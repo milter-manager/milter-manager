@@ -200,7 +200,7 @@ make build に PARALLEL=yes を付けるとビルドが並列に走る。
 初めて実行するときは、chroot 環境を作るときにロケールなどを聞かれるので
 PARALLEL=yes をつけてはいけない。
 
-make sign したら downloads.sourceforge.net をエミュレートするウェブサー
+make sign したら sourceforge.net をエミュレートするウェブサー
 バをローカルに構築してパッケージの新規インストールと更新をテストする。
 
 ((<Debianへインストール|install-to-debian.rd.ja>)),
@@ -235,7 +235,7 @@ download を事前に実行しておかないと、アップロード済みの�
 全て削除してしまうので忘れずに実行する。
 make build に PARALLEL=yes を付けるとビルドが並列に走る。
 
-make sign したら downloads.sourceforge.net をエミュレートするウェブサー
+make sign したら sourceforge.net をエミュレートするウェブサー
 バをローカルに構築してパッケージの新規インストールと更新をテストする。
 
 ((<CentOSへインストール|install-to-centos.rd.ja>)),
