@@ -1,7 +1,7 @@
 Summary: milter manager release files
 Name: milter-manager-release
-Version: 1.1.0
-Release: 0
+Version: 1.2.0
+Release: 1
 License: GPLv3+
 URL: http://milter-manager.sourceforge.net/
 Source: milter-manager-release.tar.gz
