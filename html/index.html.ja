@@ -26,7 +26,7 @@
 	<li id="menu-introduction"><a href="reference/ja/introduction.html">はじめに</a></li>
 	<li id="menu-install"><a href="reference/ja/install-to.html">インストール</a></li>
         <li id="menu-document"><a href="reference/ja/">ドキュメント</a></li>
-	<li id="menu-download"><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-2.0.2.tar.gz">ダウンロード</a></li>
+	<li id="menu-download"><a href="http://sourceforge.net/projects/milter-manager/files/milter-manager/2.0.2/milter-manager-2.0.2.tar.gz">ダウンロード</a></li>
 	<li id="menu-blog"><a href="blog/ja/">ブログ</a></li>
       </ul>
     </div>
@@ -39,7 +39,7 @@
         </p>
 	<ul>
           <li><a href="reference/ja/news.html#news.release-2-0-2">変更点</a></li>
-          <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-2.0.2.tar.gz">ダウンロード</a></li>
+          <li><a href="http://sourceforge.net/projects/milter-manager/files/milter-manager/2.0.2/milter-manager-2.0.2.tar.gz">ダウンロード</a></li>
 	</ul>
 
 	<p>環境毎のインストール方法です。</p>
@@ -105,7 +105,7 @@
 	  2010-08-03に開発版1.5.3がリリースされました。開発版には多くの新機能が含まれていますが、安定して動作しない可能性があります。実運用には安定版を利用してください。
         </p>
 	<ul>
-          <li><a href="http://downloads.sourceforge.net/milter-manager/milter-manager-1.5.3.tar.gz">ダウンロード</a></li>
+          <li><a href="http://sourceforge.net/projects/milter-manager/files/milter-manager+%28dev%29/1.5.3/milter-manager-1.5.3.tar.gz">ダウンロード</a></li>
           <li><a href="dev/reference/ja/news.html#news.release-1-5-3">変更点</a></li>
           <li><a href="dev/reference/ja/">ドキュメント</a></li>
 	</ul>

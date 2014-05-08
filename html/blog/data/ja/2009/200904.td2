@@ -165,7 +165,7 @@ UbuntuとCentOS用にmilter managerのパッケージが用意されているの
 
 それ以外の環境ではソースコードをダウンロードしてビルドしてください。
 
-  * ((<ダウンロード|URL:http://downloads.sourceforge.net/milter-manager/milter-manager-1.0.0.tar.gz>))
+  * ((<ダウンロード|URL:http://sourceforge.net/projects/milter-manager/files/milter-manager/1.0.0/milter-manager-1.0.0.tar.gz>))
 
 FreeBSD向けのインストールドキュメントを用意しています。FreeBSD上でmilter managerを利用する場合はこのドキュメントを参考にしてください。
 
