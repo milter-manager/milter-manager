@@ -86,7 +86,9 @@ install_cutter(){
     if test $build_flag = false; then
         return
     fi
-    install_package http://downloads.sourceforge.net/cutter/cutter-1.1.7.tar.gz
+    local version=1.1.7
+    install_package \
+        http://sourceforge.net/projects/cutter/files/cutter/${version}/cutter-${version}.tar.gz
 }
 
 install_other_packages $build_other
