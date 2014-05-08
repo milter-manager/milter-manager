@@ -41,6 +41,7 @@ milter manager release files
 * Thu Aug 23 2012 Kenji Okimoto <okimoto@clear-code.com> - 1.1.0-0
 - Rename to milter-manager-release from milter-manager-repository to follow
   convention such as centos-release and fedora-release.
+
 * Fri Nov 11 2011 Kenji Okimoto <okimoto@clear-code.com> - 1.0.1-0
 - Update GPG Key.
 
