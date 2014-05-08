@@ -10,18 +10,12 @@ install information.
 
 == Install packages
 
-Packages for squeeze, the current stable release, for wheezy,
+Packages for wheezy, the current stable release, for jessie,
 the current testing release, and for sid, the eternal
 unstable, are distributed on the milter manager site.
 
 We put the following content to
 /etc/apt/sources.list.d/milter-manager.list:
-
-=== For squeeze
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable/ squeeze main
-  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ squeeze main
 
 === For wheezy
 

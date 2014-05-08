@@ -27,12 +27,6 @@ support, when we release milter manager 1.9.0.
 
 Please update your source.list as soon as possible.
 
-=== For squeeze
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable/ squeeze main
-  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ squeeze main
-
 === For wheezy
 
 /etc/apt/sources.list.d/milter-manager.list:
