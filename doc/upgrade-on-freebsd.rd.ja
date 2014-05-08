@@ -19,7 +19,7 @@ milter-manager.confではなくmilter-manager.local.confを利用し
 ている場合はバックアップをとる必要はありません。
 
   % cd ~/src/
-  % fetch http://downloads.sourceforge.net/milter-manager/milter-manager-2.0.2.tar.gz
+  % fetch http://sourceforge.net/projects/milter-manager/files/milter-manager-2.0.2.tar.gz
   % tar xvzf milter-manager-2.0.2.tar.gz
   % cd milter-manager-2.0.2
   % ./configure CPPFLAGS="-I/usr/local/include"
