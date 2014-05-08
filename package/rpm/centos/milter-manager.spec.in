@@ -18,7 +18,7 @@ Release: 1%{?dist}
 License: GPLv3+, LGPL3+, AGPL3+, GFDL, Public Domain
 URL: http://milter-manager.sourceforge.net/
 Group: System Environment/Daemons
-Source: http://downloads.sourceforge.net/milter-manager/milter-manager-@VERSION@.tar.gz
+Source: http://sourceforge.net/projects/milter-manager/files/milter-manager/@VERSION@/milter-manager-@VERSION@.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-%(%{__id_u} -n)
 BuildRequires: intltool
 BuildRequires: gettext
