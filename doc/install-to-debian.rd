@@ -20,20 +20,20 @@ We put the following content to
 === For wheezy
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/milter-manager/debian/stable/ wheezy main
-  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ wheezy main
+  deb http://sourceforge.net/projects/milter-manager/files/debian/stable wheezy main
+  deb-src http://sourceforge.net/projects/milter-manager/files/debian/stable wheezy main
 
 === For jessie
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/milter-manager/debian/stable/ jessie main
-  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ jessie main
+  deb http://sourceforge.net/projects/milter-manager/files/debian/stable jessie main
+  deb-src http://sourceforge.net/projects/milter-manager/files/debian/stable jessie main
 
 === For sid
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable/ unstable main
-  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ unstable main
+  deb http://sourceforge.net/projects/milter-manager/files/debian/stable unstable main
+  deb-src http://sourceforge.net/projects/milter-manager/files/debian/stable unstable main
 
 === Install
 

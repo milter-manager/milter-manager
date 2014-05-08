@@ -19,20 +19,20 @@ milter managerのサイトで現在の安定版wheezyと開発版jessieと不
 === wheezyの場合
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable/ wheezy main
-  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ wheezy main
+  deb http://sourceforge.net/projects/milter-manager/files/debian/stable wheezy main
+  deb-src http://sourceforge.net/projects/milter-manager/files/debian/stable wheezy main
 
 === jessieの場合
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable/ jessie main
-  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ jessie main
+  deb http://sourceforge.net/projects/milter-manager/files/debian/stable jessie main
+  deb-src http://sourceforge.net/projects/milter-manager/files/debian/stable jessie main
 
 === sidの場合
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable/ unstable main
-  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable/ unstable main
+  deb http://sourceforge.net/projects/milter-manager/files/debian/stable unstable main
+  deb-src http://sourceforge.net/projects/milter-manager/files/debian/stable unstable main
 
 === インストール
 

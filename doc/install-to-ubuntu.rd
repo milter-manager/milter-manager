@@ -19,8 +19,8 @@ viruses by the latest ClamAV.
 === For Lucid Lynx
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
+  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable lucid universe
+  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable lucid universe
 
 If you don't enable the official backport repository, you need to
 create /etc/apt/sources.list.d/backports.list with the following
@@ -32,8 +32,8 @@ content:
 === For Precise Pangolin
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ precise universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ precise universe
+  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable precise universe
+  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable precise universe
 
 If you don't enable the official backport repository, you need to
 create /etc/apt/sources.list.d/backports.list with the following
@@ -44,8 +44,8 @@ content:
 === For Quantal Quetzal
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ quantal universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ quantal universe
+  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable quantal universe
+  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable quantal universe
 
 If you don't enable the official backport repository, you need to
 create /etc/apt/sources.list.d/backports.list with the following
@@ -56,8 +56,8 @@ content:
 === For Raring Ringtail
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ raring universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ raring universe
+  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable raring universe
+  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable raring universe
 
 If you don't enable the official backport repository, you need to
 create /etc/apt/sources.list.d/backports.list with the following
@@ -68,8 +68,8 @@ content:
 === For Saucy Salamander
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ saucy universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ saucy universe
+  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable saucy universe
+  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable saucy universe
 
 If you don't enable the official backport repository, you need to
 create /etc/apt/sources.list.d/backports.list with the following

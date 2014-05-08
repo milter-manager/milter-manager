@@ -30,32 +30,32 @@ Please update your source.list as soon as possible.
 === For Lucid Lynx
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ lucid universe
+  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable lucid universe
+  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable lucid universe
 
 === For Precise Pangolin
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ precise universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ precise universe
+  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable precise universe
+  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable precise universe
 
 === For Quantal Quetzal
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ quantal universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ quantal universe
+  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable quantal universe
+  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable quantal universe
 
 === For Raring Ringtail
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ raring universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ raring universe
+  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable raring universe
+  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable raring universe
 
 === For Saucy Salamander
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ saucy universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable/ saucy universe
+  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable saucy universe
+  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable saucy universe
 
 == Conclusion
 
