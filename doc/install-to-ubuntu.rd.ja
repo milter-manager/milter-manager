@@ -50,6 +50,17 @@ milter managerのサイトでは以下のUbuntu用debパッケージを提供し
 
   deb http://jp.archive.ubuntu.com/ubuntu saucy-backports main universe
 
+=== Trusty Tahrの場合
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable trusty universe
+  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable trusty universe
+
+もし、まだバックポートリポジトリを有効にしていない場合は以下のような内
+容の/etc/apt/sources.list.d/backports.listを作成して有効にします。
+
+  deb http://archive.ubuntu.com/ubuntu trusty-backports main universe
+
 === インストール
 
 パッケージはmilter managerリリース用の鍵でサインされています。信用

@@ -53,6 +53,18 @@ content:
 
   deb http://archive.ubuntu.com/ubuntu saucy-backports main universe
 
+=== For Trusty Tahr
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable trusty universe
+  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable trusty universe
+
+If you don't enable the official backport repository, you need to
+create /etc/apt/sources.list.d/backports.list with the following
+content:
+
+  deb http://archive.ubuntu.com/ubuntu trusty-backports main universe
+
 === Install
 
 We register the key of the package repository:
