@@ -1,0 +1,149 @@
+# -*- ruby -*-
+
+$LOAD_PATH.unshift("./lib")
+require 'gnome2-raketask'
+
+bin_dir            = nil
+include_dir        = nil
+glib2_include_dir  = nil
+libffi_lib_dir     = nil
+
+build_host         = nil
+
+package = GNOME2Package.new do |_package|
+  bin_dir            = (_package.windows.absolute_binary_dir + "bin").to_s
+  include_dir        = (_package.windows.absolute_binary_dir + "include").to_s
+  glib2_include_dir  = File.join(include_dir, "glib-2.0")
+  libffi_lib_dir     = (_package.windows.absolute_binary_dir + "lib").to_s
+
+  build_host         = _package.windows.build_host
+
+  _package.summary = "Ruby/GLib2 is a Ruby binding of GLib-2.x."
+  _package.description = "Ruby/GLib2 is a Ruby binding of GLib-2.x."
+  _package.dependency.gem.runtime = [["pkg-config", ">= 0"]]
+  _package.dependency.gem.development = [["test-unit", ">= 2"]]
+  _package.win32.packages = []
+  _package.win32.dependencies = ["libffi", "gettext-runtime"]
+  _package.external_packages = [
+    {
+      :name => "glib",
+      :download_site => :gnome,
+      :label => "GLib",
+      :version => "2.38.2",
+      :compression_method => "xz",
+      :windows => {
+        :configure_args => [
+          "LIBFFI_CFLAGS=-I#{include_dir}",
+          "LIBFFI_LIBS=-L#{libffi_lib_dir} -lffi",
+          "--disable-modular-tests",
+        ],
+        :need_autoreconf => true,
+        :patches => [
+          "glib-2.38.2-add-missing-exeext.diff",
+        ],
+        :built_file => "bin/libglib-2.0-0.dll",
+      },
+    },
+    {
+      :name => "gmp",
+      :download_base_url => "ftp://ftp.gmplib.org/pub/gmp-5.1.3",
+      :label => "GNU MP",
+      :version => "5.1.3",
+      :compression_method => "xz",
+      :windows => {
+        :configure_args => [
+          "--disable-static",
+          "--enable-shared",
+        ],
+        :built_file => "bin/libgmp-10.dll",
+      },
+    },
+    {
+      :name => "nettle",
+      :download_base_url => "http://www.lysator.liu.se/~nisse/archive",
+      :label => "Nettle",
+      :version => "2.7.1",
+      :windows => {
+        :configure_args => [],
+        :built_file => "bin/libnettle-4-7.dll",
+      },
+    },
+    {
+      :name => "gnutls",
+      :download_base_url => "ftp://ftp.gnutls.org/gcrypt/gnutls/v3.2",
+      :label => "GnuTLS",
+      :version => "3.2.12",
+      :compression_method => "xz",
+      :windows => {
+        :configure_args => [
+          "--disable-cxx",
+        ],
+        :use_cc_environment_variable => false,
+        :patches => [
+        ],
+        :built_file => "bin/libgnutls-28.dll",
+      },
+    },
+    {
+      :name => "glib-networking",
+      :download_site => :gnome,
+      :label => "glib-networking",
+      :version => "2.38.2",
+      :compression_method => "xz",
+      :windows => {
+        :configure_args => [
+          "--without-libproxy",
+          "--without-gnome-proxy",
+          "--without-ca-certificates",
+        ],
+        :built_file => "lib/gio/modules/libgiognutls.dll",
+      },
+    },
+  ]
+  _package.cross_compiling do |spec|
+    if /mingw|mswin/ =~ spec.platform.to_s
+      spec.add_runtime_dependency("cairo", ">= 1.12.8")
+    end
+  end
+end
+package.define_tasks
+
+namespace :win32 do
+  namespace :libffi do
+    namespace :header do
+      desc "Move libffi headers to include/"
+      task :fix do
+        libffi_version = "libffi-3.0.6"
+        mv(Dir.glob(File.join(libffi_lib_dir, libffi_version, "include", "*.h")),
+           include_dir)
+        rm_rf(File.join(libffi_lib_dir, libffi_version))
+      end
+    end
+  end
+
+  namespace :downloader do
+    task :after => [
+      "win32:libffi:header:fix",
+    ]
+  end
+
+  namespace :gettext do
+    namespace :header do
+      desc "Copy gettext headers to include/glib-2.0/"
+      task :fix do
+        cp(File.join(include_dir, "libintl.h"),
+           glib2_include_dir)
+      end
+    end
+  end
+
+  namespace :builder do
+    namespace :build do
+      namespace :glib do
+        task :after => [
+          "win32:gettext:header:fix",
+        ]
+      end
+    end
+  end
+end
