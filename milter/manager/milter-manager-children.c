@@ -2152,7 +2152,6 @@ cb_stopped (MilterServerContext *context, gpointer user_data)
         milter_server_context_quit(context);
         break;
     case MILTER_SERVER_CONTEXT_STATE_ENVELOPE_FROM:
-    case MILTER_SERVER_CONTEXT_STATE_DATA:
         compile_reply_status(children, state, MILTER_STATUS_ACCEPT);
         cb_continue(context, user_data);
         break;
@@ -2160,6 +2159,7 @@ cb_stopped (MilterServerContext *context, gpointer user_data)
         milter_server_context_set_status(context, MILTER_STATUS_NOT_CHANGE);
         cb_continue(context, user_data);
         break;
+    case MILTER_SERVER_CONTEXT_STATE_DATA:
     case MILTER_SERVER_CONTEXT_STATE_HEADER:
     case MILTER_SERVER_CONTEXT_STATE_END_OF_HEADER:
     case MILTER_SERVER_CONTEXT_STATE_BODY:
