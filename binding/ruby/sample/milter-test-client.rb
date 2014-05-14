@@ -133,7 +133,7 @@ class Session < Milter::ClientSession
     flags_klass = flags.class
     nicks = []
     flags_klass.values.each do |value|
-      next if (flags_value & value).zero?
+      next if (flags_value & value.to_i).zero?
       nicks << value.nick
     end
     nicks.join("|")
