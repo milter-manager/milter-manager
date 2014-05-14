@@ -667,6 +667,7 @@ ruby_glib2_latest_files =						\
 	glib-2.2.0/lib/gnome2/rake/win32-binary-build-task.rb		\
 	glib-2.2.0/lib/gnome2/rake/win32-binary-download-task.rb	\
 	glib-2.2.0/lib/mkmf-gnome2.rb					\
+	glib-2.2.0/lib/pkg-config.rb 					\
 	glib-2.2.0/patches/glib-2.38.2-add-missing-exeext.diff		\
 	glib-2.2.0/sample/bookmarkfile.rb				\
 	glib-2.2.0/sample/idle.rb					\
