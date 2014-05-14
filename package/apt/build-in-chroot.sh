@@ -60,10 +60,10 @@ build_chroot()
     esac
 
     case $code_name in
-        squeeze|wheezy|jessie|unstable)
+        wheezy|jessie|unstable)
             run_sudo sed -i'' -e 's/us/jp/' $base_dir/etc/apt/sources.list
             case $code_name in
-                squeeze|wheezy)
+                wheezy)
                     run_sudo sed -i'' \
                         -e "\$a\\deb http://security.debian.org/ ${code_name}/updates main" \
                         $base_dir/etc/apt/sources.list
@@ -105,7 +105,7 @@ build()
     fi
 
     case ${code_name} in
-        squeeze|wheezy|jessie|unstable)
+        wheezy|jessie|unstable)
             distribution=debian
             component=main
             ;;
