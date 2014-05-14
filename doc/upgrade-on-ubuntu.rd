@@ -39,18 +39,6 @@ Please update your source.list as soon as possible.
   deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable precise universe
   deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable precise universe
 
-=== For Quantal Quetzal
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable quantal universe
-  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable quantal universe
-
-=== For Raring Ringtail
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable raring universe
-  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable raring universe
-
 === For Saucy Salamander
 
 /etc/apt/sources.list.d/milter-manager.list:

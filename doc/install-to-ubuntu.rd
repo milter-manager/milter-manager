@@ -41,30 +41,6 @@ content:
 
   deb http://archive.ubuntu.com/ubuntu precise-backports main universe
 
-=== For Quantal Quetzal
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable quantal universe
-  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable quantal universe
-
-If you don't enable the official backport repository, you need to
-create /etc/apt/sources.list.d/backports.list with the following
-content:
-
-  deb http://archive.ubuntu.com/ubuntu quantal-backports main universe
-
-=== For Raring Ringtail
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable raring universe
-  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable raring universe
-
-If you don't enable the official backport repository, you need to
-create /etc/apt/sources.list.d/backports.list with the following
-content:
-
-  deb http://archive.ubuntu.com/ubuntu raring-backports main universe
-
 === For Saucy Salamander
 
 /etc/apt/sources.list.d/milter-manager.list:
