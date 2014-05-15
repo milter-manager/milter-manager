@@ -14,6 +14,7 @@
   * Ubuntu Raring (13.04) のサポートをやめました
   * Ubuntu Trusty (14.04) のサポートを追加しました
   * Debian squeeze のサポートをやめました
+  * rpm: CentOS6 向けの Ruby を Ruby1.9.3-p545 に更新しました。
 
 === milter manager
 

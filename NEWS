@@ -14,6 +14,7 @@ A bug fix release of 2.0.2
   * Drop Ubuntu Raring (13.04) support
   * Add Ubuntu Trusty (14.04) support
   * Drop Debian squeeze support
+  * rpm: Update Ruby1.9.3 package for CentOS6 to Ruby1.9.3-p545.
 
 === milter manager
 
