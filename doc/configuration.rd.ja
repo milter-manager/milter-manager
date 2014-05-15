@@ -1652,7 +1652,22 @@ greylist.conf:
 
 === Restrict Accounts
 
-TODO
+条件にマッチしたenvelope-recipientを含む場合に子milterを適用します。
+
+: restrict_accounts_by_list(*accounts, condition_name: "Restrict Accounts by List: #{accounts.inspect}", milters: defined_milters)
+
+    ((|accounts|))に子milterを適用したいアカウントの配列を与えます。
+    最後の引数にハッシュを与えることで適用条件の名前や適用する子milterを指定することができます。
+    内部で((|restrict_accounts_generic|))を呼び出しています。
+
+    例:
+      restrict_accounts_by_list("bob@example.com", /@example.co.jp/, condition_name: "Restrict Accounts")
+
+: restrict_accounts_generic(options, &restricted_account_p)
+
+    ((|options|))はハッシュで((|condition_name|))と((|milters|))というキーを指定することができます。
+    ブロック引数は((|context|))と((|recipient|))です。
+
 
 == [applicable-condition] 適用条件定義
 

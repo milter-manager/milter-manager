@@ -1677,7 +1677,23 @@ configurations:
 
 === Restrict Accounts
 
-TODO
+This applies milters if recipients includes envelope-recipient is
+matched the condition.
+
+: restrict_accounts_by_list(*accounts, condition_name: "Restrict Accounts by List: #{accounts.inspect}", milters: defined_milters)
+
+    Specify ((|accounts|)) that you want to apply milters.
+    Last arguments can be a Hash that includes condition name and milters.
+    Call ((|restrict_accounts_generic|)) internally.
+
+    Example:
+      restrict_accounts_by_list("bob@example.com", /@example.co.jp/, condition_name: "Restrict Accounts")
+
+
+: restrict_accounts_generic(options, &restricted_account_p)
+
+    ((|options|)) is a Hash that includes ((|condition_name|)) and ((|milters|)).
+    Block parameters are ((|context|)) and ((|recipient|)).
 
 == [applicable-condition] Define applicable condition
 
