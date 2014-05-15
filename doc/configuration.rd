@@ -1677,7 +1677,7 @@ configurations:
 
 === Restrict Accounts
 
-This applies milters if recipients includes envelope-recipient is
+This applies milters if recipients include envelope-recipient is
 matched the condition.
 
 : restrict_accounts_by_list(*accounts, condition_name: "Restrict Accounts by List: #{accounts.inspect}", milters: defined_milters)
