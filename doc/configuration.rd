@@ -1687,7 +1687,7 @@ matched the condition.
     Call ((|restrict_accounts_generic|)) internally.
 
     Example:
-      restrict_accounts_by_list("bob@example.com", /@example.co.jp/, condition_name: "Restrict Accounts")
+      restrict_accounts_by_list("bob@example.com", /@example\.co\.jp\z/, condition_name: "Restrict Accounts")
 
 
 : restrict_accounts_generic(options, &restricted_account_p)

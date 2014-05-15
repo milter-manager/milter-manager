@@ -1661,7 +1661,7 @@ greylist.conf:
     内部で((|restrict_accounts_generic|))を呼び出しています。
 
     例:
-      restrict_accounts_by_list("bob@example.com", /@example.co.jp/, condition_name: "Restrict Accounts")
+      restrict_accounts_by_list("bob@example.com", /@example\.co\.jp\z/, condition_name: "Restrict Accounts")
 
 : restrict_accounts_generic(options, &restricted_account_p)
 
