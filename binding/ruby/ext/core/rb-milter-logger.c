@@ -50,7 +50,13 @@ s_from_string (int argc, VALUE *argv, VALUE self)
 static VALUE
 s_default (VALUE self)
 {
-    return GOBJ2RVAL(milter_logger());
+    VALUE logger;
+    logger = rb_iv_get(self, "@logger");
+    if (logger == Qnil) {
+        logger = GOBJ2RVAL(milter_logger());
+        rb_iv_set(self, "@logger", logger);
+    }
+    return logger;
 }
 
 static VALUE
