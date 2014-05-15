@@ -2,6 +2,48 @@
 
 = NEWS --- The history of milter manager
 
+== [release-2-0-3] 2.0.3: 2014-05-20
+
+A bug fix release of 2.0.2
+
+=== Package
+
+==== Improvements
+
+  * Drop Ubuntu Quantal (12.10) support
+  * Drop Ubuntu Raring (13.04) support
+  * Add Ubuntu Trusty (14.04) support
+  * Drop Debian squeeze support
+
+=== milter manager
+
+==== Improvements
+
+  * Update bundled libev to 4.15
+
+==== Fixes
+
+  * Fix a bug that data_stopper cannot stop apply children
+    [GitHub #39]
+
+=== Ruby milter
+
+==== Improvements
+
+  * Update bundled glib2 to 2.2.0
+  * Milter::Logger methods can accept a block
+
+=== Document
+
+==== Fixes
+
+  * Fix typos in FreeBSD installation
+    [Patched by Dave Dodd]
+
+=== Thanks
+
+  * Dave Dodd
+
 == [release-2-0-2] 2.0.2: 2014-01-27
 
 A bug fix release of 2.0.1

@@ -2,13 +2,56 @@
 
 = お知らせ --- milter managerの歴史
 
-== [release-2-0-2] 2.0.2: 2014-01-27
+== [release-2-0-3] 2.0.3: 2014-05-20
 
-A bug fix release of 2.0.1
+2.0.2 のバグフィックスリリースです。
 
 === Package
 
-==== Fixes
+==== 改善
+
+  * Ubuntu Quantal (12.10) のサポートをやめました
+  * Ubuntu Raring (13.04) のサポートをやめました
+  * Ubuntu Trusty (14.04) のサポートを追加しました
+  * Debian squeeze のサポートをやめました
+
+=== milter manager
+
+==== 改善
+
+  * バンドルしている libev のバージョンを 4.15 にしました
+
+==== 修正
+
+  * data_stopper が子 milter の適用を止められないバグを修正しました
+    [GitHub #39]
+
+=== Ruby milter
+
+==== 改善
+
+  * バンドルしている glib2 のバージョンを 2.2.0 にしました
+  * Milter::Logger のメソッドがブロックを受け付けるようにしました
+
+=== Document
+
+==== 修正
+
+  * FreeBSD へのインストールに関するタイポを修正しました
+    [Dave Dodd さんがパッチを提供]
+
+=== 感謝
+
+  * Dave Dodd さん
+
+
+== [release-2-0-2] 2.0.2: 2014-01-27
+
+2.0.1 のバグフィックスリリースです。
+
+=== パッケージ
+
+==== 修正
 
   * Ubuntu Lucid (10.04) サポートを復活
     [荻野 充さんが報告][milter-manager-users-ja:00229]
