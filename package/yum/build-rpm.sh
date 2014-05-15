@@ -141,7 +141,7 @@ mkdir -p rpm/SRPMS
 case $distribution_version in
   6.*)
     if ! rpm -q ruby1.9 > /dev/null 2>&1; then
-      wget ftp://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.3-p484.tar.gz -P rpm/SOURCES
+      wget ftp://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.3-p545.tar.gz -P rpm/SOURCES
       cp -a /tmp/ruby193.spec rpm/SPECS/ruby193.spec
       rpmbuild -ba rpm/SPECS/ruby193.spec
     fi

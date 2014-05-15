@@ -1,5 +1,5 @@
 %define rubyver         1.9.3
-%define rubyminorver    p484
+%define rubyminorver    p545
 
 Name:           ruby1.9
 Version:        %{rubyver}%{rubyminorver}
@@ -56,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}
 
 %changelog
+* Thu May 15 2014 Kenji Okimoto <okimoto@clear-code.com> -1.9.3-p545
+- Update ruby version to 1.9.3-p545
+
 * Mon Jan 20 2014 Kenji Okimoto <okimoto@clear-code.com> -1.9.3-p484
 - Update ruby version to 1.9.3-p484
 
