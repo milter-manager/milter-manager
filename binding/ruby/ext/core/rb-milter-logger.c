@@ -52,7 +52,7 @@ s_default (VALUE self)
 {
     VALUE logger;
     logger = rb_iv_get(self, "@logger");
-    if (logger == Qnil) {
+    if (NIL_P(logger)) {
         logger = GOBJ2RVAL(milter_logger());
         rb_iv_set(self, "@logger", logger);
     }
