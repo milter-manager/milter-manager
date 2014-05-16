@@ -1054,5 +1054,7 @@ echo "  GTK-Doc                 : $enable_gtk_doc"
 echo
 echo "  Cutter                  : $CUTTER"
 echo "  LCOV                    : $LCOV"
+echo "  coverage                : $cutter_enable_coverage"
+echo "  coverage report by LCOV : $cutter_enable_coverage_report_lcov"
 echo
 echo "  Cutter Source Path      : $CUTTER_SOURCE_PATH"
