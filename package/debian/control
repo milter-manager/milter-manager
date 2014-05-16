@@ -6,7 +6,7 @@ Build-Depends:
 	debhelper (>= 5),
 	autotools-dev,
 	libglib2.0-dev,
-	ruby, ruby-dev, ruby1.9.1, ruby1.9.1-dev,
+	ruby (>= 1:1.9.3), ruby-dev (>= 1:1.9.3),
 	cdbs,
 	intltool
 Standards-Version: 3.7.3.0
@@ -19,7 +19,7 @@ Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	libmilter-manager0 (= ${binary:Version}),
-	ruby1.9.1,
+	ruby (>= 1:1.9.3),
 	adduser
 Suggests: postfix | sendmail, spamass-milter, clamav-milter, milter-greylist
 Description: A milter to use milters effectively
@@ -81,7 +81,7 @@ Depends:
 	${misc:Depends},
 	milter-manager (= ${binary:Version}),
 	munin-node,
-	ruby
+	ruby (>= 1:1.9.3)
 Description: munin-node plugins for milter manager
  milter manager administrates milters instead of MTA to reduce milter
  administration cost and combine milters flexibly.
@@ -98,7 +98,7 @@ Depends:
 	milter-manager (= ${binary:Version}),
 	rrdtool,
 	librrd-ruby1.9.1,
-	ruby1.9.1
+	ruby (>= 1:1.9.3)
 Description: Analyze milter-manager's log.
  milter manager administrates milters instead of MTA to reduce milter
  administration cost and combine milters flexibly.
@@ -226,8 +226,8 @@ Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	libmilter-core0 (= ${binary:Version}),
-	ruby1.9.1
-Description: Ruby bindings for milter core library (Ruby 1.9.1 interface)
+	ruby (>= 1:1.9.3)
+Description: Ruby bindings for milter core library (Ruby interface)
  milter "core" library is a common library for mitler "client" and
  milter "server" libraries.
 
@@ -241,8 +241,8 @@ Depends:
 	${misc:Depends},
 	libmilter-client0 (= ${binary:Version}),
 	ruby-milter-core (= ${binary:Version}),
-	ruby1.9.1
-Description: Ruby bindings for milter client (Ruby 1.9.1 interface)
+	ruby (>= 1:1.9.3)
+Description: Ruby bindings for milter client (Ruby interface)
  milter "client" library is a library which implements client-side
  (milter-side) milter protocol.
  .
@@ -258,8 +258,8 @@ Depends:
 	${misc:Depends},
 	libmilter-server0 (= ${binary:Version}),
 	ruby-milter-core (= ${binary:Version}),
-	ruby1.9.1
-Description: Ruby bindings for milter server (Ruby 1.9.1 interface)
+	ruby (>= 1:1.9.3)
+Description: Ruby bindings for milter server (Ruby interface)
  milter "server" library is a library which implements server-side
  (MTA-side) milter protocol.
  .
