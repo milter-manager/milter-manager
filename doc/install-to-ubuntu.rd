@@ -19,8 +19,8 @@ viruses by the latest ClamAV.
 === For Lucid Lynx
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable lucid universe
-  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable lucid universe
+  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable lucid universe
+  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable lucid universe
 
 If you don't enable the official backport repository, you need to
 create /etc/apt/sources.list.d/backports.list with the following
@@ -32,8 +32,8 @@ content:
 === For Precise Pangolin
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable precise universe
-  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable precise universe
+  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable precise universe
+  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable precise universe
 
 If you don't enable the official backport repository, you need to
 create /etc/apt/sources.list.d/backports.list with the following

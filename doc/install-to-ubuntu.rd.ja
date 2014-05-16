@@ -20,8 +20,8 @@ milter managerのサイトでは以下のUbuntu用debパッケージを提供し
 === Lucid Lynxの場合
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable lucid universe
-  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable lucid universe
+  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable lucid universe
+  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable lucid universe
 
 もし、まだバックポートリポジトリを有効にしていない場合は以下のような内
 容の/etc/apt/sources.list.d/backports.listを作成して有効にします。
@@ -31,8 +31,8 @@ milter managerのサイトでは以下のUbuntu用debパッケージを提供し
 === Precise Pangolinの場合
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable precise universe
-  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable precise universe
+  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable precise universe
+  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable precise universe
 
 もし、まだバックポートリポジトリを有効にしていない場合は以下のような内
 容の/etc/apt/sources.list.d/backports.listを作成して有効にします。
