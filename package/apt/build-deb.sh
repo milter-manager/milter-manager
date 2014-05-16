@@ -64,9 +64,9 @@ cd build
 tar xfz ${PACKAGE}_${VERSION}.orig.tar.gz
 cd ${PACKAGE}-${VERSION}/
 cp -rp /tmp/${PACKAGE}-debian debian
-ruby_version=$(ruby -rrbconfig -e "print RbConfig::CONFIG['ruby_version']")
+ruby_version=\$(ruby -rrbconfig -e "print RbConfig::CONFIG['ruby_version']")
 if test \${ruby_version} != "1.9.1"; then
-    sed -i'' -e "s/1\.9\.1/${ruby_version}/g" debian/*.dirs debian/*.install
+    sed -i'' -e "s/1\.9\.1/\${ruby_version}/g" debian/*.dirs debian/*.install
 fi
 case \$(lsb_release --codename --short) in
     "lucid"|"precise")
