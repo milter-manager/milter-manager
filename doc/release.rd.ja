@@ -35,8 +35,8 @@ git tag で前回リリースのタグを確認してから、コマンドを実
 
   % git log --reverse -p <前回リリースのタグ>..
 
-例(1.8.1リリースの場合):
-  % git log --reverse -p 1.8.0..
+例:
+  % git log --reverse -p $(git tag | tail -n 1)..
 
 diff が長い場合は "Author:" で検索すると次のエントリにジャンプできる。
 
@@ -95,8 +95,8 @@ OLD_RELEASE_DATE は debian/changelog をチェックすればわかる。
 
   % make dist
   % make update-latest-release \
-    OLD_RELEASE=1.8.0 \
-    OLD_RELEASE_DATE=yyyy-mm-dd \
+    OLD_RELEASE=$(git tag | tail -n 1) \
+    OLD_RELEASE_DATE=$(grep -E "^ --" package/debian/changelog | head -n 1 | ruby -rdate -e "puts Date.parse(ARGF.read).strftime('%Y-%m-%d')") \
     NEW_RELEASE_DATE=yyyy-mm-dd
 
 バージョン情報を更新したら、差分を確認してからコミットする。
