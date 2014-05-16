@@ -622,7 +622,7 @@ wait_for_reaping (gboolean check_success)
     gboolean timeout_waiting = TRUE;
     guint timeout_waiting_id;
 
-    timeout_waiting_id = milter_event_loop_add_timeout(loop, 1,
+    timeout_waiting_id = milter_event_loop_add_timeout(loop, 2,
                                                        cb_timeout_waiting,
                                                        &timeout_waiting);
     while (timeout_waiting && !reaped) {
