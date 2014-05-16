@@ -35,9 +35,19 @@ fi
 run aptitude install -V -D -y devscripts ${DEPENDED_PACKAGES}
 run aptitude clean
 
-if test "$(lsb_release --codename --short)" = "precise"; then
-    /usr/bin/update-alternatives --set ruby /usr/bin/ruby1.9.1
-fi
+case $(lsb_release --codename --short) in
+    "lucid")
+        /usr/bin/update-alternatives --list ruby > /dev/null 2>&1
+        if test $? -ne 0; then
+            /usr/bin/update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby1.8 10
+            /usr/bin/update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby1.9.1 20
+        fi
+        /usr/bin/update-alternatives --set ruby /usr/bin/ruby1.9.1
+        ;;
+    "precise")
+        /usr/bin/update-alternatives --set ruby /usr/bin/ruby1.9.1
+        ;;
+esac
 
 if ! id $USER_NAME >/dev/null 2>&1; then
     run useradd -m $USER_NAME
@@ -54,12 +64,16 @@ cd build
 tar xfz ${PACKAGE}_${VERSION}.orig.tar.gz
 cd ${PACKAGE}-${VERSION}/
 cp -rp /tmp/${PACKAGE}-debian debian
-if ! aptitude show librrd-ruby1.8 > /dev/null 2>&1; then
-    sed -i'' -e 's/librrd-ruby1\.8/rrdtool/g' debian/control
+ruby_version=$(ruby -rrbconfig -e "print RbConfig::CONFIG['ruby_version']")
+if test \${ruby_version} != "1.9.1"; then
+    sed -i'' -e "s/1\.9\.1/${ruby_version}/g" debian/*.dirs debian/*.install
 fi
-if test $(ruby -rrbconfig -e "print RbConfig::CONFIG['ruby_version']") = "1.8"; then
-    sed -i'' -e 's/1\.9\.1/1\.8/g' debian/control debian/*.dirs debian/*.install
-fi
+case \$(lsb_release --codename --short) in
+    "lucid"|"precise")
+        sed -i"" -e 's/ruby (>= 1:1.9.3)/ruby1.9.1 (>= 1.9.1)/g' debian/control
+        sed -i"" -e 's/ruby-dev (>= 1:1.9.3)/ruby1.9.1-dev (>= 1.9.1)/g' debian/control
+        ;;
+esac
 debuild -us -uc
 EOF
 
