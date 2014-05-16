@@ -6,7 +6,7 @@ Build-Depends:
 	debhelper (>= 5),
 	autotools-dev,
 	libglib2.0-dev,
-	ruby, ruby1.9.1, ruby1.9.1-dev,
+	ruby, ruby-dev, ruby1.9.1, ruby1.9.1-dev
 	cdbs,
 	intltool
 Standards-Version: 3.7.3.0
