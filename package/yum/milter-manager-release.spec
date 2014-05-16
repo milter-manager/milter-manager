@@ -38,6 +38,9 @@ milter manager release files
 %{_sysconfdir}/pki/rpm-gpg/RPM-GPG-KEY-milter-manager
 
 %changelog
+* Fri May 16 2014 Kenji Okimoto <okimoto@clear-code.com> - 1.2.0-1
+- Change yum repository URI.
+
 * Thu Aug 23 2012 Kenji Okimoto <okimoto@clear-code.com> - 1.1.0-0
 - Rename to milter-manager-release from milter-manager-repository to follow
   convention such as centos-release and fedora-release.
