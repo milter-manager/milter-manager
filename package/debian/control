@@ -8,7 +8,9 @@ Build-Depends:
 	libglib2.0-dev,
 	ruby (>= 1:1.9.3), ruby-dev (>= 1:1.9.3),
 	cdbs,
-	intltool
+	intltool,
+	rdtool,
+	gtk-doc-tools
 Standards-Version: 3.7.3.0
 Homepage: http://milter-manager.sourceforge.net/
 

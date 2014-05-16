@@ -6,3 +6,5 @@ ruby
 ruby-dev
 ruby1.9.1-dev
 intltool
+rdtool
+gtk-doc-tools
