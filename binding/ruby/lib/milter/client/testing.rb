@@ -12,15 +12,12 @@ module Milter
       end
       options = default_options.merge(options)
 
-      default_env = {
-        "MILTER_ENV" => "test"
-      }
       if options[:env]
         env = options.delete(:env)
       else
         env = {}
       end
-      env = default_env.merge(env)
+      env = ENV.to_hash.merge(env)
 
       port = options.delete(:port) || 20025
       host = options.delete(:host) || "localhost"

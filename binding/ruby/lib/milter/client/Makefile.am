@@ -6,4 +6,6 @@ dist_binding_lib_milter_client_DATA =		\
 	context-state.rb			\
 	session.rb				\
 	fallback-session.rb			\
-	session-context.rb
+	session-context.rb 			\
+	util.rb 				\
+	testing.rb
