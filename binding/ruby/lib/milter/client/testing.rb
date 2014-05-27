@@ -17,7 +17,6 @@ module Milter
       else
         env = {}
       end
-      env = ENV.to_hash.merge(env)
 
       port = options.delete(:port) || 20025
       host = options.delete(:host) || "localhost"
