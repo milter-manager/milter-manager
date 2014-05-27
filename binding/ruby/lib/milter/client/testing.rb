@@ -43,9 +43,7 @@ module Milter
     end
 
     def kill_milter(pid)
-      Process.kill(:INT, pid)
       Process.kill(:KILL, pid)
-      Process.waitpid(pid)
     rescue SystemCallError
     end
   end
