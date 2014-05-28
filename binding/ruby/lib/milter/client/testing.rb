@@ -1,16 +1,11 @@
 module Milter
   module TestClient
     def spawn_milter(milter_path, *args)
-      default_options = {
-        :out => "/dev/null",
-        :err => "/dev/null",
-      }
       if args.last.is_a?(Hash)
         options = args.pop
       else
         options = {}
       end
-      options = default_options.merge(options)
 
       if options[:env]
         env = options.delete(:env)
