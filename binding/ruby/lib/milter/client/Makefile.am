@@ -7,5 +7,5 @@ dist_binding_lib_milter_client_DATA =		\
 	session.rb				\
 	fallback-session.rb			\
 	session-context.rb 			\
-	util.rb 				\
+	envelope-address.rb 			\
 	testing.rb
