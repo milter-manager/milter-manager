@@ -3,37 +3,39 @@ module Milter
     module Test
       class MilterRunner
         def initialize(milter_path, *args)
-          if args.last.is_a?(Hash)
-            @options = args.pop
+          @milter_path = milter_path
+          @args = args
+          if @args.last.is_a?(Hash)
+            @options = @args.pop
           else
             @options = {}
           end
 
-          if options[:env]
-            @env = options.delete(:env)
+          if @options[:env]
+            @env = @options.delete(:env)
           else
             @env = {}
           end
 
-          port = options.delete(:port) || 20025
-          host = options.delete(:host) || "localhost"
-          @spec = "inet:#{port}@#{host}"
+          @port = @options.delete(:port) || 20025
+          @host = @options.delete(:host) || "localhost"
+          @spec = "inet:#{@port}@#{@host}"
         end
 
         def run
-          @pid = spawn(env,
+          @pid = spawn(@env,
                        RbConfig.ruby,
-                       milter_path,
+                       @milter_path,
                        "--connection-spec=#{@spec}",
-                       *args,
-                       options)
+                       *@args,
+                       @options)
 
           start = Time.now
-          Process.detach(pid)
+          Process.detach(@pid)
           loop do
             break if Time.now - start > 5
             begin
-              TCPSocket.new(host, port)
+              TCPSocket.new(@host, @port)
               break
             rescue SystemCallError
             end
