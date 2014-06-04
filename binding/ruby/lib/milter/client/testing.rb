@@ -17,6 +17,8 @@ module Milter
             @env = {}
           end
 
+          @timeout = @options.delete(:timeout) || 5
+
           @port = @options.delete(:port) || 20025
           @host = @options.delete(:host) || "localhost"
           @spec = "inet:#{@port}@#{@host}"
@@ -33,7 +35,7 @@ module Milter
           start = Time.now
           Process.detach(@pid)
           loop do
-            break if Time.now - start > 5
+            break if Time.now - start > @timeout
             begin
               TCPSocket.new(@host, @port)
               break
