@@ -136,6 +136,8 @@ static guint  get_max_pending_finished_sessions
 static void   set_max_pending_finished_sessions
                                           (MilterClient *client,
                                            guint         n_sessions);
+static void   workers_created             (MilterClient *client,
+                                           guint         n_workers);
 
 static void
 milter_manager_class_init (MilterManagerClass *klass)
@@ -189,6 +191,7 @@ milter_manager_class_init (MilterManagerClass *klass)
         get_max_pending_finished_sessions;
     client_class->set_max_pending_finished_sessions =
         set_max_pending_finished_sessions;
+    client_class->workers_created = workers_created;
 
     spec = g_param_spec_object("configuration",
                                "Configuration",
@@ -1387,6 +1390,19 @@ set_max_pending_finished_sessions (MilterClient *client, guint n_sessions)
     klass->set_max_pending_finished_sessions(client, n_sessions);
     milter_manager_configuration_set_max_pending_finished_sessions(priv->configuration,
                                                                    n_sessions);
+}
+
+static void
+workers_created (MilterClient *client, guint n_workers)
+{
+    MilterManagerPrivate *priv;
+    MilterManagerConfiguration *configuration;
+
+    priv = MILTER_MANAGER_GET_PRIVATE(client);
+    configuration = priv->configuration;
+    n_workers = milter_manager_configuration_get_n_workers(configuration);
+
+    milter_debug("[manager][workers-created] <%d>", n_workers);
 }
 
 MilterManagerConfiguration *
