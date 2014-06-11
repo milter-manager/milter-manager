@@ -293,6 +293,13 @@ module Milter
           end
         end
 
+        client.signal_connect("worker-created") do
+          add_signal_handler(client, :HUP) {client.reload}
+          add_signal_handler(client, :USR1) {Milter::Logger.default.reopen}
+          add_signal_handler(client, :INT,  :once => true) {client.shutdown}
+          add_signal_handler(client, :TERM, :once => true) {client.shutdown}
+        end
+
         client.signal_connect("workers-created") do
           add_signal_handler(client, :HUP) do
             client.reload
