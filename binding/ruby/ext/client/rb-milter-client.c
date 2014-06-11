@@ -279,6 +279,22 @@ client_set_default_unix_socket_mode (VALUE self, VALUE rb_mode)
     return self;
 }
 
+static VALUE
+client_get_worker_pids (VALUE self)
+{
+    VALUE worker_pids;
+    guint i = 0;
+    GArray *pids = milter_client_get_worker_pids(SELF(self));
+
+    worker_pids = rb_ary_new2(pids->len);
+
+    for (i = 0; i < pids->len; i++) {
+        GPid worker_pid = g_array_index(pids, GPid, i);
+        rb_ary_push(worker_pids, INT2FIX(worker_pid));
+    }
+    return worker_pids;
+}
+
 static void
 mark (gpointer data)
 {
@@ -343,6 +359,8 @@ Init_milter_client (void)
                      client_get_default_unix_socket_mode, 0);
     rb_define_method(rb_cMilterClient, "set_default_unix_socket_mode",
                      client_set_default_unix_socket_mode, 1);
+    rb_define_method(rb_cMilterClient, "worker_pids",
+                     client_get_worker_pids, 0);
 
     G_DEF_SETTERS(rb_cMilterClient);
 
