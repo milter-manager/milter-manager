@@ -10,7 +10,11 @@ module Milter
 
       def extract_address
         return nil unless @envelope_address
-        address = @envelope_address.dup.force_encoding("BINARY")
+        if Object.const_defined?(:Encoding)
+          address = @envelope_address.dup.force_encoding("BINARY")
+        else
+          address = @envelope_address.dup
+        end
         address = address[/<([^<>]*)>/, 1] ||
           address[/[^\s<>]+@[^\s<>]+/] || address[/[^\s<>]+/] || address
         address
