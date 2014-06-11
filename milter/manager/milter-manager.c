@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <errno.h>
+#include <unistd.h>
 
 #include "milter-manager.h"
 #include "milter-manager-leader.h"
@@ -138,6 +139,7 @@ static void   set_max_pending_finished_sessions
                                            guint         n_sessions);
 static void   workers_created             (MilterClient *client,
                                            guint         n_workers);
+static void   worker_created              (MilterClient *client);
 
 static void
 milter_manager_class_init (MilterManagerClass *klass)
@@ -192,6 +194,7 @@ milter_manager_class_init (MilterManagerClass *klass)
     client_class->set_max_pending_finished_sessions =
         set_max_pending_finished_sessions;
     client_class->workers_created = workers_created;
+    client_class->worker_created = worker_created;
 
     spec = g_param_spec_object("configuration",
                                "Configuration",
@@ -1396,6 +1399,12 @@ static void
 workers_created (MilterClient *client, guint n_workers)
 {
     milter_debug("[manager][workers-created] <%d>", n_workers);
+}
+
+static void
+worker_created (MilterClient *client)
+{
+    milter_debug("[manager][worker-created] pid=<%d>", getpid());
 }
 
 MilterManagerConfiguration *
