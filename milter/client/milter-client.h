@@ -205,6 +205,7 @@ struct _MilterClientClass
                                            guint         n_sessions);
     void   (*workers_created)             (MilterClient *client,
                                            guint         n_workers);
+    GArray *(*get_worker_pids)            (MilterClient *client);
 };
 
 GQuark               milter_client_error_quark       (void);
@@ -1041,6 +1042,8 @@ guint                milter_client_get_max_pending_finished_sessions
 void                 milter_client_set_max_pending_finished_sessions
                                                      (MilterClient  *client,
                                                       guint          n_sessions);
+
+GArray              *milter_client_get_worker_pids   (MilterClient  *client);
 
 G_END_DECLS
 

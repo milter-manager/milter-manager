@@ -107,6 +107,7 @@ struct _MilterClientPrivate
         GIOChannel *control;
         guint n_process;
         guint id;
+        GArray *pids;
     } workers;
     struct sockaddr *address;
     socklen_t address_size;
@@ -220,6 +221,8 @@ static guint        get_max_pending_finished_sessions
 static void         set_max_pending_finished_sessions
                            (MilterClient    *client,
                             guint            n_sessions);
+static GArray      *get_worker_pids
+                           (MilterClient    *client);
 
 static void
 _milter_client_class_init (MilterClientClass *klass)
@@ -259,6 +262,7 @@ _milter_client_class_init (MilterClientClass *klass)
                                          = get_max_pending_finished_sessions;
     client_class->set_max_pending_finished_sessions
                                          = set_max_pending_finished_sessions;
+    client_class->get_worker_pids        = get_worker_pids;
 
     spec = g_param_spec_string("connection-spec",
                                "Connection Spec",
@@ -2137,6 +2141,8 @@ client_run_workers (MilterClient *client, guint n_workers, GError **error)
         return FALSE;
     }
 
+    priv->workers.pids = g_array_new(TRUE, TRUE, sizeof(GPid));
+
     for (i = 0; i < n_workers; ++i) {
         GPid pid = milter_client_fork(client);
         switch (pid) {
@@ -2151,6 +2157,7 @@ client_run_workers (MilterClient *client, guint n_workers, GError **error)
             milter_client_shutdown(client);
             _exit(EXIT_SUCCESS);
         default:
+            g_array_append_val(priv->workers.pids, pid);
             milter_event_loop_watch_child(loop, pid, watch_worker_process, NULL);
             break;
         case -1:
@@ -3243,6 +3250,25 @@ milter_client_set_max_pending_finished_sessions (MilterClient  *client,
     klass = MILTER_CLIENT_GET_CLASS(client);
     klass->set_max_pending_finished_sessions(client, n_sessions);
 }
+
+static GArray *
+get_worker_pids (MilterClient *client)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+    return priv->workers.pids;
+}
+
+GArray *
+milter_client_get_worker_pids (MilterClient  *client)
+{
+    MilterClientClass *klass;
+
+    klass = MILTER_CLIENT_GET_CLASS(client);
+    return klass->get_worker_pids(client);
+}
+
 
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
