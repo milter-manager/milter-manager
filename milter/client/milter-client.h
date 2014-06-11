@@ -205,6 +205,7 @@ struct _MilterClientClass
                                            guint         n_sessions);
     void   (*workers_created)             (MilterClient *client,
                                            guint         n_workers);
+    void   (*worker_created)              (MilterClient *client);
     GArray *(*get_worker_pids)            (MilterClient *client);
 };
 
