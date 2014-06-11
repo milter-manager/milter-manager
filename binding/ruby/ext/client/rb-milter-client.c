@@ -1,4 +1,4 @@
-/* -*- c-file-style: "ruby" -*- */
+/* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
@@ -43,17 +43,17 @@ client_custom_fork (MilterClient *client)
 
     pid = rb_funcall2(rb_mKernel, rb_intern("fork"), 0, 0);
     if (NIL_P(pid)) {
-	return (GPid)0;
+        return (GPid)0;
     } else {
-	return (GPid)NUM2INT(pid);
+        return (GPid)NUM2INT(pid);
     }
 #endif
 }
 
 static void
 cb_event_loop_created (MilterClient *client,
-		       MilterEventLoop *loop,
-		       gpointer user_data)
+                       MilterEventLoop *loop,
+                       gpointer user_data)
 {
     rb_milter_event_loop_setup(loop);
 }
@@ -67,7 +67,7 @@ client_initialize (VALUE self)
     G_INITIALIZE(self, client);
     milter_client_set_custom_fork_func(client, client_custom_fork);
     g_signal_connect(client, "event-loop-created",
-		     G_CALLBACK(cb_event_loop_created), NULL);
+                     G_CALLBACK(cb_event_loop_created), NULL);
     return Qnil;
 }
 
@@ -77,7 +77,7 @@ client_run (VALUE self)
     GError *error = NULL;
 
     if (!milter_client_run(SELF(self), &error))
-	RAISE_GERROR(error);
+        RAISE_GERROR(error);
 
     return self;
 }
@@ -86,7 +86,7 @@ static VALUE
 client_main (VALUE self)
 {
     milter_warning("[ruby][client][deprecatd] Milter::Client#main is deprecated. "
-		   "Use Milter::Client#run instead.");
+                   "Use Milter::Client#run instead.");
     milter_client_main(SELF(self));
     return self;
 }
@@ -109,7 +109,7 @@ client_start_syslog (int argc, VALUE *argv, VALUE self)
     client = SELF(self);
     milter_client_set_syslog_identify(client, RVAL2CSTR(identify));
     if (!NIL_P(facility)) {
-	milter_client_set_syslog_facility(client, RVAL2CSTR(facility));
+        milter_client_set_syslog_facility(client, RVAL2CSTR(facility));
     }
     milter_client_start_syslog(client);
 
@@ -135,7 +135,7 @@ client_listen (VALUE self)
     GError *error = NULL;
 
     if (!milter_client_listen(SELF(self), &error))
-	RAISE_GERROR(error);
+        RAISE_GERROR(error);
 
     return self;
 }
@@ -146,7 +146,7 @@ client_drop_privilege (VALUE self)
     GError *error = NULL;
 
     if (!milter_client_drop_privilege(SELF(self), &error))
-	RAISE_GERROR(error);
+        RAISE_GERROR(error);
 
     return self;
 }
@@ -157,7 +157,7 @@ client_daemonize (VALUE self)
     GError *error = NULL;
 
     if (!milter_client_daemonize(SELF(self), &error))
-	RAISE_GERROR(error);
+        RAISE_GERROR(error);
 
     return self;
 }
@@ -231,18 +231,18 @@ client_set_unix_socket_mode (VALUE self, VALUE rb_mode)
     guint mode;
 
     if (NIL_P(rb_mode)) {
-	mode = 0;
+        mode = 0;
     } else if (RVAL2CBOOL(rb_obj_is_kind_of(rb_mode, rb_cString))) {
-	gchar *error_message = NULL;
-	if (!milter_utils_parse_file_mode(RVAL2CSTR(rb_mode),
-					  &mode, &error_message)) {
-	    VALUE rb_error_message;
-	    rb_error_message = CSTR2RVAL(error_message);
-	    g_free(error_message);
-	    rb_raise(rb_eArgError, "%s", RSTRING_PTR(rb_error_message));
-	}
+        gchar *error_message = NULL;
+        if (!milter_utils_parse_file_mode(RVAL2CSTR(rb_mode),
+                                          &mode, &error_message)) {
+            VALUE rb_error_message;
+            rb_error_message = CSTR2RVAL(error_message);
+            g_free(error_message);
+            rb_raise(rb_eArgError, "%s", RSTRING_PTR(rb_error_message));
+        }
     } else {
-	mode = NUM2UINT(rb_mode);
+        mode = NUM2UINT(rb_mode);
     }
 
     milter_client_set_unix_socket_mode(SELF(self), mode);
@@ -261,18 +261,18 @@ client_set_default_unix_socket_mode (VALUE self, VALUE rb_mode)
     guint mode;
 
     if (NIL_P(rb_mode)) {
-	mode = 0;
+        mode = 0;
     } else if (RVAL2CBOOL(rb_obj_is_kind_of(rb_mode, rb_cString))) {
-	gchar *error_message = NULL;
-	if (!milter_utils_parse_file_mode(RVAL2CSTR(rb_mode),
-					  &mode, &error_message)) {
-	    VALUE rb_error_message;
-	    rb_error_message = CSTR2RVAL(error_message);
-	    g_free(error_message);
-	    rb_raise(rb_eArgError, "%s", RSTRING_PTR(rb_error_message));
-	}
+        gchar *error_message = NULL;
+        if (!milter_utils_parse_file_mode(RVAL2CSTR(rb_mode),
+                                          &mode, &error_message)) {
+            VALUE rb_error_message;
+            rb_error_message = CSTR2RVAL(error_message);
+            g_free(error_message);
+            rb_raise(rb_eArgError, "%s", RSTRING_PTR(rb_error_message));
+        }
     } else {
-	mode = NUM2UINT(rb_mode);
+        mode = NUM2UINT(rb_mode);
     }
 
     milter_client_set_default_unix_socket_mode(SELF(self), mode);
@@ -285,8 +285,8 @@ mark (gpointer data)
     MilterClient *client = data;
 
     milter_client_processing_context_foreach(client,
-					     (GFunc)rbgobj_gc_mark_instance,
-					     NULL);
+                                             (GFunc)rbgobj_gc_mark_instance,
+                                             NULL);
 }
 
 void
@@ -295,17 +295,17 @@ Init_milter_client (void)
     milter_client_init();
 
     rb_cMilterClient = G_DEF_CLASS_WITH_GC_FUNC(MILTER_TYPE_CLIENT,
-						"Client",
-						rb_mMilter,
-						mark,
-						NULL);
+                                                "Client",
+                                                rb_mMilter,
+                                                mark,
+                                                NULL);
 
     rb_define_const(rb_cMilterClient,
-		    "DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE",
-		    UINT2NUM(MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE));
+                    "DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE",
+                    UINT2NUM(MILTER_CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE));
     rb_define_const(rb_cMilterClient,
-		    "DEFAULT_MAX_CONNECTIONS",
-		    UINT2NUM(MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS));
+                    "DEFAULT_MAX_CONNECTIONS",
+                    UINT2NUM(MILTER_CLIENT_DEFAULT_MAX_CONNECTIONS));
 
     rb_define_method(rb_cMilterClient, "initialize", client_initialize, 0);
     rb_define_method(rb_cMilterClient, "run", client_run, 0);
@@ -314,13 +314,13 @@ Init_milter_client (void)
     rb_define_method(rb_cMilterClient, "start_syslog", client_start_syslog, -1);
     rb_define_method(rb_cMilterClient, "stop_syslog", client_stop_syslog, 0);
     rb_define_method(rb_cMilterClient, "syslog_enabled?",
-		     client_syslog_enabled_p, 0);
+                     client_syslog_enabled_p, 0);
     rb_define_method(rb_cMilterClient, "listen", client_listen, 0);
     rb_define_method(rb_cMilterClient, "drop_privilege",
-		     client_drop_privilege, 0);
+                     client_drop_privilege, 0);
     rb_define_method(rb_cMilterClient, "daemonize", client_daemonize, 0);
     rb_define_method(rb_cMilterClient, "create_context",
-		     client_create_context, 0);
+                     client_create_context, 0);
     rb_define_method(rb_cMilterClient, "set_connection_spec",
                      client_set_connection_spec, 1);
     rb_define_method(rb_cMilterClient, "effective_user",
@@ -347,10 +347,10 @@ Init_milter_client (void)
     G_DEF_SETTERS(rb_cMilterClient);
 
     G_DEF_CLASS(MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND,
-		"ClientEventLoopBackend",
-		rb_mMilter);
+                "ClientEventLoopBackend",
+                rb_mMilter);
     G_DEF_CONSTANTS(rb_cMilterClient, MILTER_TYPE_CLIENT_EVENT_LOOP_BACKEND,
-		    "MILTER_CLIENT_");
+                    "MILTER_CLIENT_");
 
     Init_milter_client_context();
 }
