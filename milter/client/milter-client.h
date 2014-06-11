@@ -203,6 +203,8 @@ struct _MilterClientClass
     void   (*set_max_pending_finished_sessions)
                                           (MilterClient *client,
                                            guint         n_sessions);
+    void   (*workers_created)             (MilterClient *client,
+                                           guint         n_workers);
 };
 
 GQuark               milter_client_error_quark       (void);

@@ -64,6 +64,7 @@ enum
     MAINTAIN,
     SESSIONS_FINISHED,
     EVENT_LOOP_CREATED,
+    WORKERS_CREATED,
     LAST_SIGNAL
 };
 
@@ -418,6 +419,15 @@ _milter_client_class_init (MilterClientClass *klass)
                      NULL, NULL,
                      g_cclosure_marshal_VOID__OBJECT,
                      G_TYPE_NONE, 1, MILTER_TYPE_EVENT_LOOP);
+
+    signals[WORKERS_CREATED] =
+        g_signal_new("workers-created",
+                     MILTER_TYPE_CLIENT,
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MilterClientClass, workers_created),
+                     NULL, NULL,
+                     g_cclosure_marshal_VOID__UINT,
+                     G_TYPE_NONE, 1, G_TYPE_UINT);
 
     g_type_class_add_private(gobject_class, sizeof(MilterClientPrivate));
 }
@@ -2226,6 +2236,7 @@ milter_client_run_loop (MilterClient *client, GError **error)
         if (!client_run_workers(client, n_workers, error)) {
             return FALSE;
         }
+        g_signal_emit(client, signals[WORKERS_CREATED], 0, n_workers);
         success = run_master(client, error);
     } else if (priv->multi_thread_mode) {
         priv->accept_loop = milter_client_create_event_loop(client, FALSE);
