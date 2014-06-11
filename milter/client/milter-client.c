@@ -737,6 +737,11 @@ dispose (GObject *object)
         priv->workers.control = NULL;
     }
 
+    if (priv->workers.pids) {
+        g_array_unref(priv->workers.pids);
+        priv->workers.pids = NULL;
+    }
+
     if (priv->listening_channel) {
         g_io_channel_unref(priv->listening_channel);
         priv->listening_channel = NULL;
