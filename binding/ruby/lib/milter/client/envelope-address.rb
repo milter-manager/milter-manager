@@ -14,9 +14,10 @@ module Milter
         if address.respond_to?(:force_encoding)
           address.force_encoding("BINARY")
         end
-        address = address[/<([^<>]*)>/, 1] ||
-          address[/[^\s<>]+@[^\s<>]+/] || address[/[^\s<>]+/] || address
-        address
+        address[/<([^<>]*)>/, 1] ||
+          address[/[^\s<>]+@[^\s<>]+/] ||
+          address[/[^\s<>]+/] ||
+          address
       end
 
       def address_spec
