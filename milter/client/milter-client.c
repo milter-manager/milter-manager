@@ -505,6 +505,7 @@ _milter_client_init (MilterClient *client)
     priv->workers.n_process = 0;
     priv->workers.id = 0;
     priv->workers.control = NULL;
+    priv->workers.pids = NULL;
     priv->address = NULL;
     priv->address_size = 0;
     priv->effective_user = NULL;
