@@ -1395,13 +1395,6 @@ set_max_pending_finished_sessions (MilterClient *client, guint n_sessions)
 static void
 workers_created (MilterClient *client, guint n_workers)
 {
-    MilterManagerPrivate *priv;
-    MilterManagerConfiguration *configuration;
-
-    priv = MILTER_MANAGER_GET_PRIVATE(client);
-    configuration = priv->configuration;
-    n_workers = milter_manager_configuration_get_n_workers(configuration);
-
     milter_debug("[manager][workers-created] <%d>", n_workers);
 }
 
