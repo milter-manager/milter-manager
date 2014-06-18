@@ -12,13 +12,14 @@ rbenv を使用している場合は、以下のように ruby コマンドと r
 するようになっている。
 
   % gem install rdtool rttool gettext fast_gettext rr mechanize
-  % ./autogen.sh --no-update
+  % ACLOCAL_OPTIONS="-I $HOME/opt/cutter/share/aclocal" ./autogen.sh --no-update
   % ./configure --prefix=/tmp/local \
     --enable-ruby-milter --enable-gtk-doc --enable-coverage \
     --with-sf-user=sf_user_name \
     --with-cutter-source-path=/path/to/cutter/source \
     --with-ruby=$(rbenv which ruby) \
-    --with-rd2=$(rbenv which rd2)
+    --with-rd2=$(rbenv which rd2) \
+    PKG_CONFIG_PATH=$HOME/opt/cutter/lib/pkgconfig
   % make
   % make check
   % make coverage
