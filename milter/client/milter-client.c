@@ -748,7 +748,7 @@ dispose (GObject *object)
     }
 
     if (priv->workers.pids) {
-        g_array_unref(priv->workers.pids);
+        g_array_free(priv->workers.pids, TRUE);
         priv->workers.pids = NULL;
     }
 
