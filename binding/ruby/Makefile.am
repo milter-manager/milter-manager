@@ -65,9 +65,9 @@ test_unit_files =						\
 	test-unit/doc/html/heading-mark.png			\
 	test-unit/doc/html/heading-mark.svg			\
 	test-unit/doc/html/index.html				\
-	test-unit/doc/html/index.html.ja			\
 	test-unit/doc/html/install.png				\
 	test-unit/doc/html/install.svg				\
+	test-unit/doc/html/ja/index.html			\
 	test-unit/doc/html/jp.png				\
 	test-unit/doc/html/kinotan-failure.png			\
 	test-unit/doc/html/kinotan-pass.png			\
