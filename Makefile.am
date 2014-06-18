@@ -43,7 +43,7 @@ EXTRA_DIST =					\
 upload: upload-doc upload-coverage
 
 release: dist
-	$(srcdir)/misc/release.rb				\
+	$(CUTTER_SOURCE_PATH)/misc/release.rb			\
 	  $(SF_USER) '$(SF_PROJECT_ID)' '$(SF_PROJECT_NAME)'	\
 	  '$(PACKAGE_TITLE)' $(VERSION) README NEWS		\
 	  $(PACKAGE)-$(VERSION).tar.gz
@@ -66,7 +66,7 @@ update-po:
 update-files:
 	cd test/fixtures && $(MAKE) $(AM_MAKEFLAGS) update-files
 
-update-latest-release: misc
+update-latest-release:
 	@if test -z "$(OLD_RELEASE)"; then	\
 	  echo "\$$(OLD_RELEASE) is missing";	\
 	  exit 1;				\
@@ -80,7 +80,7 @@ update-latest-release: misc
 	  exit 1;					\
 	fi
 	cd $(top_srcdir) &&					\
-	  misc/update-latest-release.rb				\
+	  $(CUTTER_SOURCE_PATH)/misc/update-latest-release.rb	\
 	  $(PACKAGE)						\
 	  $(OLD_RELEASE) $(OLD_RELEASE_DATE)			\
 	  $(VERSION) $(NEW_RELEASE_DATE)			\
@@ -102,13 +102,6 @@ update-latest-release: misc
 
 tag:
 	git tag -a "$(VERSION)" -m "released $(VERSION)!!!"
-
-misc:
-	@if test -z "$(CUTTER_SOURCE_PATH)"; then		\
-	  echo "\$$(CUTTER_SOURCE_PATH) is missing";		\
-	  exit 1;						\
-	fi
-	ln -s "$(CUTTER_SOURCE_PATH)/misc" misc;
 
 echo-abs-top-srcdir:
 	@echo $(abs_top_srcdir)
