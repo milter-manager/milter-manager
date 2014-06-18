@@ -2,6 +2,21 @@
 
 = NEWS --- The history of milter manager
 
+== [release-2-0-4] 2.0.4: 2014-06-20
+
+A bug fix release of 2.0.3
+
+=== Ruby milter
+
+==== Improvements
+
+  * Add Milter::Client::Test::MilterRunner
+  * Add Milter::Client::EnvelopeAddress
+
+==== Fixes
+
+  * Fix the bug that milter written in Ruby cannot finish properly on multiple CPU environment
+
 == [release-2-0-3] 2.0.3: 2014-05-20
 
 A bug fix release of 2.0.2
