@@ -48,6 +48,14 @@ release: dist
 	  '$(PACKAGE_TITLE)' $(VERSION) README NEWS		\
 	  $(PACKAGE)-$(VERSION).tar.gz
 
+release-github: dist
+	$(CUTTER_SOURCE_PATH)/misc/release-to-github.rb \
+	  --repository=milter-manager/milter-manager \
+	  --tag=$(VERSION) \
+      --news-file=NEWS \
+	  --asset-file=$(PACKAGE)-$(VERSION).tar.gz \
+	  --access-token-file=$(ACCESS_TOKEN_FILE)
+
 upload-doc:
 	cd html && $(MAKE) $(AM_MAKEFLAGS) upload
 	cd doc/reference && $(MAKE) $(AM_MAKEFLAGS) upload
