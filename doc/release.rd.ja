@@ -283,6 +283,17 @@ make upload したらウェブブラウザで
 ((<URL:https://github.com/milter-manager/milter-manager/tags>)) にアク
 セスして新しいバージョンのタグができていることを確認する。
 
+== GitHub にリリースを作成する
+
+GitHub にもリリースを作成する。
+
+タグを作成してからでないとエラーになるので、注意すること。
+
+  % make release-github VERSION=<version> ACCESS_TOKEN_FILE=<path-to-access-token-file>
+
+例:
+  % make release-github VERSION=2.0.4 ACCESS_TOKEN_FILE=$HOME/github-access-token.txt
+
 == リリースメールを書いて ML に投げる
 
 NEWS.ja, NEWS を参考にして日本語、英語のメールを書いてそれぞれ
