@@ -52,7 +52,7 @@ release-github: dist
 	$(CUTTER_SOURCE_PATH)/misc/release-to-github.rb \
 	  --repository=milter-manager/milter-manager \
 	  --tag=$(VERSION) \
-      --news-file=NEWS \
+	  --news-file=NEWS \
 	  --asset-file=$(PACKAGE)-$(VERSION).tar.gz \
 	  --access-token-file=$(ACCESS_TOKEN_FILE)
 
