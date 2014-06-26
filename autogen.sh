@@ -28,6 +28,7 @@ git_update()
 
 # for old intltoolize
 if [ ! -d config/po ]; then
+    mkdir -p config
     ln -s ../po config/po
 fi
 
