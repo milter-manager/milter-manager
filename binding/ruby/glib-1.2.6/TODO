@@ -1,3 +1,0 @@
-* GIO support
-* inspect include readable properties.
-* make log message handler set by Ruby/GLib removable.

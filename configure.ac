@@ -413,13 +413,7 @@ if test "$ruby_available" = "yes"; then
 
   if test "x$use_bundled_ruby_glib2" != "xno" -a \
           "x$ruby_glib2_available" != "xyes"; then
-    if test $ruby_version -gt 191; then
-      ac_used_bundled_ruby_glib2_version=${bundled_latest_ruby_glib2_version}
-    elif test $ruby_version -gt 185; then
-      ac_used_bundled_ruby_glib2_version=1.2.6
-    else
-      ac_used_bundled_ruby_glib2_version=0.16.0
-    fi
+    ac_used_bundled_ruby_glib2_version=${bundled_latest_ruby_glib2_version}
     if test "x$use_bundled_ruby_glib2" != "xauto" -a \
             "x$use_bundled_ruby_glib2" != "xyes" -a \
             "x$use_bundled_ruby_glib2" != "xno"; then
