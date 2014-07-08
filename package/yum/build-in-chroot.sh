@@ -159,7 +159,7 @@ for architecture in $ARCHITECTURES; do
                 if [ -n "$CENTOS_VERSIONS" ]; then
                     distribution_versions="$CENTOS_VERSIONS"
                 else
-                    distribution_versions="5 6"
+                    distribution_versions="6 7"
                 fi
                 ;;
         esac

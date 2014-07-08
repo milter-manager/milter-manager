@@ -45,11 +45,12 @@ if test "$USE_RPMFORGE" = "yes"; then
         rpmforge_url=http://packages.sw.be/rpmforge-release
         rpmforge_rpm_base=
         case $distribution_version in
-            5.*)
-                rpmforge_rpm_base=rpmforge-release-0.5.3-1.el5.rf.${architecture}.rpm
-                ;;
             6.*)
                 rpmforge_rpm_base=rpmforge-release-0.5.3-1.el6.rf.${architecture}.rpm
+                ;;
+            7.*)
+                # repoforge.org supports only x86_64 for now.
+                rpmforge_rpm_base=rpmforge-release-0.5.3-1.el7.rf.${architecture}.rpm
                 ;;
         esac
         if test -n "$rpmforge_rpm_base"; then
@@ -91,11 +92,12 @@ if test "$USE_EPEL" = "yes"; then
     if ! rpm -q epel-release > /dev/null 2>&1; then
         epel_url=
         case $distribution_version in
-            5.*)
-                epel_url=http://ftp.iij.ad.jp/pub/linux/fedora/epel/5/i386/epel-release-5-4.noarch.rpm
-                ;;
             6.*)
                 epel_url=http://ftp.iij.ad.jp/pub/linux/fedora/epel/6/i386/epel-release-6-8.noarch.rpm
+                ;;
+            7.*)
+                # FIXME Don't use beta release
+                epel_url=http://ftp.iij.ad.jp/pub/linux/fedora/epel/beta/7/x86_64/epel-release-7-0.2.noarch.rpm
                 ;;
         esac
         if test -n "$epel_url"; then
