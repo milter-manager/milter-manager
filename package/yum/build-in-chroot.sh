@@ -54,11 +54,7 @@ build_chroot()
         distribution_architecture=$architecture
     else
         rinse_architecture=$architecture
-        if [ "$distribution_name-$distribution_version" = "centos-5" ]; then
-            distribution_architecture=$architecture
-        else
-            distribution_architecture=i686
-        fi
+        distribution_architecture=i686
     fi
 
     run_sudo mkdir -p ${base_dir}/etc/rpm
