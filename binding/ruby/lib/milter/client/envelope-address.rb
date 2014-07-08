@@ -11,9 +11,7 @@ module Milter
       def extract_address
         return nil unless @envelope_address
         address = @envelope_address.dup
-        if address.respond_to?(:force_encoding)
-          address.force_encoding("BINARY")
-        end
+        address.force_encoding("BINARY")
         address[/<([^<>]*)>/, 1] ||
           address[/[^\s<>]+@[^\s<>]+/] ||
           address[/[^\s<>]+/] ||

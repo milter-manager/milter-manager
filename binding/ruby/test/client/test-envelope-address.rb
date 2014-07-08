@@ -28,12 +28,7 @@ class TestUtil < Test::Unit::TestCase
          "EUC-JP"      => "EUC-JP")
     def test_encoding(encoding)
       address = %Q!日本語 <bob@example.com>!
-      if address.respond_to?(:encode)
-        encoded_address = address.encode(encoding).force_encoding("UTF-8")
-      else
-        require "nkf"
-        encoded_address = NKF.nkf("--ic=UTF-8 --oc=#{encoding}", address)
-      end
+      encoded_address = address.encode(encoding).force_encoding("UTF-8")
       envelope_address = Milter::Client::EnvelopeAddress.new(encoded_address)
       assert_equal("bob@example.com", envelope_address.address_spec)
     end

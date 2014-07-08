@@ -134,16 +134,10 @@ class TestClientContext < Test::Unit::TestCase
       end
 
       fqdn = "delian"
-      if fqdn.respond_to?(:force_encoding)
-        fqdn.force_encoding(Encoding::UTF_8)
-      end
+      fqdn.force_encoding(Encoding::UTF_8)
       @context.signal_emit("helo", fqdn)
-      if received_fqdn.respond_to?(:encoding)
-        assert_equal([fqdn, Encoding::ASCII_8BIT],
-                     [received_fqdn, received_fqdn.encoding])
-      else
-        assert_equal(fqdn, received_fqdn)
-      end
+      assert_equal([fqdn, Encoding::ASCII_8BIT],
+                   [received_fqdn, received_fqdn.encoding])
     end
 
     def test_envelope_from
@@ -154,16 +148,10 @@ class TestClientContext < Test::Unit::TestCase
       end
 
       from = "from@example.com"
-      if from.respond_to?(:force_encoding)
-        from.force_encoding(Encoding::UTF_8)
-      end
+      from.force_encoding(Encoding::UTF_8)
       @context.signal_emit("envelope-from", from)
-      if received_from.respond_to?(:encoding)
-        assert_equal([from, Encoding::ASCII_8BIT],
-                     [received_from, received_from.encoding])
-      else
-        assert_equal(from, received_from)
-      end
+      assert_equal([from, Encoding::ASCII_8BIT],
+                   [received_from, received_from.encoding])
     end
 
     def test_envelope_recipient
@@ -174,16 +162,10 @@ class TestClientContext < Test::Unit::TestCase
       end
 
       to = "to@example.com"
-      if to.respond_to?(:force_encoding)
-        to.force_encoding(Encoding::UTF_8)
-      end
+      to.force_encoding(Encoding::UTF_8)
       @context.signal_emit("envelope-recipient", to)
-      if received_to.respond_to?(:encoding)
-        assert_equal([to, Encoding::ASCII_8BIT],
-                     [received_to, received_to.encoding])
-      else
-        assert_equal(to, received_to)
-      end
+      assert_equal([to, Encoding::ASCII_8BIT],
+                   [received_to, received_to.encoding])
     end
 
     def test_unknown
@@ -194,16 +176,10 @@ class TestClientContext < Test::Unit::TestCase
       end
 
       command = "UNKNOWN COMMAND WITH ARGUMENT"
-      if command.respond_to?(:force_encoding)
-        command.force_encoding(Encoding::UTF_8)
-      end
+      command.force_encoding(Encoding::UTF_8)
       @context.signal_emit("unknown", command)
-      if received_command.respond_to?(:encoding)
-        assert_equal([command, Encoding::ASCII_8BIT],
-                     [received_command, received_command.encoding])
-      else
-        assert_equal(command, received_command)
-      end
+      assert_equal([command, Encoding::ASCII_8BIT],
+                   [received_command, received_command.encoding])
     end
 
     def test_header
@@ -216,22 +192,14 @@ class TestClientContext < Test::Unit::TestCase
       end
 
       name = "Subject"
-      if name.respond_to?(:force_encoding)
-        name.force_encoding(Encoding::UTF_8)
-      end
+      name.force_encoding(Encoding::UTF_8)
       value = "This is test subject."
-      if value.respond_to?(:force_encoding)
-        value.force_encoding(Encoding::UTF_8)
-      end
+      value.force_encoding(Encoding::UTF_8)
       @context.signal_emit("header", name ,value)
-      if received_name.respond_to?(:encoding)
-        assert_equal([name, Encoding::ASCII_8BIT,
-                      value, Encoding::ASCII_8BIT],
-                     [received_name, received_name.encoding,
-                      received_value, received_value.encoding])
-      else
-        assert_equal([name, value], [received_name, received_value])
-      end
+      assert_equal([name, Encoding::ASCII_8BIT,
+                     value, Encoding::ASCII_8BIT],
+                   [received_name, received_name.encoding,
+                     received_value, received_value.encoding])
     end
 
     def test_body
@@ -242,16 +210,10 @@ class TestClientContext < Test::Unit::TestCase
       end
 
       chunk = "XXX\nYYY\n"
-      if chunk.respond_to?(:force_encoding)
-        chunk.force_encoding(Encoding::UTF_8)
-      end
+      chunk.force_encoding(Encoding::UTF_8)
       @context.signal_emit("body", chunk, chunk.bytesize)
-      if received_chunk.respond_to?(:encoding)
-        assert_equal([chunk, Encoding::ASCII_8BIT],
-                     [received_chunk, received_chunk.encoding])
-      else
-        assert_equal(chunk, received_chunk)
-      end
+      assert_equal([chunk, Encoding::ASCII_8BIT],
+                   [received_chunk, received_chunk.encoding])
     end
   end
 end
