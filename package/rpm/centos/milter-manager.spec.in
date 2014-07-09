@@ -1,4 +1,4 @@
-%if 0%{?centos} >= 6
+%if 0%{?centos} == 6
 %define ruby_command ruby1.9
 %define ruby_package ruby1.9
 %define ruby_build_requires ruby1.9
