@@ -431,13 +431,8 @@ test_unknown_option (void)
             "  %s [OPTION...]\n"
             "\n"
             "Help Options:\n"
-#if GLIB_CHECK_VERSION(2, 21, 0)
             "  -h, --help                                     "
             "Show help options\n"
-#else
-            "  -?, --help                                     "
-            "Show help options\n"
-#endif
             "  --help-all                                     "
             "Show all help options\n"
             "  --help-milter                                  "
