@@ -100,7 +100,7 @@ encode_macros (GHashTable *macros, GString *buffer)
 {
     GList *keys, *node;
 
-    keys = milter_utils_hash_table_get_keys(macros);
+    keys = g_hash_table_get_keys(macros);
     keys = g_list_sort(keys, compare_macro_key);
     for (node = keys; node; node = g_list_next(node)) {
         gchar *key = node->data;

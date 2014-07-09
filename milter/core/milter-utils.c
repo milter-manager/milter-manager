@@ -913,12 +913,6 @@ milter_utils_parse_file_mode (const gchar *string,
     return success;
 }
 
-GList *
-milter_utils_hash_table_get_keys (GHashTable *table)
-{
-    return g_hash_table_get_keys(table);
-}
-
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
