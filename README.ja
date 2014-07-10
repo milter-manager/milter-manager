@@ -24,7 +24,6 @@ milter manager
 
   * ライセンスが明記してあるファイル:
     * milter/core/milter-memory-profile.c: LGPL2+
-    * binding/ruby/lib/milter/compatible.rb: Ruby's
   * コマンド: GPL3
     * src/以下
     * tool/直下
