@@ -326,13 +326,11 @@ fi
 %files -n libmilter-core
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
-%doc %{_datadir}/milter-manager/license/
 %{_libdir}/libmilter-core.so.*
 
 %files -n libmilter-core-devel
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
-%doc %{_datadir}/milter-manager/license/
 %doc %{_datadir}/gtk-doc/html/milter-manager/
 %{_includedir}/milter-manager/milter/core.h
 %{_includedir}/milter-manager/milter/core/
@@ -343,7 +341,6 @@ fi
 %files -n libmilter-client
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
-%doc %{_datadir}/milter-manager/license/
 %{_bindir}/milter-test-client
 %{_libdir}/libmilter-client.so.*
 %{_mandir}/man1/milter-test-client.*
@@ -352,7 +349,6 @@ fi
 %files -n libmilter-client-devel
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
-%doc %{_datadir}/milter-manager/license/
 %doc %{_datadir}/gtk-doc/html/milter-manager/
 %{_includedir}/milter-manager/milter/client.h
 %{_includedir}/milter-manager/milter/client/
@@ -363,7 +359,6 @@ fi
 %files -n libmilter-server
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
-%doc %{_datadir}/milter-manager/license/
 %{_bindir}/milter-test-server
 %{_libdir}/libmilter-server.so.*
 %{_mandir}/man1/milter-test-server.*
@@ -372,7 +367,6 @@ fi
 %files -n libmilter-server-devel
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
-%doc %{_datadir}/milter-manager/license/
 %doc %{_datadir}/gtk-doc/html/milter-manager/
 %{_includedir}/milter-manager/milter/server.h
 %{_includedir}/milter-manager/milter/server/
@@ -383,7 +377,6 @@ fi
 %files -n ruby-milter-core
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
-%doc %{_datadir}/milter-manager/license/
 %doc %{_datadir}/gtk-doc/html/milter-manager/
 %{ruby_libdir}/milter/core.rb
 %{_libdir}/milter-manager/binding/ext/glib2.so
@@ -409,7 +402,6 @@ fi
 %files -n ruby-milter-client
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
-%doc %{_datadir}/milter-manager/license/
 %doc %{_datadir}/gtk-doc/html/milter-manager/
 %{ruby_libdir}/milter.rb
 %{ruby_libdir}/milter/client.rb
@@ -425,7 +417,6 @@ fi
 %files -n ruby-milter-server
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
-%doc %{_datadir}/milter-manager/license/
 %doc %{_datadir}/gtk-doc/html/milter-manager/
 %{ruby_libdir}/milter/server.rb
 %{_libdir}/milter-manager/binding/ext/milter_server.so
@@ -438,14 +429,12 @@ fi
 %files -n libmilter-compatible
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
-%doc %{_datadir}/milter-manager/license/
 %{_bindir}/milter-test-client-libmilter
 %{_libdir}/milter-manager/libmilter.so.*
 
 %files -n libmilter-compatible-devel
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
-%doc %{_datadir}/milter-manager/license/
 %doc %{_datadir}/gtk-doc/html/milter-manager/
 %{_includedir}/milter-manager/libmilter/
 %{_libdir}/milter-manager/libmilter.so
@@ -455,14 +444,12 @@ fi
 %files -n milter-manager-munin-plugins
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
-%doc %{_datadir}/milter-manager/license/
 %{_datadir}/munin/
 %config %{_sysconfdir}/munin/plugin-conf.d/
 
 %files -n milter-manager-log-analyzer
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
-%doc %{_datadir}/milter-manager/license/
 %{_bindir}/milter-manager-log-analyzer
 %{_mandir}/man1/milter-manager-log-analyzer.*
 %{_mandir}/ja/man1/milter-manager-log-analyzer.*
