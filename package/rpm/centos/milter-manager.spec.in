@@ -494,7 +494,7 @@ fi
 %{_bindir}/milter-manager-log-analyzer
 %{_mandir}/man1/milter-manager-log-analyzer.*
 %{_mandir}/ja/man1/milter-manager-log-analyzer.*
-%{_sysconfdir}/cron.d/
+%config(noreplace) %{_sysconfdir}/cron.d/
 
 %files doc
 %defattr(-,root,root,-)
