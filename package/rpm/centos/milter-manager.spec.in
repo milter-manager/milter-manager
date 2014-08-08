@@ -223,6 +223,7 @@ Documentation for milter manager
 
 %build
 %configure								\
+    --disable-static					\
     --with-default-effective-user=milter-manager			\
     --with-default-effective-group=milter-manager			\
     --with-default-socket-group=milter-manager				\
@@ -231,6 +232,9 @@ Documentation for milter manager
     --with-ruby=/usr/bin/%{ruby_command}			\
     --with-bundled-ruby-glib2						\
     --enable-ruby-milter=%{ruby_libdir}
+
+sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
+sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 
 make %{?_smp_mflags}
 
