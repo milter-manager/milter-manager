@@ -44,7 +44,6 @@ Summary: A common library for milter protocol libraries
 Group: System Environment/Libraries
 License: LGPLv3+
 Obsoletes: libmilter-toolkit < 1.6.6-0
-Requires: glib2
 
 %description -n libmilter-core
 Common libraries for both of client-side and server-side milter protocol
