@@ -271,6 +271,7 @@ if ! /usr/bin/id milter-manager &>/dev/null; then
 fi
 
 %post
+/sbin/ldconfig
 /sbin/chkconfig --add milter-manager
 /bin/mkdir -p /var/run/milter-manager
 /bin/chown -R milter-manager:milter-manager /var/run/milter-manager
@@ -282,6 +283,18 @@ fi
 [ -f /var/lock/subsys/munin-node ] && \
     /sbin/service munin-node restart > /dev/null 2>&1
 :
+
+%post -n milter-manager-debuginfo -p /sbin/ldconfig
+%postun -n milter-manager-debuginfo -p /sbin/ldconfig
+
+%post -n libmilter-core -p /sbin/ldconfig
+%postun -n libmilter-core -p /sbin/ldconfig
+
+%post -n libmilter-client -p /sbin/ldconfig
+%postun -n libmilter-client -p /sbin/ldconfig
+
+%post -n libmilter-server -p /sbin/ldconfig
+%postun -n libmilter-server -p /sbin/ldconfig
 
 %preun
 if [ $1 -eq 0 ] ; then
@@ -295,6 +308,7 @@ if [ $1 -ge 1 ] ; then
 fi
 
 if [ $1 -eq 0 ]; then
+    /sbin/ldconfig
     /usr/sbin/userdel -r milter-manager || \
 	%logmsg "User \"milter-manager\" could not be deleted."
 fi
@@ -486,6 +500,7 @@ fi
 %defattr(-,root,root,-)
 %doc README
 %doc %{_datadir}/gtk-doc/html/milter-manager/
+
 
 %changelog
 * Thu Jun 19 2014 Kenji Okimoto <okimoto@clear-code.com> - 2.0.4-1
