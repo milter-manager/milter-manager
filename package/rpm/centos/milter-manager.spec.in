@@ -223,13 +223,13 @@ Documentation for milter manager
 
 %build
 %configure								\
-    --disable-static					\
+    --disable-static							\
     --with-default-effective-user=milter-manager			\
     --with-default-effective-group=milter-manager			\
     --with-default-socket-group=milter-manager				\
     --with-default-pid-file=/var/run/milter-manager/milter-manager.pid	\
     --with-default-connection-spec=unix:/var/run/milter-manager/milter-manager.sock \
-    --with-ruby=/usr/bin/%{ruby_command}			\
+    --with-ruby=/usr/bin/%{ruby_command}				\
     --with-bundled-ruby-glib2						\
     --enable-ruby-milter=%{ruby_libdir}
 
