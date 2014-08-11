@@ -241,6 +241,7 @@ make %{?_smp_mflags}
 %install
 rm -rf %{buildroot}
 make install DESTDIR=%{buildroot}
+find $RPM_BUILD_ROOT%{_libdir}/ -name \*.la | xargs rm
 
 chmod 600 %{buildroot}%{_sysconfdir}/cron.d/milter-manager-log
 
@@ -372,7 +373,6 @@ fi
 %{_includedir}/milter-manager/milter/core.h
 %{_includedir}/milter-manager/milter/core/
 %{_libdir}/libmilter-core.so
-%{_libdir}/libmilter-core.la
 %{_libdir}/pkgconfig/milter-core.pc
 
 %files -n libmilter-client
@@ -387,7 +387,6 @@ fi
 %{_includedir}/milter-manager/milter/client.h
 %{_includedir}/milter-manager/milter/client/
 %{_libdir}/libmilter-client.so
-%{_libdir}/libmilter-client.la
 %{_libdir}/pkgconfig/milter-client.pc
 
 %files -n libmilter-server
@@ -402,7 +401,6 @@ fi
 %{_includedir}/milter-manager/milter/server.h
 %{_includedir}/milter-manager/milter/server/
 %{_libdir}/libmilter-server.so
-%{_libdir}/libmilter-server.la
 %{_libdir}/pkgconfig/milter-server.pc
 
 %files -n ruby-milter-core
@@ -414,7 +412,6 @@ fi
 %{_libdir}/milter-manager/binding/ext/rbg*.h
 %{_libdir}/milter-manager/binding/ext/glib*.h
 %{_libdir}/milter-manager/binding/ext/milter_core.so
-%{_libdir}/milter-manager/binding/ext/milter_core.la
 %{_libdir}/milter-manager/binding/ext/rb-milter-core.h
 %{_libdir}/milter-manager/binding/lib/milter.rb
 %{_libdir}/milter-manager/binding/lib/milter/core.rb
@@ -437,7 +434,6 @@ fi
 %{ruby_libdir}/milter.rb
 %{ruby_libdir}/milter/client.rb
 %{_libdir}/milter-manager/binding/ext/milter_client.so
-%{_libdir}/milter-manager/binding/ext/milter_client.la
 %{_libdir}/milter-manager/binding/ext/rb-milter-client.h
 %{_libdir}/milter-manager/binding/lib/milter/client.rb
 %{_libdir}/milter-manager/binding/lib/milter/client/
@@ -451,7 +447,6 @@ fi
 %doc %{_datadir}/gtk-doc/html/milter-manager/
 %{ruby_libdir}/milter/server.rb
 %{_libdir}/milter-manager/binding/ext/milter_server.so
-%{_libdir}/milter-manager/binding/ext/milter_server.la
 %{_libdir}/milter-manager/binding/ext/rb-milter-server.h
 %{_libdir}/milter-manager/binding/lib/milter/server.rb
 %{_libdir}/milter-manager/binding/lib/milter/server/
@@ -468,7 +463,6 @@ fi
 %doc %{_datadir}/gtk-doc/html/milter-manager/
 %{_includedir}/milter-manager/libmilter/
 %{_libdir}/milter-manager/libmilter.so
-%{_libdir}/milter-manager/libmilter.la
 %{_libdir}/pkgconfig/libmilter.pc
 
 %files -n milter-test-client
