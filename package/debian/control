@@ -213,7 +213,7 @@ Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	libmilter-compatible (= ${binary:Version})
-Description: Milter developement files which have API compatiblity with Sendmail's libmilter
+Description: Milter development files which have API compatiblity with Sendmail's libmilter
  This provides API that is compatible with Sendmail's libmilter. Milters can
  be built and run with libmilter-compatible-dev and libmilter-compatible.
 
