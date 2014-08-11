@@ -39,6 +39,23 @@ Requires(postun): /sbin/service, /sbin/chkconfig, /usr/sbin/userdel
 milter manager administrates milters instead of MTA to reduce milter
 administration cost and combine milters flexibly.
 
+%package libs
+Summary: Runtime libraries for milter manager
+Group: System Environment/Libraries
+License: LGPLv3+
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
+
+%description libs
+This packages contains libraries for milter manager.
+
+%package devel
+Summary: Libraries and header files for milter manager
+Group: Development/Libraries
+
+%description devel
+Libraries and header files for milter manager
+
 %package -n libmilter-core
 Summary: A common library for milter protocol libraries
 Group: System Environment/Libraries
@@ -276,10 +293,12 @@ if ! /usr/bin/id milter-manager &>/dev/null; then
 fi
 
 %post
-/sbin/ldconfig
 /sbin/chkconfig --add milter-manager
 /bin/mkdir -p /var/run/milter-manager
 /bin/chown -R milter-manager:milter-manager /var/run/milter-manager
+
+%post libs -p /sbin/ldconfig
+%postun libs -p /sbin/ldconfig
 
 %post -n milter-manager-munin-plugins
 /usr/sbin/munin-node-configure --shell --remove-also | \
@@ -335,14 +354,6 @@ fi
 %{_bindir}/milter-performance-check
 %{_bindir}/milter-report-statistics
 %{_sbindir}/milter-manager
-%{_includedir}/milter-manager/milter/manager.h
-%{_includedir}/milter-manager/milter/manager/
-%{_libdir}/libmilter-manager.*
-%{_libdir}/milter-manager/binding/ext/milter_manager.*
-%{_libdir}/milter-manager/binding/lib/milter/manager.rb
-%{_libdir}/milter-manager/binding/lib/milter/manager/
-%{_libdir}/milter-manager/module/
-%{_libdir}/pkgconfig/milter-manager.pc
 %{_mandir}/man1/milter-performance-check.*
 %{_mandir}/man1/milter-report-statistics.*
 %{_mandir}/man1/milter-manager.*
@@ -360,6 +371,21 @@ fi
 
 %defattr(-, milter-manager, milter-manager, 0755)
 %dir %{_localstatedir}/run/milter-manager/
+
+%files libs
+%defattr(-, root, root, -)
+%{_libdir}/libmilter-manager.so.*
+%{_libdir}/milter-manager/binding/ext/milter_manager.*
+%{_libdir}/milter-manager/binding/lib/milter/manager.rb
+%{_libdir}/milter-manager/binding/lib/milter/manager/
+%{_libdir}/milter-manager/module/
+
+%files devel
+%defattr(-, root, root, -)
+%{_includedir}/milter-manager/milter/manager.h
+%{_includedir}/milter-manager/milter/manager/
+%{_libdir}/libmilter-manager.so
+%{_libdir}/pkgconfig/milter-manager.pc
 
 %files -n libmilter-core
 %defattr(-,root,root)
