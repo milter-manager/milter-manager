@@ -27,6 +27,7 @@ BuildRequires: gcc
 BuildRequires: make
 BuildRequires: glib2-devel
 BuildRequires: %{ruby_build_requires}
+Requires: %{name}-libs = %{version}-%{release}
 Requires: ruby-milter-client = %{version}-%{release}
 Requires: ruby-milter-server = %{version}-%{release}
 Requires(pre): /usr/bin/getent, /usr/sbin/useradd
