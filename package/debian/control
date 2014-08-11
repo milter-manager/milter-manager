@@ -2,7 +2,6 @@ Source: milter-manager
 Section: mail
 Priority: optional
 Maintainer: Kouhei Sutou <kou@clear-code.com>
-Uploaders: Jun Kobayashi <jkbys@ubuntu.com>
 Build-Depends:
 	debhelper (>= 5),
 	autotools-dev,
