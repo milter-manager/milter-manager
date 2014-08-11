@@ -205,17 +205,17 @@ Requires: libmilter-compatible = %{version}-%{release}
 %description -n milter-test-server
 This package provides mitler-test-server command.
 
-%package -n milter-manager-munin-plugins
+%package munin-plugins
 Summary: Munin plugins for milter manager
 Group: System Environment/Libraries
 License: LGPLv3+
 Requires: munin-node
 Requires: milter-manager = %{version}-%{release}
 
-%description -n milter-manager-munin-plugins
+%description munin-plugins
 This package contains the munin plugins for munin-node.
 
-%package -n milter-manager-log-analyzer
+%package log-analyzer
 Summary: Analyze milter-manager's log.
 Group: Applications/System
 License: GPLv3+
@@ -223,7 +223,7 @@ Requires: milter-manager = %{version}-%{release}
 Requires: %{ruby_package}
 Requires: rrdtool
 
-%description -n milter-manager-log-analyzer
+%description log-analyzer
 This provides a Ruby script to generate some graphs from
 milter-manager's log.
 
@@ -300,7 +300,7 @@ fi
 %post libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
 
-%post -n milter-manager-munin-plugins
+%post munin-plugins
 /usr/sbin/munin-node-configure --shell --remove-also | \
     grep -e '\(milter_manager_\|\(postfix\|sendmail\)_processes\)' | \
     sh
@@ -308,8 +308,8 @@ fi
     /sbin/service munin-node restart > /dev/null 2>&1
 :
 
-%post -n milter-manager-debuginfo -p /sbin/ldconfig
-%postun -n milter-manager-debuginfo -p /sbin/ldconfig
+%post debuginfo -p /sbin/ldconfig
+%postun debuginfo -p /sbin/ldconfig
 
 %post -n libmilter-core -p /sbin/ldconfig
 %postun -n libmilter-core -p /sbin/ldconfig
@@ -337,7 +337,7 @@ if [ $1 -eq 0 ]; then
 	%logmsg "User \"milter-manager\" could not be deleted."
 fi
 
-%postun -n milter-manager-munin-plugins
+%postun munin-plugins
 if [ $1 -eq 0 ]; then
     rm %{_sysconfdir}/munin/plugins/milter_manager_* > /dev/null 2>&1
     rm %{_sysconfdir}/munin/plugins/postfix_processes > /dev/null 2>&1
@@ -506,13 +506,13 @@ fi
 %{_mandir}/man1/milter-test-server.*
 %{_mandir}/ja/man1/milter-test-server.*
 
-%files -n milter-manager-munin-plugins
+%files munin-plugins
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
 %{_datadir}/munin/
 %config %{_sysconfdir}/munin/plugin-conf.d/
 
-%files -n milter-manager-log-analyzer
+%files log-analyzer
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
 %{_bindir}/milter-manager-log-analyzer
