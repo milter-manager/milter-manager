@@ -2,7 +2,7 @@ SERVER_PATH = $(SF_FRS)
 DISTRIBUTIONS = debian ubuntu
 CHROOT_BASE = /var/lib/chroot
 ARCHITECTURES = i386 amd64
-CODE_NAMES = wheezy jessie unstable lucid precise saucy trusty
+CODE_NAMES = wheezy jessie unstable lucid precise trusty
 
 release: build update sign upload
 
