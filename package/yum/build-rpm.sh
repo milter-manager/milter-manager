@@ -195,6 +195,8 @@ fi
 chmod o+rx . rpm rpm/RPMS rpm/SRPMS
 
 rpmbuild -ba rpm/SPECS/${PACKAGE}.spec ${BUILD_OPTIONS}
+find rpm/RPMS -name \*${VERSION}\*.rpm | xargs rpmlint
+:
 EOF
 
 run chmod +x $BUILD_SCRIPT
