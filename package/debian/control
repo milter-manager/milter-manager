@@ -87,7 +87,7 @@ Description: munin-node plugins for milter manager
  administration cost and combine milters flexibly.
  .
  This provides munin-node plugins to monitor milter manager and related
- softwares. (e.g. Postfix, Sendmail and milters.)
+ software. (e.g. Postfix, Sendmail and milters.)
 
 Package: milter-manager-log-analyzer
 Section: ruby
@@ -132,7 +132,7 @@ Description: Development files for milter core library
  milter "core" library is a common library for mitler "client" and
  milter "server" libraries.
  .
- This provides development environment to build softwares against
+ This provides development environment to build software against
  libmilter-core.
 
 Package: libmilter-client0
@@ -161,7 +161,7 @@ Description: Development files for milter client library
  milter "client" library is a library which implements client-side
  (milter-side) milter protocol.
  .
- This provides development environment to build softwares against
+ This provides development environment to build software against
  libmilter-client.
 
 Package: libmilter-server0
@@ -190,7 +190,7 @@ Description: Development files for milter toolkit
  milter "server" library is a library which implements server-side
  (MTA-side) milter protocol.
  .
- This provides development environment to build softwares against
+ This provides development environment to build software against
  libmilter-server.
 
 Package: libmilter-compatible
