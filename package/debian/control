@@ -22,13 +22,13 @@ Depends:
 	ruby (>= 1:1.9.3),
 	adduser
 Suggests: postfix | sendmail, spamass-milter, clamav-milter, milter-greylist
-Description: A milter to use milters effectively
+Description: Milter to use milters effectively
  milter manager administrates milters instead of MTA to reduce milter
  administration cost and combine milters flexibly.
 
 Package: milter-manager-doc
 Section: doc
-Architecture: any
+Architecture: all
 Depends: ${misc:Depends}
 Description: Documentation of milter manager
  milter manager administrates milters instead of MTA to reduce milter
@@ -82,7 +82,7 @@ Depends:
 	milter-manager (= ${binary:Version}),
 	munin-node,
 	ruby (>= 1:1.9.3)
-Description: munin-node plugins for milter manager
+Description: This package proviede munin-node plugins for milter manager
  milter manager administrates milters instead of MTA to reduce milter
  administration cost and combine milters flexibly.
  .
@@ -115,7 +115,7 @@ Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	libglib2.0-0
-Description: A common library for implementing milter protocol
+Description: Common library for implementing milter protocol
  milter "core" library is a common library for mitler "client" and
  milter "server" libraries.
 
@@ -200,7 +200,7 @@ Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	libmilter-client0 (= ${binary:Version})
-Description: A milter library which has ABI compatiblity with Sendmail's libmilter
+Description: Milter library which has ABI compatiblity with Sendmail's libmilter
  libmilter-compatible is a milter toolkit based library which has ABI
  compatiblity with Sendmail's libmilter. It can be used with a milter
  which is built with Sendmail's libmilter. To use LD_PRELOAD is the
