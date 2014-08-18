@@ -28,5 +28,5 @@ override_dh_install:
 	dh_install
 
 override_dh_installdocs:
-	dh_installdocs --all NEWS NEWS.ja README.ja TODO license/*.txt
+	dh_installdocs --all NEWS NEWS.ja README.ja TODO
 
