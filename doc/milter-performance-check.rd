@@ -134,8 +134,9 @@ smtp-source is more better tool for you.
    Since 1.6.9.
 
    Loads SMTP Authentication configurations for MTA address
-   and port number pairs from ((|FILE|)). Here is ((|FILE|))
-   format that is also used by ((<Postfix's 
+   and port number pairs from ((|FILE|)).
+
+   Here is ((|FILE|)) format that is also used by ((<Postfix's
    smtp_sasl_password_maps|URL:http://www.postfix.org/postconf.5.html#smtp_sasl_password_maps>)):
 
      SERVER1:PORT USER1:PASSWORD1
