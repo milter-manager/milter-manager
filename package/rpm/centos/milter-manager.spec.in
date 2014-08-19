@@ -217,7 +217,7 @@ Requires: milter-manager = %{version}-%{release}
 This package contains the munin plugins for munin-node.
 
 %package log-analyzer
-Summary: Analyze milter-manager's log.
+Summary: Analyze milter-manager's log
 Group: Applications/System
 License: GPLv3+
 Requires: milter-manager = %{version}-%{release}
