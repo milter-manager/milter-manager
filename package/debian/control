@@ -7,7 +7,6 @@ Build-Depends:
 	autotools-dev,
 	libglib2.0-dev,
 	ruby (>= 1:1.9.3), ruby-dev (>= 1:1.9.3),
-	cdbs,
 	intltool
 Standards-Version: 3.7.3.0
 Homepage: http://milter-manager.sourceforge.net/
