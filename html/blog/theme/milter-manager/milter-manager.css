@@ -61,6 +61,31 @@ pre
   overflow: auto;
 }
 
+table.CodeRay,
+table.CodeRay th,
+table.CodeRay td
+{
+  border-style: none;
+  padding: 0;
+}
+
+table.CodeRay td.line_numbers
+{
+  padding-left: 1em;
+}
+
+table.CodeRay pre
+{
+  margin: 0;
+  width: auto;
+}
+
+table.CodeRay td.code pre
+{
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
 div.error,
 span.error
 {
