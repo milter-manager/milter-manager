@@ -5,19 +5,25 @@
 #export DH_VERBOSE=1
 # This has to be exported to make some magic below work.
 export DH_OPTIONS
+# search rbgobject.h
+export CFLAGS += -I$(ruby -rrbconfig -e 'print RbConfig::CONFIG["vendorarchdir"]')
+# Workaround ev.h path
+export CFLAGS += -I/usr/include
+# support MULTIARCH
+export DEB_HOST_MULTIARCH ?= $(dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 %:
 	dh $@
 
 override_dh_auto_configure:
-	dh_auto_configure --								\
-		--with-default-effective-user=milter-manager				\
-		--with-default-effective-group=mail					\
-		--with-default-socket-group=mail					\
-		--with-default-pid-file=/var/run/milter-manager/milter-manager.pid	\
-		--with-default-connection-spec=unix:/var/run/milter-manager/milter-manager.sock \
-		--with-bundled-ruby-glib2						\
-		--enable-ruby-milter=$$(ruby -rrbconfig -e 'print RbConfig::CONFIG["rubylibdir"]')
+	dh_auto_configure --													\
+		--with-default-effective-user=milter-manager						\
+		--with-default-effective-group=mail								\
+		--with-default-socket-group=mail									\
+		--with-default-pid-file=/run/milter-manager/milter-manager.pid	\
+		--with-default-connection-spec=unix:/run/milter-manager/milter-manager.sock \
+		--with-libev=/usr/lib/$(DEB_HOST_MULTIARCH) \
+		--enable-ruby-milter=$$(ruby -rrbconfig -e 'print RbConfig::CONFIG["vendordir"]')
 
 
 # disable 'make check'.
@@ -27,6 +33,15 @@ override_dh_install:
 	find $(CURDIR)/debian/tmp/usr/lib/ -name *.la -delete
 	dh_install
 
-override_dh_installdocs:
-	dh_installdocs --all NEWS NEWS.ja README.ja TODO
+override_dh_installchangelogs:
+	dh_installchangelogs --all -k NEWS
 
+override_dh_installdocs:
+	dh_installdocs --all NEWS.ja README.ja TODO
+
+override_dh_auto_clean:
+	dh_auto_clean
+	-find $(CURDIR)/binding/ruby -name Makefile | xargs rm -f
+	-rm -fr $(CURDIR)/doc/reference/ja/*.xml
+	-rm -fr $(CURDIR)/doc/reference/ja/html.stamp
+	-rm -fr $(CURDIR)/doc/reference/ja/xml
