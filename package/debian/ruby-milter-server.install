@@ -1,5 +1,5 @@
-usr/lib/pkgconfig/ruby-milter-server.pc
-usr/lib/ruby/1.9.1/milter/server.rb
-usr/lib/milter-manager/binding/ext/milter_server.*
-usr/lib/milter-manager/binding/lib/milter/server.rb
-usr/lib/milter-manager/binding/lib/milter/server/*
+usr/lib/*/pkgconfig/ruby-milter-server.pc
+usr/lib/*/milter-manager/binding/ext/milter_server.*
+usr/lib/*/milter-manager/binding/lib/milter/server.rb
+usr/lib/*/milter-manager/binding/lib/milter/server/*
+usr/lib/ruby/vendor_ruby/milter/server.rb

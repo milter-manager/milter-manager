@@ -1,5 +1,5 @@
-usr/lib/libmilter-manager.so
-usr/lib/pkgconfig/milter-manager.pc
+usr/lib/*/libmilter-manager.so
+usr/lib/*/pkgconfig/milter-manager.pc
 usr/include/milter-manager/milter/manager.h
 usr/include/milter-manager/milter/manager.h
 usr/include/milter-manager/milter/manager/*

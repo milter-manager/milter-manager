@@ -1,4 +1,4 @@
-usr/lib/libmilter-server.so
-usr/lib/pkgconfig/milter-server.pc
+usr/lib/*/libmilter-server.so
+usr/lib/*/pkgconfig/milter-server.pc
 usr/include/milter-manager/milter/server.h
 usr/include/milter-manager/milter/server/*

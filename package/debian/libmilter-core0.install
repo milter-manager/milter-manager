@@ -1,1 +1,1 @@
-usr/lib/libmilter-core.so.*
+usr/lib/*/libmilter-core.so.*

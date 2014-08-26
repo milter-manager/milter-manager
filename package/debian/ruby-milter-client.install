@@ -1,7 +1,7 @@
-usr/lib/pkgconfig/ruby-milter.pc
-usr/lib/pkgconfig/ruby-milter-client.pc
-usr/lib/ruby/1.9.1/milter/client.rb
-usr/lib/milter-manager/binding/ext/milter_client.*
-usr/lib/milter-manager/binding/lib/milter.rb
-usr/lib/milter-manager/binding/lib/milter/client.rb
-usr/lib/milter-manager/binding/lib/milter/client/*
+usr/lib/*/pkgconfig/ruby-milter.pc
+usr/lib/*/pkgconfig/ruby-milter-client.pc
+usr/lib/*/milter-manager/binding/ext/milter_client.*
+usr/lib/*/milter-manager/binding/lib/milter.rb
+usr/lib/*/milter-manager/binding/lib/milter/client.rb
+usr/lib/*/milter-manager/binding/lib/milter/client/*
+usr/lib/ruby/vendor_ruby/milter/client.rb
