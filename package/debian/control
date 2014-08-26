@@ -2,18 +2,17 @@ Source: milter-manager
 Section: mail
 Priority: optional
 Maintainer: Kouhei Sutou <kou@clear-code.com>
-Uploaders: Kenji Okimoto <okimoto@clear-code.com>
+Uploaders: Kenji Okimoto <okimoto@clear-code.com>, Youhei SASAKI <uwabami@gfd-dennou.org>
 Build-Depends:
-	debhelper (>= 5),
+	debhelper (>= 9),
 	autotools-dev,
 	libglib2.0-dev,
-	ruby (>= 1:1.9.3), ruby-dev (>= 1:1.9.3),
+	ruby (>= 1:1.9.3), ruby-dev (>= 1:1.9.3), ruby-gnome2-dev,
 	intltool
-Standards-Version: 3.7.3.0
+Standards-Version: 3.9.5
 Homepage: http://milter-manager.sourceforge.net/
 
 Package: milter-manager
-Section: mail
 Architecture: any
 Depends:
 	${shlibs:Depends},
@@ -264,4 +263,3 @@ Description: Ruby bindings for milter server (Ruby interface)
  (MTA-side) milter protocol.
  .
  This provides Ruby bindings for libmilter-server.
-
