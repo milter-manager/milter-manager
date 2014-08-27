@@ -23,7 +23,15 @@ run()
 
 for distribution in ${DISTRIBUTIONS}; do
     for dir in $script_base_dir/${distribution}/*/*; do
-        test -d $dir && run createrepo $dir
+        case $dir in
+            *centos/5/*)
+                echo $dir
+                test -d $dir && run createrepo --checksum sha $dir
+                ;;
+            *)
+                test -d $dir && run createrepo $dir
+                ;;
+        esac
     done;
 
     run $script_base_dir/gpg-public-key.sh > \
