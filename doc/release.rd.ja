@@ -11,6 +11,23 @@ rbenv を使用している場合は、以下のように ruby コマンドと r
 パスを指定する。rbenv を使用していない場合は各コマンドのパスを自動検出
 するようになっている。
 
+TODO: 手順を整理する。
+NOTE: apt で入れるパッケージと gem で入れるパッケージが被っている。。。
+
+  % sudo apt-get install \
+    ruby-gnome2-dev \
+    ruby-glib2 \
+    cutter-glib-support \
+    cutter-testing-framework-bin \
+    lcov \
+    gtk-doc-tools \
+    gnome-doc-utils \
+    libglib2.0-dev \
+    ruby-gnome2-dev \
+    build-essential \
+    rdtool \
+    ruby-fast-gettext \
+    inkscape
   % gem install rdtool rttool gettext fast_gettext rr mechanize
   % ACLOCAL_OPTIONS="-I $HOME/opt/cutter/share/aclocal" ./autogen.sh --no-update
   % ./configure --prefix=/tmp/local \
