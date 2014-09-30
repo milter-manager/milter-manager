@@ -21,6 +21,13 @@ class TestClientContext < Test::Unit::TestCase
     @context.event_loop = Milter::GLibEventLoop.new
   end
 
+  def test_shelf
+    value = { :foo => "bar", :baz => "boo" }
+    assert_nil(@context.shelf)
+    @context.shelf = value
+    assert_equal(value, @context.shelf)
+  end
+
   def test_feed
     received_option = nil
     @context.signal_connect("negotiate") do |_, option|

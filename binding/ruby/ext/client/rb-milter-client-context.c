@@ -273,6 +273,8 @@ Init_milter_client_context (void)
     G_DEF_CONSTANTS(rb_cMilterClientContext, MILTER_TYPE_CLIENT_CONTEXT_STATE,
                     "MILTER_CLIENT_CONTEXT_");
 
+    rb_define_attr(rb_cMilterClientContext, "shelf", TRUE, TRUE);
+
     rb_define_method(rb_cMilterClientContext, "initialize", initialize, -1);
     rb_define_method(rb_cMilterClientContext, "feed", feed, 1);
     rb_define_method(rb_cMilterClientContext, "progress", progress, 0);
