@@ -113,11 +113,15 @@ class TestChildContext < Test::Unit::TestCase
     assert_true(create_context.authenticated?)
   end
 
-  def test_shelf
-    value = { "foo" => "bar", "baz" => "boo" }
-    assert_nil(@context.mail_transaction_shelf)
-    @context.mail_transaction_shelf = value
-    assert_equal(value, @context.mail_transaction_shelf)
+  data(:hash_string => { "foo" => "bar", "baz" => 1, "true" => true },
+       :hash_symbol => { :foo => "bar", :baz => 1, :true => true },
+       :string => "string",
+       :fixnum => 42,
+       :true =>  true,
+       :false => false,)
+  def test_shelf(data)
+    @context.mail_transaction_shelf["key"] = data
+    assert_equal(data, @context.mail_transaction_shelf["key"])
   end
 
   private
