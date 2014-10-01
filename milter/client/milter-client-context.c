@@ -3933,6 +3933,17 @@ milter_client_context_clear_mail_transaction_shelf (MilterClientContext *context
     g_hash_table_remove_all(priv->mail_transaction_shelf);
 }
 
+void
+milter_client_context_mail_transaction_shelf_foreach (MilterClientContext *context,
+                                                      GHFunc func,
+                                                      gpointer user_data)
+{
+    MilterClientContextPrivate *priv;
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+
+    g_hash_table_foreach(priv->mail_transaction_shelf, func, user_data);
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

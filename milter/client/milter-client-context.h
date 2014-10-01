@@ -1008,6 +1008,19 @@ GHashTable          *milter_client_context_get_mail_transaction_shelf
 void                 milter_client_context_clear_mail_transaction_shelf
                                                        (MilterClientContext *context);
 
+/**
+ * milter_client_context_mail_transaction_shelf_foreach:
+ * @context: a %MilterClientContext.
+ * @func: the function to call for each key/value pair
+ * @user_data: user data to pass to the function
+ *
+ * A wrapper for g_hash_table_foreach().
+ */
+void                 milter_client_context_mail_transaction_shelf_foreach
+                                                       (MilterClientContext *context,
+                                                        GHFunc func,
+                                                        gpointer user_data);
+
 G_END_DECLS
 
 #endif /* __MILTER_CLIENT_CONTEXT_H__ */
