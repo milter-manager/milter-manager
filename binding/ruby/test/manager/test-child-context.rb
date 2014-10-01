@@ -114,7 +114,7 @@ class TestChildContext < Test::Unit::TestCase
   end
 
   def test_shelf
-    value = { :foo => "bar", :baz => "boo" }
+    value = { "foo" => "bar", "baz" => "boo" }
     assert_nil(@context.shelf)
     @context.shelf = value
     assert_equal(value, @context.shelf)

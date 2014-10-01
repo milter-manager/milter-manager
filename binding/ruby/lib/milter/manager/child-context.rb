@@ -13,6 +13,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
+require "json"
+
 module Milter::Manager
   class ChildContext
     include Milter::MacroNameNormalizer
@@ -67,11 +69,13 @@ module Milter::Manager
     end
 
     def shelf
-      @client_context.shelf
+      return nil if @client_context.shelf.nil?
+      JSON.parse(@client_context.shelf)
     end
 
     def shelf=(value)
-      @client_context.shelf = value
+      json = JSON.generate(value)
+      @client_context.shelf = json
     end
 
     private
