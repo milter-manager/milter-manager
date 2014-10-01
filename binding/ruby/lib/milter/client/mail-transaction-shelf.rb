@@ -5,7 +5,6 @@ module Milter
 
       def initialize(context)
         @context = context
-        @shelf = context.mail_transaction_shelf
       end
 
       def [](key)
@@ -19,7 +18,9 @@ module Milter
       end
 
       def each(&block)
-        @shelf.each(&block)
+        @context.mail_transaction_shelf.each do |key, value|
+          block.call(key, YAML.load(value))
+        end
       end
     end
   end
