@@ -115,9 +115,9 @@ class TestChildContext < Test::Unit::TestCase
 
   def test_shelf
     value = { "foo" => "bar", "baz" => "boo" }
-    assert_nil(@context.shelf)
-    @context.shelf = value
-    assert_equal(value, @context.shelf)
+    assert_nil(@context.mail_transaction_shelf)
+    @context.mail_transaction_shelf = value
+    assert_equal(value, @context.mail_transaction_shelf)
   end
 
   private

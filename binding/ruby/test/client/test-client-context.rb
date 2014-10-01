@@ -21,12 +21,12 @@ class TestClientContext < Test::Unit::TestCase
     @context.event_loop = Milter::GLibEventLoop.new
   end
 
-  def test_shelf
+  def test_mail_transaction_shelf
     value = { :foo => "bar", :baz => "boo" }
     json = JSON.generate(value)
-    assert_nil(@context.shelf)
-    @context.shelf = json
-    assert_equal(json, @context.shelf)
+    assert_nil(@context.mail_transaction_shelf)
+    @context.mail_transaction_shelf = json
+    assert_equal(json, @context.mail_transaction_shelf)
   end
 
   def test_feed

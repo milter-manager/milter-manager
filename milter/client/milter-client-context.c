@@ -110,7 +110,7 @@ struct _MilterClientContextPrivate
     GString *buffered_packets;
     gboolean buffering;
     guint packet_buffer_size;
-    gchar *shelf;
+    gchar *mail_transaction_shelf;
 };
 
 static void         finished           (MilterFinishedEmittable *emittable);
@@ -1580,7 +1580,7 @@ milter_client_context_init (MilterClientContext *context)
     priv->buffered_packets = g_string_new(NULL);
     priv->buffering = FALSE;
     priv->packet_buffer_size = 0;
-    priv->shelf = NULL;
+    priv->mail_transaction_shelf = NULL;
 }
 
 static void
@@ -1662,9 +1662,9 @@ dispose (GObject *object)
         priv->buffered_packets = NULL;
     }
 
-    if (priv->shelf) {
-        g_free(priv->shelf);
-        priv->shelf = NULL;
+    if (priv->mail_transaction_shelf) {
+        g_free(priv->mail_transaction_shelf);
+        priv->mail_transaction_shelf = NULL;
     }
 
     G_OBJECT_CLASS(milter_client_context_parent_class)->dispose(object);
@@ -3892,23 +3892,23 @@ milter_client_context_get_packet_buffer_size (MilterClientContext *context)
 }
 
 void
-milter_client_context_set_shelf(MilterClientContext *context,
-                                const gchar *shelf)
+milter_client_context_set_mail_transaction_shelf(MilterClientContext *context,
+                                                 const gchar *mail_transaction_shelf)
 {
     MilterClientContextPrivate *priv;
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
-    if (priv->shelf)
-        g_free(priv->shelf);
-    priv->shelf = g_strdup(shelf);
+    if (priv->mail_transaction_shelf)
+        g_free(priv->mail_transaction_shelf);
+    priv->mail_transaction_shelf = g_strdup(mail_transaction_shelf);
 }
 
 const gchar *
-milter_client_context_get_shelf(MilterClientContext *context)
+milter_client_context_get_mail_transaction_shelf(MilterClientContext *context)
 {
     MilterClientContextPrivate *priv;
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
 
-    return priv->shelf;
+    return priv->mail_transaction_shelf;
 }
 
 /*

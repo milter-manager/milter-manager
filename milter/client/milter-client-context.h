@@ -961,7 +961,7 @@ guint                milter_client_context_get_packet_buffer_size
 
 
 /**
- * milter_client_context_set_shelf:
+ * milter_client_context_set_mail_transaction_shelf:
  * @context: a %MilterClientContext.
  * @shelf: a string
  *
@@ -969,11 +969,12 @@ guint                milter_client_context_get_packet_buffer_size
  * as a mail-transaction scope storage.
  *
  */
-void                 milter_client_context_set_shelf(MilterClientContext *context,
-                                                     const gchar *shelf);
+void                 milter_client_context_set_mail_transaction_shelf
+                                                       (MilterClientContext *context,
+                                                        const gchar *mail_transaction_shelf);
 
 /**
- * milter_client_context_get_shelf:
+ * milter_client_context_get_mail_transaction_shelf:
  * @context: a %MilterClientContext.
  *
  * Gets the string for the context. The string is intended to be used
@@ -981,7 +982,8 @@ void                 milter_client_context_set_shelf(MilterClientContext *contex
  *
  * Returns: the string for the context.
  */
-const gchar         *milter_client_context_get_shelf(MilterClientContext *context);
+const gchar         *milter_client_context_get_mail_transaction_shelf
+                                                       (MilterClientContext *context);
 
 
 G_END_DECLS

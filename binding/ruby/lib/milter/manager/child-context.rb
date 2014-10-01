@@ -68,14 +68,14 @@ module Milter::Manager
       @client_context.n_processing_sessions
     end
 
-    def shelf
-      return nil if @client_context.shelf.nil?
-      JSON.parse(@client_context.shelf)
+    def mail_transaction_shelf
+      return nil if @client_context.mail_transaction_shelf.nil?
+      JSON.parse(@client_context.mail_transaction_shelf)
     end
 
-    def shelf=(value)
+    def mail_transaction_shelf=(value)
       json = JSON.generate(value)
-      @client_context.shelf = json
+      @client_context.mail_transaction_shelf = json
     end
 
     private

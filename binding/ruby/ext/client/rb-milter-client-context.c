@@ -259,17 +259,18 @@ get_packet_buffer_size (VALUE self)
 }
 
 static VALUE
-set_shelf (VALUE self, VALUE rb_shelf)
+set_mail_transaction_shelf (VALUE self, VALUE rb_shelf)
 {
     const gchar *shelf = RVAL2CSTR(rb_shelf);
-    milter_client_context_set_shelf(SELF(self), shelf);
+    milter_client_context_set_mail_transaction_shelf(SELF(self), shelf);
     return self;
 }
 
 static VALUE
-get_shelf(VALUE self)
+get_mail_transaction_shelf(VALUE self)
 {
-    const gchar *shelf = milter_client_context_get_shelf(SELF(self));
+    const gchar *shelf =
+        milter_client_context_get_mail_transaction_shelf(SELF(self));
     return CSTR2RVAL(shelf);
 }
 
@@ -311,9 +312,11 @@ Init_milter_client_context (void)
     rb_define_method(rb_cMilterClientContext, "set_packet_buffer_size",
                      set_packet_buffer_size, 1);
     rb_define_method(rb_cMilterClientContext, "packet_buffer_size",
-    rb_define_method(rb_cMilterClientContext, "shelf=", set_shelf, 1);
-    rb_define_method(rb_cMilterClientContext, "shelf", get_shelf, 0);
                      get_packet_buffer_size, 0);
+    rb_define_method(rb_cMilterClientContext, "mail_transaction_shelf=",
+                     set_mail_transaction_shelf, 1);
+    rb_define_method(rb_cMilterClientContext, "mail_transaction_shelf",
+                     get_mail_transaction_shelf, 0);
 
     G_DEF_SIGNAL_FUNC(rb_cMilterClientContext, "connect",
                       rb_milter__connect_signal_convert);
