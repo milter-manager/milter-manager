@@ -24,6 +24,7 @@ require "milter/client/context-state"
 require "milter/client/command-line"
 require "milter/client/composite-session"
 require "milter/client/envelope-address"
+require "milter/client/mail-transaction-shelf"
 
 module Milter
   class Client
