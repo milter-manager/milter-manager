@@ -110,6 +110,7 @@ struct _MilterClientContextPrivate
     GString *buffered_packets;
     gboolean buffering;
     guint packet_buffer_size;
+    gchar *shelf;
 };
 
 static void         finished           (MilterFinishedEmittable *emittable);
@@ -1579,6 +1580,7 @@ milter_client_context_init (MilterClientContext *context)
     priv->buffered_packets = g_string_new(NULL);
     priv->buffering = FALSE;
     priv->packet_buffer_size = 0;
+    priv->shelf = NULL;
 }
 
 static void
@@ -1658,6 +1660,11 @@ dispose (GObject *object)
     if (priv->buffered_packets) {
         g_string_free(priv->buffered_packets, TRUE);
         priv->buffered_packets = NULL;
+    }
+
+    if (priv->shelf) {
+        g_free(priv->shelf);
+        priv->shelf = NULL;
     }
 
     G_OBJECT_CLASS(milter_client_context_parent_class)->dispose(object);
@@ -3882,6 +3889,26 @@ milter_client_context_get_packet_buffer_size (MilterClientContext *context)
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     return priv->packet_buffer_size;
+}
+
+void
+milter_client_context_set_shelf(MilterClientContext *context,
+                                const gchar *shelf)
+{
+    MilterClientContextPrivate *priv;
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    if (priv->shelf)
+        g_free(priv->shelf);
+    priv->shelf = g_strdup(shelf);
+}
+
+const gchar *
+milter_client_context_get_shelf(MilterClientContext *context)
+{
+    MilterClientContextPrivate *priv;
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+
+    return priv->shelf;
 }
 
 /*
