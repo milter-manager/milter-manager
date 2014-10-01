@@ -22,11 +22,15 @@ class TestClientContext < Test::Unit::TestCase
   end
 
   def test_mail_transaction_shelf
-    value = { :foo => "bar", :baz => "boo" }
-    json = JSON.generate(value)
     assert_nil(@context.mail_transaction_shelf)
-    @context.mail_transaction_shelf = json
-    assert_equal(json, @context.mail_transaction_shelf)
+    @context.set_mail_transaction_shelf_value("key1", "value1")
+    @context.set_mail_transaction_shelf_value("key2", "value2")
+    @context.set_mail_transaction_shelf_value("key3", "value3")
+    assert_equal("value1", @context.get_mail_transaction_shelf_value("key1"))
+    assert_equal("value2", @context.get_mail_transaction_shelf_value("key2"))
+    assert_equal("value3", @context.get_mail_transaction_shelf_value("key3"))
+    assert_equal(["key1", "key2", "key3"], @context.mail_transaction_shelf.keys.sort)
+    assert_equal(["value1", "value2", "value3"], @context.mail_transaction_shelf.values.sort)
   end
 
   def test_feed
