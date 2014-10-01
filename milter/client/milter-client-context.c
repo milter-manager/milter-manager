@@ -3924,6 +3924,15 @@ milter_client_context_get_mail_transaction_shelf (MilterClientContext *context)
     return priv->mail_transaction_shelf;
 }
 
+void
+milter_client_context_clear_mail_transaction_shelf (MilterClientContext *context)
+{
+    MilterClientContextPrivate *priv;
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+
+    g_hash_table_remove_all(priv->mail_transaction_shelf);
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */

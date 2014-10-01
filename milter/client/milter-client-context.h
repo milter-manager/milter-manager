@@ -998,6 +998,15 @@ const gchar         *milter_client_context_get_mail_transaction_shelf_value
  */
 GHashTable          *milter_client_context_get_mail_transaction_shelf
                                                        (MilterClientContext *context);
+/**
+ * milter_client_context_clear_mail_transaction_shelf:
+ * @context: a %MilterClientContext.
+ *
+ * Remove all keys and values from mail_transaction_shelf.
+ *
+ */
+void                 milter_client_context_clear_mail_transaction_shelf
+                                                       (MilterClientContext *context);
 
 G_END_DECLS
 
