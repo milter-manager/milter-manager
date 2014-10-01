@@ -20,10 +20,13 @@ module Milter::Manager
     include Milter::MacroNameNormalizer
     include Milter::MacroPredicates
 
+    attr_reader :mail_transaction_shelf
+
     def initialize(child, children, client_context)
       @child = child
       @children = children
       @client_context = client_context
+      @mail_transaction_shelf = Milter::Client::MailTransactionShelf.new(client_context)
     end
 
     def name
@@ -66,16 +69,6 @@ module Milter::Manager
 
     def n_processing_sessions
       @client_context.n_processing_sessions
-    end
-
-    def mail_transaction_shelf
-      return nil if @client_context.mail_transaction_shelf.nil?
-      JSON.parse(@client_context.mail_transaction_shelf)
-    end
-
-    def mail_transaction_shelf=(value)
-      json = JSON.generate(value)
-      @client_context.mail_transaction_shelf = json
     end
 
     private
