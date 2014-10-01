@@ -10,6 +10,7 @@ module Milter
 
       def [](key)
         value = @context.get_mail_transaction_shelf_value(key)
+        return nil if value.nil?
         YAML.load(value)
       end
 
