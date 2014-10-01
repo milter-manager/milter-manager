@@ -961,30 +961,43 @@ guint                milter_client_context_get_packet_buffer_size
 
 
 /**
- * milter_client_context_set_mail_transaction_shelf:
+ * milter_client_context_set_mail_transaction_shelf_value:
  * @context: a %MilterClientContext.
- * @shelf: a string
+ * @key: a string
+ * @value: a string
  *
- * Sets the string for the context. The string is intended to be used
- * as a mail-transaction scope storage.
+ * Sets the string for the mail_transaction_shelf.
  *
  */
-void                 milter_client_context_set_mail_transaction_shelf
+void                 milter_client_context_set_mail_transaction_shelf_value
                                                        (MilterClientContext *context,
-                                                        const gchar *mail_transaction_shelf);
+                                                        const gchar *key,
+                                                        const gchar *value);
+
+/**
+ * milter_client_context_get_mail_transaction_shelf_value:
+ * @context: a %MilterClientContext.
+ * @key: a key
+ *
+ * Gets the string for the mail_transaction_shelf.
+ *
+ * Returns: the string for the mail_transaction_shelf.
+ */
+const gchar         *milter_client_context_get_mail_transaction_shelf_value
+                                                       (MilterClientContext *context,
+                                                        const gchar *key);
 
 /**
  * milter_client_context_get_mail_transaction_shelf:
  * @context: a %MilterClientContext.
  *
- * Gets the string for the context. The string is intended to be used
- * as a mail-transaction scope storage.
+ * Gets the mail_transaction_shelf.
+ * This is a mail-transaction scope storage.
  *
- * Returns: the string for the context.
+ * Returns: the GHashTable for the context.
  */
-const gchar         *milter_client_context_get_mail_transaction_shelf
+GHashTable          *milter_client_context_get_mail_transaction_shelf
                                                        (MilterClientContext *context);
-
 
 G_END_DECLS
 
