@@ -285,17 +285,18 @@ build_rb_hash(gpointer key, gpointer value, gpointer data)
 static VALUE
 get_mail_transaction_shelf (VALUE self)
 {
-    VALUE rb_hash = rb_hash_new();
-    GHashTable *hash_table;
+    VALUE rb_hash;
     VALUE shelf = rb_iv_get(self, "@mail_transaction_shelf");
     if (!NIL_P(shelf))
         return shelf;
 
-    hash_table = milter_client_context_get_mail_transaction_shelf(SELF(self));
-    if (g_hash_table_size(hash_table) == 0)
+    rb_hash = rb_hash_new();
+    milter_client_context_mail_transaction_shelf_foreach(SELF(self),
+                                                         build_rb_hash,
+                                                         rb_hash);
+    if (RHASH_ENPTY_P(rb_hash))
         return Qnil;
 
-    g_hash_table_foreach(hash_table, build_rb_hash, (gpointer)rb_hash);
     shelf = rb_iv_set(self, "@mail_transaction_shelf", rb_hash);
     return shelf;
 }
