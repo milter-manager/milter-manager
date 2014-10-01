@@ -289,7 +289,7 @@ get_mail_transaction_shelf (VALUE self)
     GHashTable *hash_table;
     VALUE shelf = rb_iv_get(self, "@mail_transaction_shelf");
     if (!NIL_P(shelf))
-        return Qnil;
+        return shelf;
 
     hash_table = milter_client_context_get_mail_transaction_shelf(SELF(self));
     if (g_hash_table_size(hash_table) == 0)
