@@ -66,6 +66,14 @@ module Milter::Manager
       @client_context.n_processing_sessions
     end
 
+    def shelf
+      @client_context.shelf
+    end
+
+    def shelf=(value)
+      @client_context.shelf = value
+    end
+
     private
     def create_child_contexts
       contexts = {}

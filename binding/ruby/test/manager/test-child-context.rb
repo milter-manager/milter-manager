@@ -113,8 +113,17 @@ class TestChildContext < Test::Unit::TestCase
     assert_true(create_context.authenticated?)
   end
 
+  def test_shelf
+    value = { :foo => "bar", :baz => "boo" }
+    assert_nil(@context.shelf)
+    @context.shelf = value
+    assert_equal(value, @context.shelf)
+  end
+
   private
   def create_context
-    Milter::Manager::ChildContext.new(@clamav, @children, nil)
+    context = Milter::ClientContext.new
+    context.event_loop = @loop
+    Milter::Manager::ChildContext.new(@clamav, @children, context)
   end
 end
