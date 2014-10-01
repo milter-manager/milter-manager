@@ -8,4 +8,5 @@ dist_binding_lib_milter_client_DATA =		\
 	fallback-session.rb			\
 	session-context.rb 			\
 	envelope-address.rb 			\
-	testing.rb
+	testing.rb 				\
+	mail-transaction-shelf.rb
