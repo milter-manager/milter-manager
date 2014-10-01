@@ -14,7 +14,7 @@ module Milter
       end
 
       def []=(key, value)
-        @context.set_mail_transaction_shelf_value(key, value.to_yaml)
+        @context.set_mail_transaction_shelf_value(key, YAML.dump(value))
       end
 
       def each(&block)
