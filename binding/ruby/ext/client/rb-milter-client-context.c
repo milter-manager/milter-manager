@@ -259,19 +259,45 @@ get_packet_buffer_size (VALUE self)
 }
 
 static VALUE
-set_mail_transaction_shelf (VALUE self, VALUE rb_shelf)
+set_mail_transaction_shelf_value (VALUE self, VALUE key, VALUE value)
 {
-    const gchar *shelf = RVAL2CSTR(rb_shelf);
-    milter_client_context_set_mail_transaction_shelf(SELF(self), shelf);
+    milter_client_context_set_mail_transaction_shelf_value(SELF(self),
+                                                           RVAL2CSTR(key),
+                                                           RVAL2CSTR(value));
     return self;
 }
 
 static VALUE
-get_mail_transaction_shelf(VALUE self)
+get_mail_transaction_shelf_value (VALUE self, VALUE key)
 {
-    const gchar *shelf =
-        milter_client_context_get_mail_transaction_shelf(SELF(self));
-    return CSTR2RVAL(shelf);
+    const gchar *value =
+        milter_client_context_get_mail_transaction_shelf_value(SELF(self),
+                                                               RVAL2CSTR(key));
+    return CSTR2RVAL(value);
+}
+
+static void
+build_rb_hash(gpointer key, gpointer value, gpointer data)
+{
+    rb_hash_aset((VALUE) data, CSTR2RVAL(key), CSTR2RVAL(value));
+}
+
+static VALUE
+get_mail_transaction_shelf (VALUE self)
+{
+    VALUE rb_hash = rb_hash_new();
+    GHashTable *hash_table;
+    VALUE shelf = rb_iv_get(self, "@mail_transaction_shelf");
+    if (!NIL_P(shelf))
+        return Qnil;
+
+    hash_table = milter_client_context_get_mail_transaction_shelf(SELF(self));
+    if (g_hash_table_size(hash_table) == 0)
+        return Qnil;
+
+    g_hash_table_foreach(hash_table, build_rb_hash, (gpointer)rb_hash);
+    shelf = rb_iv_set(self, "@mail_transaction_shelf", rb_hash);
+    return shelf;
 }
 
 void
@@ -313,8 +339,12 @@ Init_milter_client_context (void)
                      set_packet_buffer_size, 1);
     rb_define_method(rb_cMilterClientContext, "packet_buffer_size",
                      get_packet_buffer_size, 0);
-    rb_define_method(rb_cMilterClientContext, "mail_transaction_shelf=",
-                     set_mail_transaction_shelf, 1);
+    rb_define_method(rb_cMilterClientContext,
+                     "set_mail_transaction_shelf_value",
+                     set_mail_transaction_shelf_value, 2);
+    rb_define_method(rb_cMilterClientContext,
+                     "get_mail_transaction_shelf_value",
+                     get_mail_transaction_shelf_value, 1);
     rb_define_method(rb_cMilterClientContext, "mail_transaction_shelf",
                      get_mail_transaction_shelf, 0);
 
