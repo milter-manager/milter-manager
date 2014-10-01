@@ -23,9 +23,10 @@ class TestClientContext < Test::Unit::TestCase
 
   def test_shelf
     value = { :foo => "bar", :baz => "boo" }
+    json = JSON.generate(value)
     assert_nil(@context.shelf)
-    @context.shelf = value
-    assert_equal(value, @context.shelf)
+    @context.shelf = json
+    assert_equal(json, @context.shelf)
   end
 
   def test_feed
