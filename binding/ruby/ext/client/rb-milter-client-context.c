@@ -293,7 +293,7 @@ get_mail_transaction_shelf (VALUE self)
     rb_hash = rb_hash_new();
     milter_client_context_mail_transaction_shelf_foreach(SELF(self),
                                                          build_rb_hash,
-                                                         rb_hash);
+                                                         (gpointer) rb_hash);
     if (RHASH_EMPTY_P(rb_hash))
         return Qnil;
 
