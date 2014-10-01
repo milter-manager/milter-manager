@@ -258,6 +258,21 @@ get_packet_buffer_size (VALUE self)
     return UINT2NUM(packet_buffer_size);
 }
 
+static VALUE
+set_shelf (VALUE self, VALUE rb_shelf)
+{
+    const gchar *shelf = RVAL2CSTR(rb_shelf);
+    milter_client_context_set_shelf(SELF(self), shelf);
+    return self;
+}
+
+static VALUE
+get_shelf(VALUE self)
+{
+    const gchar *shelf = milter_client_context_get_shelf(SELF(self));
+    return CSTR2RVAL(shelf);
+}
+
 void
 Init_milter_client_context (void)
 {
@@ -272,8 +287,6 @@ Init_milter_client_context (void)
 		rb_mMilter);
     G_DEF_CONSTANTS(rb_cMilterClientContext, MILTER_TYPE_CLIENT_CONTEXT_STATE,
                     "MILTER_CLIENT_CONTEXT_");
-
-    rb_define_attr(rb_cMilterClientContext, "shelf", TRUE, TRUE);
 
     rb_define_method(rb_cMilterClientContext, "initialize", initialize, -1);
     rb_define_method(rb_cMilterClientContext, "feed", feed, 1);
@@ -296,9 +309,11 @@ Init_milter_client_context (void)
     rb_define_method(rb_cMilterClientContext, "n_processing_sessions",
 		     get_n_processing_sessions, 0);
     rb_define_method(rb_cMilterClientContext, "set_packet_buffer_size",
-		     set_packet_buffer_size, 0);
+		     set_packet_buffer_size, 1);
     rb_define_method(rb_cMilterClientContext, "packet_buffer_size",
 		     get_packet_buffer_size, 0);
+    rb_define_method(rb_cMilterClientContext, "shelf=", set_shelf, 1);
+    rb_define_method(rb_cMilterClientContext, "shelf", get_shelf, 0);
 
     G_DEF_SIGNAL_FUNC(rb_cMilterClientContext, "connect",
 		      rb_milter__connect_signal_convert);
