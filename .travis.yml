@@ -5,12 +5,15 @@ rvm:
   - 1.9.3
   - 2.0.0
   - 2.1.2
+  - 2.1.3
 env:
   - MILTER_EVENT_LOOP_BACKEND=glib
 #  - MILTER_EVENT_LOOP_BACKEND=libev
 matrix:
   allow_failures:
     - rvm: 2.1.2
+      env: MILTER_EVENT_LOOP_BACKEND=glib
+    - rvm: 2.1.3
       env: MILTER_EVENT_LOOP_BACKEND=glib
 install:
   - curl https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh
