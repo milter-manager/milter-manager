@@ -167,6 +167,24 @@ test_quarantine_reason (void)
         milter_client_context_get_quarantine_reason(context));
 }
 
+void
+test_mail_transaction_shelf (void)
+{
+    cut_assert_equal_string(
+        NULL,
+        milter_client_context_get_mail_transaction_shelf_value(context, "test"));
+    milter_client_context_set_mail_transaction_shelf_value(context,
+                                                           "test",
+                                                           "test value");
+    cut_assert_equal_string(
+        "test value",
+        milter_client_context_get_mail_transaction_shelf_value(context, "test"));
+    milter_client_context_clear_mail_transaction_shelf(context);
+    cut_assert_equal_string(
+        NULL,
+        milter_client_context_get_mail_transaction_shelf_value(context, "test"));
+}
+
 /*
 vi:ts=4:nowrap:ai:expandtab:sw=4
 */
