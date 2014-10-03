@@ -14,7 +14,7 @@ matrix:
   allow_failures:
     - rvm: 2.1
       env: MILTER_EVENT_LOOP_BACKEND=glib
-    - rvm: 2.1
+    - rvm: 2.2
       env: MILTER_EVENT_LOOP_BACKEND=glib
     - rvm: ruby-head
       env: MILTER_EVENT_LOOP_BACKEND=glib
