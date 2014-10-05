@@ -23,6 +23,7 @@ install:
   - sudo apt-get install -y autotools-dev intltool libglib2.0-dev ruby1.8-dev ruby1.9.1-dev cutter-testing-framework subversion lcov
   - gem install coveralls-lcov --version 1.1.0
 before_script:
+  - ruby -rpp -rrbconfig -e 'pp RbConfig::CONFIG'
   - ./autogen.sh
   - ./configure --enable-coverage
 script:
