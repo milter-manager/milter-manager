@@ -13,7 +13,7 @@ AM_CFLAGS = 								\
 #	$(COVERAGE_CFLAGS)
 
 LIBS =					\
-	$(RUBY_LIBS)
+	$(MILTER_RUBY_LIBS)
 
 AM_LDFLAGS =				\
 	-module				\
