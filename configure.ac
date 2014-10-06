@@ -270,7 +270,7 @@ if test "$ruby_available" = "yes"; then
                   rubyarchhdrdir sitearchhdrdir vendorarchhdrdir \
                   rubyhdrdir sitehdrdir vendorhdrdir; do
     rbconfig_value=`$rbconfig "print Shellwords.shellwords(RbConfig::CONFIG['$var_name'] || '').join(' ')"`
-    eval "rbconfig_$var_name=\"$rbconfig_value\""
+    eval "rbconfig_$var_name=\"\$rbconfig_value\""
   done
   # XXX: RbConfig::CONFIG["LIBRUBYARG"] is the following on Travis CI:
   #   "-Wl,-rpath,'${ORIGIN}/../lib' -Wl,-R -Wl,'${ORIGIN}/../lib' -L'${ORIGIN}/../lib' -lruby"
