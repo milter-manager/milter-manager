@@ -272,6 +272,12 @@ if test "$ruby_available" = "yes"; then
     rbconfig_value=`$rbconfig "print Shellwords.shellwords(RbConfig::CONFIG['$var_name'] || '').join(' ')"`
     eval "rbconfig_$var_name=\"$rbconfig_value\""
   done
+  # XXX: RbConfig::CONFIG["LIBRUBYARG"] is the following on Travis CI:
+  #   "-Wl,-rpath,'${ORIGIN}/../lib' -Wl,-R -Wl,'${ORIGIN}/../lib' -L'${ORIGIN}/../lib' -lruby"
+  #   https://travis-ci.org/milter-manager/milter-manager/jobs/37108226#L431
+  # We don't know who sets "${ORIGIN}".
+  #  The following code is just a workaround. :<
+  rbconfig_LIBRUBYARG="`echo \"$rbconfig_LIBRUBYARG\" | sed -e \"s,\\\${ORIGIN},$rbconfig_libdir,g\"`"
   ruby_major_version="`$RUBY -e 'print RUBY_VERSION.split(/\\./)[0]'`"
   ruby_minor_version="`$RUBY -e 'print RUBY_VERSION.split(/\\./)[1]'`"
   ruby_micro_version="`$RUBY -e 'print RUBY_VERSION.split(/\\./)[2]'`"
@@ -313,8 +319,8 @@ if test "$ruby_available" = "yes"; then
   fi
 
   RUBY_CFLAGS="$RUBY_CFLAGS $rbconfig_CFLAGS"
+  RUBY_LIBS="$rbconfig_LIBRUBYARG $rbconfig_LIBS"
   RUBY_LDFLAGS="-L$rbconfig_libdir"
-  RUBY_LIBS="$RUBY_LDFLAGS $rbconfig_LIBRUBYARG $rbconfig_LIBS"
 
   AC_SUBST(RUBY_CFLAGS)
   AC_SUBST(RUBY_LIBS)
