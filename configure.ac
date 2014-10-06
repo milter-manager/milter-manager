@@ -277,7 +277,9 @@ if test "$ruby_available" = "yes"; then
   #   https://travis-ci.org/milter-manager/milter-manager/jobs/37108226#L431
   # We don't know who sets "${ORIGIN}".
   #  The following code is just a workaround. :<
+  echo "<$rbconfig_LIBRUBYARG><$rbconfig_libdir><echo \"$rbconfig_LIBRUBYARG\" | sed -e \"s,\\\${ORIGIN},$rbconfig_libdir,g\">"
   rbconfig_LIBRUBYARG="`echo \"$rbconfig_LIBRUBYARG\" | sed -e \"s,\\\${ORIGIN},$rbconfig_libdir,g\"`"
+  echo "<$rbconfig_LIBRUBYARG>"
   ruby_major_version="`$RUBY -e 'print RUBY_VERSION.split(/\\./)[0]'`"
   ruby_minor_version="`$RUBY -e 'print RUBY_VERSION.split(/\\./)[1]'`"
   ruby_micro_version="`$RUBY -e 'print RUBY_VERSION.split(/\\./)[2]'`"
