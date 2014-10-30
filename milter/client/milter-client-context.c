@@ -2651,6 +2651,7 @@ milter_client_context_reset_message_related_data (MilterClientContext *context)
 
     agent = MILTER_PROTOCOL_AGENT(context);
     milter_protocol_agent_clear_message_related_macros(agent);
+    milter_client_context_clear_mail_transaction_shelf(context);
 
     dispose_message_result(priv);
 }
