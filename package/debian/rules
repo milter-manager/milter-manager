@@ -5,10 +5,6 @@
 #export DH_VERBOSE=1
 # This has to be exported to make some magic below work.
 export DH_OPTIONS
-export DEB_BUILD_MAINT_OPTIONS = hardening=+all
-export DEB_BUILD_HARDENING = 1
-DPKG_EXPORT_BUILDFLAGS = 1
-include /usr/share/dpkg/buildflags.mk
 
 %:
 	dh $@
