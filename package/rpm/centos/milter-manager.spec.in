@@ -186,26 +186,6 @@ Requires: libmilter-compatible = %{version}-%{release}
 This package contains the headers, and other support files
 required for developing applications against libmilter-compatible.
 
-%package -n milter-test-client
-Summary: milter-test-client for testing
-Group: Development/Tools
-License: GPLv3+
-Requires: libmilter-client = %{version}-%{release}
-Requires: libmilter-compatible = %{version}-%{release}
-
-%description -n milter-test-client
-This package provides mitler-test-client command.
-
-%package -n milter-test-server
-Summary: milter-test-server for testing
-Group: Development/Tools
-License: GPLv3+
-Requires: libmilter-server = %{version}-%{release}
-Requires: libmilter-compatible = %{version}-%{release}
-
-%description -n milter-test-server
-This package provides mitler-test-server command.
-
 %package munin-plugins
 Summary: Munin plugins for milter manager
 Group: System Environment/Libraries
@@ -405,7 +385,10 @@ fi
 %files -n libmilter-client
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
+%{_bindir}/milter-test-client
 %{_libdir}/libmilter-client.so.*
+%{_mandir}/man1/milter-test-client.*
+%{_mandir}/ja/man1/milter-test-client.*
 
 %files -n libmilter-client-devel
 %defattr(-,root,root)
@@ -419,7 +402,10 @@ fi
 %files -n libmilter-server
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
+%{_bindir}/milter-test-server
 %{_libdir}/libmilter-server.so.*
+%{_mandir}/man1/milter-test-server.*
+%{_mandir}/ja/man1/milter-test-server.*
 
 %files -n libmilter-server-devel
 %defattr(-,root,root)
@@ -482,6 +468,7 @@ fi
 %files -n libmilter-compatible
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
+%{_bindir}/milter-test-client-libmilter
 %{_libdir}/milter-manager/libmilter.so.*
 
 %files -n libmilter-compatible-devel
@@ -491,21 +478,6 @@ fi
 %{_includedir}/milter-manager/libmilter/
 %{_libdir}/milter-manager/libmilter.so
 %{_libdir}/pkgconfig/libmilter.pc
-
-%files -n milter-test-client
-%defattr(-,root,root)
-%doc README README.ja NEWS NEWS.ja TODO
-%{_bindir}/milter-test-client
-%{_bindir}/milter-test-client-libmilter
-%{_mandir}/man1/milter-test-client.*
-%{_mandir}/ja/man1/milter-test-client.*
-
-%files -n milter-test-server
-%defattr(-,root,root)
-%doc README README.ja NEWS NEWS.ja TODO
-%{_bindir}/milter-test-server
-%{_mandir}/man1/milter-test-server.*
-%{_mandir}/ja/man1/milter-test-server.*
 
 %files munin-plugins
 %defattr(-,root,root)
