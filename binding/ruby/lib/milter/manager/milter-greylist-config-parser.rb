@@ -1,4 +1,4 @@
-# Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2014  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -12,6 +12,8 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
+
+require "milter/manager/file-reader"
 
 module Milter::Manager
   class MilterGreylistConfigParser
@@ -64,8 +66,8 @@ module Milter::Manager
     def normalize_lines(conf_file)
       lines = []
       continued_line = false
-      File.open(conf_file) do |conf|
-        conf.each_line do |line|
+      content = FileReader.read(conf_file)
+        content.each_line do |line|
           case line
           when /\A\s*#/
             continued_line = false
@@ -79,7 +81,6 @@ module Milter::Manager
             end
           end
         end
-      end
       lines
     end
 

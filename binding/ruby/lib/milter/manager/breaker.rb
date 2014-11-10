@@ -1,4 +1,4 @@
-# Copyright (C) 2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2010-2014  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -12,6 +12,8 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
+
+require "milter/manager/file-reader"
 
 module Milter::Manager
   class Breaker
@@ -82,8 +84,8 @@ module Milter::Manager
 
     def detect_postfix_process_limit_from_master_cf(master_cf)
       return nil unless File.exist?(master_cf)
-      File.open(master_cf) do |file|
-        file.each_line do |line|
+      content = FileReader.read(master_cf)
+        content.each_line do |line|
           next if /\A#/ =~ line
           service, type, _private, unpriv, chroot, wakeup, maxproc, command =
             line.split(/\s+/, 8)
@@ -91,7 +93,6 @@ module Milter::Manager
           return nil if maxproc == "-"
           return maxproc.to_i
         end
-      end
       nil
     end
 

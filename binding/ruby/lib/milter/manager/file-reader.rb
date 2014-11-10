@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2014  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2014  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -13,25 +13,22 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-require "milter/manager/file-reader"
-
 module Milter::Manager
-  class EnmaSocketDetector
-    def initialize(conf_file)
-      @conf_file = conf_file
+  class FileReader
+    class << self
+      def read(path)
+        new(path).read
+      end
     end
 
-    def detect
-      return nil unless File.readable?(@conf_file)
+    def initialize(path)
+      @path = path
+    end
 
-      connection_spec = nil
-      content = FileReader.read(@conf_file)
-        content.each_line do |line|
-          if /\A\s*milter\.socket\s*:\s*(.+)/ =~ line
-            connection_spec = $1
-          end
-        end
-      connection_spec
+    def read
+      content = File.read(@path)
+      content.force_encoding("UTF-8")
+      content
     end
   end
 end

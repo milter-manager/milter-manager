@@ -1,4 +1,4 @@
-# Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2014  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -13,6 +13,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
+require "milter/manager/file-reader"
+
 module Milter::Manager
   class OpenDKIMConfigParser
     def initialize
@@ -26,13 +28,12 @@ module Milter::Manager
     def parse(conf_file)
       return unless File.readable?(conf_file)
 
-      File.open(conf_file) do |conf|
-        conf.each_line do |line|
+      content = FileReader.read(conf_file)
+        content.each_line do |line|
           if /\A\s*(\w+)(?:\s+(.+))?\s*\z/ =~ line
             @variables[$1] = $2
           end
         end
-      end
     end
   end
 end

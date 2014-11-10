@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2014  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
+require 'milter/manager/file-reader'
 require 'milter/manager/detector'
 
 module Milter::Manager
@@ -101,9 +102,9 @@ module Milter::Manager
 
     def parse_rc_conf(file)
       return unless File.readable?(file)
-      File.open(file) do |conf|
+      content = FileReader.read(file)
         _rcvar_prefix = Regexp.escape(rcvar_prefix)
-        conf.each_line do |line|
+        content.each_line do |line|
           case line
           when /\A#{_rcvar_prefix}_(.+)=(.+)/
             variable_name = $1
@@ -114,7 +115,6 @@ module Milter::Manager
             parse_rc_conf_unknown_line(line)
           end
         end
-      end
     end
 
     def parse_rc_conf_unknown_line(line)

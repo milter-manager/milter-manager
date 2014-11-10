@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2014  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
+require 'milter/manager/file-reader'
 require 'milter/manager/detector'
 
 module Milter::Manager
@@ -71,7 +72,7 @@ module Milter::Manager
     end
 
     def parse_upstart_script
-      content = File.open(upstart_script).read
+      content = FileReader.read(upstart_script)
 
       description = nil
       first_comment_block = true

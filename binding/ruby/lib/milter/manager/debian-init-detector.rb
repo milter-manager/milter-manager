@@ -1,4 +1,4 @@
-# Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2014  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
+require 'milter/manager/file-reader'
 require 'milter/manager/init-detector'
 
 module Milter::Manager
@@ -52,9 +53,7 @@ module Milter::Manager
     end
 
     def parse_init_script
-      content = File.read(init_script)
-      content.force_encoding("UTF-8")
-
+      content = FileReader.read(init_script)
       content = content.gsub(/\A#!\s*\/bin\/sh\s*/m, '')
       before, init_info_content, after = extract_meta_data_blocks(content)
       parse_init_info(init_info_content) if init_info_content
@@ -66,9 +65,7 @@ module Milter::Manager
 
     def parse_default_conf(file)
       return unless File.readable?(file)
-      File.open(file) do |input|
-        extract_variables(@variables, input)
-      end
+      extract_variables(@variables, FileReader.read(file))
     end
 
     def clamav_milter_conf
