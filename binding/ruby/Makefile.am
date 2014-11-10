@@ -162,7 +162,7 @@ test_unit_files =						\
 	test-unit/test/util/test-output.rb			\
 	test-unit/test/util/test_backtracefilter.rb		\
 	test-unit/test/util/test_observable.rb			\
-	test-unit/test/util/test_procwrapper.rb			\
+	test-unit/test/util/test_procwrapper.rb
 
 # find glib-2.2.0 -type f | sort
 ruby_glib2_latest_files =						\
