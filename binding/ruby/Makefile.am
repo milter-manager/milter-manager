@@ -23,146 +23,146 @@ echo-abs-top-builddir:
 
 # find test-unit -not -path '*/.git/*' -type f | sort | sed -e 's,^,\t,g'
 test_unit_files =						\
-	test-unit/.gitignore
-	test-unit/.travis.yml
-	test-unit/.yardopts
-	test-unit/COPYING
-	test-unit/GPL
-	test-unit/Gemfile
-	test-unit/LGPL
-	test-unit/PSFL
-	test-unit/README.md
-	test-unit/Rakefile
-	test-unit/TODO
-	test-unit/doc/html/bar.png
-	test-unit/doc/html/bar.svg
-	test-unit/doc/html/color-diff.png
-	test-unit/doc/html/developer.png
-	test-unit/doc/html/developer.svg
-	test-unit/doc/html/famfamfam-logo.png
-	test-unit/doc/html/favicon.ico
-	test-unit/doc/html/favicon.png
-	test-unit/doc/html/favicon.svg
-	test-unit/doc/html/github-logo.png
-	test-unit/doc/html/heading-mark.png
-	test-unit/doc/html/heading-mark.svg
-	test-unit/doc/html/index.html
-	test-unit/doc/html/install.png
-	test-unit/doc/html/install.svg
-	test-unit/doc/html/ja/index.html
-	test-unit/doc/html/jp.png
-	test-unit/doc/html/kinotan-failure.png
-	test-unit/doc/html/kinotan-pass.png
-	test-unit/doc/html/logo.png
-	test-unit/doc/html/logo.svg
-	test-unit/doc/html/reference.png
-	test-unit/doc/html/tango-logo.png
-	test-unit/doc/html/test-unit.css
-	test-unit/doc/html/tutorial.png
-	test-unit/doc/html/tutorial.svg
-	test-unit/doc/html/us.png
-	test-unit/doc/po/ja.po
-	test-unit/doc/templates/footer.en.html.erb
-	test-unit/doc/templates/footer.ja.html.erb
-	test-unit/doc/templates/head.en.html.erb
-	test-unit/doc/templates/head.ja.html.erb
-	test-unit/doc/templates/header.en.html.erb
-	test-unit/doc/templates/header.ja.html.erb
-	test-unit/doc/text/how-to.md
-	test-unit/doc/text/news.md
-	test-unit/lib/test-unit.rb
-	test-unit/lib/test/unit.rb
-	test-unit/lib/test/unit/assertion-failed-error.rb
-	test-unit/lib/test/unit/assertions.rb
-	test-unit/lib/test/unit/attribute-matcher.rb
-	test-unit/lib/test/unit/attribute.rb
-	test-unit/lib/test/unit/autorunner.rb
-	test-unit/lib/test/unit/code-snippet-fetcher.rb
-	test-unit/lib/test/unit/collector.rb
-	test-unit/lib/test/unit/collector/descendant.rb
-	test-unit/lib/test/unit/collector/dir.rb
-	test-unit/lib/test/unit/collector/load.rb
-	test-unit/lib/test/unit/collector/objectspace.rb
-	test-unit/lib/test/unit/collector/xml.rb
-	test-unit/lib/test/unit/color-scheme.rb
-	test-unit/lib/test/unit/color.rb
-	test-unit/lib/test/unit/data.rb
-	test-unit/lib/test/unit/diff.rb
-	test-unit/lib/test/unit/error.rb
-	test-unit/lib/test/unit/exception-handler.rb
-	test-unit/lib/test/unit/failure.rb
-	test-unit/lib/test/unit/fault-location-detector.rb
-	test-unit/lib/test/unit/fixture.rb
-	test-unit/lib/test/unit/notification.rb
-	test-unit/lib/test/unit/omission.rb
-	test-unit/lib/test/unit/pending.rb
-	test-unit/lib/test/unit/priority.rb
-	test-unit/lib/test/unit/runner/console.rb
-	test-unit/lib/test/unit/runner/emacs.rb
-	test-unit/lib/test/unit/runner/xml.rb
-	test-unit/lib/test/unit/test-suite-creator.rb
-	test-unit/lib/test/unit/testcase.rb
-	test-unit/lib/test/unit/testresult.rb
-	test-unit/lib/test/unit/testsuite.rb
-	test-unit/lib/test/unit/ui/console/outputlevel.rb
-	test-unit/lib/test/unit/ui/console/testrunner.rb
-	test-unit/lib/test/unit/ui/emacs/testrunner.rb
-	test-unit/lib/test/unit/ui/testrunner.rb
-	test-unit/lib/test/unit/ui/testrunnermediator.rb
-	test-unit/lib/test/unit/ui/testrunnerutilities.rb
-	test-unit/lib/test/unit/ui/xml/testrunner.rb
-	test-unit/lib/test/unit/util/backtracefilter.rb
-	test-unit/lib/test/unit/util/method-owner-finder.rb
-	test-unit/lib/test/unit/util/observable.rb
-	test-unit/lib/test/unit/util/output.rb
-	test-unit/lib/test/unit/util/procwrapper.rb
-	test-unit/lib/test/unit/version.rb
-	test-unit/sample/adder.rb
-	test-unit/sample/subtracter.rb
-	test-unit/sample/test_adder.rb
-	test-unit/sample/test_subtracter.rb
-	test-unit/sample/test_user.rb
-	test-unit/test-unit.gemspec
-	test-unit/test/collector/test-descendant.rb
-	test-unit/test/collector/test-load.rb
-	test-unit/test/collector/test_dir.rb
-	test-unit/test/collector/test_objectspace.rb
-	test-unit/test/fixtures/header-label.csv
-	test-unit/test/fixtures/header-label.tsv
-	test-unit/test/fixtures/header.csv
-	test-unit/test/fixtures/header.tsv
-	test-unit/test/fixtures/no-header.csv
-	test-unit/test/fixtures/no-header.tsv
-	test-unit/test/fixtures/plus.csv
-	test-unit/test/run-test.rb
-	test-unit/test/test-assertions.rb
-	test-unit/test/test-attribute-matcher.rb
-	test-unit/test/test-attribute.rb
-	test-unit/test/test-code-snippet.rb
-	test-unit/test/test-color-scheme.rb
-	test-unit/test/test-color.rb
-	test-unit/test/test-data.rb
-	test-unit/test/test-diff.rb
-	test-unit/test/test-emacs-runner.rb
-	test-unit/test/test-error.rb
-	test-unit/test/test-failure.rb
-	test-unit/test/test-fault-location-detector.rb
-	test-unit/test/test-fixture.rb
-	test-unit/test/test-notification.rb
-	test-unit/test/test-omission.rb
-	test-unit/test/test-pending.rb
-	test-unit/test/test-priority.rb
-	test-unit/test/test-test-case.rb
-	test-unit/test/test-test-result.rb
-	test-unit/test/test-test-suite-creator.rb
-	test-unit/test/test-test-suite.rb
-	test-unit/test/testunit-test-util.rb
-	test-unit/test/ui/test_testrunmediator.rb
-	test-unit/test/util/test-method-owner-finder.rb
-	test-unit/test/util/test-output.rb
-	test-unit/test/util/test_backtracefilter.rb
-	test-unit/test/util/test_observable.rb
-	test-unit/test/util/test_procwrapper.rb
+	test-unit/.gitignore					\
+	test-unit/.travis.yml					\
+	test-unit/.yardopts					\
+	test-unit/COPYING					\
+	test-unit/GPL						\
+	test-unit/Gemfile					\
+	test-unit/LGPL						\
+	test-unit/PSFL						\
+	test-unit/README.md					\
+	test-unit/Rakefile					\
+	test-unit/TODO						\
+	test-unit/doc/html/bar.png				\
+	test-unit/doc/html/bar.svg				\
+	test-unit/doc/html/color-diff.png			\
+	test-unit/doc/html/developer.png			\
+	test-unit/doc/html/developer.svg			\
+	test-unit/doc/html/famfamfam-logo.png			\
+	test-unit/doc/html/favicon.ico				\
+	test-unit/doc/html/favicon.png				\
+	test-unit/doc/html/favicon.svg				\
+	test-unit/doc/html/github-logo.png			\
+	test-unit/doc/html/heading-mark.png			\
+	test-unit/doc/html/heading-mark.svg			\
+	test-unit/doc/html/index.html				\
+	test-unit/doc/html/install.png				\
+	test-unit/doc/html/install.svg				\
+	test-unit/doc/html/ja/index.html			\
+	test-unit/doc/html/jp.png				\
+	test-unit/doc/html/kinotan-failure.png			\
+	test-unit/doc/html/kinotan-pass.png			\
+	test-unit/doc/html/logo.png				\
+	test-unit/doc/html/logo.svg				\
+	test-unit/doc/html/reference.png			\
+	test-unit/doc/html/tango-logo.png			\
+	test-unit/doc/html/test-unit.css			\
+	test-unit/doc/html/tutorial.png				\
+	test-unit/doc/html/tutorial.svg				\
+	test-unit/doc/html/us.png				\
+	test-unit/doc/po/ja.po					\
+	test-unit/doc/templates/footer.en.html.erb		\
+	test-unit/doc/templates/footer.ja.html.erb		\
+	test-unit/doc/templates/head.en.html.erb		\
+	test-unit/doc/templates/head.ja.html.erb		\
+	test-unit/doc/templates/header.en.html.erb		\
+	test-unit/doc/templates/header.ja.html.erb		\
+	test-unit/doc/text/how-to.md				\
+	test-unit/doc/text/news.md				\
+	test-unit/lib/test-unit.rb				\
+	test-unit/lib/test/unit.rb				\
+	test-unit/lib/test/unit/assertion-failed-error.rb	\
+	test-unit/lib/test/unit/assertions.rb			\
+	test-unit/lib/test/unit/attribute-matcher.rb		\
+	test-unit/lib/test/unit/attribute.rb			\
+	test-unit/lib/test/unit/autorunner.rb			\
+	test-unit/lib/test/unit/code-snippet-fetcher.rb		\
+	test-unit/lib/test/unit/collector.rb			\
+	test-unit/lib/test/unit/collector/descendant.rb		\
+	test-unit/lib/test/unit/collector/dir.rb		\
+	test-unit/lib/test/unit/collector/load.rb		\
+	test-unit/lib/test/unit/collector/objectspace.rb	\
+	test-unit/lib/test/unit/collector/xml.rb		\
+	test-unit/lib/test/unit/color-scheme.rb			\
+	test-unit/lib/test/unit/color.rb			\
+	test-unit/lib/test/unit/data.rb				\
+	test-unit/lib/test/unit/diff.rb				\
+	test-unit/lib/test/unit/error.rb			\
+	test-unit/lib/test/unit/exception-handler.rb		\
+	test-unit/lib/test/unit/failure.rb			\
+	test-unit/lib/test/unit/fault-location-detector.rb	\
+	test-unit/lib/test/unit/fixture.rb			\
+	test-unit/lib/test/unit/notification.rb			\
+	test-unit/lib/test/unit/omission.rb			\
+	test-unit/lib/test/unit/pending.rb			\
+	test-unit/lib/test/unit/priority.rb			\
+	test-unit/lib/test/unit/runner/console.rb		\
+	test-unit/lib/test/unit/runner/emacs.rb			\
+	test-unit/lib/test/unit/runner/xml.rb			\
+	test-unit/lib/test/unit/test-suite-creator.rb		\
+	test-unit/lib/test/unit/testcase.rb			\
+	test-unit/lib/test/unit/testresult.rb			\
+	test-unit/lib/test/unit/testsuite.rb			\
+	test-unit/lib/test/unit/ui/console/outputlevel.rb	\
+	test-unit/lib/test/unit/ui/console/testrunner.rb	\
+	test-unit/lib/test/unit/ui/emacs/testrunner.rb		\
+	test-unit/lib/test/unit/ui/testrunner.rb		\
+	test-unit/lib/test/unit/ui/testrunnermediator.rb	\
+	test-unit/lib/test/unit/ui/testrunnerutilities.rb	\
+	test-unit/lib/test/unit/ui/xml/testrunner.rb		\
+	test-unit/lib/test/unit/util/backtracefilter.rb		\
+	test-unit/lib/test/unit/util/method-owner-finder.rb	\
+	test-unit/lib/test/unit/util/observable.rb		\
+	test-unit/lib/test/unit/util/output.rb			\
+	test-unit/lib/test/unit/util/procwrapper.rb		\
+	test-unit/lib/test/unit/version.rb			\
+	test-unit/sample/adder.rb				\
+	test-unit/sample/subtracter.rb				\
+	test-unit/sample/test_adder.rb				\
+	test-unit/sample/test_subtracter.rb			\
+	test-unit/sample/test_user.rb				\
+	test-unit/test-unit.gemspec				\
+	test-unit/test/collector/test-descendant.rb		\
+	test-unit/test/collector/test-load.rb			\
+	test-unit/test/collector/test_dir.rb			\
+	test-unit/test/collector/test_objectspace.rb		\
+	test-unit/test/fixtures/header-label.csv		\
+	test-unit/test/fixtures/header-label.tsv		\
+	test-unit/test/fixtures/header.csv			\
+	test-unit/test/fixtures/header.tsv			\
+	test-unit/test/fixtures/no-header.csv			\
+	test-unit/test/fixtures/no-header.tsv			\
+	test-unit/test/fixtures/plus.csv			\
+	test-unit/test/run-test.rb				\
+	test-unit/test/test-assertions.rb			\
+	test-unit/test/test-attribute-matcher.rb		\
+	test-unit/test/test-attribute.rb			\
+	test-unit/test/test-code-snippet.rb			\
+	test-unit/test/test-color-scheme.rb			\
+	test-unit/test/test-color.rb				\
+	test-unit/test/test-data.rb				\
+	test-unit/test/test-diff.rb				\
+	test-unit/test/test-emacs-runner.rb			\
+	test-unit/test/test-error.rb				\
+	test-unit/test/test-failure.rb				\
+	test-unit/test/test-fault-location-detector.rb		\
+	test-unit/test/test-fixture.rb				\
+	test-unit/test/test-notification.rb			\
+	test-unit/test/test-omission.rb				\
+	test-unit/test/test-pending.rb				\
+	test-unit/test/test-priority.rb				\
+	test-unit/test/test-test-case.rb			\
+	test-unit/test/test-test-result.rb			\
+	test-unit/test/test-test-suite-creator.rb		\
+	test-unit/test/test-test-suite.rb			\
+	test-unit/test/testunit-test-util.rb			\
+	test-unit/test/ui/test_testrunmediator.rb		\
+	test-unit/test/util/test-method-owner-finder.rb		\
+	test-unit/test/util/test-output.rb			\
+	test-unit/test/util/test_backtracefilter.rb		\
+	test-unit/test/util/test_observable.rb			\
+	test-unit/test/util/test_procwrapper.rb			\
 
 # find glib-2.2.0 -type f | sort
 ruby_glib2_latest_files =						\
