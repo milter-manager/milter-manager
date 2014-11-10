@@ -29,11 +29,11 @@ module Milter::Manager
       return unless File.readable?(conf_file)
 
       content = FileReader.read(conf_file)
-        content.each_line do |line|
-          if /\A\s*(\w+)(?:\s+(.+))?\s*\z/ =~ line
-            @variables[$1] = $2
-          end
+      content.each_line do |line|
+        if /\A\s*(\w+)(?:\s+(.+))?\s*\z/ =~ line
+          @variables[$1] = $2
         end
+      end
     end
   end
 end

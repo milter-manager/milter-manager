@@ -85,14 +85,14 @@ module Milter::Manager
     def detect_postfix_process_limit_from_master_cf(master_cf)
       return nil unless File.exist?(master_cf)
       content = FileReader.read(master_cf)
-        content.each_line do |line|
-          next if /\A#/ =~ line
-          service, type, _private, unpriv, chroot, wakeup, maxproc, command =
-            line.split(/\s+/, 8)
-          next if service != "smtp"
-          return nil if maxproc == "-"
-          return maxproc.to_i
-        end
+      content.each_line do |line|
+        next if /\A#/ =~ line
+        service, type, _private, unpriv, chroot, wakeup, maxproc, command =
+          line.split(/\s+/, 8)
+        next if service != "smtp"
+        return nil if maxproc == "-"
+        return maxproc.to_i
+      end
       nil
     end
 

@@ -26,11 +26,11 @@ module Milter::Manager
 
       connection_spec = nil
       content = FileReader.read(@conf_file)
-        content.each_line do |line|
-          if /\A\s*milter\.socket\s*:\s*(.+)/ =~ line
-            connection_spec = $1
-          end
+      content.each_line do |line|
+        if /\A\s*milter\.socket\s*:\s*(.+)/ =~ line
+          connection_spec = $1
         end
+      end
       connection_spec
     end
   end

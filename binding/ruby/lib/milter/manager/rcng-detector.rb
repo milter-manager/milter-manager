@@ -103,18 +103,18 @@ module Milter::Manager
     def parse_rc_conf(file)
       return unless File.readable?(file)
       content = FileReader.read(file)
-        _rcvar_prefix = Regexp.escape(rcvar_prefix)
-        content.each_line do |line|
-          case line
-          when /\A#{_rcvar_prefix}_(.+)=(.+)/
-            variable_name = $1
-            variable_value = $2
-            variable_value = normalize_variable_value(variable_value)
-            @variables[variable_name] = variable_value
-          else
-            parse_rc_conf_unknown_line(line)
-          end
+      _rcvar_prefix = Regexp.escape(rcvar_prefix)
+      content.each_line do |line|
+        case line
+        when /\A#{_rcvar_prefix}_(.+)=(.+)/
+          variable_name = $1
+          variable_value = $2
+          variable_value = normalize_variable_value(variable_value)
+          @variables[variable_name] = variable_value
+        else
+          parse_rc_conf_unknown_line(line)
         end
+      end
     end
 
     def parse_rc_conf_unknown_line(line)

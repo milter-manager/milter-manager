@@ -67,20 +67,20 @@ module Milter::Manager
       lines = []
       continued_line = false
       content = FileReader.read(conf_file)
-        content.each_line do |line|
-          case line
-          when /\A\s*#/
-            continued_line = false
+      content.each_line do |line|
+        case line
+        when /\A\s*#/
+          continued_line = false
+        else
+          line = lines.pop.rstrip + " " + line if continued_line
+          lines << line
+          if /\\\z/ =~ line
+            continued_line = true
           else
-            line = lines.pop.rstrip + " " + line if continued_line
-            lines << line
-            if /\\\z/ =~ line
-              continued_line = true
-            else
-              continued_line = false
-            end
+            continued_line = false
           end
         end
+      end
       lines
     end
 
