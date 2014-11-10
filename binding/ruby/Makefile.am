@@ -21,7 +21,8 @@ DISTCLEANFILES =				\
 echo-abs-top-builddir:
 	@echo $(abs_top_builddir)
 
-# find test-unit -not -path '*/.git/*' -type f | sort | sed -e 's,^,\t,g'
+# % find test-unit -not -path '*/.git/*' -type f | sort | sed -e 's,^,\t,g'
+# Use region and C-c C-\ for adding backslashes to the above list.
 test_unit_files =						\
 	test-unit/.gitignore					\
 	test-unit/.travis.yml					\
@@ -164,7 +165,8 @@ test_unit_files =						\
 	test-unit/test/util/test_observable.rb			\
 	test-unit/test/util/test_procwrapper.rb
 
-# find glib-2.2.0 -type f | sort
+# % find glib-2.2.0 -type f | sort
+# Use region and C-c C-\ for adding backslashes to the above list.
 ruby_glib2_latest_files =						\
 	glib-2.2.0/COPYING.LIB 						\
 	glib-2.2.0/README						\
