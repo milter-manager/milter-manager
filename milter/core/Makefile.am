@@ -1,11 +1,13 @@
 AM_CPPFLAGS =			\
 	 -I$(top_builddir)	\
-	 -I$(top_srcdir)
+	 -I$(top_srcdir)	\
+	$(LIBEV_INCLUDES)
 
 AM_CFLAGS =					\
 	-DLOCALEDIR=\""$(localedir)"\"		\
 	-DMILTER_LOG_DOMAIN=\""milter-core"\"	\
 	$(GLIB_CFLAGS)				\
+	$(LIBEV_CFLAGS)				\
 	$(COVERAGE_CFLAGS)
 
 EXTRA_DIST =
@@ -89,24 +91,17 @@ libmilter_core_la_SOURCES =		\
 	milter-session-result.c		\
 	milter-memory-profile.c		\
 	milter-event-loop.c		\
+	milter-libev-event-loop.c	\
 	milter-glib-event-loop.c	\
 	milter-glib-compatible.c	\
 	milter-glib-compatible.h	\
 	milter-core-internal.h
 
 libmilter_core_la_LIBADD =		\
-	$(MILTER_CORE_LIBS)
-libmilter_core_la_CFLAGS =		\
-	$(AM_CFLAGS)
-libmilter_core_la_DEPENDENCIES =
-
-if WITH_LIBEV
-libmilter_core_la_SOURCES += milter-libev-event-loop.c
-libmilter_core_la_DEPENDENCIES += $(LIBEV_LA)
-libmilter_core_la_LIBADD += $(LIBEV_LIBS)
-libmilter_core_la_CFLAGS += $(LIBEV_CFLAGS)
-AM_CPPFLAGS += $(LIBEV_INCLUDES)
-endif
+	$(MILTER_CORE_LIBS)		\
+	$(LIBEV_LIBS)
+libmilter_core_la_DEPENDENCIES =	\
+	$(LIBEV_LA)
 
 include $(top_srcdir)/build/enum-types.mk
 include $(top_srcdir)/build/marshal.mk
