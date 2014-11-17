@@ -13,7 +13,9 @@ noinst_MANS = ev.3
 
 noinst_HEADERS = ev.h ev++.h event.h
 
+if WITH_BUNDLED_LIBEV
 noinst_LTLIBRARIES = libev.la
+endif
 
 libev_la_SOURCES = ev.c event.c
 libev_la_LDFLAGS = -version-info $(VERSION_INFO)

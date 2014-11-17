@@ -669,6 +669,7 @@ if test "x$with_libev" != "xno"; then
   AC_DEFINE(HAVE_LIBEV, [1], [Define to 1 if libev is available.])
 fi
 AM_CONDITIONAL(WITH_LIBEV, [test "x$libev_available" != xno])
+AM_CONDITIONAL(WITH_BUNDLED_LIBEV, [test "x$libev_prefix" = xbundled])
 AC_SUBST(LIBEV_INCLUDES)
 AC_SUBST(LIBEV_CFLAGS)
 AC_SUBST(LIBEV_LA)
