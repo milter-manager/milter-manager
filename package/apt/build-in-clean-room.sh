@@ -55,7 +55,7 @@ build_by_pbuilder()
     package_initial=$(echo ${PACKAGE} | sed -e 's/\(.\).*/\1/')
     pool_dir=${script_base_dir}/${distribution}/${status}/pool
     pool_dir=${pool_dir}/${code_name}/${component}/${package_initial}/${PACKAGE}
-    basetgz=$CHROOT_BASE/base-$code_name-$architecture.tgz
+    basetgz=$CHROOT_BASE/$code_name-$architecture-base.tgz
     builddir=${script_base_dir}/$code_name-$architecture
 
     OPTS=( )
