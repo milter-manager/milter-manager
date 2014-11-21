@@ -70,15 +70,15 @@ if test \${ruby_version} != "1.9.1"; then
 fi
 case \$(lsb_release --codename --short) in
     "lucid")
-        sed -i"" -e 's/ruby (>= 1:1.9.3)/ruby1.9.1 (>= 1.9.1)/g' debian/control
-        sed -i"" -e 's/ruby-dev (>= 1:1.9.3)/ruby1.9.1-dev (>= 1.9.1)/g' debian/control
-        sed -i"" -e 's/debhelper (>= 9)/debhelper (>= 7)/' debian/control
+        sed -i"" -e 's/ruby (>= 1:1.9.3)/ruby1.9.1 (>= 1.9.1)/g' \
+                 -e 's/ruby-dev (>= 1:1.9.3)/ruby1.9.1-dev (>= 1.9.1)/g' \
+                 -e 's/debhelper (>= 9)/debhelper (>= 7)/' debian/control
         sed -i"" -e 's/9/7/' debian/compat
         sed -i"" -e 's,usr/lib/\*,usr/lib,' debian/*.install
         ;;
     "precise")
-        sed -i"" -e 's/ruby (>= 1:1.9.3)/ruby1.9.1 (>= 1.9.1)/g' debian/control
-        sed -i"" -e 's/ruby-dev (>= 1:1.9.3)/ruby1.9.1-dev (>= 1.9.1)/g' debian/control
+        sed -i"" -e 's/ruby (>= 1:1.9.3)/ruby1.9.1 (>= 1.9.1)/g' \
+                 -e 's/ruby-dev (>= 1:1.9.3)/ruby1.9.1-dev (>= 1.9.1)/g' debian/control
         ;;
 esac
 debuild -us -uc
