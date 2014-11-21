@@ -61,10 +61,10 @@ build_by_pbuilder()
     OPTS=( )
     OPTS+=( --distribution "$code_name" )
     OPTS+=( --architecture "$architecture" )
+    OPTS+=( --basetgz "$basetgz" )
     case $code_name in
         lucid)
             OPTS+=( --components 'main universe' )
-            OPTS+=( --basetgz "$basetgz" )
             MIRROR=http://old-release.archive.ubuntu.com/ubuntu
             OPTS+=( --mirror "$MIRROR" )
             OPTS+=( --othermirror "deb $MIRROR $code_name-security main universe")
@@ -72,20 +72,17 @@ build_by_pbuilder()
             ;;
         precise|trusty)
             OPTS+=( --components 'main universe' )
-            OPTS+=( --basetgz "$basetgz" )
             MIRROR=http://jp.archive.ubuntu.com/ubuntu
             OPTS+=( --mirror "$MIRROR" )
             OPTS+=( --othermirror "deb $MIRROR $code_name-security main universe")
             OPTS+=( --debootstrapopts --keyring=/usr/share/keyrings/ubuntu-archive-keyring.gpg )
             ;;
         wheezy|jessie)
-            OPTS+=( --basetgz "$basetgz" )
             MIRROR=http://ftp.jp.debian.org/debian
             OPTS+=( --mirror "$MIRROR" )
             OPTS+=( --othermirror "deb http://security.debian.org $code_name/updates main")
             ;;
         unstable|*)
-            OPTS+=( --basetgz "$basetgz" )
             MIRROR=http://ftp.jp.debian.org/debian
             OPTS+=( --mirror "$MIRROR" )
     esac
