@@ -134,8 +134,8 @@ for architecture in $ARCHITECTURES; do
             build_by_pbuilder $architecture $code_name &
         else
             build_by_pbuilder $architecture $code_name
-        fi;
-    done;
+        fi
+    done
 done
 
 if test "$parallel" = "yes" ; then
