@@ -2,8 +2,8 @@
 # -*- indent-tabs-mode: nil; sh-basic-offset: 4; sh-indentation: 4 -*-
 
 if [ $# != 4 ]; then
-    echo "Usage: $0 VERSION CHROOT_BASE ARCHITECTURES CODES"
-    echo " e.g.: $0 1.5.0 /var/lib/chroot 'i386 amd64' 'lenny hardy kermic'"
+    echo "Usage: $0 VERSION CLEAN_ROOM_BASE ARCHITECTURES CODES"
+    echo " e.g.: $0 2.0.5 /var/cache/pbuilder 'i386 amd64' 'wheezy jessie unstable'"
     exit 1
 fi
 
