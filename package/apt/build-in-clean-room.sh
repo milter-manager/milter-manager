@@ -103,7 +103,8 @@ build_by_pbuilder()
 
     case $code_name in
         lucid)
-            sed -i -e 's/ruby (>= 1:1.9.3)/ruby1.9.1 (>= 1.9.1)/g' \
+            sed -i \
+                -e 's/ruby (>= 1:1.9.3)/ruby1.9.1 (>= 1.9.1)/g' \
                 -e 's/ruby-dev (>= 1:1.9.3)/ruby1.9.1-dev (>= 1.9.1)/g' \
                 -e 's/debhelper (>= 9)/debhelper (>= 7)/' $builddir/${PACKAGE}-${VERSION}/debian/control
             sed -i -e 's/9/7/' $builddir/${PACKAGE}-${VERSION}/debian/compat
