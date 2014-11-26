@@ -7,6 +7,7 @@ Build-Depends:
 	debhelper (>= 9),
 	autotools-dev,
 	libglib2.0-dev,
+    libev-dev,
 	ruby (>= 1:1.9.3), ruby-dev (>= 1:1.9.3), ruby-gnome2-dev,
 	intltool
 Standards-Version: 3.9.5
