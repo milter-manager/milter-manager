@@ -8,7 +8,8 @@ Build-Depends:
 	autotools-dev,
 	libglib2.0-dev,
 	libev-dev,
-	ruby (>= 1:1.9.3), ruby-dev (>= 1:1.9.3), ruby-gnome2-dev,
+	ruby (>= 1:1.9.3), ruby-dev (>= 1:1.9.3),
+	ruby-gnome2-dev,
 	intltool
 Standards-Version: 3.9.5
 Homepage: http://milter-manager.sourceforge.net/
