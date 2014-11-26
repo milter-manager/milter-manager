@@ -106,7 +106,9 @@ build_by_pbuilder()
             sed -i \
                 -e 's/ruby (>= 1:1.9.3)/ruby1.9.1 (>= 1.9.1)/g' \
                 -e 's/ruby-dev (>= 1:1.9.3)/ruby1.9.1-dev (>= 1.9.1)/g' \
-                -e 's/debhelper (>= 9)/debhelper (>= 7)/' $builddir/${PACKAGE}-${VERSION}/debian/control
+                -e 's/debhelper (>= 9)/debhelper (>= 7)/' \
+                -e '/libev-dev/d' \
+                $builddir/${PACKAGE}-${VERSION}/debian/control
             sed -i -e 's/9/7/' $builddir/${PACKAGE}-${VERSION}/debian/compat
             sed -i -e 's,usr/lib/\*,usr/lib,' $builddir/${PACKAGE}-${VERSION}/debian/*.install
             ;;
