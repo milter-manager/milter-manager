@@ -1,17 +1,17 @@
-%define rubyver         1.9.3
-%define rubyminorver    p545
+%define rubyver         2.1.5
 
-Name:           ruby1.9
-Version:        %{rubyver}%{rubyminorver}
-Release:        0%{?dist}
-License:        Ruby License/GPL - see COPYING
+Name:           ruby2.1
+Version:        %{rubyver}
+Release:        1%{?dist}
+License:        BSD
 URL:            http://www.ruby-lang.org/
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:  readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make libyaml libyaml-devel libffi libffi-devel
-Source0:        ftp://ftp.ruby-lang.org/pub/ruby/ruby-%{rubyver}-%{rubyminorver}.tar.gz
+Source0:        ftp://ftp.ruby-lang.org/pub/ruby/ruby-%{rubyver}.tar.gz
 Summary:        An interpreter of object-oriented scripting language
 Group:          Development/Languages
-Provides: ruby(abi) = 1.9
+Provides: ruby(abi) = 2.1
+Obsoletes: ruby1.9
 
 %description
 Ruby is the interpreted scripting language for quick and easy
@@ -20,7 +20,7 @@ files and to do system management tasks (as in Perl).  It is simple,
 straight-forward, and extensible.
 
 %prep
-%setup -n ruby-%{rubyver}-%{rubyminorver}
+%setup -n ruby-%{rubyver}
 
 %build
 export CFLAGS="$RPM_OPT_FLAGS -Wall -fno-strict-aliasing"
@@ -32,8 +32,8 @@ export CFLAGS="$RPM_OPT_FLAGS -Wall -fno-strict-aliasing"
   --without-tk \
   --includedir=%{_includedir}/ruby \
   --libdir=%{_libdir} \
-  --with-soname=ruby-1.9 \
-  --program-suffix=1.9
+  --with-soname=ruby-2.1 \
+  --program-suffix=2.1
 
 make %{?_smp_mflags}
 
@@ -56,19 +56,22 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}
 
 %changelog
-* Thu May 15 2014 Kenji Okimoto <okimoto@clear-code.com> -1.9.3-p545
+* Thu Nov 27 2014 Kenji Okimoto <okimoto@clear-code.com> - 2.1.5
+- Update ruby version to 2.1.5
+
+* Thu May 15 2014 Kenji Okimoto <okimoto@clear-code.com> - 1.9.3-p545
 - Update ruby version to 1.9.3-p545
 
-* Mon Jan 20 2014 Kenji Okimoto <okimoto@clear-code.com> -1.9.3-p484
+* Mon Jan 20 2014 Kenji Okimoto <okimoto@clear-code.com> - 1.9.3-p484
 - Update ruby version to 1.9.3-p484
 
-* Fri Jun 28 2013 Kenji Okimoto <okimoto@clear-code.com> -1.9.3-p448
+* Fri Jun 28 2013 Kenji Okimoto <okimoto@clear-code.com> - 1.9.3-p448
 - Update ruby version to 1.9.3-p448.
 
-* Fri Jun 14 2013 Kenji Okimoto <okimoto@clear-code.com> -1.9.3-p429
+* Fri Jun 14 2013 Kenji Okimoto <okimoto@clear-code.com> - 1.9.3-p429
 - Update ruby version to 1.9.3-p429.
 
-* Fri Apr 26 2013 Kenji Okimoto <okimoto@clear-code.com> -1.9.3-p392
+* Fri Apr 26 2013 Kenji Okimoto <okimoto@clear-code.com> - 1.9.3-p392
 - Co-exist multiple ruby versions.
 
 * Sun Feb 24 2013 Masahito Yoshida <masahito@axsh.net> - 1.9.3-p392
