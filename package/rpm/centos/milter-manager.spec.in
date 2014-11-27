@@ -289,9 +289,6 @@ fi
     /sbin/service munin-node restart > /dev/null 2>&1
 :
 
-%post debuginfo -p /sbin/ldconfig
-%postun debuginfo -p /sbin/ldconfig
-
 %post -n libmilter-core -p /sbin/ldconfig
 %postun -n libmilter-core -p /sbin/ldconfig
 
