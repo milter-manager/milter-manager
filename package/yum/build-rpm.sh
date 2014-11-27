@@ -123,9 +123,9 @@ fi
 
 case $distribution_version in
     6.*)
-        if ! rpm -q ruby1.9 > /dev/null 2>&1; then
+        if ! rpm -q ruby2.1 > /dev/null 2>&1; then
             yum install -y wget libyaml libyaml-devel
-            yum install -y $(grep BuildRequires: /tmp/ruby193.spec | cut -d: -f2)
+            yum install -y $(grep BuildRequires: /tmp/ruby21.spec | cut -d: -f2)
             cat <<EOF > $BUILD_RUBY_SCRIPT
 if [ ! -f ~/.rpmmacros ]; then
     cat <<EOM > ~/.rpmmacros
@@ -142,10 +142,10 @@ mkdir -p rpm/SRPMS
 
 case $distribution_version in
   6.*)
-    if ! rpm -q ruby1.9 > /dev/null 2>&1; then
-      wget ftp://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.3-p545.tar.gz -P rpm/SOURCES
-      cp -a /tmp/ruby193.spec rpm/SPECS/ruby193.spec
-      rpmbuild -ba rpm/SPECS/ruby193.spec
+    if ! rpm -q ruby2.1 > /dev/null 2>&1; then
+      wget http://cache.ruby-lang.org/pub/ruby/2.1/ruby-2.1.5.tar.gz -P rpm/SOURCES
+      cp -a /tmp/ruby21.spec rpm/SPECS/ruby21.spec
+      rpmbuild -ba rpm/SPECS/ruby21.spec
     fi
     ;;
 esac
