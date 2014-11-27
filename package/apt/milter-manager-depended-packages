@@ -6,3 +6,4 @@ ruby-dev
 ruby1.9.1-dev
 intltool
 ruby-gnome2-dev
+libev-dev
