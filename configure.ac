@@ -619,6 +619,7 @@ dnl Check for libev.
 dnl **************************************************************
 
 libev_available=no
+libev_version=""
 m4_define([BUNDLED_LIBEV_VERSION], [4.15])
 LIBEV_CFLAGS='-DEV_COMPAT3=0'
 AC_ARG_WITH(libev,
@@ -654,6 +655,18 @@ if test "x$with_libev" != "xno"; then
 	  [EV_VERSION_MAJOR > 4 || (EV_VERSION_MAJOR == 4 && EV_VERSION_MINOR >= 1)])],
 	[],
 	[libev_available=no])
+      LDFLAGS="$LDFLAGS -lev"
+      AC_MSG_CHECKING([libev version])
+      AC_RUN_IFELSE(
+        [AC_LANG_PROGRAM(
+          [
+          @%:@include <stdio.h>
+          @%:@include <ev.h>
+          ],
+          [printf("%d.%d\n", ev_version_major(), ev_version_minor());])
+        ],
+        [libev_version=`./conftest$EXEEXT`],
+        [AC_MSG_RESULT(no)])
     fi
     CFLAGS="$_SAVE_CFLAGS"
     LDFLAGS="$_SAVE_LDFLAGS"
@@ -667,6 +680,7 @@ if test "x$with_libev" != "xno"; then
   if test "$libev_available" = no; then
     libev_available=yes
     libev_prefix=bundled
+    libev_version=BUNDLED_LIBEV_VERSION
     m4_include([libev-]BUNDLED_LIBEV_VERSION[/libev.m4])
     AC_DEFINE(HAVE_LIBEV, [1], [Define to 1 if libev is available.])
     LIBEV_INCLUDES='-I$(top_srcdir)/libev-'BUNDLED_LIBEV_VERSION
@@ -1037,9 +1051,9 @@ AC_OUTPUT
 glib_version="$glib_config_major_version.$glib_config_minor_version.$glib_config_micro_version"
 
 if test "$libev_available" = "yes"; then
-   libev_configure_result="$libev_available ($libev_prefix)"
+   libev_configure_result="$libev_version ($libev_prefix)"
 else
-   libev_configure_result="$libev_available"
+   libev_configure_result="$libev_version ($libev_available)"
 fi
 
 echo
