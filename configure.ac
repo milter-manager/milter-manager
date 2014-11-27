@@ -1050,6 +1050,7 @@ echo
 echo "  GLib                    : $glib_version"
 echo "  libev                   : $libev_configure_result"
 echo "  Ruby                    : $RUBY"
+echo "  Ruby version            : `$RUBY -v`"
 echo "  Ruby/GLib2              : $RUBY_GLIB2_CFLAGS"
 echo "  Ruby milter PATH        : $ruby_milterdir"
 echo
