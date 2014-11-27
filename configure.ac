@@ -635,6 +635,13 @@ if test "x$with_libev" != "xno"; then
     libev_prefixes="$with_libev"
   fi
   for libev_prefix in $libev_prefixes; do
+    AC_CHECK_FILE([$libev_prefix/include/ev.h],
+                  [],
+                  [
+                    CFLAGS="$_SAVE_CFLAGS"
+                    LDFLAGS="$_SAVE_LDFLAGS"
+                    continue
+                  ])
     CFLAGS="$CFLAGS -I$libev_prefix/include ${LIBEV_CFLAGS}"
     LDFLAGS="$LDFLAGS -L$libev_prefix/lib"
     libev_available=no
