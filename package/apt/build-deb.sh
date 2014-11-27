@@ -35,20 +35,6 @@ fi
 run aptitude install -V -D -y devscripts ${DEPENDED_PACKAGES}
 run aptitude clean
 
-case $(lsb_release --codename --short) in
-    "lucid")
-        /usr/bin/update-alternatives --list ruby > /dev/null 2>&1
-        if test $? -ne 0; then
-            /usr/bin/update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby1.8 10
-            /usr/bin/update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby1.9.1 20
-        fi
-        /usr/bin/update-alternatives --set ruby /usr/bin/ruby1.9.1
-        ;;
-    "precise")
-        /usr/bin/update-alternatives --set ruby /usr/bin/ruby1.9.1
-        ;;
-esac
-
 if ! id $USER_NAME >/dev/null 2>&1; then
     run useradd -m $USER_NAME
 fi
@@ -75,6 +61,8 @@ case \$(lsb_release --codename --short) in
                  -e 's/debhelper (>= 9)/debhelper (>= 7)/' \
                  -e '/libev-dev/d' \
                  -e '/ruby-gnome2-dev/d' debian/control
+        sed -i"" -e '/--enable-ruby-milter/i \\t\t--with-ruby=/usr/bin/ruby1.9.1 \\' \
+                 -e 's/ruby -rrbconfig/ruby1.9.1 -rrbconfig/g' debian/rules
         sed -i"" -e 's/9/7/' debian/compat
         sed -i"" -e 's,usr/lib/\*,usr/lib,' debian/*.install
         ;;
@@ -82,6 +70,8 @@ case \$(lsb_release --codename --short) in
         sed -i"" -e 's/ruby (>= 1:1.9.3)/ruby1.9.1 (>= 1.9.1)/g' \
                  -e 's/ruby-dev (>= 1:1.9.3)/ruby1.9.1-dev (>= 1.9.1)/g' \
                  -e '/ruby-gnome2-dev/d' debian/control
+        sed -i"" -e '/--enable-ruby-milter/i \\t\t--with-ruby=/usr/bin/ruby1.9.1 \\' \
+                 -e 's/ruby -rrbconfig/ruby1.9.1 -rrbconfig/g' debian/rules
         ;;
 esac
 debuild -us -uc
