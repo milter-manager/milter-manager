@@ -2,7 +2,7 @@ SERVER_PATH = $(SF_FRS)
 DISTRIBUTIONS = debian ubuntu
 CHROOT_BASE = /var/lib/chroot
 ARCHITECTURES = i386 amd64
-CODE_NAMES = wheezy jessie unstable lucid precise trusty
+CODE_NAMES = wheezy jessie unstable lucid precise trusty utopic
 CLEAN_ROOM_BASE = /var/cache/pbuilder
 CLEAN_ROOM = no
 
