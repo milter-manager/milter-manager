@@ -116,6 +116,7 @@ build_by_pbuilder()
                 $builddir/${PACKAGE}-${VERSION}/debian/rules
             sed -i -e 's/9/7/' $builddir/${PACKAGE}-${VERSION}/debian/compat
             sed -i -e 's,usr/lib/\*,usr/lib,' $builddir/${PACKAGE}-${VERSION}/debian/*.install
+            sed -i -e 's,^# ,,' $builddir/${PACKAGE}-${VERSION}/debian/ruby-milter-core.install
             ;;
         precise)
             sed -i \
@@ -127,6 +128,7 @@ build_by_pbuilder()
                 -e '/--enable-ruby-milter/i \\t\t--with-ruby=/usr/bin/ruby1.9.1 \\' \
                 -e 's/ruby -rrbconfig/ruby1.9.1 -rrbconfig/g' \
                 $builddir/${PACKAGE}-${VERSION}/debian/rules
+            sed -i -e 's,^# ,,' $builddir/${PACKAGE}-${VERSION}/debian/ruby-milter-core.install
             ;;
         *)
             ;;
