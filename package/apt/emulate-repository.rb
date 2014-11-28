@@ -26,6 +26,9 @@ server = WEBrick::HTTPServer.new(:BindAddress => "0.0.0.0",
 server.mount("/projects/milter-manager/files/",
              WEBrick::HTTPServlet::FileHandler,
              "./")
+server.mount("/project/milter-manager/",
+             WEBrick::HTTPServlet::FileHandler,
+             "./")
 trap("INT") do
   server.shutdown
 end
