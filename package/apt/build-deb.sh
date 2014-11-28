@@ -61,7 +61,7 @@ case \$(lsb_release --codename --short) in
                  -e 's/debhelper (>= 9)/debhelper (>= 7)/' \
                  -e '/libev-dev/d' \
                  -e '/ruby-gnome2-dev/d' debian/control
-        sed -i"" -e '/--enable-ruby-milter/i \\t\t--with-ruby=/usr/bin/ruby1.9.1 \\' \
+        sed -i"" -e '/--enable-ruby-milter/i \\\\t\t--with-ruby=/usr/bin/ruby1.9.1 \\\\' \
                  -e 's/ruby -rrbconfig/ruby1.9.1 -rrbconfig/g' debian/rules
         sed -i"" -e 's/9/7/' debian/compat
         sed -i"" -e 's,usr/lib/\*,usr/lib,' debian/*.install
@@ -70,7 +70,7 @@ case \$(lsb_release --codename --short) in
         sed -i"" -e 's/ruby (>= 1:1.9.3)/ruby1.9.1 (>= 1.9.1)/g' \
                  -e 's/ruby-dev (>= 1:1.9.3)/ruby1.9.1-dev (>= 1.9.1)/g' \
                  -e '/ruby-gnome2-dev/d' debian/control
-        sed -i"" -e '/--enable-ruby-milter/i \\t\t--with-ruby=/usr/bin/ruby1.9.1 \\' \
+        sed -i"" -e '/--enable-ruby-milter/i \\\\t\t--with-ruby=/usr/bin/ruby1.9.1 \\\\' \
                  -e 's/ruby -rrbconfig/ruby1.9.1 -rrbconfig/g' debian/rules
         ;;
 esac
