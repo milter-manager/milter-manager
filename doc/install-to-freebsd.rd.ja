@@ -92,6 +92,10 @@ spamdを起動します。
 
   % sudo /usr/sbin/service sa-spamd start
 
+うまく起動できない場合は以下のコマンドでSpamassassinのルールを更新します。
+
+  % sudo sa-update
+
 次にspamass-milterの設定をします。spamass-milterはspamdユー
 ザ・spamdグループで動かすことにします。
 

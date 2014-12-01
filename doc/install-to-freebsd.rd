@@ -89,6 +89,10 @@ spamd should be started:
 
   % sudo /usr/sbin/service sa-spamd start
 
+If you cannot start sa-spamd, you can try a command as followings:
+
+  % sudo sa-update
+
 Next, we configure spamass-milter. We run spamass-milter
 with 'spamd' user and 'spamd' group.
 
