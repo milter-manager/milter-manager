@@ -712,7 +712,7 @@ AC_ARG_WITH([package-platform],
                             (default: auto-detect)]),
             [MILTER_MANAGER_PACKAGE_PLATFORM="$withval"])
 
-if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = ""; then
+if test -z "$MILTER_MANAGER_PACKAGE_PLATFORM"; then
   case `uname` in
   Linux)
     if test -f /etc/debian_version -o -x /usr/bin/dpkg; then
