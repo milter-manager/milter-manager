@@ -19,14 +19,8 @@ upgrading. If you are using milter-manager.local.conf not
 milter-manager.conf, you don't need to backup
 milter-manager.conf.
 
-  % cd ~/src/
-  % fetch http://sourceforge.net/projects/milter-manager/files/milter-manager-2.0.4.tar.gz
-  % tar xvzf milter-manager-2.0.4.tar.gz
-  % cd milter-manager-2.0.4
-  % ./configure CPPFLAGS="-I/usr/local/include"
-  % gmake
-  % sudo cp /usr/local/etc/milter-manager/milter-manager.conf{,.`date +%Y%m%d`}
-  % sudo gmake install
+  % sudo pkg update
+  % sudo pkg upgrade --yes milter-manager
 
 == Conclusion
 

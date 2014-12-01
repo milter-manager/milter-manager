@@ -8,39 +8,25 @@ FreeBSDに特化したmilter managerのインストール方法について説�
 します。FreeBSDに依存しない一般的なインストール情報は((<イン
 ストール|install.rd.ja>))を見てください。
 
-FreeBSD 9.1-RELEASEを想定しています。
+FreeBSD 10.0-RELEASEを想定しています。
 
 == パッケージのインストール
 
 以下のパッケージをインストールすることにより、関連するパッケー
 ジもインストールされます。
 
-  % sudo /usr/local/sbin/portupgrade -NRr lang/ruby18 glib20
-
 MTAはPostfixを利用することとします。
 
-  % sudo /usr/local/sbin/portupgrade -NRr postfix
+  % sudo pkg install --yes postfix
 
 milterはspamass-milter、clamav-milter、milter-greylistを使用
 することとします。
 
-  % sudo /usr/local/sbin/portupgrade -NRr spamass-milter
-  % sudo /usr/local/sbin/portupgrade -NRr -m 'WITH_POSTFIX=true' milter-greylist
-  % sudo /usr/local/sbin/portupgrade -NRr -m 'WITH_MILTER=true' clamav
+  % sudo pkg install --yes spamass-milter mitler-greylist clamav-milter
 
-== ビルドとインストール
+milter-manager をインストールします。
 
-~/src/以下で作業をすることとします。また、/usr/local/以下に
-インストールします。
-
-  % mkdir -p ~/src/
-  % cd ~/src/
-  % fetch http://sourceforge.net/projects/milter-manager/files/milter-manager-2.0.4.tar.gz
-  % tar xvzf milter-manager-2.0.4.tar.gz
-  % cd milter-manager-2.0.4
-  % ./configure CPPFLAGS="-I/usr/local/include"
-  % gmake
-  % sudo gmake install
+  % sudo pkg install --yes milter-manager
 
 == 設定
 
@@ -314,7 +300,7 @@ milter-managerの設定が完了したので、起動の設定をします。
 
 /etc/rc.confに以下を追加してmilter-managerを有効にします。
 
-  milter_manager_enable="YES"
+  miltermanager_enable="YES"
 
 milter-managerを起動します。
 
@@ -341,7 +327,7 @@ milter-managerを起動します。
 /etc/rc.confに以下を追加します。これにより、標準出力に詳細な
 ログが表示されます。
 
-  milter_manager_debug="YES"
+  miltermanager_debug="YES"
 
 milter-managerをもう一度起動します。
 

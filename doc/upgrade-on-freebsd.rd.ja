@@ -18,14 +18,8 @@ FreeBSDに特化したmilter managerの更新方法について説明します�
 milter-manager.confではなくmilter-manager.local.confを利用し
 ている場合はバックアップをとる必要はありません。
 
-  % cd ~/src/
-  % fetch http://sourceforge.net/projects/milter-manager/files/milter-manager-2.0.4.tar.gz
-  % tar xvzf milter-manager-2.0.4.tar.gz
-  % cd milter-manager-2.0.4
-  % ./configure CPPFLAGS="-I/usr/local/include"
-  % gmake
-  % sudo cp /usr/local/etc/milter-manager/milter-manager.conf{,.`date +%Y%m%d`}
-  % sudo gmake install
+  % sudo pkg update
+  % sudo pkg upgrade --yes milter-manager
 
 == まとめ
 

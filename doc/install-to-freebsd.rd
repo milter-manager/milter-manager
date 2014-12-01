@@ -8,38 +8,25 @@ This document describes how to install milter manager to
 FreeBSD. See ((<Install|install.rd>)) for general install
 information.
 
-This document assumes that FreeBSD 9.1-RELEASE is used.
+This document assumes that FreeBSD 10.0-RELEASE is used.
 
 == Install packages
 
 To install the following packages, related packages are also
 installed:
 
-  % sudo /usr/local/sbin/portupgrade -NRr lang/ruby18 glib20
-
 We use Postfix as MTA:
 
-  % sudo /usr/local/sbin/portupgrade -NRr postfix
+  % sudo pkg install --yes postfix
 
 We use spamass-milter, clamav-milter and milter-greylist as
 milters:
 
-  % sudo /usr/local/sbin/portupgrade -NRr spamass-milter
-  % sudo /usr/local/sbin/portupgrade -NRr -m 'WITH_POSTFIX=true' milter-greylist
-  % sudo /usr/local/sbin/portupgrade -NRr -m 'WITH_MILTER=true' clamav
+  % sudo pkg install --yes spamass-milter mitler-greylist clamav-milter
 
-== Build and Install
+Install milter-manager.
 
-We work at ~/src/. We will install milter manager into /usr/local/.
-
-  % mkdir -p ~/src/
-  % cd ~/src/
-  % fetch http://sourceforge.net/projects/milter-manager/files/milter-manager-2.0.4.tar.gz
-  % tar xvzf milter-manager-2.0.4.tar.gz
-  % cd milter-manager-2.0.4
-  % ./configure CPPFLAGS="-I/usr/local/include"
-  % gmake
-  % sudo gmake install
+  % sudo pkg install --yes milter-manager
 
 == Configuration
 
@@ -309,7 +296,7 @@ setup running milter-manager.
 
 We add the following to /etc/rc.conf to enable milter-manager:
 
-  milter_manager_enable="YES"
+  miltermanager_enable="YES"
 
 milter-manager should be started:
 
@@ -338,7 +325,7 @@ milter-manager isn't daemon process.
 We add the following to /etc/rc.conf to output verbose log
 to standard output:
 
-  milter_manager_debug="YES"
+  miltermanager_debug="YES"
 
 milter-manager should be started:
 
