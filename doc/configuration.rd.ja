@@ -474,7 +474,7 @@ milter-managerの設定ファイルmilter-manager.confの書き方につ
    定します。
 
    もし、security.effective_user, security.effective_groupを
-   指定して場合は、その権限でファイルへ書き込みます。ファイ
+   指定している場合は、その権限でファイルへ書き込みます。ファイ
    ルのパーミッションに注意してください。
 
    ファイルのパスは「"」で囲んで
