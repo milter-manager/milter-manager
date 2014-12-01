@@ -2109,7 +2109,7 @@ define_applicable_condition do ... end内で設定できる項目は以
 
    認証されている場合はtrue、そうでない場合はfalseが返ります。
 
-   Example:
+   例:
      context["auth_type"]   # -> nil
      context["auth_authen"] # -> nil
      context.authenticated? # -> false
