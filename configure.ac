@@ -802,7 +802,7 @@ AC_ARG_WITH([default-socket-group],
 
 AC_ARG_WITH([default-connection-spec],
             AS_HELP_STRING([--with-default-connection-spec=SPEC],
-                           [Default connection spec. (default: none)]),
+                           [Default connection spec. (default: auto)]),
             [MILTER_MANAGER_DEFAULT_CONNECTION_SPEC="$withval"])
 
 AC_ARG_WITH([default-pid-file],
@@ -831,8 +831,26 @@ if test -z "$MILTER_MANAGER_DEFAULT_SOCKET_GROUP"; then
 else
   MILTER_MANAGER_DEFAULT_SOCKET_GROUP_C_STRING="\\\"\$(MILTER_MANAGER_DEFAULT_SOCKET_GROUP)\\\""
 fi
+
 if test -z "$MILTER_MANAGER_DEFAULT_CONNECTION_SPEC"; then
-  MILTER_MANAGER_DEFAULT_CONNECTION_SPEC=['inet:10025@[127.0.0.1]']
+  case "$MILTER_MANAGER_PACKAGE_PLATFORM" in
+  debian)
+    case `lsb_release -c --short` in
+    lucid|precise)
+      MILTER_MANAGER_DEFAULT_CONNECTION_SPEC=['unix:/var/run/milter-manager/milter-manager.sock']
+      ;;
+    *)
+      MILTER_MANAGER_DEFAULT_CONNECTION_SPEC=['unix:/run/milter-manager/milter-manager.sock']
+    ;;
+    esac
+    ;;
+  redhat|freebsd|pkgsrc)
+    MILTER_MANAGER_DEFAULT_CONNECTION_SPEC=['unix:/var/run/milter-manager/milter-manager.sock']
+    ;;
+  *)
+    MILTER_MANAGER_DEFAULT_CONNECTION_SPEC=['inet:10025@[127.0.0.1]']
+    ;;
+  esac
 fi
 MILTER_MANAGER_DEFAULT_CONNECTION_SPEC_C_STRING="\\\"\$(MILTER_MANAGER_DEFAULT_CONNECTION_SPEC)\\\""
 if test -z "$MILTER_MANAGER_DEFAULT_PID_FILE"; then
