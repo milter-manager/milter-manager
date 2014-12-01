@@ -2155,6 +2155,23 @@ It has the following information.
      context["auth_authen"] # -> "sender"
      context.authenticated? # -> true
 
+: context.mail_transaction_shelf
+
+   Child milters can share data while mail transaction.
+
+   Example:
+     define_applicable_condition("") do |condition|
+       condition.define_envelope_recipient_stopper do |context, recipient|
+         if /\Asomeone@example.com\z/ =~ recipient
+           context.mail_transaction_shelf["stop-on-data"] = true
+         end
+         false
+       end
+       condition.define_data_stopper do |context|
+         context.mail_transaction_shelf["stop-on-data"]
+       end
+     end
+
 === [socket-address] socket_address
 
 The object that describes socket address. Socket is one of
