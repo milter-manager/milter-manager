@@ -74,13 +74,10 @@ SpamAssassinまでは処理がまわってきません。まずは、SMTPクラ�
 運用後はmilter managerの統計情報をグラフ化し、調整してくださ
 い。
 
-spamdを起動します。
-
-  % sudo /usr/sbin/service sa-spamd start
-
-うまく起動できない場合は以下のコマンドでSpamassassinのルールを更新します。
+Spamassassinのルールファイルを更新してからspamdを起動します。
 
   % sudo sa-update
+  % sudo /usr/sbin/service sa-spamd start
 
 次にspamass-milterの設定をします。spamass-milterはspamdユー
 ザ・spamdグループで動かすことにします。

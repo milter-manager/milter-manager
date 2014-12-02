@@ -72,13 +72,10 @@ SMTP server:
 We can adjust apposite value after operation. We can see
 milter manager's statistics graphs at the time.
 
-spamd should be started:
-
-  % sudo /usr/sbin/service sa-spamd start
-
-If you cannot start sa-spamd, you can try a command as followings:
+Update Spamassassin's rule file and start spamd:
 
   % sudo sa-update
+  % sudo /usr/sbin/service sa-spamd start
 
 Next, we configure spamass-milter. We run spamass-milter
 with 'spamd' user and 'spamd' group.
