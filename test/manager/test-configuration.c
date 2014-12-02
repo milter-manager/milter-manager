@@ -444,7 +444,7 @@ test_manager_connection_spec (void)
 
     actual_spec =
         milter_manager_configuration_get_manager_connection_spec(config);
-    cut_assert_equal_string("inet:10025@[127.0.0.1]", actual_spec);
+    cut_assert_equal_string(MILTER_MANAGER_DEFAULT_CONNECTION_SPEC, actual_spec);
 
     milter_manager_configuration_set_manager_connection_spec(config, spec);
 
@@ -649,7 +649,7 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
     cut_assert_false(milter_manager_configuration_is_privilege_mode(config));
 
     cut_assert_equal_string(
-        "inet:10025@[127.0.0.1]",
+        MILTER_MANAGER_DEFAULT_CONNECTION_SPEC,
         milter_manager_configuration_get_manager_connection_spec(config));
     cut_assert_equal_string(
         NULL,
