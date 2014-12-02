@@ -62,7 +62,9 @@ case \$(lsb_release --codename --short) in
                  -e '/libev-dev/d' \
                  -e '/ruby-gnome2-dev/d' debian/control
         sed -i"" -e '/--enable-ruby-milter/i \\\\t\t--with-ruby=/usr/bin/ruby1.9.1 \\\\' \
-                 -e 's/ruby -rrbconfig/ruby1.9.1 -rrbconfig/g' debian/rules
+                 -e 's/ruby -rrbconfig/ruby1.9.1 -rrbconfig/g' \
+                 -e 's,=/run/,=/var/run/,' \
+                 -e 's,=unix:/run/,=unix:/var/run/,' debian/rules
         sed -i"" -e 's/9/7/' debian/compat
         sed -i"" -e 's,usr/lib/\*,usr/lib,' debian/*.install
         sed -i"" -e 's,^# ,,' debian/ruby-milter-core.install
