@@ -75,7 +75,7 @@ case \$(lsb_release --codename --short) in
                  -e '/ruby-gnome2-dev/d' debian/control
         sed -i"" -e '/--enable-ruby-milter/i \\\\t\t--with-ruby=/usr/bin/ruby1.9.1 \\\\' \
                  -e 's/ruby -rrbconfig/ruby1.9.1 -rrbconfig/g' debian/rules
-        sed -i -e 's,^# usr/,,' debian/ruby-milter-core.install
+        sed -i -e 's,^# ,,' debian/ruby-milter-core.install
         ;;
 esac
 debuild -us -uc
