@@ -449,6 +449,7 @@ if test "$ruby_available" = "yes"; then
       cat <<EOM >> $ac_ruby_glib2_dir/Makefile
 
 srcdir_prefix = `test "${srcdir}" = . || echo "../../../$srcdir/$ac_ruby_glib2_dir/"`
+prefix = $prefix
 exec_prefix = $milter_manager_exec_prefix
 libdir = \$(DESTDIR)$libdir
 pkglibdir = \$(libdir)/$PACKAGE_NAME
