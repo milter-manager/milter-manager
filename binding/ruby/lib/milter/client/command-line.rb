@@ -294,29 +294,44 @@ module Milter
         end
 
         if client.n_workers == 0
-          add_signal_handler(client, :HUP) {client.reload}
-          add_signal_handler(client, :USR1) {Milter::Logger.default.reopen}
-          add_signal_handler(client, :INT,  :once => true) {client.shutdown}
-          add_signal_handler(client, :TERM, :once => true) {client.shutdown}
+          setup_signal_handler_reload(client)
+          setup_signal_handler_reopen_log(client)
+          setup_signal_handler_shutdown(client)
         end
 
         client.signal_connect("worker-created") do
-          add_signal_handler(client, :HUP) {client.reload}
-          add_signal_handler(client, :USR1) {Milter::Logger.default.reopen}
+          setup_signal_handler_reload(client)
+          setup_signal_handler_reopen_log(client)
         end
 
         client.signal_connect("workers-created") do
-          add_signal_handler(client, :HUP) do
-            client.reload
+          setup_signal_handler_reload(client) do
             Process.kill(:HUP, *client.worker_pids)
           end
-          add_signal_handler(client, :USR1) do
-            Milter::Logger.default.reopen
+          setup_signal_handler_reopen_log(client) do
             Process.kill(:USR1, *client.worker_pids)
           end
-          add_signal_handler(client, :INT,  :once => true) {client.shutdown}
-          add_signal_handler(client, :TERM, :once => true) {client.shutdown}
+          setup_signal_handler_shutdown(client)
         end
+      end
+
+      def setup_signal_handler_reload(client)
+        add_signal_handler(client, :HUP) do
+          client.reload
+          yield(client) if block_given?
+        end
+      end
+
+      def setup_signal_handler_reopen_log(client)
+        add_signal_handler(client, :USR1) do
+          Milter::Logger.default.reopen
+          yield(client) if block_given?
+        end
+      end
+
+      def setup_signal_handler_shutdown(client)
+        add_signal_handler(client, :INT,  :once => true) {client.shutdown}
+        add_signal_handler(client, :TERM, :once => true) {client.shutdown}
       end
 
       def add_signal_handler(client, signal, options={})
