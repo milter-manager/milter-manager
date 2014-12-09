@@ -470,3 +470,20 @@ milter manager のブログだけでなく、ククログにも記事を書く�
 一年以上、空いているようであれば milter manager の説明を入れるとよい。
 
 参考: ((<"milter manager 2.0.0 リリース - ククログ(2013-07-31)"|URL:http://www.clear-code.com/blog/2013/7/31.html>))
+
+== その他の注意
+
+=== Ubuntu Lucid
+
+debootstrap(pbuilder) で Lucid の chroot を作るのは失敗するので、どこか
+から rootfs を持って来た方が早い。
+
+例えば https://images.linuxcontainers.org/images/ から最新の
+rootfs.tar.xz をもらってくる。
+以下のコマンドで圧縮形式を変更する。
+
+  $ xz -d -c | gzip > rootfs.tar.gz
+
+pbuilder 用には名前を変更して所定のパスにファイルを置く。
+chroot 用には所定のパスに展開しておけばよい。
+
