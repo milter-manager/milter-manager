@@ -2159,6 +2159,8 @@ It has the following information.
 
    Child milters can share data while mail transaction.
 
+   Since 2.0.5 [Experimental]
+
    Example:
      define_applicable_condition("") do |condition|
        condition.define_envelope_recipient_stopper do |context, recipient|

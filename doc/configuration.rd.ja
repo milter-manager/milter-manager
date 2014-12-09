@@ -2129,6 +2129,8 @@ define_applicable_condition do ... end内で設定できる項目は以
    envelope-recipient にあるユーザが含まれる場合のみ、子 milter でメー
    ル本文を処理する、というような使い方ができます。
 
+   2.0.5 から使えます[実験的]
+
    例:
      define_applicable_condition("") do |condition|
        condition.define_envelope_recipient_stopper do |context, recipient|
