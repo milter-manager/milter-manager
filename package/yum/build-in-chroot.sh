@@ -160,6 +160,9 @@ for architecture in $ARCHITECTURES; do
                 ;;
         esac
         for distribution_version in $distribution_versions; do
+            if test "$architecture" = "i386" -a "$distribution_version" = "7"; then
+                continue
+            fi
             if test "$parallel" = "yes"; then
                 build $architecture $distribution $distribution_version &
             else
