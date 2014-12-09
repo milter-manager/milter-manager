@@ -56,6 +56,14 @@
   * FreeBSD で sa-spamd を起動する前に sa-update を実行するようにしました
     [川崎さんが報告][milter-manager-users-ja:00250]
 
+=== 感謝
+
+  * 佐々木さん
+  * 西山さん
+  * おばたさん
+  * Panagiotis Skarvelis さん
+  * 川崎さん
+
 == [release-2-0-4] 2.0.4: 2014-06-20
 
 2.0.3 のバグフィックスリリースです。
