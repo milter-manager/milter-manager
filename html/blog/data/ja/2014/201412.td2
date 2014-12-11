@@ -1,0 +1,24 @@
+TDIARY2.01.00
+Date: 20141211
+Title: 
+Last-Modified: 1418258253
+Visible: true
+Format: RD
+
+= milter manager 2.0.5
+
+milter manager 2.0.5 をリリースしました。
+
+CentOS7のサポートを追加しました。((-が systemd への対応はまだできていません。。。-))
+
+佐々木さんの協力でdebパッケージをクリーンルームビルドするようにしまし
+た。wheezy, jessie, sid, trusty, utopic ではシステムの libev や ruby-glib2 を利用するようになりました。
+
+実験的な機能としてメールトランザクション(SMTPコマンドのMAILコマンドか
+らDATAコマンドの終わりまで)の間データを保持できるAPIを追加しました。こ
+れにより milter の適用条件がより柔軟に書けるようになりました。
+
+
+詳しくは((<2.0.4から2.0.5の変更点|URL:http://milter-manager.sourceforge.net/reference/ja/news.html#news.release-2-0-5>))を参照してください。
+
+.
