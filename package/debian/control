@@ -227,6 +227,7 @@ Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	libmilter-core0 (= ${binary:Version}),
+	ruby-glib2,
 	ruby (>= 1:1.9.3)
 Description: Ruby bindings for milter core library (Ruby interface)
  milter "core" library is a common library for mitler "client" and
