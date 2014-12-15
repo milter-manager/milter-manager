@@ -60,7 +60,8 @@ case \$(lsb_release --codename --short) in
                  -e 's/ruby-dev (>= 1:1.9.3)/ruby1.9.1-dev (>= 1.9.1)/g' \
                  -e 's/debhelper (>= 9)/debhelper (>= 7)/' \
                  -e '/libev-dev/d' \
-                 -e '/ruby-gnome2-dev/d' debian/control
+                 -e '/ruby-gnome2-dev/d' \
+                 -e '/ruby-glib2/d' debian/control
         sed -i"" -e '/--enable-ruby-milter/i \\\\t\t--with-ruby=/usr/bin/ruby1.9.1 \\\\' \
                  -e 's/ruby -rrbconfig/ruby1.9.1 -rrbconfig/g' \
                  -e 's,=/run/,=/var/run/,' \
@@ -72,7 +73,8 @@ case \$(lsb_release --codename --short) in
     "precise")
         sed -i"" -e 's/ruby (>= 1:1.9.3)/ruby1.9.1 (>= 1.9.1)/g' \
                  -e 's/ruby-dev (>= 1:1.9.3)/ruby1.9.1-dev (>= 1.9.1)/g' \
-                 -e '/ruby-gnome2-dev/d' debian/control
+                 -e '/ruby-gnome2-dev/d' \
+                 -e '/ruby-glib2/d' debian/control
         sed -i"" -e '/--enable-ruby-milter/i \\\\t\t--with-ruby=/usr/bin/ruby1.9.1 \\\\' \
                  -e 's/ruby -rrbconfig/ruby1.9.1 -rrbconfig/g' debian/rules
         sed -i -e 's,^# ,,' debian/ruby-milter-core.install
