@@ -58,11 +58,15 @@ build_by_pbuilder()
     pool_dir=${pool_dir}/${code_name}/${component}/${package_initial}/${PACKAGE}
     basetgz=$CHROOT_BASE/$code_name-$architecture-base.tgz
     builddir=${script_base_dir}/$code_name-$architecture
+    aptcache_dir=$CHROOT_BASE/aptcache/$code_name-$architecture
+
+    run_sudo mkdir -p $aptcache_dir
 
     OPTS=( )
     OPTS+=( --distribution "$code_name" )
     OPTS+=( --architecture "$architecture" )
     OPTS+=( --basetgz "$basetgz" )
+    OPTS+=( --aptcache "$aptcache_dir")
     case $code_name in
         lucid)
             OPTS+=( --components 'main universe' )
@@ -168,11 +172,15 @@ build_by_cowbuilder()
     pool_dir=${pool_dir}/${code_name}/${component}/${package_initial}/${PACKAGE}
     basecow=$CHROOT_BASE/$code_name-$architecture-base.cow
     builddir=${script_base_dir}/$code_name-$architecture
+    aptcache_dir=$CHROOT_BASE/aptcache/$code_name-$architecture
+
+    run_sudo mkdir -p $aptcache_dir
 
     OPTS=( )
     OPTS+=( --distribution "$code_name" )
     OPTS+=( --architecture "$architecture" )
     OPTS+=( --basepath "$basecow" )
+    OPTS+=( --aptcache "$aptcache_dir" )
     case $code_name in
         lucid)
             OPTS+=( --components 'main universe' )
