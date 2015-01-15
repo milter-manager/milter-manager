@@ -151,6 +151,12 @@ build_by_pbuilder()
     run_sudo rm -fr $builddir
 }
 
+: ${TMPFS_SIZE:=2g}
+buildplace=$CHROOT_BASE/build/
+if test "$USE_TMPFS" = "yes"; then
+    run_sudo mount -t tmpfs -o size=$TMPFS_SIZE tmpfs $buildplace
+fi
+
 for architecture in $ARCHITECTURES; do
     for code_name in $CODES; do
         if test "$parallel" = "yes"; then
@@ -163,4 +169,8 @@ done
 
 if test "$parallel" = "yes" ; then
     wait
+fi
+
+if test "$USE_TMPFS" = "yes"; then
+    run_sudo umount $buildplace
 fi
