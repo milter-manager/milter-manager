@@ -487,3 +487,10 @@ rootfs.tar.xz をもらってくる。
 pbuilder 用には名前を変更して所定のパスにファイルを置く。
 chroot 用には所定のパスに展開しておけばよい。
 
+=== Pbuilder + tmpfs
+
+APTCACHEHARDLINK=no を pbuilderrc に追加しておくと以下のコマンドで使えるようになる。
+
+  $ make build USE_TMPFS=yes
+
+
