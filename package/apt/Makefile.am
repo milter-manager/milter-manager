@@ -1,10 +1,8 @@
 SERVER_PATH = $(SF_FRS)
 DISTRIBUTIONS = debian ubuntu
-CHROOT_BASE = /var/lib/chroot
 ARCHITECTURES = i386 amd64
 CODE_NAMES = wheezy jessie unstable lucid precise trusty utopic
 CLEAN_ROOM_BASE = /var/cache/pbuilder
-CLEAN_ROOM = no
 
 release: build update sign upload
 
@@ -48,12 +46,6 @@ download:
 	done
 
 build:
-	@if test "$(CLEAN_ROOM)" = "yes"; then \
-		./build-in-clean-room.sh \
-		  $(VERSION) $(CLEAN_ROOM_BASE) \
-		  '$(ARCHITECTURES)' '$(CODE_NAMES)'; \
-	else \
-		./build-in-chroot.sh \
-		  $(VERSION) $(CHROOT_BASE) \
-		  '$(ARCHITECTURES)' '$(CODE_NAMES)'; \
-	fi
+	./build-in-clean-room.sh \
+	  $(VERSION) $(CLEAN_ROOM_BASE) \
+	  '$(ARCHITECTURES)' '$(CODE_NAMES)'; \
