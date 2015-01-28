@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2009-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2009-2015  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -34,6 +34,7 @@ void test_socket_address (void);
 void test_n_processing_sessions (void);
 void test_packet_buffer_size (void);
 void test_quarantine_reason (void);
+void test_mail_transaction_shelf (void);
 
 static MilterClientContext *context;
 
