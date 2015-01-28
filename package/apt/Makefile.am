@@ -48,4 +48,4 @@ download:
 build:
 	./build-in-clean-room.sh \
 	  $(VERSION) $(CLEAN_ROOM_BASE) \
-	  '$(ARCHITECTURES)' '$(CODE_NAMES)'; \
+	  '$(ARCHITECTURES)' '$(CODE_NAMES)'
