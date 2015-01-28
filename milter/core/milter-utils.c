@@ -498,6 +498,7 @@ guint
 milter_utils_flags_from_string (GType        flags_type,
                                 const gchar *flags_string,
                                 guint        base_flags,
+                                guint        default_flags,
                                 GError     **error)
 {
     gchar **split_names, **names;
@@ -559,10 +560,17 @@ milter_utils_flags_from_string (GType        flags_type,
 
             value = g_flags_get_value_by_nick(flags_class, name);
             if (value) {
+                guint current_flags;
+
+                current_flags = value->value;
+                if (current_flags == 0 && g_str_equal(name, "default")) {
+                    current_flags = default_flags;
+                }
+
                 if (local_append) {
-                    flags |= value->value;
+                    flags |= current_flags;
                 } else {
-                    flags &= ~(value->value);
+                    flags &= ~current_flags;
                 }
             } else {
                 if (!unknown_strings)

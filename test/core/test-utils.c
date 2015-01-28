@@ -421,6 +421,13 @@ data_flags_from_string_success (void)
         MILTER_LOG_LEVEL_ALL | MILTER_LOG_LEVEL_NONE,
         "error|all|info",
         0);
+    ADD("multi - default",
+        MILTER_LOG_LEVEL_CRITICAL |
+        MILTER_LOG_LEVEL_WARNING |
+        MILTER_LOG_LEVEL_ERROR |
+        MILTER_LOG_LEVEL_INFO,
+        "info|default",
+        0);
     ADD("append",
         MILTER_LOG_LEVEL_CRITICAL |
         MILTER_LOG_LEVEL_WARNING |
@@ -464,14 +471,19 @@ test_flags_from_string_success (gconstpointer data)
 {
     const gchar *input;
     GType type;
-    MilterLogLevelFlags base_flags, expected, actual;
+    MilterLogLevelFlags base_flags, default_flags, expected, actual;
     GError *error = NULL;
 
     input = gcut_data_get_string(data, "/input");
     type = gcut_data_get_type(data, "/type");
     base_flags = gcut_data_get_flags(data, "/base-flags");
     expected = gcut_data_get_flags(data, "/expected");
-    actual = milter_utils_flags_from_string(type, input, base_flags, &error);
+    default_flags =
+        MILTER_LOG_LEVEL_CRITICAL |
+        MILTER_LOG_LEVEL_ERROR |
+        MILTER_LOG_LEVEL_WARNING;
+    actual = milter_utils_flags_from_string(type, input, base_flags,
+                                            default_flags, &error);
     gcut_assert_equal_flags(type, expected, actual);
     gcut_assert_error(error);
 }
@@ -515,7 +527,8 @@ test_flags_from_string_error (gconstpointer data)
     gcut_assert_equal_flags(type,
                             0,
                             milter_utils_flags_from_string(type, input,
-                                                           base_flags, &error));
+                                                           base_flags, 0,
+                                                           &error));
     gcut_assert_equal_error(gcut_data_get_pointer(data, "/expected"),
                             error);
 }

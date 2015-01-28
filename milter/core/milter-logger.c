@@ -316,6 +316,7 @@ milter_log_level_flags_from_string (const gchar *level_name,
         return milter_utils_flags_from_string(MILTER_TYPE_LOG_LEVEL_FLAGS,
                                               level_name,
                                               base_flags,
+                                              DEFAULT_LEVEL,
                                               error);
     }
 }
@@ -333,6 +334,7 @@ milter_log_item_flags_from_string (const gchar *item_name,
     return milter_utils_flags_from_string(MILTER_TYPE_LOG_ITEM_FLAGS,
                                           item_name,
                                           base_flags,
+                                          DEFAULT_ITEM,
                                           error);
 }
 
