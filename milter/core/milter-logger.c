@@ -403,7 +403,8 @@ log_message_colorize_console (GString *log,
 }
 
 static void
-log_message (GString *log, MilterLogLevelFlags level, const gchar *message)
+log_message (MilterLoggerPrivate *priv, GString *log,
+             MilterLogLevelFlags level, const gchar *message)
 {
     const gchar *colorize_type;
     MilterLogColorize colorize = MILTER_LOG_COLORIZE_DEFAULT;
@@ -415,8 +416,14 @@ log_message (GString *log, MilterLogLevelFlags level, const gchar *message)
                                                  NULL);
 
     if (colorize == MILTER_LOG_COLORIZE_DEFAULT) {
+        int output_fileno;
 
-        if (isatty(STDOUT_FILENO) &&
+        if (priv->output) {
+            output_fileno = fileno(priv->output);
+        } else {
+            output_fileno = STDOUT_FILENO;
+        }
+        if (isatty(output_fileno) &&
             milter_utils_guess_console_color_usability()) {
             colorize = MILTER_LOG_COLORIZE_CONSOLE;
         } else {
@@ -535,7 +542,7 @@ milter_logger_default_log_handler (MilterLogger *logger, const gchar *domain,
             g_string_append(log, ": ");
     }
 
-    log_message(log, level, message);
+    log_message(priv, log, level, message);
     g_string_append(log, "\n");
     if (priv->output) {
         fputs(log->str, priv->output);
