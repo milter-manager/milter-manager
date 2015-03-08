@@ -1,4 +1,4 @@
-/* -*- c-file-style: "ruby" -*- */
+/* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
  *
