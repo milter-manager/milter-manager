@@ -46,6 +46,16 @@ establish_connection (VALUE self)
 }
 
 static VALUE
+context_negotiate(VALUE self, VALUE option)
+{
+    gboolean success;
+
+    success = milter_server_context_negotiate(SELF(self), RVAL2OPTION(option));
+
+    return success;
+}
+
+static VALUE
 context_connect (VALUE self, VALUE host, VALUE address)
 {
     VALUE rb_packed_address;
@@ -184,6 +194,8 @@ Init_milter_server_context (void)
     rb_define_method(rb_cMilterServerContext, "establish_connection",
                      establish_connection, 0);
 
+    rb_define_method(rb_cMilterServerContext, "negotiate",
+                     context_negotiate, 1);
     rb_define_method(rb_cMilterServerContext, "connect", context_connect, 2);
     rb_define_method(rb_cMilterServerContext, "helo", context_helo, 1);
     rb_define_method(rb_cMilterServerContext, "envelope_from",
