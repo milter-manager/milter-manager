@@ -209,6 +209,13 @@ context_is_quitted (VALUE self)
     return CBOOL2RVAL(milter_server_context_is_quitted(SELF(self)));
 }
 
+static VALUE
+context_reset_message_related_data (VALUE self)
+{
+    milter_server_context_reset_message_related_data(SELF(self));
+    return Qnil;
+}
+
 void
 Init_milter_server_context (void)
 {
@@ -248,6 +255,9 @@ Init_milter_server_context (void)
                      context_is_processing_message, 0);
     rb_define_method(rb_cMilterServerContext, "quitted?",
                      context_is_quitted, 0);
+
+    rb_define_method(rb_cMilterServerContext, "reset_message_related_data",
+                     context_reset_message_related_data, 0);
 
     G_DEF_SIGNAL_FUNC(rb_cMilterServerContext, "stop-on-connect",
                       rb_milter__connect_signal_convert);
