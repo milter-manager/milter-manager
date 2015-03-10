@@ -111,6 +111,16 @@ context_envelope_recipient (VALUE self, VALUE envelope_recipient)
 }
 
 static VALUE
+context_data (VALUE self)
+{
+    gboolean success;
+
+    success = milter_server_context_data(SELF(self));
+
+    return CBOOL2RVAL(success);
+}
+
+static VALUE
 context_header (VALUE self, VALUE name, VALUE value)
 {
     gboolean success;
@@ -202,6 +212,7 @@ Init_milter_server_context (void)
                      context_envelope_from, 1);
     rb_define_method(rb_cMilterServerContext, "envelope_recipient",
                      context_envelope_recipient, 1);
+    rb_define_method(rb_cMilterServerContext, "data", context_data, 0);
     rb_define_method(rb_cMilterServerContext, "header", context_header, 2);
     rb_define_method(rb_cMilterServerContext, "end_of_header",
                      context_end_of_header, 0);
