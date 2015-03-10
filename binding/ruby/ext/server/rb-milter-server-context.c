@@ -172,6 +172,26 @@ context_end_of_message (int argc, VALUE *argv, VALUE self)
 }
 
 static VALUE
+context_quit(VALUE self)
+{
+    gboolean success;
+
+    success = milter_server_context_quit(SELF(self));
+
+    return CBOOL2RVAL(success);
+}
+
+static VALUE
+context_abort(VALUE self)
+{
+    gboolean success;
+
+    success = milter_server_context_abort(SELF(self));
+
+    return success;
+}
+
+static VALUE
 context_is_negotiated (VALUE self)
 {
     return CBOOL2RVAL(milter_server_context_is_negotiated(SELF(self)));
@@ -219,6 +239,8 @@ Init_milter_server_context (void)
     rb_define_method(rb_cMilterServerContext, "body", context_body, 1);
     rb_define_method(rb_cMilterServerContext, "end_of_message",
                      context_end_of_message, -1);
+    rb_define_method(rb_cMilterServerContext, "quit", context_quit, 0);
+    rb_define_method(rb_cMilterServerContext, "abort", context_abort, 0);
 
     rb_define_method(rb_cMilterServerContext, "negotiated?",
                      context_is_negotiated, 0);
