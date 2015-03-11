@@ -52,7 +52,7 @@ context_negotiate(VALUE self, VALUE option)
 
     success = milter_server_context_negotiate(SELF(self), RVAL2OPTION(option));
 
-    return success;
+    return CBOOL2RVAL(success);
 }
 
 static VALUE
