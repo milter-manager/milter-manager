@@ -46,7 +46,7 @@ establish_connection (VALUE self)
 }
 
 static VALUE
-context_negotiate(VALUE self, VALUE option)
+context_negotiate (VALUE self, VALUE option)
 {
     gboolean success;
 
@@ -172,7 +172,7 @@ context_end_of_message (int argc, VALUE *argv, VALUE self)
 }
 
 static VALUE
-context_quit(VALUE self)
+context_quit (VALUE self)
 {
     gboolean success;
 
@@ -182,7 +182,7 @@ context_quit(VALUE self)
 }
 
 static VALUE
-context_abort(VALUE self)
+context_abort (VALUE self)
 {
     gboolean success;
 
