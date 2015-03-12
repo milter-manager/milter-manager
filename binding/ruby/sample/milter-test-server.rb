@@ -28,8 +28,8 @@ class MilterTestServer
                        :original_recipients,
                        :headers,
                        :original_headers,
-                       :body,
-                       :replaced_body)
+                       :body_chunks,
+                       :replaced_body_chunks)
 
   ProcessData = Struct.new("ProcessData",
                            :loop,
