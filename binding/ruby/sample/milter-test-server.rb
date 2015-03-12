@@ -26,7 +26,7 @@ class MilterTestServer
                        :original_envelope_from,
                        :recipients,
                        :original_recipients,
-                       :heaers,
+                       :headers,
                        :original_headers,
                        :body,
                        :replaced_body)
