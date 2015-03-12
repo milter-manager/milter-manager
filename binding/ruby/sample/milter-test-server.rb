@@ -652,6 +652,24 @@ class MilterTestServer
   end
 
   def parse_mail_contents(contents)
+    begin
+      require "mail"
+    rescue LoadError => ex
+      $stderr.puts "#{ex.class}: #{ex.message}"
+      $stderr.puts "Require mail gem when use `--mail-file` option"
+      exit false
+    end
+    mail = Mail.new(contents)
+    from_header = mail["From"]
+    @envelope_from = from_header.addresses.first if from_header
+    to_header = mail["To"]
+    cc_header = mail["Cc"]
+    @envelope_recipients.concat(to_header.addresses) if to_header
+    @envelope_recipients.concat(cc_header.addresses) if cc_header
+    mail.header.entries.each do |field|
+      @headers[field.name] = field.value
+    end
+    @chunks << mail.body.raw_source
   end
 end
 
