@@ -585,7 +585,7 @@ class MilterTestServer
                " (This is used for {auth_author} macro value.)") do |author|
       @authenticated_author = author
     end
-    @parser.on("-m, --mail-file=PATH", "Use mail placed at PATH as mail content.") do |path|
+    @parser.on("-m", "--mail-file=PATH", "Use mail placed at PATH as mail content.") do |path|
       @mail_file = Pathname(path).realpath
       parse_mail_contents(@mail_file.read)
     end
