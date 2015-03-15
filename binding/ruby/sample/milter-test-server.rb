@@ -28,8 +28,8 @@ class MilterTestServer
                        :original_envelope_recipients,
                        :headers,
                        :original_headers,
-                       :body_chunks,
-                       :replaced_body_chunks)
+                       :body,
+                       :replaced_body)
 
   ProcessData = Struct.new("ProcessData",
                            :loop,
@@ -127,8 +127,8 @@ class MilterTestServer
     data.message.original_envelope_recipients = @envelope_recipients.dup
     data.message.headers = @headers.copy
     data.message.original_headers = @headers.copy
-    data.message.body_chunks = @body_chunks.dup
-    data.message.replaced_body_chunks = []
+    data.message.body = @body_chunks.join("")
+    data.message.replaced_body = ""
     data.error = nil
     data
   end
