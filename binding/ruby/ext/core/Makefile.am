@@ -45,4 +45,5 @@ milter_core_la_SOURCES =			\
 	rb-milter-utils.c			\
 	rb-milter-compat.c			\
 	rb-milter-memory-profile.c		\
-	rb-milter-event-loop.c
+	rb-milter-event-loop.c			\
+	rb-milter-headers.c

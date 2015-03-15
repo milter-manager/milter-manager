@@ -40,6 +40,7 @@ void Init_milter_error_emittable (void);
 void Init_milter_agent (void);
 void Init_milter_protocol_agent (void);
 void Init_milter_event_loop (void);
+void Init_milter_headers (void);
 
 #define RVAL2ENCODER(obj)         (MILTER_ENCODER(RVAL2GOBJ(obj)))
 #define RVAL2COMMAND_ENCODER(obj) (MILTER_COMMAND_ENCODER(RVAL2GOBJ(obj)))
