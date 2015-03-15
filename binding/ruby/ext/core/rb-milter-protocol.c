@@ -1,4 +1,4 @@
-/* -*- c-file-style: "ruby" -*- */
+/* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
  *
@@ -23,7 +23,7 @@ static VALUE
 compare (VALUE self, VALUE other)
 {
     return INT2NUM(milter_status_compare(RVAL2STATUS(self),
-					 RVAL2STATUS(other)));
+                                         RVAL2STATUS(other)));
 }
 
 void
