@@ -364,7 +364,26 @@ class MilterTestServer
   end
 
   def print_result(context, data)
-    puts "done"
+    if context.status.pass?
+      status_name = "pass"
+    else
+      status_name = context.status.nick
+    end
+    print "status: #{status_name}"
+    if data.reply_code > 0 || data.reply_extended_code || data.reply_message
+      print " [%d]<%s>(%s)" % [data.reply_code, data.reply_extended_code, data.reply_message]
+    end
+    puts
+    puts "elapsed-time: %g seconds" % [data.timer.elapsed.first]
+    if data.quarantine_reason
+      puts "Quarantine reason: <#{data.quarantine_reason}>"
+    end
+    if @output_message
+      print_message(data.message)
+    end
+  end
+
+  def print_message(message)
   end
 
   def negotiate(context)
