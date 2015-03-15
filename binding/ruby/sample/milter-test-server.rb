@@ -121,6 +121,14 @@ class MilterTestServer
     data.reply_extended_code = nil
     data.reply_message = nil
     data.message = Message.new
+    data.message.envelope_from = @envelope_from.dup
+    data.message.original_envelope_from = @envelope_from.dup
+    data.message.envelope_recipients = @envelope_recipients.dup
+    data.message.original_envelope_recipients = @envelope_recipients.dup
+    data.message.headers = @headers.copy
+    data.message.original_headers = @headers.copy
+    data.message.body_chunks = @body_chunks.dup
+    data.message.replaced_body_chunks = []
     data.error = nil
     data
   end
