@@ -242,17 +242,17 @@ class MilterTestServer
       send_abort(_contect, _data)
       _data.succeeded = false
     end
-    context.signal_connect("add_header", data) do |_context, _data|
-      # TODO
+    context.signal_connect("add_header", data) do |_context, name, value, _data|
+      _data.message.headers.add(name, value)
     end
-    context.signal_connect("insert_header", data) do |_context, _data|
-      # TODO
+    context.signal_connect("insert_header", data) do |_context, index, name, value, _data|
+      _data.message.headers.insert(index, name, value)
     end
-    context.signal_connect("change_header", data) do |_context, _data|
-      # TODO
+    context.signal_connect("change_header", data) do |_context, name, index, value, _data|
+      _data.message.headers.change(name, index, value)
     end
-    context.signal_connect("delete_header", data) do |_context, _data|
-      # TODO
+    context.signal_connect("delete_header", data) do |_context, name, index, _data|
+      _data.message.headers.delete(name, index)
     end
     context.signal_connect("change_from", data) do |_context, from, parameters, _data|
       _data.message.envelope_from = from
