@@ -60,7 +60,7 @@ class MilterTestServer
     @envelope_recipients = []
     @envelope_recipient_macros = {}
     @data_macros = {}
-    @headers = {}
+    @headers = Milter::Headers.new
     @end_of_header_macros = {}
     @body_chunks = []
     @end_of_message_macros = {}
@@ -446,8 +446,8 @@ class MilterTestServer
 
   def send_header(context, data)
     return false if data.option.step == Milter::StepFlags::NO_HEADERS
-    name, value = data.option_headers.next
-    context.header(name, value)
+    milter_header = data.option_headers.next
+    context.header(milter_header.name, milter_header.value)
   rescue StopIteration
     false
   end
@@ -549,7 +549,7 @@ class MilterTestServer
     @parser.on("-h", "--header=NAME:VALUE",
                "Add a header. To add n headers, use --header option n times.") do |header|
       name, value = header.split(":")
-      @headers[name] = value
+      @headers.add(name, value)
     end
     @parser.on("--end-of-header-macro=NAME:VALUE",
                "Add a macro that has NAME name and VALUE value on xxfi_eoh()." +
@@ -637,11 +637,11 @@ class MilterTestServer
     @envelope_recipients = @envelope_recipients.map do |recipient|
       normalize_envelope_address(recipient)
     end
-    unless @headers.has_key?("From")
-      @headers["From"] = @envelope_from
+    unless @headers.find_by_name("From")
+      @headers.append("From", @envelope_from)
     end
-    unless @headers.has_key?("To")
-      @headers["To"] = @envelope_recipients.first
+    unless @headers.find_by_name("To")
+      @headers.append("To", @envelope_recipients.first)
     end
     if @body_chunks.empty?
       @body_chunks << "La de da de da 1.\n" +
@@ -667,7 +667,7 @@ class MilterTestServer
     @envelope_recipients.concat(to_header.addresses) if to_header
     @envelope_recipients.concat(cc_header.addresses) if cc_header
     mail.header.entries.each do |field|
-      @headers[field.name] = field.value
+      @headers.add(field.name, field.value)
     end
     @body_chunks << mail.body.raw_source
   end
