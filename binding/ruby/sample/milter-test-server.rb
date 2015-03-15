@@ -62,7 +62,7 @@ class MilterTestServer
     @data_macros = {}
     @headers = {}
     @end_of_header_macros = {}
-    @chunks = []
+    @body_chunks = []
     @end_of_message_macros = {}
     prepare_parser
   end
@@ -115,7 +115,7 @@ class MilterTestServer
     data.quarantine_reason = nil
     data.option = nil
     data.option_headers = @headers.each
-    data.current_body_chunk = @chunks.each
+    data.current_body_chunk = @body_chunks.each
     data.current_recipient = @envelope_recipients.each
     data.reply_code = 0
     data.reply_extended_code = nil
@@ -559,7 +559,7 @@ class MilterTestServer
     end
     @parser.on("-b", "--body=CHUNK",
                "Add a body chunk. To add n body chunks, use --body option n times.") do |chunk|
-      @chunks << chunk
+      @body_chunks << chunk
     end
     @parser.on("--end-of-message-macro=NAME:VALUE",
                "Add a macro that has NAME name and VALUE value on xxfi_eom()." +
@@ -643,8 +643,8 @@ class MilterTestServer
     unless @headers.has_key?("To")
       @headers["To"] = @envelope_recipients.first
     end
-    if @chunks.empty?
-      @chunks << "La de da de da 1.\n" +
+    if @body_chunks.empty?
+      @body_chunks << "La de da de da 1.\n" +
         "La de da de da 2.\n" +
         "La de da de da 3.\n" +
         "La de da de da 4."
@@ -669,7 +669,7 @@ class MilterTestServer
     mail.header.entries.each do |field|
       @headers[field.name] = field.value
     end
-    @chunks << mail.body.raw_source
+    @body_chunks << mail.body.raw_source
   end
 end
 
