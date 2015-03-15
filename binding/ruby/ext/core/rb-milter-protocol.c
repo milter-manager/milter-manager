@@ -26,6 +26,12 @@ compare (VALUE self, VALUE other)
                                          RVAL2STATUS(other)));
 }
 
+static VALUE
+is_pass (VALUE self)
+{
+    return CBOOL2RVAL(MILTER_STATUS_IS_PASS(RVAL2STATUS(self)));
+}
+
 void
 Init_milter_protocol (void)
 {
@@ -37,6 +43,7 @@ Init_milter_protocol (void)
     rb_include_module(rb_cMilterStatus, rb_mComparable);
 
     rb_define_method(rb_cMilterStatus, "<=>", compare, 1);
+    rb_define_method(rb_cMilterStatus, "pass?", is_pass, 0);
 
     G_DEF_CLASS(MILTER_TYPE_COMMAND, "Command", rb_mMilter);
     G_DEF_CONSTANTS(rb_mMilter, MILTER_TYPE_COMMAND, "MILTER_");
