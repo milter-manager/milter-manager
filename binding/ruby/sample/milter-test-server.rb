@@ -250,7 +250,7 @@ class MilterTestServer
 
     context.signal_connect("ready", data) do |_context, _data|
       setup(_context, _data)
-      data.timer.start
+      _data.timer.start
       negotiate(_context)
     end
     context.signal_connect("error", data) do |_context, error, _data|
