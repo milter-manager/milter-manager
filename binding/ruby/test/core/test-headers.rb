@@ -152,7 +152,7 @@ class TestHeaders < Test::Unit::TestCase
     assert_equal(expected_headers, @headers.to_a)
   end
 
-  def test_copy
+  def test_dup
     expected_headers = [
       Milter::Header.new("name1", "value1"),
       Milter::Header.new("name2", "value2"),
@@ -162,7 +162,7 @@ class TestHeaders < Test::Unit::TestCase
     headers.append("name1", "value1")
     headers.append("name2", "value2")
     headers.append("name3", "value3")
-    copied_headers = headers.copy
+    copied_headers = headers.cup
     assert_equal(expected_headers, copied_headers.to_a)
   end
 end
