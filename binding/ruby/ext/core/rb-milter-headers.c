@@ -38,14 +38,8 @@ rb_milter_header_alloc (VALUE klass)
 static VALUE
 rb_milter_header_initialize (VALUE self, VALUE name, VALUE val)
 {
-    MilterHeader *header;
-    if (DATA_PTR(self)) {
-        milter_header_free(DATA_PTR(self));
-        DATA_PTR(self) = NULL;
-    }
-    header = milter_header_new(StringValueCStr(name),
-                               StringValueCStr(val));
-    DATA_PTR(self) = header;
+    DATA_PTR(self) = milter_header_new(StringValueCStr(name),
+                                       StringValueCStr(val));
     return Qnil;
 }
 
