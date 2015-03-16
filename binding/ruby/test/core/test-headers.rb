@@ -162,7 +162,7 @@ class TestHeaders < Test::Unit::TestCase
     headers.append("name1", "value1")
     headers.append("name2", "value2")
     headers.append("name3", "value3")
-    copied_headers = headers.cup
+    copied_headers = headers.dup
     assert_equal(expected_headers, copied_headers.to_a)
   end
 end
