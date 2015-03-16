@@ -226,8 +226,8 @@ class MilterTestServer
     data.message.original_envelope_from = @envelope_from.dup
     data.message.envelope_recipients = @envelope_recipients.dup
     data.message.original_envelope_recipients = @envelope_recipients.dup
-    data.message.headers = @headers.copy
-    data.message.original_headers = @headers.copy
+    data.message.headers = @headers.dup
+    data.message.original_headers = @headers.dup
     data.message.body = @body_chunks.join("")
     data.message.replaced_body = ""
     data.error = nil

@@ -105,7 +105,7 @@ rb_milter_header_inspect (VALUE self)
 }
 
 static VALUE
-rb_milter_headers_copy (VALUE self)
+rb_milter_headers_dup (VALUE self)
 {
     MilterHeaders *headers;
     headers = milter_headers_copy(SELF(self));
@@ -289,7 +289,7 @@ Init_milter_headers (void)
     rb_cMilterHeaders = G_DEF_CLASS(MILTER_TYPE_HEADERS, "Headers", rb_mMilter);
     rb_include_module(rb_cMilterHeaders, rb_mEnumerable);
 
-    rb_define_method(rb_cMilterHeaders, "copy", rb_milter_headers_copy, 0);
+    rb_define_method(rb_cMilterHeaders, "dup", rb_milter_headers_dup, 0);
     rb_define_method(rb_cMilterHeaders,
                      "add", rb_milter_headers_add, 2);
     rb_define_method(rb_cMilterHeaders,
