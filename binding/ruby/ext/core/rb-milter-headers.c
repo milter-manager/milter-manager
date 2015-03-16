@@ -154,9 +154,8 @@ rb_milter_headers_find (VALUE self, VALUE name, VALUE value)
     if (!found_header)
         return Qnil;
 
-    rb_header = RB_MILTER_HEADER(NULL);
     header = milter_header_new(found_header->name, found_header->value);
-    DATA_PTR(rb_header) = header;
+    rb_header = RB_MILTER_HEADER(header);
 
     return rb_header;
 }
@@ -172,9 +171,8 @@ rb_milter_headers_lookup_by_name (VALUE self, VALUE name)
     if (!found_header)
         return Qnil;
 
-    rb_header = RB_MILTER_HEADER(NULL);
     header = milter_header_new(found_header->name, found_header->value);
-    DATA_PTR(rb_header) = header;
+    rb_header = RB_MILTER_HEADER(header);
 
     return rb_header;
 }
@@ -190,9 +188,8 @@ rb_milter_headers_get_nth (VALUE self, VALUE index)
     if (!found_header)
         return Qnil;
 
-    rb_header = RB_MILTER_HEADER(NULL);
     header = milter_header_new(found_header->name, found_header->value);
-    DATA_PTR(rb_header) = header;
+    rb_header = RB_MILTER_HEADER(header);
 
     return rb_header;
 }
