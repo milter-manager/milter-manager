@@ -144,7 +144,7 @@ rb_milter_headers_find (VALUE self, VALUE name, VALUE value)
     MilterHeader *target_header;
     MilterHeader *found_header;
     MilterHeader *header;
-    VALUE obj;
+    VALUE rb_header;
 
     target_header = milter_header_new(StringValueCStr(name),
                                       StringValueCStr(value));
@@ -154,11 +154,11 @@ rb_milter_headers_find (VALUE self, VALUE name, VALUE value)
     if (!found_header)
         return Qnil;
 
-    obj = RB_MILTER_HEADER(NULL);
+    rb_header = RB_MILTER_HEADER(NULL);
     header = milter_header_new(found_header->name, found_header->value);
-    DATA_PTR(obj) = header;
+    DATA_PTR(rb_header) = header;
 
-    return obj;
+    return rb_header;
 }
 
 static VALUE
@@ -166,17 +166,17 @@ rb_milter_headers_lookup_by_name (VALUE self, VALUE name)
 {
     MilterHeader *found_header;
     MilterHeader *header;
-    VALUE obj;
+    VALUE rb_header;
     found_header = milter_headers_lookup_by_name(SELF(self),
                                                  StringValueCStr(name));
     if (!found_header)
         return Qnil;
 
-    obj = RB_MILTER_HEADER(NULL);
+    rb_header = RB_MILTER_HEADER(NULL);
     header = milter_header_new(found_header->name, found_header->value);
-    DATA_PTR(obj) = header;
+    DATA_PTR(rb_header) = header;
 
-    return obj;
+    return rb_header;
 }
 
 static VALUE
@@ -184,17 +184,17 @@ rb_milter_headers_get_nth (VALUE self, VALUE index)
 {
     MilterHeader *found_header;
     MilterHeader *header;
-    VALUE obj;
+    VALUE rb_header;
     found_header = milter_headers_get_nth_header(SELF(self), FIX2INT(index));
 
     if (!found_header)
         return Qnil;
 
-    obj = RB_MILTER_HEADER(NULL);
+    rb_header = RB_MILTER_HEADER(NULL);
     header = milter_header_new(found_header->name, found_header->value);
-    DATA_PTR(obj) = header;
+    DATA_PTR(rb_header) = header;
 
-    return obj;
+    return rb_header;
 }
 
 static VALUE
