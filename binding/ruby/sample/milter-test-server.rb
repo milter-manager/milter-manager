@@ -50,74 +50,82 @@ class MilterTestServer
   class Error < StandardError
   end
 
-  class Message
-    def print
-      puts "Envelope:------------------------------"
-      print_envelope
-      puts "Header:--------------------------------"
-      print_headers
-      puts "Body:----------------------------------"
-      print_body
+  class MessageFormatter
+    def initialize(message)
+      @message = message
+      @string = ""
     end
 
-    def print_envelope
+    def format
+      @string << "Envelope:------------------------------"
+      format_envelope
+      @string << "Header:--------------------------------"
+      format_headers
+      @string << "Body:----------------------------------"
+      format_body
+      @string
+    end
+
+    def format_envelope
       label = "MAIL FROM"
-      if original_envelope_from == envelope_from
-        puts "  #{label}:#{original_envelope_from}"
+      if @message.original_envelope_from == @message.envelope_from
+        @string << "  #{label}:#{@message.original_envelope_from}"
       else
-        puts "- #{label}:#{original_envelope_from}"
-        puts "+ #{label}:#{envelope_from}"
+        @string << "- #{label}:#{@message.original_envelope_from}"
+        @string << "+ #{label}:#{@message.envelope_from}"
       end
       label = "RCPT TO"
-      result_recipients = envelope_recipients.values_at(0...original_envelope_recipients.size)
-      original_envelope_recipients.zip(result_recipients) do |original, result|
+      result_recipients =
+        @message.envelope_recipients.values_at(0...@message.original_envelope_recipients.size).compact
+      @message.original_envelope_recipients.zip(result_recipients) do |original, result|
         case
         when original && result && original == result
-          puts "  #{label}:#{original}"
+          @string << "  #{label}:#{original}"
         when original && result && original != result
-          puts "- #{label}:#{original}"
-          puts "+ #{label}:#{result}"
-        when original && !envelope_recipients.detect(original)
-          puts "- #{label}:#{original}"
+          @string << "- #{label}:#{original}"
+          @string << "+ #{label}:#{result}"
+        when original && !@message.envelope_recipients.detect(original)
+          @string << "- #{label}:#{original}"
         else
-          puts "+ #{label}:#{result}"
+          @string << "+ #{label}:#{result}"
         end
       end
-      result_recipients = envelope_recipients.values_at(original_envelope_recipients.size..-1).compact
+      result_recipients =
+        @message.envelope_recipients.values_at(@message.original_envelope_recipients.size..-1).compact
       result_recipients.each do |recipient|
         next unless recipient
-        puts "+ #{label}:#{recipient}"
+        @string << "+ #{label}:#{recipient}"
       end
     end
 
-    def print_headers
-      result_headers = headers.to_a.values_at(0...original_headers.size)
-      original_headers.zip(result_headers) do |original, result|
+    def format_headers
+      result_headers = @message.headers.to_a.values_at(0...@message.original_headers.size)
+      @message.original_headers.zip(result_headers) do |original, result|
         case
         when original && result && original == result
-          print_header(" ", original)
-        when original.nil? && result && !original_headers.detect(result)
-          print_header("+", result)
+          format_header(" ", original)
+        when original.nil? && result && !@message.original_headers.detect(result)
+          format_header("+", result)
         when original && result.nil? && !result_headers.detect(original)
-          print_header("-", original)
+          format_header("-", original)
         end
       end
-      result_headers = headers.to_a.values_at(original_headers.size..-1).compact
+      result_headers = @message.headers.to_a.values_at(@message.original_headers.size..-1).compact
       result_headers.each do |header|
         next unless header
-        print_header("+", header)
+        format_header("+", header)
       end
     end
 
-    def print_body
-      content_type = headers.find_by_name("Content-Type")
+    def format_body
+      content_type = @message.headers.find_by_name("Content-Type")
       charset = content_type.value[/charset=(.+);?\z/, 1] if content_type
-      content_transfer_encoding = headers.find_by_name("Content-Transfer-Encoding")
+      content_transfer_encoding = @message.headers.find_by_name("Content-Transfer-Encoding")
       content_transfer_encoding = content_transfer_encoding.value if content_transfer_encoding
-      if replaced_body.empty?
-        target_body = body
+      if @message.replaced_body.empty?
+        target_body = @message.body
       else
-        target_body = replaced_body
+        target_body = @message.replaced_body
       end
       if charset && /[78]bit/ =~ content_transfer_encoding
         begin
@@ -125,18 +133,18 @@ class MilterTestServer
                                            fix_encoding(charset),
                                            invalid: :replace)
         rescue
-          puts "Error:---------------------------------"
-          puts "#{$!.class}: #{$!.message}"
-          puts "---------------------------------------"
+          @string << "Error:---------------------------------"
+          @string << "#{$!.class}: #{$!.message}"
+          @string << "---------------------------------------"
         end
       end
-      puts target_body
+      @string << target_body
     end
 
     private
 
-    def print_header(prefix, header)
-      puts "#{prefix} #{header.name}:#{header.value}"
+    def format_header(prefix, header)
+      @string << "#{prefix} #{header.name}:#{header.value}"
     end
 
     def fix_encoding(charset)
@@ -481,7 +489,8 @@ class MilterTestServer
     end
     if @output_message
       puts
-      data.message.print
+      formatter = MessageFormatter.new(data.message)
+      puts formatter.format
     end
   end
 
