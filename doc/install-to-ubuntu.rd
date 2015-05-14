@@ -52,6 +52,18 @@ content:
 
   deb http://archive.ubuntu.com/ubuntu trusty-backports main universe
 
+=== For Utopic Unicorn
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable utopic universe
+  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable utopic universe
+
+If you don't enable the official backport repository, you need to
+create /etc/apt/sources.list.d/backports.list with the following
+content:
+
+  deb http://archive.ubuntu.com/ubuntu utopic-backports main universe
+
 === For Vivid Vervet
 
 /etc/apt/sources.list.d/milter-manager.list:
