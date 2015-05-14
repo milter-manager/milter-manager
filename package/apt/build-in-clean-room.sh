@@ -43,7 +43,7 @@ build_by_pbuilder()
     code_name=$2
     source_dir=${script_base_dir}/../..
     case ${code_name} in
-        wheezy|jessie|unstable)
+        wheezy|jessie|stretch|unstable)
             distribution=debian
             component=main
             ;;
@@ -82,7 +82,7 @@ build_by_pbuilder()
             OPTS+=( --othermirror "deb $MIRROR $code_name-security main universe")
             OPTS+=( --debootstrapopts --keyring=/usr/share/keyrings/ubuntu-archive-keyring.gpg )
             ;;
-        wheezy|jessie)
+        wheezy|jessie|stretch)
             MIRROR=http://ftp.jp.debian.org/debian
             OPTS+=( --mirror "$MIRROR" )
             OPTS+=( --othermirror "deb http://security.debian.org $code_name/updates main")

@@ -38,6 +38,12 @@ sources.list に指定する URI を変更しました。しばらくは以前�
   deb http://sourceforge.net/projects/milter-manager/files/debian/stable jessie main
   deb-src http://sourceforge.net/projects/milter-manager/files/debian/stable jessie main
 
+=== stretchの場合
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://sourceforge.net/projects/milter-manager/files/debian/stable stretch main
+  deb-src http://sourceforge.net/projects/milter-manager/files/debian/stable stretch main
+
 === sidの場合
 
 /etc/apt/sources.list.d/milter-manager.list:

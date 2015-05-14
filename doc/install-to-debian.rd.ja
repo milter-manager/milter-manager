@@ -10,7 +10,7 @@ Debian GNU/Linuxに特化したmilter managerのインストール方法に
 
 == パッケージのインストール
 
-milter managerのサイトで現在の安定版wheezyと開発版jessieと不
+milter managerのサイトで現在の安定版jessieと開発版stretchと不
 安定版sid用のパッケージを配布しています。
 
 まず、以下の内容の
@@ -27,6 +27,12 @@ milter managerのサイトで現在の安定版wheezyと開発版jessieと不
 /etc/apt/sources.list.d/milter-manager.list:
   deb http://sourceforge.net/projects/milter-manager/files/debian/stable jessie main
   deb-src http://sourceforge.net/projects/milter-manager/files/debian/stable jessie main
+
+=== stretchの場合
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://sourceforge.net/projects/milter-manager/files/debian/stable stretch main
+  deb-src http://sourceforge.net/projects/milter-manager/files/debian/stable stretch main
 
 === sidの場合
 

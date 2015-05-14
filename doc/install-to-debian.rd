@@ -10,7 +10,7 @@ install information.
 
 == Install packages
 
-Packages for wheezy, the current stable release, for jessie,
+Packages for jessie, the current stable release, for stretch,
 the current testing release, and for sid, the eternal
 unstable, are distributed on the milter manager site.
 
@@ -28,6 +28,12 @@ We put the following content to
 /etc/apt/sources.list.d/milter-manager.list:
   deb http://sourceforge.net/projects/milter-manager/files/debian/stable jessie main
   deb-src http://sourceforge.net/projects/milter-manager/files/debian/stable jessie main
+
+=== For stretch
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://sourceforge.net/projects/milter-manager/files/debian/stable stretch main
+  deb-src http://sourceforge.net/projects/milter-manager/files/debian/stable stretch main
 
 === For sid
 
