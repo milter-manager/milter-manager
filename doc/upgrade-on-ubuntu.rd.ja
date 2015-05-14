@@ -44,6 +44,11 @@ sources.list に指定する URI を変更しました。しばらくは以前�
   deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable trusty universe
   deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable trusty universe
 
+=== Vivid Vervetの場合
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable vivid universe
+  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable vivid universe
 
 == まとめ
 

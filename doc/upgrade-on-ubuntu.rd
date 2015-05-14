@@ -45,6 +45,12 @@ Please update your source.list as soon as possible.
   deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable trusty universe
   deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable trusty universe
 
+=== For Vivid Vervet
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable vivid universe
+  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable vivid universe
+
 == Conclusion
 
 milter manager can be upgraded easily. It means that milter
