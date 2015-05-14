@@ -837,7 +837,7 @@ if test -z "$MILTER_MANAGER_DEFAULT_CONNECTION_SPEC"; then
   case "$MILTER_MANAGER_PACKAGE_PLATFORM" in
   debian)
     case `lsb_release -c --short` in
-    lucid|precise)
+    precise)
       MILTER_MANAGER_DEFAULT_CONNECTION_SPEC=['unix:/var/run/milter-manager/milter-manager.sock']
       ;;
     *)

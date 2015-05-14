@@ -27,12 +27,6 @@ support, when we release milter manager 1.9.0.
 
 Please update your source.list as soon as possible.
 
-=== For Lucid Lynx
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable lucid universe
-  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable lucid universe
-
 === For Precise Pangolin
 
 /etc/apt/sources.list.d/milter-manager.list:

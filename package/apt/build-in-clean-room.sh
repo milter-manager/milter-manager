@@ -68,13 +68,6 @@ build_by_pbuilder()
     OPTS+=( --basetgz "$basetgz" )
     OPTS+=( --aptcache "$aptcache_dir")
     case $code_name in
-        lucid)
-            OPTS+=( --components 'main universe' )
-            MIRROR=http://old-release.archive.ubuntu.com/ubuntu
-            OPTS+=( --mirror "$MIRROR" )
-            OPTS+=( --othermirror "deb $MIRROR $code_name-security main universe")
-            OPTS+=( --debootstrapopts --keyring=/usr/share/keyrings/ubuntu-archive-keyring.gpg )
-            ;;
         precise|trusty)
             OPTS+=( --components 'main universe' )
             MIRROR=http://jp.archive.ubuntu.com/ubuntu
@@ -107,25 +100,6 @@ build_by_pbuilder()
     run cp -rp ${source_dir}/package/debian $builddir/${PACKAGE}-${VERSION}/
 
     case $code_name in
-        lucid)
-            sed -i \
-                -e 's/ruby (>= 1:1.9.3)/ruby1.9.1 (>= 1.9.1)/g' \
-                -e 's/ruby-dev (>= 1:1.9.3)/ruby1.9.1-dev (>= 1.9.1)/g' \
-                -e 's/debhelper (>= 9)/debhelper (>= 7)/' \
-                -e '/libev-dev/d' \
-                -e '/ruby-gnome2-dev/d' \
-                -e '/ruby-glib2/d' \
-                $builddir/${PACKAGE}-${VERSION}/debian/control
-            sed -i \
-                -e '/--enable-ruby-milter/i \\t\t--with-ruby=/usr/bin/ruby1.9.1 \\' \
-                -e 's/ruby -rrbconfig/ruby1.9.1 -rrbconfig/g' \
-                -e 's,=/run/,=/var/run/,' \
-                -e 's,=unix:/run/,=unix:/var/run/,' \
-                $builddir/${PACKAGE}-${VERSION}/debian/rules
-            sed -i -e 's/9/7/' $builddir/${PACKAGE}-${VERSION}/debian/compat
-            sed -i -e 's,usr/lib/\*,usr/lib,' $builddir/${PACKAGE}-${VERSION}/debian/*.install
-            sed -i -e 's,^# ,,' $builddir/${PACKAGE}-${VERSION}/debian/ruby-milter-core.install
-            ;;
         precise)
             sed -i \
                 -e 's/ruby (>= 1:1.9.3)/ruby1.9.1 (>= 1.9.1)/g' \
