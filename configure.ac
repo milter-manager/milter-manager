@@ -621,7 +621,7 @@ dnl **************************************************************
 
 libev_available=no
 libev_version=""
-m4_define([BUNDLED_LIBEV_VERSION], [4.15])
+m4_define([BUNDLED_LIBEV_VERSION], [4.19])
 LIBEV_CFLAGS='-DEV_COMPAT3=0'
 AC_ARG_WITH(libev,
   [AS_HELP_STRING([--with-libev],
