@@ -200,16 +200,7 @@ AC_SUBST(moduledir)
 AC_SUBST(module_configurationdir)
 
 if echo -- "$libdir" | grep '\$' > /dev/null 2>&1; then
-  if test "$exec_prefix" = "NONE"; then
-    if test "$prefix" = "NONE"; then
-      milter_manager_exec_prefix=$ac_default_prefix
-    else
-      milter_manager_exec_prefix=$prefix
-    fi
-  else
-    milter_manager_exec_prefix=$exec_prefix
-  fi
-  milter_manager_libdir="${milter_manager_exec_prefix}/lib"
+  eval "milter_manager_libdir=$libdir"
 else
   milter_manager_libdir="${libdir}"
 fi
