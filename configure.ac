@@ -210,7 +210,7 @@ if echo -- "$libdir" | grep '\$' > /dev/null 2>&1; then
     milter_manager_exec_prefix=$exec_prefix
   fi
   eval "milter_manager_libdir=$libdir"
-  if test "$milter_manager_libdir" = "NONE"; then
+  if echo -- "$milter_manager_libdir" | grep NONE > /dev/null 2>&1; then
     milter_manager_libdir=${milter_manager_exec_prefix}/lib
   fi
 else
