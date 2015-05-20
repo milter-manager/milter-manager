@@ -250,7 +250,7 @@ else
                 [AC_MSG_WARN([$RUBY is not found. Disable milter manager.])])
 fi
 
-bundled_latest_ruby_glib2_version=2.2.0
+bundled_latest_ruby_glib2_version=2.2.5
 if test "$ruby_available" = "yes"; then
   rbconfig="$RUBY -rrbconfig -rshellwords -e "
 
