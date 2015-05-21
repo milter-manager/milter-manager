@@ -852,6 +852,9 @@ gboolean             milter_client_get_syslog_enabled(MilterClient  *client);
  */
 MilterEventLoop     *milter_client_get_event_loop   (MilterClient  *client);
 
+void                 milter_client_set_event_loop   (MilterClient *client,
+                                                     MilterEventLoop *event_loop);
+
 /**
  * milter_client_get_event_loop_backend:
  * @client: a %MilterClient.

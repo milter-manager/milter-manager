@@ -2993,6 +2993,20 @@ milter_client_get_event_loop (MilterClient *client)
     }
 }
 
+void
+milter_client_set_event_loop (MilterClient *client,
+                              MilterEventLoop *event_loop)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(client);
+
+    if (priv->event_loop) {
+        g_object_unref(priv->event_loop);
+    }
+    priv->event_loop = event_loop;
+}
+
 static MilterClientEventLoopBackend
 get_event_loop_backend (MilterClient *client)
 {
