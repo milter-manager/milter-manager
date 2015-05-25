@@ -2241,7 +2241,7 @@ single_thread_single_loop_run (MilterClient *client, GError **error)
     loop = milter_client_get_event_loop(client);
     if (!loop) {
         loop = milter_client_create_event_loop(client, TRUE);
-        priv->event_loop = loop;
+        milter_client_set_event_loop(client, loop);
     }
     if (!milter_client_prepare(client,
                                loop,
