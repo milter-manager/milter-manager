@@ -2233,10 +2233,7 @@ single_thread_single_loop_accept_watch_func (GIOChannel *channel,
 static gboolean
 single_thread_single_loop_run (MilterClient *client, GError **error)
 {
-    MilterClientPrivate *priv;
     MilterEventLoop *loop;
-
-    priv = MILTER_CLIENT_GET_PRIVATE(client);
 
     loop = milter_client_get_event_loop(client);
     if (!loop) {
