@@ -3001,10 +3001,17 @@ milter_client_set_event_loop (MilterClient *client,
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
+    if (priv->event_loop == event_loop) {
+        return;
+    }
+
     if (priv->event_loop) {
         g_object_unref(priv->event_loop);
     }
     priv->event_loop = event_loop;
+    if (priv->event_loop) {
+        g_object_ref(priv->event_loop);
+    }
 }
 
 static MilterClientEventLoopBackend
