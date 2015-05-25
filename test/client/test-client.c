@@ -341,6 +341,7 @@ cut_setup (void)
     loop_run_count = 0;
     loop = milter_client_create_event_loop(client, TRUE);
     milter_client_set_event_loop(client, loop);
+    g_object_unref(loop);
     milter_event_loop_set_custom_run_func(loop, loop_run);
     setup_client_signals();
     server = NULL;
@@ -420,9 +421,6 @@ cut_teardown (void)
         g_object_unref(decoder);
     if (encoder)
         g_object_unref(encoder);
-
-    if (loop)
-        g_object_unref(loop);
 
     if (option)
         g_object_unref(option);
