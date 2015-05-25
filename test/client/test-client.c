@@ -412,10 +412,10 @@ cut_teardown (void)
     if (idle_shutdown_id > 0)
         milter_event_loop_remove(loop, idle_shutdown_id);
 
-    if (client)
-        g_object_unref(client);
     if (server)
         g_object_unref(server);
+    if (client)
+        g_object_unref(client);
 
     if (decoder)
         g_object_unref(decoder);
