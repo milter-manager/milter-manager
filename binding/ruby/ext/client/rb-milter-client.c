@@ -305,6 +305,15 @@ mark (gpointer data)
                                              NULL);
 }
 
+static VALUE
+client_create_event_loop(VALUE self, VALUE use_default_context)
+{
+    MilterEventLoop *event_loop;
+    event_loop = milter_client_create_event_loop(SELF(self),
+                                                 RVAL2CBOOL(use_default_context))
+    return GOBJ2RVAL_UNREF(event_loop);
+}
+
 void
 Init_milter_client (void)
 {
@@ -361,6 +370,8 @@ Init_milter_client (void)
                      client_set_default_unix_socket_mode, 1);
     rb_define_method(rb_cMilterClient, "worker_pids",
                      client_get_worker_pids, 0);
+    rb_define_method(rb_cMilterClient, "create_event_loop",
+                     client_create_event_loop, 1);
 
     G_DEF_SETTERS(rb_cMilterClient);
 
