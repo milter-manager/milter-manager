@@ -855,6 +855,9 @@ set_property (GObject      *object,
     case PROP_EVENT_LOOP_BACKEND:
         milter_client_set_event_loop_backend(client, g_value_get_enum(value));
         break;
+    case PROP_EVENT_LOOP:
+        milter_client_set_event_loop(client, g_value_get_object(value));
+        break;
     case PROP_N_WORKERS:
         milter_client_set_n_workers(client, g_value_get_uint(value));
         break;
