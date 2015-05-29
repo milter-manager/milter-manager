@@ -1,7 +1,6 @@
 ACLOCAL_AMFLAGS = $$ACLOCAL_OPTIONS
 
 SUBDIRS =					\
-	libev-4.19				\
 	milter					\
 	libmilter				\
 	binding					\
@@ -16,6 +15,11 @@ SUBDIRS =					\
 	html					\
 	license					\
 	package
+
+if WITH_BUNDLED_LIBEV
+SUBDIRS +=					\
+	libev-4.19
+endif
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA =				\
