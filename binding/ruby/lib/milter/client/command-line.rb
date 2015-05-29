@@ -49,8 +49,9 @@ module Milter
         client.on_error do |_client, error|
           Milter::Logger.error("[client][error] #{error.message}")
         end
-        yield(client, options) if block_given?
         @configuration.setup(client)
+        client.event_loop = client.create_event_loop(true)
+        yield(client, options) if block_given?
         client.listen
         client.drop_privilege
         client.daemonize if @configuration.milter.daemon?
