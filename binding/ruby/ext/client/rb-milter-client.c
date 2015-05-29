@@ -310,7 +310,7 @@ client_create_event_loop(VALUE self, VALUE use_default_context)
 {
     MilterEventLoop *event_loop;
     event_loop = milter_client_create_event_loop(SELF(self),
-                                                 RVAL2CBOOL(use_default_context))
+                                                 RVAL2CBOOL(use_default_context));
     return GOBJ2RVAL_UNREF(event_loop);
 }
 
