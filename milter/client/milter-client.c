@@ -324,7 +324,7 @@ _milter_client_class_init (MilterClientClass *klass)
                                "Event Loop",
                                "The event loop of the client",
                                MILTER_TYPE_EVENT_LOOP,
-                               G_PARAM_READABLE);
+                               G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_EVENT_LOOP, spec);
 
     spec = g_param_spec_string("pid-file",
