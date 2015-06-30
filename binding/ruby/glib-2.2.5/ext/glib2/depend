@@ -1,6 +1,5 @@
 install-so: install-headers
 install-headers:
-	$(MAKEDIRS) $(RUBYARCHDIR)
 	$(INSTALL_DATA) $(srcdir)/rbglib.h $(RUBYARCHDIR)
 	$(INSTALL_DATA) $(srcdir)/rbglibdeprecated.h $(RUBYARCHDIR)
 	$(INSTALL_DATA) $(srcdir)/rbglib2conversions.h $(RUBYARCHDIR)
