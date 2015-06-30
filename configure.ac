@@ -433,11 +433,7 @@ if test "$ruby_available" = "yes"; then
        (cd $ac_ruby_glib2_dir && \
         $RUBY ../../../$srcdir/$ac_ruby_glib2_dir/extconf.rb); then
       ruby_glib2_available=yes
-      if test "$ac_used_bundled_ruby_glib2_version" = "0.16.0"; then
-        ac_ruby_glib2_source_dir="$ac_ruby_glib2_dir/src"
-      else
-        ac_ruby_glib2_source_dir="$ac_ruby_glib2_dir/ext/glib2"
-      fi
+      ac_ruby_glib2_source_dir="$ac_ruby_glib2_dir/ext/glib2"
       RUBY_GLIB2_CFLAGS="-I \$(top_srcdir)/$ac_ruby_glib2_source_dir"
       sed -e "s,^CPPFLAGS = ,CPPFLAGS = ${CPPFLAGS} ," \
           $ac_ruby_glib2_source_dir/Makefile > \
