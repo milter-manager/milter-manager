@@ -149,10 +149,10 @@ MAINTAINERCLEANFILES = $(dist_man1_MANS) $(dist_ja_man1_mans)
 SUFFIXES = .rd .man .rd .jman .svg .png
 
 .rd.man:
-	$(RUBY) -I $(CUTTER_SOURCE_PATH)/misc $(RD2) -r rd2man-lib $< > $@
+	$(RUBY) -I $(CUTTER_SOURCE_PATH)/misc $(RD2) -r rd/rd2man-lib $< > $@
 
 .rd.jman: # dirty...
-	$(RUBY) -I $(CUTTER_SOURCE_PATH)/misc $(RD2) -r rd2man-lib $<.ja > $@
+	$(RUBY) -I $(CUTTER_SOURCE_PATH)/misc $(RD2) -r rd/rd2man-lib $<.ja > $@
 
 .svg.png:
 	inkscape --export-png $@ $<
