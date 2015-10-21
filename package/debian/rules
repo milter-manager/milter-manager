@@ -10,7 +10,7 @@ export CFLAGS += -I$(ruby -rrbconfig -e 'print RbConfig::CONFIG["vendorarchdir"]
 # Workaround ev.h path
 export CFLAGS += -I/usr/include
 # support MULTIARCH
-export DEB_HOST_MULTIARCH ?= $(dpkg-architecture -qDEB_HOST_MULTIARCH)
+export DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 %:
 	dh $@
