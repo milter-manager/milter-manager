@@ -155,7 +155,6 @@ Makefile
 Makefile.in
 stamp-*-enum-types-*
 /libev-4.19/aclocal.m4
-/libev-4.19/autogen.sh
 /libev-4.19/config.guess
 /libev-4.19/config.h.in
 /libev-4.19/config.sub
@@ -167,3 +166,4 @@ stamp-*-enum-types-*
 /libev-4.19/ltmain.sh
 /libev-4.19/missing
 /libev-4.19/mkinstalldirs
+/milter-manager-*/
