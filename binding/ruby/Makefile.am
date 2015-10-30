@@ -37,7 +37,7 @@ test_unit_files =						\
 	test-unit/PSFL						\
 	test-unit/README.md					\
 	test-unit/Rakefile					\
-	test-unit/TODO						\
+	test-unit/appveyor.yml					\
 	test-unit/doc/html/bar.png				\
 	test-unit/doc/html/bar.svg				\
 	test-unit/doc/html/color-diff.png			\
