@@ -27,8 +27,9 @@ NOTE: apt で入れるパッケージと gem で入れるパッケージが被�
     build-essential \
     rdtool \
     ruby-fast-gettext \
-    inkscape
-  % gem install rdtool rttool gettext fast_gettext rr mechanize
+    inkscape \
+    rrdtool
+  % gem install rdtool rttool gettext fast_gettext mechanize test-unit test-unit-rr
   % ACLOCAL_OPTIONS="-I $HOME/opt/cutter/share/aclocal" ./autogen.sh --no-update
   % ./configure --prefix=/tmp/local \
     --enable-ruby-milter --enable-gtk-doc --enable-coverage \
