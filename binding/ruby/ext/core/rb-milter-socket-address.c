@@ -160,7 +160,7 @@ unix_pack (VALUE self)
 {
     VALUE path;
     struct sockaddr_un address;
-    int path_length;
+    unsigned int path_length;
 
     path = rb_iv_get(self, "@path");
 
