@@ -32,12 +32,6 @@ sources.list に指定する URI を変更しました。しばらくは以前�
   deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable precise universe
   deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable precise universe
 
-=== Saucy Salamanderの場合
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable saucy universe
-  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable saucy universe
-
 === Trusty Tahrの場合
 
 /etc/apt/sources.list.d/milter-manager.list:
