@@ -68,7 +68,7 @@ build_by_pbuilder()
     OPTS+=( --basetgz "$basetgz" )
     OPTS+=( --aptcache "$aptcache_dir")
     case $code_name in
-        precise|trusty|utopic|vivid|wily)
+        precise|trusty|vivid|wily)
             OPTS+=( --components 'main universe' )
             MIRROR=http://jp.archive.ubuntu.com/ubuntu
             OPTS+=( --mirror "$MIRROR" )

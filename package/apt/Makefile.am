@@ -1,7 +1,7 @@
 SERVER_PATH = $(SF_FRS)
 DISTRIBUTIONS = debian ubuntu
 ARCHITECTURES = i386 amd64
-CODE_NAMES = wheezy jessie stretch unstable precise trusty utopic vivid wily
+CODE_NAMES = wheezy jessie stretch unstable precise trusty vivid wily
 CLEAN_ROOM_BASE = /var/cache/pbuilder
 
 release: build update sign upload
