@@ -117,8 +117,7 @@ tool for looking into the problems.
    Availble values are ((%glib%)) or ((%libev%)).
    If you use glib backend, please refer to the following note.
 
-   ((*NOTE: This item is an experimental feature.
-   And for the sake of improving milter-manager performance per process,
+   ((*NOTE: For the sake of improving milter-manager performance per process,
    event-driven model based architechture pattern is choosed in this software.
    If this feature is implemented by glib, it is expressed as a callback.
    Note that glib's callback registration upper limit makes
