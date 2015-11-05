@@ -92,11 +92,11 @@ milter-test-clientが役立つでしょう。
 
 : --user=USER
 
-   実効ユーザをUSERとします。root権限が必要です。
+   実行ユーザをUSERとします。root権限が必要です。
 
 : --group=GROUP
 
-   実効グループをGROUPとします。root権限が必要です。
+   実行グループをGROUPとします。root権限が必要です。
 
 : --unix-socket-group=GROUP
 
