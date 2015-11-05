@@ -28,17 +28,6 @@ milter managerのサイトでは以下のUbuntu用debパッケージを提供し
 
   deb http://jp.archive.ubuntu.com/ubuntu precise-backports main universe
 
-=== Saucy Salamanderの場合
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable saucy universe
-  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable saucy universe
-
-もし、まだバックポートリポジトリを有効にしていない場合は以下のような内
-容の/etc/apt/sources.list.d/backports.listを作成して有効にします。
-
-  deb http://jp.archive.ubuntu.com/ubuntu saucy-backports main universe
-
 === Trusty Tahrの場合
 
 /etc/apt/sources.list.d/milter-manager.list:

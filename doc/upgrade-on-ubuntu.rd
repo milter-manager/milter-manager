@@ -33,12 +33,6 @@ Please update your source.list as soon as possible.
   deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable precise universe
   deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable precise universe
 
-=== For Saucy Salamander
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable saucy universe
-  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable saucy universe
-
 === For Trusty Tahr
 
 /etc/apt/sources.list.d/milter-manager.list:
