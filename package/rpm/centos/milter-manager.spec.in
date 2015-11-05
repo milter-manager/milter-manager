@@ -1,7 +1,7 @@
 %if 0%{?centos} == 6
-%define ruby_command ruby2.1
-%define ruby_package ruby2.1
-%define ruby_build_requires ruby2.1
+%define ruby_command ruby2.2
+%define ruby_package ruby2.2
+%define ruby_build_requires ruby2.2
 %else
 %define ruby_command ruby
 %define ruby_package ruby
