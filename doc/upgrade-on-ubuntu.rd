@@ -51,6 +51,12 @@ Please update your source.list as soon as possible.
   deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable vivid universe
   deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable vivid universe
 
+=== For Wily Werewolf
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable wily universe
+  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable wily universe
+
 == Conclusion
 
 milter manager can be upgraded easily. It means that milter

@@ -61,6 +61,17 @@ milter managerのサイトでは以下のUbuntu用debパッケージを提供し
 
   deb http://archive.ubuntu.com/ubuntu vivid-backports main universe
 
+=== Wily Werewolfの場合
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable wily universe
+  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable wily universe
+
+もし、まだバックポートリポジトリを有効にしていない場合は以下のような内
+容の/etc/apt/sources.list.d/backports.listを作成して有効にします。
+
+  deb http://archive.ubuntu.com/ubuntu wily-backports main universe
+
 === インストール
 
 パッケージはmilter managerリリース用の鍵でサインされています。信用

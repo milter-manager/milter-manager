@@ -50,6 +50,12 @@ sources.list に指定する URI を変更しました。しばらくは以前�
   deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable vivid universe
   deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable vivid universe
 
+=== Wily Werewolfの場合
+
+/etc/apt/sources.list.d/milter-manager.list:
+  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable wily universe
+  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable wily universe
+
 == まとめ
 
 milter managerは簡単に更新することができる、メンテナンスコス
