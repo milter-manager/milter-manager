@@ -356,7 +356,7 @@ data_parse_connection_spec_inet6 (void)
                                NULL),
                  test_data_free,
                  "full - host name",
-                 test_data_new("inet6:9999@localhost",
+                 test_data_new("inet6:9999@ip6-localhost",
                                sockaddr_in6_new(9999, "::1"),
                                NULL),
                  test_data_free,
