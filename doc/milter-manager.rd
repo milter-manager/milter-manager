@@ -131,6 +131,19 @@ configurations specified in configuration file.
    output is the standard output. You can use "-" to output to the
    standard output.
 
+: --event-loop-backend=BACKEDN
+
+   Uses ((|BACKEND|)) as event loop backend.
+   Availble values are ((%glib%)) or ((%libev%)).
+   If you use glib backend, please refer to the following note.
+
+   ((*NOTE: For the sake of improving milter-manager performance per process,
+   event-driven model based architechture pattern is choosed in this software.
+   If this feature is implemented by glib, it is expressed as a callback.
+   Note that glib's callback registration upper limit makes
+   the limitation of the number of communications.
+   This limitations exist against glib backend only.*))
+
 : --verbose
 
    Logs verbosely. Logs by syslog with "mail". If
