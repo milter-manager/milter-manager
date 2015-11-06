@@ -52,7 +52,7 @@ configurations specified in configuration file.
      * inet:10025@localhost
      * inet:10025@[127.0.0.1]
      * inet6:10025
-     * inet6:10025@localhost
+     * inet6:10025@ip6-localhost
      * inet6:10025@[::1]
 
    This option overrides "manager.connection_spec" in
