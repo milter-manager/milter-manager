@@ -56,7 +56,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}
 
 %changelog
-* Thu Nov 5 2014 Hiroshi Hatake <hatake@clear-code.com> - 2.2.3
+* Thu Nov 5 2015 Hiroshi Hatake <hatake@clear-code.com> - 2.2.3
 - Update ruby version to 2.2.3
 
 * Thu Nov 27 2014 Kenji Okimoto <okimoto@clear-code.com> - 2.1.5
