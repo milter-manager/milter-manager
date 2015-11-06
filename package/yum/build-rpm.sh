@@ -123,9 +123,9 @@ fi
 
 case $distribution_version in
     6.*)
-        if ! rpm -q ruby2.1 > /dev/null 2>&1; then
-            yum install -y wget libyaml libyaml-devel
-            yum install -y $(grep BuildRequires: /tmp/ruby21.spec | cut -d: -f2)
+        if ! rpm -q ruby2.2 > /dev/null 2>&1; then
+            yum install -y wget
+            yum install -y $(grep BuildRequires: /tmp/ruby22.spec | cut -d: -f2)
             cat <<EOF > $BUILD_RUBY_SCRIPT
 if [ ! -f ~/.rpmmacros ]; then
     cat <<EOM > ~/.rpmmacros
@@ -142,10 +142,10 @@ mkdir -p rpm/SRPMS
 
 case $distribution_version in
   6.*)
-    if ! rpm -q ruby2.1 > /dev/null 2>&1; then
-      wget http://cache.ruby-lang.org/pub/ruby/2.1/ruby-2.1.5.tar.gz -P rpm/SOURCES
-      cp -a /tmp/ruby21.spec rpm/SPECS/ruby21.spec
-      rpmbuild -ba rpm/SPECS/ruby21.spec
+    if ! rpm -q ruby2.2 > /dev/null 2>&1; then
+      wget http://cache.ruby-lang.org/pub/ruby/2.2/ruby-2.2.3.tar.gz -P rpm/SOURCES
+      cp -a /tmp/ruby22.spec rpm/SPECS/ruby22.spec
+      rpmbuild -ba rpm/SPECS/ruby22.spec
     fi
     ;;
 esac

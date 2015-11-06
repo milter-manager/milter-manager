@@ -1,6 +1,6 @@
-%define rubyver         2.1.5
+%define rubyver         2.2.3
 
-Name:           ruby2.1
+Name:           ruby2.2
 Version:        %{rubyver}
 Release:        2%{?dist}
 License:        BSD
@@ -10,7 +10,7 @@ BuildRequires:  readline readline-devel ncurses ncurses-devel gdbm gdbm-devel gl
 Source0:        ftp://ftp.ruby-lang.org/pub/ruby/ruby-%{rubyver}.tar.gz
 Summary:        An interpreter of object-oriented scripting language
 Group:          Development/Languages
-Provides: ruby(abi) = 2.1
+Provides: ruby(abi) = 2.2
 Conflicts: ruby1.9
 
 %description
@@ -32,8 +32,8 @@ export CFLAGS="$RPM_OPT_FLAGS -Wall -fno-strict-aliasing"
   --without-tk \
   --includedir=%{_includedir}/ruby \
   --libdir=%{_libdir} \
-  --with-soname=ruby-2.1 \
-  --program-suffix=2.1
+  --with-soname=ruby-2.2 \
+  --program-suffix=2.2
 
 make %{?_smp_mflags}
 
@@ -56,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}
 
 %changelog
+* Thu Nov 5 2014 Hiroshi Hatake <hatake@clear-code.com> - 2.2.3
+- Update ruby version to 2.2.3
+
 * Thu Nov 27 2014 Kenji Okimoto <okimoto@clear-code.com> - 2.1.5
 - Update ruby version to 2.1.5
 
