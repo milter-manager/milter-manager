@@ -649,6 +649,11 @@ Since 1.6.6.
    processes 100 or more mails per seconds, you need to
    change it to "libev".
 
+   ((*NOTE: For the sake of implemenation, glib backend uses callback.
+   Note that glib's callback registration upper limit makes
+   the limitation of the number of communications.
+   This limitations exist against glib backend only.*))
+
    Here are availble values:
 
      * "glib": Uses GLib's event loop that uses poll(2) as
