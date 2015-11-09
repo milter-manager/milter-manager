@@ -111,7 +111,7 @@ tool for looking into the problems.
 
    ((*NOTE: This item is an experimental feature.*))
 
-: --event-loop-backend=BACKEDN
+: --event-loop-backend=BACKEND
 
    Uses ((|BACKEND|)) as event loop backend.
    Availble values are ((%glib%)) or ((%libev%)).
