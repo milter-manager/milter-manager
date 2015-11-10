@@ -97,7 +97,7 @@ if test "$USE_EPEL" = "yes"; then
                 ;;
             7.*)
                 # FIXME Don't use beta release
-                epel_url=http://ftp.iij.ad.jp/pub/linux/fedora/epel/beta/7/x86_64/epel-release-7-0.2.noarch.rpm
+                epel_url=http://ftp.iij.ad.jp/pub/linux/fedora/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
                 ;;
         esac
         if test -n "$epel_url"; then
