@@ -102,7 +102,7 @@ if test "$USE_EPEL" = "yes"; then
         esac
         if test -n "$epel_url"; then
             run yum update ${yum_options} -y
-            run yum install ${yum_options} -y wget
+            run yum install ${yum_options} -y wget pyliblzma
             run yum ${yum_options} clean packages
             run wget $epel_url
             run rpm -Uvh $(basename $epel_url)
