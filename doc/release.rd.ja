@@ -197,6 +197,10 @@ milter-manager のリリース用鍵の情報を暗号化しておく。UID の�
 
 === Debian 系
 
+pbuilder と ubuntu-archive-keyring をインストールする。
+
+  % sudo apt-get install pbuilder ubuntu-archive-keyring
+
 apt ディレクトリに移動してからコマンドを実行すると、一連のリリース作業
 を実行するが、途中で失敗することもあるので、順番に作業した方がよい。
 
