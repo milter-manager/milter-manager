@@ -14,7 +14,9 @@ SUBDIRS +=					\
 EXTRA_DIST =					\
 	$(test_unit_files)
 
+if WITH_BUNDLED_RUBY_GLIB2_LATEST
 EXTRA_DIST += $(ruby_glib2_latest_files)
+endif
 
 DISTCLEANFILES =				\
 	glib-2.2.5/Makefile
