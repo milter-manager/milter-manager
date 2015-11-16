@@ -159,7 +159,7 @@ $HOME/ssh/config:
 
 === 必須パッケージのインストール
 
-  % sudo apt-get install -y debootstrap gnupg
+  % sudo apt-get install -y debootstrap gnupg pbuilder ubuntu-archive-keyring
   % sudo apt-get install -y rinse createrepo rpm
 
 === GPG 鍵ペアの作成
@@ -201,10 +201,6 @@ milter-manager のリリース用鍵の情報を暗号化しておく。UID の�
 なお、パッケージの作成は Debian GNU/Linux か Ubuntu でしかできない。
 
 === Debian 系
-
-pbuilder と ubuntu-archive-keyring をインストールする。
-
-  % sudo apt-get install pbuilder ubuntu-archive-keyring
 
 apt ディレクトリに移動してからコマンドを実行すると、一連のリリース作業
 を実行するが、途中で失敗することもあるので、順番に作業した方がよい。
