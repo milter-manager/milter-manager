@@ -37,7 +37,9 @@ NOTE: apt で入れるパッケージと gem で入れるパッケージが被�
   % gem install rdtool rttool gettext fast_gettext mechanize test-unit test-unit-rr
   % ACLOCAL_OPTIONS="-I $HOME/opt/cutter/share/aclocal" ./autogen.sh --no-update
   % ./configure --prefix=/tmp/local \
-    --enable-ruby-milter --enable-gtk-doc --enable-coverage \
+    --enable-ruby-milter \
+    --with-bundled-ruby-glib2 \
+    --enable-gtk-doc --enable-coverage \
     --with-sf-user=sf_user_name \
     --with-cutter-source-path=/path/to/cutter/source \
     --with-ruby=$(rbenv which ruby) \
