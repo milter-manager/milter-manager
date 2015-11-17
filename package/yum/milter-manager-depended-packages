@@ -6,3 +6,4 @@ make
 glib2-devel
 ruby
 ruby-devel
+rpmlint
