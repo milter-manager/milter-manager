@@ -1003,6 +1003,8 @@ AC_CONFIG_FILES([Makefile
 		 data/smf/manifest/Makefile
 		 data/smf/manifest/milter-manager.xml
 		 data/smf/method/Makefile
+		 data/systemd/Makefile
+		 data/systemd/redhat/Makefile
 		 package/solaris/Makefile
 		 package/solaris/prototypes/Makefile
 		 package/solaris/prototypes/milter-manager/Makefile

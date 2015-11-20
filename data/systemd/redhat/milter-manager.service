@@ -1,0 +1,12 @@
+[Unit]
+Description=milter-manager server daemon
+After=syslog.target network-online.target
+
+[Service]
+User=milter-manager
+Group=milter-manager
+ExecStart=/usr/sbin/milter-manager $OPTIONS --pid-file "/var/run/milter-manager/milter-manager.pid" --unix-socket-group "mail"
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target

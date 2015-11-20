@@ -2,10 +2,12 @@
 %define ruby_command ruby2.2
 %define ruby_package ruby2.2
 %define ruby_build_requires ruby2.2
+%define use_systemd %(echo 0)
 %else
 %define ruby_command ruby
 %define ruby_package ruby
 %define ruby_build_requires ruby ruby-devel
+%define use_systemd %(echo 1)
 %endif
 
 %define ruby_version %(%{ruby_command} -e "print RUBY_VERSION.tr('.', '')")
@@ -27,6 +29,9 @@ BuildRequires: gcc
 BuildRequires: make
 BuildRequires: glib2-devel
 BuildRequires: %{ruby_build_requires}
+%if use_systemd
+BuildRequires: systemd-units
+%endif
 Requires: %{name}-libs = %{version}-%{release}
 Requires: ruby-milter-client = %{version}-%{release}
 Requires: ruby-milter-server = %{version}-%{release}
@@ -239,6 +244,9 @@ make %{?_smp_mflags}
 %install
 rm -rf %{buildroot}
 make install DESTDIR=%{buildroot}
+%if use_systemd
+install -D -m 644 %{buildroot}/%{_sysconfdir}/systemd/redhat/milter-manager.service %{buildroot}/%{_unitdir}/milter-manager.service
+%endif
 find $RPM_BUILD_ROOT%{_libdir}/ -name \*.la | xargs rm
 
 chmod 600 %{buildroot}%{_sysconfdir}/cron.d/milter-manager-log
@@ -340,6 +348,10 @@ fi
 %{_mandir}/ja/man1/milter-manager.*
 %{_initrddir}/milter-manager
 %{_sysconfdir}/rc.d/init.d/
+%{_sysconfdir}/systemd/redhat/
+%if use_systemd
+%{_unitdir}/milter-manager.service
+%endif
 %config(noreplace) %{_sysconfdir}/sysconfig/milter-manager
 %config(noreplace) %{_sysconfdir}/milter-manager/milter-manager.conf
 %config %{_sysconfdir}/milter-manager/defaults/
