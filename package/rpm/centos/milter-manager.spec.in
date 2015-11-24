@@ -2,12 +2,12 @@
 %define ruby_command ruby2.2
 %define ruby_package ruby2.2
 %define ruby_build_requires ruby2.2
-%define use_systemd %(echo 0)
+%define use_systemd 0
 %else
 %define ruby_command ruby
 %define ruby_package ruby
 %define ruby_build_requires ruby ruby-devel
-%define use_systemd %(echo 1)
+%define use_systemd 1
 %endif
 
 %define ruby_version %(%{ruby_command} -e "print RUBY_VERSION.tr('.', '')")
