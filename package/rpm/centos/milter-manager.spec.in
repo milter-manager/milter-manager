@@ -245,7 +245,7 @@ make %{?_smp_mflags}
 rm -rf %{buildroot}
 make install DESTDIR=%{buildroot}
 %if %use_systemd
-install -D -m 644 %{buildroot}/%{_sysconfdir}/systemd/redhat/milter-manager.service %{buildroot}/%{_unitdir}/milter-manager.service
+install -D -m 644 %{buildroot}/%{_datadir}/milter-manager/milter-manager.service %{buildroot}/%{_unitdir}/milter-manager.service
 %endif
 find $RPM_BUILD_ROOT%{_libdir}/ -name \*.la | xargs rm
 
@@ -348,7 +348,7 @@ fi
 %{_mandir}/ja/man1/milter-manager.*
 %{_initrddir}/milter-manager
 %{_sysconfdir}/rc.d/init.d/
-%{_sysconfdir}/systemd/redhat/
+%{_datadir}/milter-manager/milter-manager.service
 %if %use_systemd
 %{_unitdir}/milter-manager.service
 %endif

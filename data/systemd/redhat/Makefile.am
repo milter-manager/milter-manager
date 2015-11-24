@@ -1,9 +1,8 @@
-service = \
-	milter-manager.service
+service = milter-manager.service
 
 if REDHAT_PLATFORM
-initdir = $(sysconfdir)/systemd/redhat
-dist_init_SCRIPTS = $(service)
+initscript_DATA = $(service)
+initscriptdir = $(pkgdatadir)
 else
 EXTRA_DIST = $(service)
 endif
