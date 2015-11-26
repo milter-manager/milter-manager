@@ -3,6 +3,7 @@ Description=milter-manager server daemon
 After=syslog.target network-online.target
 
 [Service]
+EnvironmentFile=-/etc/sysconfig/milter-manager
 User=milter-manager
 Group=milter-manager
 ExecStart=/usr/sbin/milter-manager $OPTIONS --pid-file "/var/run/milter-manager/milter-manager.pid"
