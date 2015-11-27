@@ -2,6 +2,58 @@
 
 = NEWS --- The history of milter manager
 
+== [release-2-0-5] 2.0.6: 2015-11-30
+
+A bug fix release of 2.0.5.
+
+=== Package
+
+==== Fixes
+
+  * Add missing dependency for deb Package
+    [Reported by Christian Use][milter-manager-users-en]
+
+==== Improvements
+
+  * Add Debian stretch support
+  * Add Ubuntu Vivid (15.04) support
+  * Add Ubuntu Wily (15.10) support
+  * Drop Ubuntu lucid (10.04) support
+  * Drop Ubuntu Saucy (13.10) support
+  * Drop Ubuntu Utopic (14.10) support
+  * Use Ruby 2.2.3 on CentOS6
+  * Add systemd support on CentOS7 (experimental)
+
+=== milter manager
+
+==== Improvements
+
+  * Update bundled libev to 4.19
+  * Update bundled ruby-glib2 to 2.2.5
+
+=== milter core
+
+==== Improvements
+
+  * --log-level and --log-item can accepts multiple values separated by pipe "|" such as "info|default"
+    [Reported by TOMITA Masahiro]
+  * Don't colorize log by default when output is file
+    [Reported by TOMITA Masahiro][GitHub #58]
+
+=== Ruby milter
+
+==== Improvements
+
+  * Add Milter::ServerContext#negotiate
+  * Add Milter::ServerContext#data
+  * Add Milter::ServerContext#abort
+  * Add Milter::ServerContext#quit
+  * Add Milter::ServerContext#reset_message_related_data
+  * Add Milter::Headers and Milter::Header
+  * Add Milter::Status#pass?
+  * Add sample/milter-test-server.rb
+
+
 == [release-2-0-5] 2.0.5: 2014-12-09
 
 A bug fix release of 2.0.4.

@@ -2,6 +2,57 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-2-0-6] 2.0.6: 2015-11-30
+
+2.0.5 のバグフィックスリリースです。
+
+=== Package
+
+==== 修正
+
+  * debパッケージの依存関係を修正しました
+    [Christian Useさんが報告][milter-manager-users-en]
+
+==== 改善
+
+  * Debian stretch のサポートを追加しました
+  * Ubuntu Vivid (15.04) のサポートを追加しました
+  * Ubuntu Wily (15.10) のサポートを追加しました
+  * Ubuntu Lucid (10.04) のサポートをやめました
+  * Ubuntu Saucy (13.10) のサポートをやめました
+  * Ubuntu Utopic (14.10) のサポートをやめました
+  * CentOS6 で使うRubyを2.2.3にしました
+  * CentOS7 で systemd サポートを追加しました(実験的)
+
+=== milter manager
+
+==== 改善
+
+  * バンドルしている libev のバージョンを 4.19 にしました
+  * バンドルしている ruby-glib2 のバージョンを 2.2.5 にしました
+
+=== milter core
+
+==== 改善
+
+  * --log-level オプションと--log-itemオプションでパイプで区切って複数の値を指定できるようにしました
+    [とみたまさひろさんが報告]
+  * ログの出力先がファイルの場合、デフォルトでは色を付けないようにしました
+    [とみたまさひろさんが報告][GitHub #58]
+
+=== Ruby milter
+
+==== 改善
+
+  * Milter::ServerContext#negotiate を追加しました
+  * Milter::ServerContext#data を追加しました
+  * Milter::ServerContext#abort を追加しました
+  * Milter::ServerContext#quit を追加しました
+  * Milter::ServerContext#reset_message_related_data を追加しました
+  * Milter::Headers と Milter::Header を追加しました
+  * Milter::Status#pass? を追加しました
+  * sample/milter-test-server.rb を追加しました
+
 == [release-2-0-5] 2.0.5: 2014-12-09
 
 2.0.4 のバグフィックスリリースですが、実験的な機能としてメールトランザ
