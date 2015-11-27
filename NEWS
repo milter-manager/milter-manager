@@ -53,6 +53,12 @@ A bug fix release of 2.0.5.
   * Add Milter::Status#pass?
   * Add sample/milter-test-server.rb
 
+=== Thanks
+
+  * TOMITA Masahiro
+  * Christian Use
+  * Hiroshi Hatake
+  * Toshio Maki
 
 == [release-2-0-5] 2.0.5: 2014-12-09
 

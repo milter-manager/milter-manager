@@ -53,6 +53,13 @@
   * Milter::Status#pass? を追加しました
   * sample/milter-test-server.rb を追加しました
 
+=== 感謝
+
+  * とみたまさひろさん
+  * Christian Useさん
+  * 畑ケ宇宙さん
+  * Toshio Makiさん
+
 == [release-2-0-5] 2.0.5: 2014-12-09
 
 2.0.4 のバグフィックスリリースですが、実験的な機能としてメールトランザ
