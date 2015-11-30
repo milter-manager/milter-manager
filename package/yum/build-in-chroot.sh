@@ -91,6 +91,9 @@ build()
     build_user_dir=${base_dir}/home/${build_user}
     rpm_base_dir=${build_user_dir}/rpm
     rpm_dir=${rpm_base_dir}/RPMS/${architecture}
+    if [ "${architecture}" = "i386" ]; then
+        rpm_dir=${rpm_base_dir}/RPMS/i686
+    fi
     srpm_dir=${rpm_base_dir}/SRPMS
     pool_base_dir=${distribution}/${distribution_version}
     if test "${HAVE_DEVELOPMENT_BRANCH}" = "yes"; then
