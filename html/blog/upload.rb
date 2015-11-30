@@ -37,7 +37,7 @@ def main
   sf_project = "milter-manager"
   sf_host = "web.sourceforge.net"
   sf_htdocs_path = "/home/groups/m/mi/milter-manager/htdocs"
-  system("echo", "rsync", "-avz", "--delete", tdiary_compiled_dir,
+  system("rsync", "-avz", "--delete", tdiary_compiled_dir,
          "#{sf_user},#{sf_project}@#{sf_host}:#{sf_htdocs_path}/blog/")
 end
 
