@@ -2,6 +2,16 @@
 
 = NEWS --- The history of milter manager
 
+== [release-2-0-7] 2.0.7: 2015-11-30
+
+A bug fix release of 2.0.6
+
+=== Package
+
+==== Fixes
+
+  * Fix milter-manager(1) and html documents
+
 == [release-2-0-6] 2.0.6: 2015-11-30
 
 A bug fix release of 2.0.5.
