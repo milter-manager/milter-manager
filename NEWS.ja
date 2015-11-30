@@ -53,12 +53,20 @@
   * Milter::Status#pass? を追加しました
   * sample/milter-test-server.rb を追加しました
 
+=== Document
+
+==== 修正
+
+  * タイポの修正
+    [佐々木洋平さんがパッチを提供][GitHub #82]
+
 === 感謝
 
   * とみたまさひろさん
   * Christian Useさん
   * 畑ケ宇宙さん
   * Toshio Makiさん
+  * 佐々木洋平さん
 
 == [release-2-0-5] 2.0.5: 2014-12-09
 
