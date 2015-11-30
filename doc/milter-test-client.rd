@@ -106,7 +106,7 @@ tool for looking into the problems.
 : --n-workers=N_WORKERS
 
    Runs ((|N_WORKERS|)) processes to process mails.
-   Availble value is between 0 and 1000.
+   Available value is between 0 and 1000.
    If it is 0, no worker processes will be used.
 
    ((*NOTE: This item is an experimental feature.*))
@@ -114,7 +114,7 @@ tool for looking into the problems.
 : --event-loop-backend=BACKEND
 
    Uses ((|BACKEND|)) as event loop backend.
-   Availble values are ((%glib%)) or ((%libev%)).
+   Available values are ((%glib%)) or ((%libev%)).
    If you use glib backend, please refer to the following note.
 
    ((*NOTE: For the sake of improving milter-manager performance per process,

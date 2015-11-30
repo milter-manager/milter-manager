@@ -134,7 +134,7 @@ configurations specified in configuration file.
 : --event-loop-backend=BACKEDN
 
    Uses ((|BACKEND|)) as event loop backend.
-   Availble values are ((%glib%)) or ((%libev%)).
+   Available values are ((%glib%)) or ((%libev%)).
    If you use glib backend, please refer to the following note.
 
    ((*NOTE: For the sake of improving milter-manager performance per process,
