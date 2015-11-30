@@ -34,8 +34,8 @@ def setup_tdiary_dirs(tdiary_base_dir)
   blog_base_dir = nil
   tdiary_conf_dir = nil
   tdiary_conf = nil
-  ["~/public_html/milter-manager"].each do |dir|
-    conf = "#{dir}/blog/ja/tdiary.conf"
+  ["~/wc/milter-manager/html"].each do |dir|
+    conf = "#{dir}/blog/tdiary.conf"
     conf = Pathname(conf).expand_path
     if conf.exist?
       blog_base_dir = Pathname(dir).expand_path
