@@ -411,14 +411,15 @@ URL やバージョンを変更して使う。
 CGI で動かすよりも Rack で動かした方が便利なのでそうする。tdiary.conf
 は milter-manager のリポジトリにあるものを使う。
 
-  % mkdir -p ~/work/ruby/tdiary
-  % cd ~/work/ruby/tdiary
-  % tar xf tdiary-full-3.1.1.tar.gz
-  % ln -s tdiary-full-3.1.1 tdiary
+  % mkdir -p ~/work/ruby
+  % cd ~/work/ruby/
+  % tar xf tdiary-full-v4.2.0.tar.gz
+  % ln -s tdiary-v4.2.0 tdiary
   % cd tdiary
   % echo "gem \"tdiary-style-rd\"" >> Gemfile.local
   % bundle install --path vendor/bundle
   % ln -s ~/wc/milter-manager/html/blog/tdiary.conf tdiary.conf
+  % mkdir -p clear-code
   % ln -s ~/wc/milter-manager/html/blog/clear-code clear-code/public
   % bundle exec ruby bin/tdiary htpasswd
 
@@ -427,9 +428,8 @@ CGI で動かすよりも Rack で動かした方が便利なのでそうする�
 ウェブブラウザで ((<URL:http://localhost:9292/>)) にアクセスしてトップ
 ページが表示されればセットアップに成功している。
 
-デフォルトのユーザ名(user)とパスワード(pass)でログインすれば更新できる。
-ブラウザから tDiary でエントリを投稿すると、ブログ用エントリのファイル
-(*.td2)が作成・更新されるのでブログ用リポジトリに git push する。
+ウェブブラウザから新しい日記を投稿するとGitリポジトリにコミットしてプッ
+シュまでしてくれる。日記投稿後、次のコマンドを実行する。
 
   % ./update.rb --sf-user=sf_user_name
 
