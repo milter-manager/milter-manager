@@ -137,12 +137,12 @@ configurations specified in configuration file.
    Available values are ((%glib%)) or ((%libev%)).
    If you use glib backend, please refer to the following note.
 
-   ((*NOTE: For the sake of improving milter-manager performance per process,
+   NOTE: For the sake of improving milter-manager performance per process,
    event-driven model based architecture pattern is choosed in this software.
    If this feature is implemented by glib, it is expressed as a callback.
    Note that glib's callback registration upper limit makes
    the limitation of the number of communications.
-   This limitations exist against glib backend only.*))
+   This limitations exist against glib backend only.
 
 : --verbose
 
