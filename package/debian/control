@@ -5,13 +5,19 @@ Maintainer: Kouhei Sutou <kou@clear-code.com>
 Uploaders: Kenji Okimoto <okimoto@clear-code.com>, Youhei SASAKI <uwabami@gfd-dennou.org>
 Build-Depends:
 	debhelper (>= 9),
+	dh-autoreconf,
+	dh-systemd (>= 1.5),
 	autotools-dev,
 	libglib2.0-dev,
 	libev-dev,
-	ruby (>= 1:1.9.3), ruby-dev (>= 1:1.9.3),
+	cutter-glib-support,
+	ruby (>= 1:1.9.3),
+	ruby-dev (>= 1:1.9.3),
 	ruby-gnome2-dev,
-	intltool
-Standards-Version: 3.9.5
+	rdtool,
+	intltool,
+	gtk-doc-tools
+Standards-Version: 3.9.6
 Homepage: http://milter-manager.sourceforge.net/
 
 Package: milter-manager
@@ -116,7 +122,7 @@ Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	libglib2.0-0
-Description: Common library for implementing milter protocol
+Description: Common library for implementing milter protocol: core
  milter "core" library is a common library for mitler "client" and
  milter "server" libraries.
 
@@ -145,7 +151,7 @@ Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	libmilter-core0 (= ${binary:Version})
-Description: Libraries and tools for implementing milter protocol
+Description: Libraries and tools for implementing milter protocol: client
  milter "client" library is a library which implements client-side
  (milter-side) milter protocol.
 
@@ -174,7 +180,7 @@ Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	libmilter-core0 (= ${binary:Version})
-Description: Libraries and tools for implementing milter protocol
+Description: Libraries and tools for implementing milter protocol: server
  milter "server" library is a library which implements server-side
  (MTA-side) milter protocol.
 
@@ -201,9 +207,9 @@ Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	libmilter-client0 (= ${binary:Version})
-Description: Milter library which has ABI compatiblity with Sendmail's libmilter
+Description: Milter library which has ABI compatibility with Sendmail's libmilter
  libmilter-compatible is a milter toolkit based library which has ABI
- compatiblity with Sendmail's libmilter. It can be used with a milter
+ compatibility with Sendmail's libmilter. It can be used with a milter
  which is built with Sendmail's libmilter. To use LD_PRELOAD is the
  most easy way to use libmilter-compatible.
 
@@ -214,7 +220,7 @@ Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	libmilter-compatible (= ${binary:Version})
-Description: Milter development files which have API compatiblity with Sendmail's libmilter
+Description: Milter development files which have API compatibility with Sendmail's libmilter
  This provides API that is compatible with Sendmail's libmilter. Milters can
  be built and run with libmilter-compatible-dev and libmilter-compatible.
 
@@ -232,6 +238,8 @@ Depends:
 Description: Ruby bindings for milter core library (Ruby interface)
  milter "core" library is a common library for mitler "client" and
  milter "server" libraries.
+ .
+ This package provides Ruby binding for milter-manager.
 
 Package: ruby-milter-client
 Section: ruby

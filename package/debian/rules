@@ -3,6 +3,9 @@
 #
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
+# enable Hardening: see https://wiki.debian.org/Hardening
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/buildflags.mk
 # This has to be exported to make some magic below work.
 export DH_OPTIONS
 # search rbgobject.h
@@ -13,7 +16,11 @@ export CFLAGS += -I/usr/include
 export DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 %:
-	dh $@
+	dh $@ --with autoreconf --with systemd
+
+override_dh_autoreconf:
+	dh_autoreconf --as-needed -- \
+	  $(CURDIR)/debian/autogen.sh
 
 override_dh_auto_configure:
 	dh_auto_configure --													\
@@ -22,8 +29,8 @@ override_dh_auto_configure:
 		--with-default-socket-group=mail									\
 		--with-default-pid-file=/run/milter-manager/milter-manager.pid	\
 		--with-default-connection-spec=unix:/run/milter-manager/milter-manager.sock \
-		--enable-ruby-milter=$$(ruby -rrbconfig -e 'print RbConfig::CONFIG["vendordir"]')
-
+		--enable-ruby-milter=$$(ruby -rrbconfig -e 'print RbConfig::CONFIG["vendordir"]') \
+		--enable-gtk-doc
 
 # disable 'make check'.
 override_dh_auto_test:
@@ -40,7 +47,35 @@ override_dh_installdocs:
 
 override_dh_auto_clean:
 	dh_auto_clean
+	cp -fv $(CURDIR)/debian/gtk-doc.make $(CURDIR)/
 	-find $(CURDIR)/binding/ruby -name Makefile | xargs rm -f
-	-rm -fr $(CURDIR)/doc/reference/ja/*.xml
-	-rm -fr $(CURDIR)/doc/reference/ja/html.stamp
-	-rm -fr $(CURDIR)/doc/reference/ja/xml
+	-rm -fr $(CURDIR)/doc/reference/*.xml
+	-rm -fr $(CURDIR)/doc/reference/*.xml.ja
+	-rm -fr $(CURDIR)/doc/reference/*.stamp
+	-rm -fr $(CURDIR)/doc/*.man
+	-rm -fr $(CURDIR)/doc/*.jman
+	-rm -fr $(CURDIR)/doc/*.stamp
+	-rm -fr $(CURDIR)/binding/ruby/test/.test-result
+	-rm -fr $(CURDIR)/config/po
+	-rm -fr $(CURDIR)/milter/client/milter-client-enum-types.c
+	-rm -fr $(CURDIR)/milter/client/milter-client-enum-types.h
+	-rm -fr $(CURDIR)/milter/client/stamp-milter-client-enum-types-c
+	-rm -fr $(CURDIR)/milter/client/stamp-milter-client-enum-types-h
+	-rm -fr $(CURDIR)/milter/core/milter-enum-types.c
+	-rm -fr $(CURDIR)/milter/core/milter-enum-types.h
+	-rm -fr $(CURDIR)/milter/core/milter-marshalers.c
+	-rm -fr $(CURDIR)/milter/core/milter-marshalers.h
+	-rm -fr $(CURDIR)/milter/core/stamp-milter-enum-types-c
+	-rm -fr $(CURDIR)/milter/core/stamp-milter-enum-types-h
+	-rm -fr $(CURDIR)/milter/manager/milter-manager-enum-types.c
+	-rm -fr $(CURDIR)/milter/manager/milter-manager-enum-types.h
+	-rm -fr $(CURDIR)/milter/manager/stamp-milter-manager-enum-types-c
+	-rm -fr $(CURDIR)/milter/manager/stamp-milter-manager-enum-types-h
+	-rm -fr $(CURDIR)/milter/server/milter-server-enum-types.c
+	-rm -fr $(CURDIR)/milter/server/milter-server-enum-types.h
+	-rm -fr $(CURDIR)/milter/server/stamp-milter-server-enum-types-c
+	-rm -fr $(CURDIR)/milter/server/stamp-milter-server-enum-types-h
+	-rm -fr $(CURDIR)/test/lib/milter-test-enum-types.c
+	-rm -fr $(CURDIR)/test/lib/milter-test-enum-types.h
+	-rm -fr $(CURDIR)/test/lib/stamp-milter-test-enum-types-c
+	-rm -fr $(CURDIR)/test/lib/stamp-milter-test-enum-types-h

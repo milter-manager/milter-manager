@@ -1,0 +1,115 @@
+diff --git a/NEWS.ja b/NEWS.ja
+index 7b01700..ae4d210 100644
+--- a/NEWS.ja
++++ b/NEWS.ja
+@@ -4,7 +4,7 @@
+ 
+ == [release-2-0-7] 2.0.7: 2015-11-30
+ 
+-2.0.7 のバグフィックスリリースです。
++2.0.6 のバグフィックスリリースです。
+ 
+ === Package
+ 
+diff --git a/doc/release.rd.ja b/doc/release.rd.ja
+index bd37a1e..1181c2f 100644
+--- a/doc/release.rd.ja
++++ b/doc/release.rd.ja
+@@ -411,14 +411,15 @@ URL やバージョンを変更して使う。
+ CGI で動かすよりも Rack で動かした方が便利なのでそうする。tdiary.conf
+ は milter-manager のリポジトリにあるものを使う。
+ 
+-  % mkdir -p ~/work/ruby/tdiary
+-  % cd ~/work/ruby/tdiary
+-  % tar xf tdiary-full-3.1.1.tar.gz
+-  % ln -s tdiary-full-3.1.1 tdiary
++  % mkdir -p ~/work/ruby
++  % cd ~/work/ruby/
++  % tar xf tdiary-full-v4.2.0.tar.gz
++  % ln -s tdiary-v4.2.0 tdiary
+   % cd tdiary
+   % echo "gem \"tdiary-style-rd\"" >> Gemfile.local
+   % bundle install --path vendor/bundle
+   % ln -s ~/wc/milter-manager/html/blog/tdiary.conf tdiary.conf
++  % mkdir -p clear-code
+   % ln -s ~/wc/milter-manager/html/blog/clear-code clear-code/public
+   % bundle exec ruby bin/tdiary htpasswd
+ 
+@@ -427,20 +428,11 @@ CGI で動かすよりも Rack で動かした方が便利なのでそうする
+ ウェブブラウザで ((<URL:http://localhost:9292/>)) にアクセスしてトップ
+ ページが表示されればセットアップに成功している。
+ 
+-デフォルトのユーザ名(user)とパスワード(pass)でログインすれば更新できる。
+-ブラウザから tDiary でエントリを投稿すると、ブログ用エントリのファイル
+-(*.td2)が作成・更新されるのでブログ用リポジトリに git push する。
++ウェブブラウザから新しい日記を投稿するとGitリポジトリにコミットしてプッ
++シュまでしてくれる。日記投稿後、次のコマンドを実行する。
+ 
+   % ./update.rb --sf-user=sf_user_name
+ 
+-== Freecode でアナウンス
+-
+-((<URL:http://freecode.com/projects/milter-manager>)) でアナウンスする。
+-
+-内容は英語版リリースメールの始めに書いているのと同じでよい。
+-
+-アカウントが無い場合は作成してプロジェクト管理者に連絡する。
+-
+ == メジャーバージョンリリース時の追加作業
+ 
+ メジャーバージョンリリースというプロジェクトとしての大きなイベントを利
+diff --git a/html/blog/data/ja/2015/201511.td2 b/html/blog/data/ja/2015/201511.td2
+new file mode 100644
+index 0000000..8f44adf
+--- /dev/null
++++ b/html/blog/data/ja/2015/201511.td2
+@@ -0,0 +1,21 @@
++TDIARY2.01.00
++Date: 20151130
++Title: 
++Last-Modified: 1448872482
++Visible: true
++Format: RD
++
++= milter manager 2.0.6 and 2.0.7
++
++milter manager 2.0.6 と 2.0.7 をリリースしました。
++前回のリリースから約1年ぶりです。
++
++milter manager 2.0.6 で同梱のドキュメント類が正しく生成されていなかったため、正しく生成したものを milter manager 2.0.7 としてリリースしました。
++
++milter manager 2.0.6 では CentOS7 に systemd のサポートを実験的に追加しました。
++
++サポートしているUbuntuのバージョンを整理しました。
++
++Debian Wheezy 向けのパッケージはこのリリースで終了します。
++
++.
+diff --git a/html/blog/update.rb b/html/blog/update.rb
+index e620913..787abfc 100755
+--- a/html/blog/update.rb
++++ b/html/blog/update.rb
+@@ -34,8 +34,8 @@ def setup_tdiary_dirs(tdiary_base_dir)
+   blog_base_dir = nil
+   tdiary_conf_dir = nil
+   tdiary_conf = nil
+-  ["~/public_html/milter-manager"].each do |dir|
+-    conf = "#{dir}/blog/ja/tdiary.conf"
++  ["~/wc/milter-manager/html"].each do |dir|
++    conf = "#{dir}/blog/tdiary.conf"
+     conf = Pathname(conf).expand_path
+     if conf.exist?
+       blog_base_dir = Pathname(dir).expand_path
+diff --git a/html/blog/upload.rb b/html/blog/upload.rb
+index 3601c4d..329a031 100755
+--- a/html/blog/upload.rb
++++ b/html/blog/upload.rb
+@@ -37,7 +37,7 @@ def main
+   sf_project = "milter-manager"
+   sf_host = "web.sourceforge.net"
+   sf_htdocs_path = "/home/groups/m/mi/milter-manager/htdocs"
+-  system("echo", "rsync", "-avz", "--delete", tdiary_compiled_dir,
++  system("rsync", "-avz", "--delete", tdiary_compiled_dir,
+          "#{sf_user},#{sf_project}@#{sf_host}:#{sf_htdocs_path}/blog/")
+ end
+ 
