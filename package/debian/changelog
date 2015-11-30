@@ -1,8 +1,12 @@
-milter-manager (2.0.7-1) unstable; urgency=low
+milter-manager (2.0.7-1) UNRELEASED; urgency=medium
 
+  [Kenji Okimoto]
   * New upstream release.
 
- -- Kenji Okimoto <okimoto@clear-code.com>  Mon, 30 Nov 2015 00:00:00 +0900
+  [Youhei SASAKI]
+  * Fix: latest-debian-changelog-entry-without-new-date
+
+ -- Youhei SASAKI <uwabami@gfd-dennou.org>  Mon, 30 Nov 2015 21:14:37 +0900
 
 milter-manager (2.0.6-1) unstable; urgency=low
 

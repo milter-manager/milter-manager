@@ -1,0 +1,13 @@
+[Unit]
+Description=flexible milter management daemon
+After=syslog.target network-online.target
+
+[Service]
+EnvironmentFile=-/etc/default/milter-manager
+User=-mail
+Group=-mail
+ExecStart=/usr/sbin/milter-manager $OPTIONS
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target
