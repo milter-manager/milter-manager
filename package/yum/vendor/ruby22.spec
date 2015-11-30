@@ -11,7 +11,7 @@ Source0:        ftp://ftp.ruby-lang.org/pub/ruby/ruby-%{rubyver}.tar.gz
 Summary:        An interpreter of object-oriented scripting language
 Group:          Development/Languages
 Provides: ruby(abi) = 2.2
-Conflicts: ruby1.9
+Conflicts: ruby1.9 ruby2.1
 
 %description
 Ruby is the interpreted scripting language for quick and easy
