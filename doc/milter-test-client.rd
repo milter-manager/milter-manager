@@ -118,7 +118,7 @@ tool for looking into the problems.
    If you use glib backend, please refer to the following note.
 
    ((*NOTE: For the sake of improving milter-manager performance per process,
-   event-driven model based architechture pattern is choosed in this software.
+   event-driven model based architecture pattern is choosed in this software.
    If this feature is implemented by glib, it is expressed as a callback.
    Note that glib's callback registration upper limit makes
    the limitation of the number of communications.
