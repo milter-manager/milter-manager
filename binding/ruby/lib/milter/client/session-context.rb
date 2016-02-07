@@ -25,7 +25,7 @@ module Milter
     def status=(value)
       case value
       when String, Symbol
-        unless Milter::Status.const_defined?(value.to_s.upcase)
+        unless Milter::Status.const_defined?(value.to_s.upcase.gsub(/-/,'_'))
           raise ArgumentError, "unknown status: <#{value.inspect}>"
         end
       when Milter::Status, nil
@@ -41,7 +41,7 @@ module Milter
     def status
       status = @status || Milter::Status::DEFAULT
       if status.is_a?(String) or status.is_a?(Symbol)
-        status = Milter::Status.const_get(status.to_s.upcase)
+        status = Milter::Status.const_get(status.to_s.upcase.gsub(/-/,'_'))
       end
       status
     end
