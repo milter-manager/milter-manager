@@ -7,7 +7,7 @@ build:
           yum install -y libtool intltool gettext gcc make glib2-devel git tar rpm-build
           yum install -y readline-devel ncurses-devel gdbm-devel tcl-devel openssl-devel db4-devel byacc libyaml libyaml-devel libffi-devel
     - script:
-        name: Install cutter
+        name: Install Cutter
         code: |
           yum install -y http://sourceforge.net/projects/cutter/files/centos/cutter-release-1.2.0-0.noarch.rpm
           sed -i -e "s/downloads.//" /etc/yum.repos.d/cutter.repo
@@ -34,7 +34,7 @@ build:
             --enable-ruby-milter=$(ruby2.2 -rrbconfig -e 'print RbConfig::CONFIG["rubylibdir"]') \
             --with-default-connection-spec="inet:10025@[127.0.0.1]"
     - script:
-        name: Test with cutter
+        name: Test with Cutter
         code: |
           test/run-test.sh -v v || true
     - script:
