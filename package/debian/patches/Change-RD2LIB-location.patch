@@ -1,0 +1,45 @@
+From: Kouhei Sutou <kou@clear-code.com>
+Date: Sun, 29 Nov 2015 21:53:59 +0900
+Subject: Change-RD2LIB-location
+
+---
+ doc/Makefile.am           | 4 ++--
+ doc/reference/Makefile.am | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/doc/Makefile.am b/doc/Makefile.am
+index fea7f38..8cfa02c 100644
+--- a/doc/Makefile.am
++++ b/doc/Makefile.am
+@@ -149,10 +149,10 @@ MAINTAINERCLEANFILES = $(dist_man1_MANS) $(dist_ja_man1_mans)
+ SUFFIXES = .rd .man .rd .jman .svg .png
+ 
+ .rd.man:
+-	$(RUBY) -I $(CUTTER_SOURCE_PATH)/misc $(RD2) -r rd2man-lib $< > $@
++	$(RUBY) -I$(CURDIR)/../debian/cutter-import $(RD2) -r rd2man-lib $< > $@
+ 
+ .rd.jman: # dirty...
+-	$(RUBY) -I $(CUTTER_SOURCE_PATH)/misc $(RD2) -r rd2man-lib $<.ja > $@
++	$(RUBY) -I$(CURDIR)/../debian/cutter-import $(RD2) -r rd2man-lib $<.ja > $@
+ 
+ .svg.png:
+ 	inkscape --export-png $@ $<
+diff --git a/doc/reference/Makefile.am b/doc/reference/Makefile.am
+index 3518960..9ad3fc8 100644
+--- a/doc/reference/Makefile.am
++++ b/doc/reference/Makefile.am
+@@ -220,11 +220,11 @@ update-po: Makefile sgml.stamp
+ 	    $(srcdir)/xml/*.xml;		\
+ 	done
+ 
+-EXPAND_RD2_SNIPPET = $(CUTTER_SOURCE_PATH)/misc/expand-rd2-snippet.rb
+-RD2LIB_DIR = $(CUTTER_SOURCE_PATH)/misc
++EXPAND_RD2_SNIPPET = expand-rd2-snippet.rb
++RD2LIB_DIR = $(CURDIR)/../../debian/cutter-import
+ RD2REFENTRY_LIB_FILE = rd2refentry-lib.rb
+ RD2REFENTRY_LIB = $(RD2LIB_DIR)/$(RD2REFENTRY_LIB_FILE)
+-RD2DOCBOOK = $(RUBY) -I $(RD2LIB_DIR) $(RD2) -r $(RD2REFENTRY_LIB_FILE) --name=MILTER-MANAGER
++RD2DOCBOOK = $(RUBY) -I$(RD2LIB_DIR) $(RD2) -r $(RD2REFENTRY_LIB_FILE) --name=MILTER-MANAGER
+ RD2DOCBOOK_JA = $(RD2DOCBOOK) --po=$(srcdir)/ja.po
+ SVG2PNG = inkscape --export-dpi=60 --export-background=white --export-png
+ 
