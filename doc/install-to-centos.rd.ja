@@ -42,7 +42,7 @@ milter managerはyumでインストールできます。
 
 まず、yumリポジトリを登録します。
 
-  % sudo rpm -Uvh http://sourceforge.net/projects/milter-manager/files/centos/milter-manager-release-1.2.0-1.noarch.rpm
+  % sudo rpm -Uvh http://sourceforge.net/projects/milter-manager/files/centos/milter-manager-release-1.3.0-1.noarch.rpm
 
 登録が完了したらmilter managerをインストールできます。
 
