@@ -1,6 +1,6 @@
 Summary: milter manager release files
 Name: milter-manager-release
-Version: 1.2.0
+Version: 1.3.0
 Release: 1
 License: GPLv3+
 URL: http://milter-manager.sourceforge.net/
@@ -38,6 +38,9 @@ milter manager release files
 %{_sysconfdir}/pki/rpm-gpg/RPM-GPG-KEY-milter-manager
 
 %changelog
+* Thu Feb 18 2016 HAYASHI Kentaro <hayashi@clear-code.com> - 1.3.0-1
+- Fix broken yum repository URI.
+
 * Fri May 16 2014 Kenji Okimoto <okimoto@clear-code.com> - 1.2.0-1
 - Change yum repository URI.
 
