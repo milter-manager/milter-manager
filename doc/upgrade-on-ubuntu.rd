@@ -30,26 +30,26 @@ Please update your source.list as soon as possible.
 === For Precise Pangolin
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable precise universe
-  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable precise universe
+  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable precise universe
+  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable precise universe
 
 === For Trusty Tahr
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable trusty universe
-  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable trusty universe
+  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable trusty universe
+  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable trusty universe
 
 === For Vivid Vervet
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable vivid universe
-  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable vivid universe
+  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable vivid universe
+  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable vivid universe
 
 === For Wily Werewolf
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable wily universe
-  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable wily universe
+  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable wily universe
+  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable wily universe
 
 == Conclusion
 

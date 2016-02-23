@@ -30,26 +30,26 @@ Please update your source.list as soon as possible.
 === For wheezy
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/debian/stable wheezy main
-  deb-src http://sourceforge.net/projects/milter-manager/files/debian/stable wheezy main
+  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable wheezy main
+  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable wheezy main
 
 === For jessie
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/debian/stable jessie main
-  deb-src http://sourceforge.net/projects/milter-manager/files/debian/stable jessie main
+  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable jessie main
+  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable jessie main
 
 === For stretch
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/debian/stable stretch main
-  deb-src http://sourceforge.net/projects/milter-manager/files/debian/stable stretch main
+  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable stretch main
+  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable stretch main
 
 === For sid
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/debian/stable unstable main
-  deb-src http://sourceforge.net/projects/milter-manager/files/debian/stable unstable main
+  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable unstable main
+  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable unstable main
 
 == Conclusion
 

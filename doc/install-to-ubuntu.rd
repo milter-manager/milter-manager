@@ -31,8 +31,8 @@ content:
 === For Trusty Tahr
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable trusty universe
-  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable trusty universe
+  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable trusty universe
+  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable trusty universe
 
 If you don't enable the official backport repository, you need to
 create /etc/apt/sources.list.d/backports.list with the following
@@ -43,8 +43,8 @@ content:
 === For Vivid Vervet
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable vivid universe
-  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable vivid universe
+  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable vivid universe
+  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable vivid universe
 
 If you don't enable the official backport repository, you need to
 create /etc/apt/sources.list.d/backports.list with the following
@@ -55,8 +55,8 @@ content:
 === For Wily Werewolf
 
 /etc/apt/sources.list.d/milter-manager.list:
-  deb http://sourceforge.net/projects/milter-manager/files/ubuntu/stable wily universe
-  deb-src http://sourceforge.net/projects/milter-manager/files/ubuntu/stable wily universe
+  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable wily universe
+  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable wily universe
 
 If you don't enable the official backport repository, you need to
 create /etc/apt/sources.list.d/backports.list with the following
