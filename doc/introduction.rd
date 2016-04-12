@@ -4,6 +4,11 @@
 
 == About this document
 
+  # note
+  You can see this guide in
+  ((<Russian|URL:http://www.everycloudtech.com/miltermanager>)) hosted
+  by ((<Everycloud|URL:http://www.everycloudtech.com/>)).
+
 This document describes the following advantages by introducing
 milter manager:
 
