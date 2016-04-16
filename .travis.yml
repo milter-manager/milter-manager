@@ -2,10 +2,9 @@ notifications:
   recipients:
     - travis@clear-code.com
 rvm:
-  - 1.9.3
-  - 2.0.0
   - 2.1
   - 2.2
+  - 2.3.0
 # - ruby-head
 env:
   - MILTER_EVENT_LOOP_BACKEND=glib
