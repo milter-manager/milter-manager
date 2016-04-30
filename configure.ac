@@ -435,13 +435,15 @@ if test "$ruby_available" = "yes"; then
       ruby_glib2_available=yes
       ac_ruby_glib2_source_dir="$ac_ruby_glib2_dir/ext/glib2"
       RUBY_GLIB2_CFLAGS="-I \$(top_srcdir)/$ac_ruby_glib2_source_dir"
-      sed -e '/^install-headers:/a xxx	$(MAKEDIRS) $(RUBYARCHDIR)' \
+      sed -e '/^install-headers:/a\
+xxx	$(MAKEDIRS) $(RUBYARCHDIR)' \
 	  $ac_ruby_glib2_dir/ext/glib2/Makefile | \
           sed -e 's/^xxx//' > \
 	  $ac_ruby_glib2_dir/ext/glib2/Makefile.fix-install-headers
       mv $ac_ruby_glib2_dir/ext/glib2/Makefile.fix-install-headers \
 	 $ac_ruby_glib2_dir/ext/glib2/Makefile
-      sed -e '/^pre-install-rb:/a xxx	$(MAKEDIRS) $(RUBYLIBDIR)/gnome2/rake' \
+      sed -e '/^pre-install-rb:/a\
+xxx	$(MAKEDIRS) $(RUBYLIBDIR)/gnome2/rake' \
           $ac_ruby_glib2_dir/Makefile.lib | \
           sed -e 's/^xxx//' > \
           $ac_ruby_glib2_dir/Makefile.lib.fix-pre-install-rb
