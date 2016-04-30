@@ -6,9 +6,9 @@ list_paths()
     echo "$variable_name = \\"
     sort | \
     sed \
-      -e 's,^,\t,' \
+      -e 's,^,	,' \
       -e 's,$, \\,'
-    echo "\t\$(NULL)"
+    echo '	$(NULL)'
     echo
 }
 
