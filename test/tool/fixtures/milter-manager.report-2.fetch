@@ -1,4 +1,4 @@
-                           spam               virus               uribl    greylisting-pass            spf-pass            spf-fail      sender-id-pass      sender-id-fail           dkim-pass           dkim-fail      dkim-adsp-pass      dkim-adsp-fail     tarpitting-pass
+                           spam               virus               uribl    greylisting_pass            spf_pass            spf_fail      sender_id_pass      sender_id_fail           dkim_pass           dkim_fail      dkim_adsp_pass      dkim_adsp_fail     tarpitting_pass
 
 1247607840: -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan
 1247608320: -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan

@@ -1,4 +1,4 @@
-                           pass              accept              reject             discard   temporary-failure          quarantine               abort               error                stop
+                           pass              accept              reject             discard   temporary_failure          quarantine               abort               error                stop
 
 1247607840: 0.0000000000e+00 0.0000000000e+00 0.0000000000e+00 0.0000000000e+00 1.0000000000e+00 0.0000000000e+00 0.0000000000e+00 0.0000000000e+00 0.0000000000e+00
 1247608320: 0.0000000000e+00 0.0000000000e+00 0.0000000000e+00 0.0000000000e+00 1.0000000000e+00 0.0000000000e+00 2.0000000000e+00 0.0000000000e+00 0.0000000000e+00

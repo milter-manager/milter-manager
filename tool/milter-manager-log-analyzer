@@ -279,6 +279,7 @@ class MilterManagerLogAnalyzer
       time_stamp = time_stamp.to_i
       data = []
       find_data(content) do |key, type, options|
+        key = normalize_name(key)
         data << [key, type, options]
       end
       return if data.empty?
@@ -300,6 +301,7 @@ class MilterManagerLogAnalyzer
       unless @data.empty?
         counts = []
         @items.each do |item|
+          item = normalize_name(item)
           counts << (@data[item] || unknown_value)
         end
         RRD.update(rrd_file, "#{@current_time}:#{counts.join(':')}")
@@ -370,6 +372,7 @@ class MilterManagerLogAnalyzer
       end
 
       data_sources = sources.collect do |source|
+        source = normalize_name(source)
         "DS:#{source}:GAUGE:#{heartbeat}:0:U"
       end
 
@@ -384,6 +387,9 @@ class MilterManagerLogAnalyzer
     end
 
     def recreate_rrd(*new_items)
+      new_items = new_items.collect do |new_item|
+        normalize_name(new_item)
+      end
       dump_file = Tempfile.new("milter-manager-log-analyzer")
       RRD.dump(rrd_file, dump_file.path)
       data = dump_file.read
@@ -484,6 +490,7 @@ EODS
     end
 
     def generate_definitions(rrd_file, range, item, label=nil)
+      item = normalize_name(item)
       label ||= item
       [
        "DEF:#{label}=#{rrd_file}:#{item}:AVERAGE",
@@ -524,6 +531,12 @@ EODS
           @data[key] = [@data[key], count].max
         end
       end
+    end
+
+    def normalize_name(name)
+      # It's work around for RRDtool 1.5. RRDtool except 1.5 accepts
+      # "-" as data source name.
+      name.gsub(/-/, "_")
     end
   end
 
@@ -640,6 +653,7 @@ EODS
 
       items = []
       entries.each do |type, name, color, label|
+        name = normalize_name(name)
         items << "#{type}:#{name}#{color}:#{label.ljust(max_label_size)}"
         items << "GPRINT:total_#{name}:MAX:total\\: %8.0lf sessions"
         items << "GPRINT:#{name}:AVERAGE:avg\\: %6.2lf sessions/#{unit}"
