@@ -24,6 +24,7 @@ install:
 before_script:
   - ./autogen.sh
   - ./configure --enable-coverage --with-default-connection-spec="inet:10025@[127.0.0.1]"
+  - ls -laR ~/.rvm/rubies/ruby-*/lib/
   - make V=1
 script:
   - test/run-test.sh
