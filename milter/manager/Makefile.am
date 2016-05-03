@@ -2,7 +2,7 @@ AM_CPPFLAGS =						\
 	 -I$(top_builddir)				\
 	 -I$(top_srcdir)
 
-AM_CFLAGS = 						\
+AM_CFLAGS =						\
 	-DLOCALEDIR=\""$(localedir)"\"			\
 	-DPREFIX=\""$(prefix)"\"			\
 	-DMILTER_LOG_DOMAIN=\""milter-manager"\"	\

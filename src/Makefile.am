@@ -1,8 +1,8 @@
-AM_CPPFLAGS = 					\
+AM_CPPFLAGS =					\
 	 -I$(top_builddir)			\
 	 -I$(top_srcdir)
 
-AM_CFLAGS = 				\
+AM_CFLAGS =				\
 	-DLOCALEDIR=\""$(localedir)"\"	\
 	$(MILTER_MANAGER_CFLAGS)	\
 	$(RUBY_CFLAGS)
