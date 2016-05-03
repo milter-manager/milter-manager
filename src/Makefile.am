@@ -7,7 +7,8 @@ AM_CFLAGS = 				\
 	$(MILTER_MANAGER_CFLAGS)	\
 	$(RUBY_CFLAGS)
 
-LIBS =			\
+LIBS =						\
+	$(RUBY_LDFLAGS)				\
 	$(RUBY_LIBS)
 
 CLEANFILES = *.gcno *.gcda
