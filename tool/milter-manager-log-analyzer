@@ -773,6 +773,7 @@ EODS
 
       items = []
       entries.each do |type, name, color, label|
+        name = normalize_name(name)
         items << "#{type}:#{name}#{color}:#{label.ljust(max_label_size)}"
         items << "GPRINT:total_#{name}:MAX:total\\: %8.0lf mails"
         items << "GPRINT:#{name}:AVERAGE:avg\\: %6.2lf mails/#{unit}"
