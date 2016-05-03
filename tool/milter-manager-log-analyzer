@@ -387,12 +387,12 @@ class MilterManagerLogAnalyzer
     end
 
     def recreate_rrd(*new_items)
-      new_items = new_items.collect do |new_item|
-        normalize_name(new_item)
-      end
       dump_file = Tempfile.new("milter-manager-log-analyzer")
       RRD.dump(rrd_file, dump_file.path)
       data = dump_file.read
+      data.gsub!(/<name> (.+?) <\/name>/) do
+        "<name> #{normalize_name($1)} </name>"
+      end
       data.gsub!(/<last_ds><\/last_ds>/, "<last_ds>NaN</last_ds>")
       data.sub!(/<!-- Round Robin Archives -->/) do |text|
         ds = ""
@@ -468,10 +468,20 @@ EODS
         end
       end
       data_names = data_names.uniq
-      if data_names.size < @items.size
-        recreate_rrd(*@items[(data_names.size)..-1])
-      elsif data_names.size > @items.size
+      normalized_data_names = data_names.collect do |name|
+        normalize_name(name)
+      end
+
+      normalized_items = @items.collect do |item|
+        normalize_name(item)
+      end
+      if data_names.size < normalized_items.size
+        recreate_rrd(*normalized_items[(data_names.size)..-1])
+      elsif data_names.size > normalized_items.size
         raise "data source can't be removed!"
+      elsif data_names.sort != normalized_items.sort and
+          normalized_data_names.sort == normalized_items.sort
+        recreate_rrd
       end
     end
 
