@@ -107,20 +107,7 @@ spamass-milterはデフォルトの設定で問題ありません。
 
 === clamav-milterの設定
 
-clamav-milterのソケットはpostfixグループに読み書き権限を与え
-るようにします。
-
-以下のように/etc/default/clamav-milterを変更します。
-
-変更前:
-  #SOCKET_RWGROUP=postfix
-
-変更後:
-  SOCKET_RWGROUP=postfix
-
-clamav-milterを再起動します。
-
-  % sudo /etc/init.d/clamav-milter restart
+clamav-milterはデフォルトの設定で問題ありません。
 
 === milter-greylistの設定
 

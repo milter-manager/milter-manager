@@ -131,20 +131,7 @@ There are no changes for spamass-milter's configuration.
 
 === Configure clamav-milter
 
-We change /etc/default/clamav-milter to do the followings:
-
-  * Virus check is done by clamd not clamav-milter.
-  * 'postfix' group can communicate to clamav-milter.
-
-Before:
-  #SOCKET_RWGROUP=postfix
-
-After:
-  SOCKET_RWGROUP=postfix
-
-clamav-milter should be restarted:
-
-  % sudo /etc/init.d/clamav-milter restart
+We don't need to change the default clamav-milter's configuration.
 
 === Configure milter-greylist
 

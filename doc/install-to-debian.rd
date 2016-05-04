@@ -108,18 +108,7 @@ There are no changes for spamass-milter's configuration.
 
 === Configure clamav-milter
 
-We change /etc/default/clamav-milter to change socket owner
-and group to 'postfix' group.
-
-Before:
-  #SOCKET_RWGROUP=postfix
-
-After:
-  SOCKET_RWGROUP=postfix
-
-clamav-milter should be restarted:
-
-  % sudo /etc/init.d/clamav-milter restart
+We don't need to change the default clamav-milter's configuration.
 
 === Configure milter-greylist
 
