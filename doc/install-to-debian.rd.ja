@@ -212,6 +212,10 @@ Postfixと一緒に動作するように/etc/default/milter-managerを編
   SOCKET_GROUP=postfix
   CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
+ソケットを作成するディレクトリーを作成します。
+
+  % sudo mkdir -p /var/spool/postfix/milter-manager/
+
 milter-managerユーザーをpostfixグループに所属させます。
 
   % sudo adduser milter-manager postfix

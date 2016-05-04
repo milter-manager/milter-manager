@@ -238,6 +238,10 @@ After:
   SOCKET_GROUP=postfix
   CONNECTION_SPEC=unix:/var/spool/postfix/milter-manager/milter-manager.sock
 
+We create a directory for milter-manager's socket:
+
+  % sudo mkdir -p /var/spool/postfix/milter-manager/
+
 We add milter-manager user to postfix group:
 
   % sudo adduser milter-manager postfix
