@@ -20,7 +20,7 @@ update:
 	  '$(SF_PROJECT_NAME)' '$(PACKAGE_TITLE)' '$(CODE_NAMES)'
 
 sign:
-	./sign-repository.sh '$(CODE_NAMES)'
+	./sign-repository.sh $(GPG_UID) '$(CODE_NAMES)'
 
 upload:
 	for distribution in $(DISTRIBUTIONS); do		\

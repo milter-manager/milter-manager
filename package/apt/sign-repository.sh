@@ -2,11 +2,11 @@
 # -*- indent-tabs-mode: nil; sh-basic-offset: 4; sh-indentation: 4 -*-
 
 script_base_dir=`dirname $0`
-GPG_UID=`$script_base_dir/gpg-uid.sh`
+GPG_UID=$1
 
 if [ $# != 1 ]; then
-    echo "Usage: $0 CODE_NAMES"
-    echo " e.g.: $0 'lenny hardy lucid'"
+    echo "Usage: $0 GPG_UID CODE_NAMES"
+    echo " e.g.: $0 1BD22CD1 'lenny hardy lucid'"
     exit 1
 fi
 

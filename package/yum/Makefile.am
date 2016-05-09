@@ -21,7 +21,7 @@ remove-existing-packages:
 	done
 
 sign:
-	./sign-rpm.sh '$(DISTRIBUTIONS)'
+	./sign-rpm.sh $(GPG_UID) '$(DISTRIBUTIONS)'
 
 update:
 	./update-repository.sh $(PACKAGE) '$(DISTRIBUTIONS)'
@@ -63,5 +63,9 @@ build-release-rpm: RPM-GPG-KEY-$(PACKAGE)
 	  '$(DISTRIBUTIONS)'			\
 	  $(HAVE_DEVELOPMENT_BRANCH)
 
-RPM-GPG-KEY-$(PACKAGE):
-	./gpg-public-key.sh > $@
+ensure-public-key:
+	gpg --list-keys '$(GPG_UID)' > /dev/null ||			\
+	  gpg --keyserver keyserver.ubuntu.com --recv-key '$(GPG_UID)'
+
+RPM-GPG-KEY-$(PACKAGE): ensure-public-key
+	gpg --armor --export '$(GPG_UID)' > $@

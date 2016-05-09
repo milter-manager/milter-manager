@@ -41,6 +41,7 @@ endif
 
 EXTRA_DIST =					\
 	autogen.sh				\
+	gpg_uid					\
 	README					\
 	README.ja				\
 	NEWS					\

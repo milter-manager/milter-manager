@@ -232,6 +232,9 @@ AC_SUBST(expanded_binding_libdir)
 tool_libdir='$(pkglibdir)/tool'
 AC_SUBST(tool_libdir)
 
+GPG_UID=m4_include(gpg_uid)
+AC_SUBST(GPG_UID)
+
 pkgsysconfdir="\$(sysconfdir)/$PACKAGE_NAME"
 AC_SUBST(pkgsysconfdir)
 
@@ -1085,3 +1088,5 @@ echo "  coverage                : $cutter_enable_coverage"
 echo "  coverage report by LCOV : $cutter_enable_coverage_report_lcov"
 echo
 echo "  Cutter Source Path      : $CUTTER_SOURCE_PATH"
+echo
+echo "  GPG UID                 : ${GPG_UID}"
