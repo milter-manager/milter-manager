@@ -13,7 +13,10 @@ export CFLAGS += -I/usr/include
 export DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 %:
-	dh $@
+	dh $@ --with autoreconf
+
+override_dh_autoreconf:
+	dh_autoreconf ./autogen.sh -- --no-update
 
 override_dh_auto_configure:
 	dh_auto_configure --													\
@@ -40,7 +43,24 @@ override_dh_installdocs:
 
 override_dh_auto_clean:
 	dh_auto_clean
-	-find $(CURDIR)/binding/ruby -name Makefile | xargs rm -f
+	-find $(CURDIR) -name Makefile.in -delete
+	-find $(CURDIR)/milter/client -name milter-client-enum-types.c -delete
+	-find $(CURDIR)/milter/client -name milter-client-enum-types.h -delete
+	-find $(CURDIR)/milter/client -name stamp-milter-client-enum-types-c -delete
+	-find $(CURDIR)/milter/client -name stamp-milter-client-enum-types-h -delete
+	-find $(CURDIR)/milter/manager -name milter-manager-enum-types.c -delete
+	-find $(CURDIR)/milter/manager -name milter-manager-enum-types.h -delete
+	-find $(CURDIR)/milter/manager -name stamp-milter-manager-enum-types-c -delete
+	-find $(CURDIR)/milter/manager -name stamp-milter-manager-enum-types-h -delete
+	-find $(CURDIR)/milter/server -name milter-server-enum-types.c -delete
+	-find $(CURDIR)/milter/server -name milter-server-enum-types.h -delete
+	-find $(CURDIR)/milter/server -name stamp-milter-server-enum-types-c -delete
+	-find $(CURDIR)/milter/server -name stamp-milter-server-enum-types-h -delete
+	-find $(CURDIR)/test/lib -name milter-test-enum-types.c -delete
+	-find $(CURDIR)/test/lib -name milter-test-enum-types.h -delete
+	-find $(CURDIR)/test/lib -name stamp-milter-test-enum-types-c -delete
+	-find $(CURDIR)/test/lib -name stamp-milter-test-enum-types-h -delete
 	-rm -fr $(CURDIR)/doc/reference/ja/*.xml
 	-rm -fr $(CURDIR)/doc/reference/ja/html.stamp
 	-rm -fr $(CURDIR)/doc/reference/ja/xml
+	-rm -fr $(CURDIR)/config/po
