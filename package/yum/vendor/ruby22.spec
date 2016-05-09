@@ -2,7 +2,7 @@
 
 Name:           ruby2.2
 Version:        %{rubyver}
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            http://www.ruby-lang.org/
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -11,7 +11,7 @@ Source0:        ftp://ftp.ruby-lang.org/pub/ruby/ruby-%{rubyver}.tar.gz
 Summary:        An interpreter of object-oriented scripting language
 Group:          Development/Languages
 Provides: ruby(abi) = 2.2
-Conflicts: ruby1.9 ruby2.1
+Obsoletes: ruby1.9 ruby2.1
 
 %description
 Ruby is the interpreted scripting language for quick and easy
