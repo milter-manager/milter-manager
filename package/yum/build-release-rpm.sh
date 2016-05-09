@@ -93,10 +93,8 @@ EOR
     run cp -p $rpm_base_dir/RPMS/noarch/${PACKAGE}-release-* $top_dir/6/stable/x86_64/Packages/
     run cp -p $rpm_base_dir/SRPMS/${PACKAGE}-release-* $top_dir/6/stable/source/SRPMS/
 
-    run mkdir -p $top_dir/7/stable/i386/Packages/
     run mkdir -p $top_dir/7/stable/x86_64/Packages/
     run mkdir -p $top_dir/7/stable/source/SRPMS/
-    run cp -p $rpm_base_dir/RPMS/noarch/${PACKAGE}-release-* $top_dir/7/stable/i386/Packages/
     run cp -p $rpm_base_dir/RPMS/noarch/${PACKAGE}-release-* $top_dir/7/stable/x86_64/Packages/
     run cp -p $rpm_base_dir/SRPMS/${PACKAGE}-release-* $top_dir/7/stable/source/SRPMS/
 
