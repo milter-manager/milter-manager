@@ -232,6 +232,13 @@ AC_SUBST(expanded_binding_libdir)
 tool_libdir='$(pkglibdir)/tool'
 AC_SUBST(tool_libdir)
 
+AC_ARG_WITH(launchpad-uploader-pgp-key,
+            [AS_HELP_STRING([--with-launchpad-uploader-pgp-key=KEY],
+            [specify PGP key UID to upload Groonga packages to Launchpad.])],
+            [LAUNCHPAD_UPLOADER_PGP_KEY="$withval"],
+            [LAUNCHPAD_UPLOADER_PGP_KEY=""])
+AC_SUBST(LAUNCHPAD_UPLOADER_PGP_KEY)
+
 GPG_UID=m4_include(gpg_uid)
 AC_SUBST(GPG_UID)
 
@@ -1089,4 +1096,5 @@ echo "  coverage report by LCOV : $cutter_enable_coverage_report_lcov"
 echo
 echo "  Cutter Source Path      : $CUTTER_SOURCE_PATH"
 echo
+echo "  Launchpad PGP key       : ${LAUNCHPAD_UPLOADER_PGP_KEY}"
 echo "  GPG UID                 : ${GPG_UID}"
