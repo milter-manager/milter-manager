@@ -1053,6 +1053,7 @@ AC_CONFIG_FILES([Makefile
 		 build/Makefile
 		 package/Makefile
 		 package/apt/Makefile
+		 package/ubuntu/Makefile
 		 package/rpm/Makefile
 		 package/rpm/centos/Makefile
 		 package/yum/Makefile])
