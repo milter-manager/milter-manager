@@ -1,7 +1,5 @@
 # -*- rd -*-
 
-# TODO: Update for CentOS 7
-
 = Install to CentOS 6 --- How to install milter manager to CentOS 6
 
 == About this document

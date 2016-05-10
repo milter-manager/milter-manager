@@ -1,33 +1,36 @@
 # -*- rd -*-
 
-= CentOS 7へインストール --- CentOS 7へのmilter managerのインストール方法
+= CentOS 6へインストール --- CentOS 6へのmilter managerのインストール方法
 
 == このドキュメントについて
 
-CentOS 7に特化したmilter managerのインストール方法について説明します。
-CentOS 5に特化したmilter managerのインストール方法は((<CentOS 5へイン
-ストール|install-to-centos5.rd.ja>))を見てください。CentOS 6に特化した
-milter managerのインストール方法は((<CentOS 6へインストール
-|install-to-centos6.rd.ja>))を見てください。CentOSに依存しない一般的な
-インストール情報は((<インストール|install.rd.ja>))を見てください。
+CentOS 6に特化したmilter managerのインストール方法について説明します。
+CentOS 5に特化したmilter managerのインストール方法は((<CentOS 5へインス
+トール|install-to-centos5.rd.ja>))を見てください。CentOSに依存しない一
+般的なインストール情報は((<インストール|install.rd.ja>))を見てください。
 
-CentOSのバージョンは7.2を想定しています。また、root権限での実行はsudo
-を使用することを想定しています。sudoを利用していない場合はsuなどroot権
-限で実行してください。
+CentOSのバージョンは6.4を想定しています。また、root権限での
+実行はsudoを使用することを想定しています。sudoを利用していな
+い場合はsuなどroot権限で実行してください。
 
 == パッケージのインストール
 
 MTAは標準でインストールされているPostfixを利用することとします。
 
-milterはspamass-milter、clamav-milter、milter-greylistを使用することと
-します。各milterはEPELにあるものを利用します。そのため、EPELを有効にし
-ます。
+milterはspamass-milter、clamav-milter、milter-greylistを使用
+することとします。各milterはEPELにあるものを利用します。
 
-  % sudo yum install -y epel-release
+32bit環境の場合は以下のようにEPELを登録します。
 
-EPELを有効にしたらmilterをインストールします。
+  % sudo rpm -Uhv http://ftp.jaist.ac.jp/pub/Linux/Fedora/epel/6/i386/epel-release-6-8.noarch.rpm
 
-  % sudo yum install -y spamass-milter-postfix clamav-scanner-systemd clamav-update clamav-milter-systemd milter-greylist
+64bit環境の場合は以下のようにEPELを登録します。
+
+  % sudo rpm -Uhv http://ftp.jaist.ac.jp/pub/Linux/Fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
+
+リポジトリを登録したらmilterをインストールします。
+
+  % sudo yum install -y spamass-milter clamav-milter milter-greylist
 
 また、グラフ作成用にRRDtoolもインストールします。
 
@@ -90,104 +93,56 @@ postfix と milter を無効にして設定を進めることにします。
 
 システム起動時にspamdを起動するようにします。
 
-  % sudo systemctl enable spamassassin
+  % sudo /sbin/chkconfig spamassassin on
 
 spamdを起動します。
 
-  % sudo systemctl start spamassassin
+  % sudo run_init /sbin/service spamassassin start
 
 spamass-milterは以下のように設定します。
 
+  * ソケットを変更する。
   * 本文変更機能を無効にする。
   * スコア15以上で拒否する。
 
 /etc/sysconfig/spamass-milterを以下のように変更します。
 
 変更前:
+  #SOCKET=/var/run/spamass.sock
   #EXTRA_FLAGS="-m -r 15"
 
 変更後:
+  SOCKET="inet:11120@[127.0.0.1]"
   EXTRA_FLAGS="-m -r 15"
 
 システム起動時にspamass-milterを起動するようにします。
 
-  % sudo systemctl enable spamass-milter
+  % sudo /sbin/chkconfig spamass-milter on
 
 spamass-milterを起動します。
 
-  % sudo systemctl status spamass-milter
+  % sudo run_init /sbin/service spamass-milter start
 
 === clamav-milterの設定
 
-ClamAVで使用するウィルス定義を自動更新する設定をします。
-
-/etc/freshclam.confを次のように変更します。「Example」はコメントアウト
-し、「NotifyClamd」はコメントを外し値を変更しています。それ以外の項目
-はコメントを外しています。
-
-変更前:
-  Example
-  #LogFacility LOG_MAIL
-  #AllowSupplementaryGroups yes
-  #NotifyClamd /path/to/clamd.conf
-
-変更後:
-  #Example
-  LogFacility LOG_MAIL
-  AllowSupplementaryGroups yes
-  NotifyClamd /etc/clamd.d/scan.conf
-
-最初は手動でfreshclamを実行します。
+ClamAVで使用するウィルス定義を更新してからclamdを起動します。
 
   % sudo freshclam
-
-clamdの設定をします。
-
-/etc/clamd/scan.confを次のように変更します。「Example」はコメントアウ
-トし、それ以外の項目はコメントを外しています。
-
-変更前:
-  Example
-  #LogFacility LOG_MAIL
-  #LocalSocket /var/run/clamd.scan/clamd.sock
-
-変更後:
-  #Example
-  LogFacility LOG_MAIL
-  LocalSocket /var/run/clamd.scan/clamd.sock
-
-システム起動時にclamdを起動するようにします。
-
-  % sudo systemctl enable clamd@scan
-
-clamdを起動します。
-
-  % sudo systemctl start clamd@scan
+  % sudo run_init /sbin/service clamd start
 
 clamav-milterのソケットを変更します。
 
-/etc/mail/clamav-milter.confを次のように変更します。「Example」はコメ
-ントアウトし、それ以外の項目はコメントを外しています。
+/etc/clamav-milter.confを以下のように変更します。
 
 変更前:
-  Example
-  #MilterSocket unix:/var/run/clamav-milter/clamav-milter.socket
-  #ClamdSocket tcp:scanner.mydomain:7357
-  #LogFacility LOG_MAIL
+  #MilterSocketMode 0660
 
 変更後:
-  #Example
-  MilterSocket unix:/var/run/clamav-milter/clamav-milter.socket
-  ClamdSocket unix:/var/run/clamd.scan/clamd.sock
-  LogFacility LOG_MAIL
-
-システム起動時にclamav-milterを起動するようにします。
-
-  % sudo systemctl enable clamav-milter
+  MilterSocketMode 0660
 
 clamav-milterを起動します。
 
-  % sudo systemctl start clamav-milter
+  % sudo run_init /sbin/service clamav-milter start
 
 === milter-greylistの設定
 
@@ -199,8 +154,6 @@ clamav-milterを起動します。
     る（Greylistの悪影響を抑えるため）
   * オートホワイトリストの期間を1日（デフォルト）から1週間に
     伸ばす（Greylistの悪影響を抑えるため）
-  * 信用するドメインの場合はSPFにパスしたらGreylistを使わない
-    （信用するドメインはmilter managerで指定する）
   * デフォルトでGreylistを使う
 
   # note
@@ -213,35 +166,45 @@ clamav-milterを起動します。
   築を支援します。
 
 変更前:
-  socket "/run/milter-greylist/milter-greylist.sock"
+  socket "/var/run/milter-greylist/milter-greylist.sock"
   # ...
   racl whitelist default
 
 変更後:
-  socket "/run/milter-greylist/milter-greylist.sock" 660
+  socket "/var/run/milter-greylist/milter-greylist.sock" 660
   # ...
   subnetmatch /24
   greylist 10m
   autowhite 1w
-  sm_macro "trusted_domain" "{trusted_domain}" "yes"
-  racl whitelist sm_macro "trusted_domain" spf pass
-  racl greylist sm_macro "trusted_domain" not spf pass
   racl greylist default
+
+# TODO: libspf2サポートつきのmilter-greylistがEPELで使えるようになっ
+# たらこの設定を追加する。milter-greylist-4.5.1 時点ではまだ使えない。
+# sm_macro "trusted_domain" "{trusted_domain}" "yes"
+# racl whitelist sm_macro "trusted_domain" spf pass
+# racl greylist sm_macro "trusted_domain" not spf pass
+
+/var/run/milter-greylist/ディレクトリはmilter-greylistの実行ユーザーで
+あるgrmilterユーザーのみがアクセスできるようになっています。
+milter-managerも/var/run/milter-greylist/以下にあるソケットファイルにア
+クセスできるようにします。
+
+  % sudo chmod +rx /var/run/milter-greylist/
 
 システム起動時にmilter-greylistを起動するようにします。
 
-  % sudo systemctl enable milter-greylist
+  % sudo /sbin/chkconfig milter-greylist on
 
 milter-greylistを起動します。
 
-  % sudo systemctl start milter-greylist
+  % sudo run_init /sbin/service milter-greylist start
 
 === milter-managerの設定
 
-まず、clamav-milterのソケットにアクセスできるようにmilter-managerを
-clamiltグループに加えます。
+まず、clamav-milterのソケットにアクセスできるように
+milter-managerをclamグループに加えます。
 
-  % sudo usermod -G clamilt -a milter-manager
+  % sudo usermod -G clam -a milter-manager
 
 同様に、milter-greylistのソケットにアクセスできるように
 milter-managerをgrmilterグループに加えます。
@@ -288,19 +251,13 @@ milterの名前、ソケットのパス、enabledがtrueになっていること
 milter-manager.confを編集しなくとも使用できるように検出方法を
 改良することができるかもしれません。
 
-これでmilter-managerの設定は完了です。
+milter-managerの設定が完了したので、起動します。
 
-システム起動時にmilter-managerを起動するようにします。
-
-  % sudo systemctl enable milter-manager
-
-milter-managerを起動します。
-
-  % sudo systemctl start milter-manager
+  % sudo run_init /sbin/service milter-manager restart
 
 milter-test-serverで起動の確認をすることができます。
 
-  % sudo -u milter-manager -H milter-test-server -s unix:/var/run/milter-manager/milter-manager.sock
+  % sudo -u milter-manager milter-test-server -s unix:/var/run/milter-manager/milter-manager.sock
 
 このように表示されれば成功です。
 
@@ -322,7 +279,7 @@ milter-test-serverで起動の確認をすることができます。
 
 milter-managerをもう一度起動します。
 
-  % sudo systemctl start milter-greylist
+  % sudo run_init /sbin/service milter-manager restart
 
 問題があればログが表示されます。起動しているmilter-managerは
 Ctrl+cで終了することができます。
@@ -340,8 +297,8 @@ postfixユーザーをmilter-managerグループに加えます。
 
 次に、Postfixを有効にします。
 
-  % sudo systemctl enable postfix
-  % sudo systemctl start postfix
+  % sudo /sbin/chkconfig --add postfix
+  % sudo run_init /sbin/service postfix start
 
 次に、milterの設定をします。
 
@@ -385,7 +342,7 @@ clamav-milter、milter-greylistはmilter-manager経由で利用する
 
 Postfixの設定を再読み込みします。
 
-  % sudo systemctl reload postfix
+  % sudo /etc/init.d/postfix reload
 
 以上で設定は完了です。
 
@@ -406,25 +363,27 @@ miler-greylistのそれぞれのソケットを指定する必要があります
 ソケットはmilter-managerが検出するため、typoなどの小さいです
 が気づきにくいミスに惑わされることがなくなります。
 
-また、ここでは触れませんでしたが、milter-managerはsystemctl enableされ
-ているかどうかも検出します。そのため、milterを無効にしたい場合は、他の
-サービスと同様に以下のような手順になります。
+また、ここでは触れませんでしたが、milter-managerは
+/sbin/chkconfig --addされているかどうかも検出します。そのため、
+milterを無効にしたい場合は、他のサービスと同様に以下のような
+手順になります。
 
-  % sudo systemctl stop milter-greylist
-  % sudo systemctl disable milter-greylist
+  % sudo /sbin/service milter-greylist stop
+  % sudo /sbin/chkconfig --del milter-greylist
 
 milterを無効にしたら、milter-managerの設定を再読み込みします。
-milter-managerはmilterが無効になったことを検出し、無効になったmilterと
-は接続しなくなります。
+milter-managerはmilterが無効になったことを検出し、無効になっ
+たmilter とは接続しなくなります。
 
-  % sudo systemctl reload milter-greylist
+  % sudo /sbin/service milter-manager reload
 
 Postfixの/etc/postfix/main.cfを変更する必要はありません。
 
 CentOS上でmilterを複数使っている場合は、milter-managerを導入
 して、管理コストを削減することができます。
 
-milter managerは運用を支援するツールも提供しています。インストールは必
-須ではありませんが、それらを導入することで運用コストを削減することがで
-きます。それらのツールもインストールする場合は((<CentOSへインストール
-（任意）|install-options-to-centos.rd.ja>))を参照してください。
+milter managerは運用を支援するツールも提供しています。インス
+トールは必須ではありませんが、それらを導入することで運用コス
+トを削減することができます。それらのツールもインストールする
+場合は((<CentOSへインストール（任
+意）|install-options-to-centos.rd.ja>))を参照してください。

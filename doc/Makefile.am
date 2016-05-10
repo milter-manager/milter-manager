@@ -16,6 +16,8 @@ EXTRA_DIST =						\
 	install-to-ubuntu.rd.ja				\
 	install-to-centos5.rd				\
 	install-to-centos5.rd.ja			\
+	install-to-centos6.rd				\
+	install-to-centos6.rd.ja			\
 	install-to-centos.rd				\
 	install-to-centos.rd.ja				\
 	install-to-freebsd.rd				\
