@@ -172,12 +172,14 @@ clamav-milterのソケットを変更します。
 変更前:
   Example
   #MilterSocket /var/run/clamav-milter/clamav-milter.socket
+  #MilterSocketMode 660
   #ClamdSocket tcp:scanner.mydomain:7357
   #LogFacility LOG_MAIL
 
 変更後:
   #Example
   MilterSocket /var/run/clamav-milter/clamav-milter.socket
+  MilterSocketMode 660
   ClamdSocket unix:/var/run/clamd.scan/clamd.sock
   LogFacility LOG_MAIL
 
@@ -244,9 +246,15 @@ clamiltグループに加えます。
   % sudo usermod -G clamilt -a milter-manager
 
 同様に、milter-greylistのソケットにアクセスできるように
-milter-managerをgrmilterグループに加えます。
+milter-managerをmailグループとgrmilterグループに加えます。
 
+  % sudo usermod -G mail -a milter-manager
   % sudo usermod -G grmilter -a milter-manager
+
+同様に、spamass-milterのソケットにアクセスできるようにmilter-managerを
+postfixグループに加えます。
+
+  % sudo usermod -G postfix -a milter-manager
 
 milter-managerはシステムにインストールされているmilterを検出
 します。以下のコマンドでspamass-milter、clamav-milter、
@@ -258,35 +266,34 @@ milter-greylistを検出していることを確認してください。
 
   ...
   define_milter("milter-greylist") do |milter|
-    milter.connection_spec = "unix:/var/milter-greylist/milter-greylist.sock"
+    milter.connection_spec = "unix:/run/milter-greylist/milter-greylist.sock"
     ...
     milter.enabled = true
     ...
   end
   ...
   define_milter("clamav-milter") do |milter|
-    milter.connection_spec = "unix:/var/clamav/clmilter.socket"
+    milter.connection_spec = "unix:/var/run/clamav-milter/clamav-milter.socket"
     ...
     milter.enabled = true
     ...
   end
   ...
   define_milter("spamass-milter") do |milter|
-    milter.connection_spec = "inet:11120@[127.0.0.1]"
+    milter.connection_spec = "unix:/run/spamass-milter/postfix/sock"
     ...
     milter.enabled = true
     ...
   end
   ...
 
-milterの名前、ソケットのパス、enabledがtrueになっていることを
-確認してください。異なっていた場合は、((<設定
-|configuration.rd.ja>))を参考に
-/etc/milter-manager/milter-manager.confを編集してください。た
-だ、できれば、設定を変更せずに使用できるようにしたいと考えて
-います。もし、検出できなかった環境のことを教えてもらえれば、
-milter-manager.confを編集しなくとも使用できるように検出方法を
-改良することができるかもしれません。
+milterの名前、ソケットのパス、enabledがtrueになっていることを確認して
+ください。異なっていた場合は、((<設定|configuration.rd.ja>))を参考に
+/etc/milter-manager/milter-manager.local.confで設定してください。ただ、
+できれば、設定を変更せずに使用できるようにしたいと考えています。もし、
+検出できなかった環境のことを教えてもらえれば、
+milter-manager.local.confで設定しなくとも使用できるように検出方法を改
+良することができるかもしれません。
 
 これでmilter-managerの設定は完了です。
 
@@ -322,7 +329,7 @@ milter-test-serverで起動の確認をすることができます。
 
 milter-managerをもう一度起動します。
 
-  % sudo systemctl start milter-greylist
+  % sudo systemctl start milter-manager
 
 問題があればログが表示されます。起動しているmilter-managerは
 Ctrl+cで終了することができます。
@@ -333,12 +340,7 @@ OPTION_ARGSをコメントアウトし、デーモンプロセスで起動する
 
 === Postfixの設定
 
-まず、milter managerのソケットにアクセスできるように、
-postfixユーザーをmilter-managerグループに加えます。
-
-  % sudo usermod -G milter-manager -a postfix
-
-次に、Postfixを有効にします。
+Postfixを有効にします。
 
   % sudo systemctl enable postfix
   % sudo systemctl start postfix
@@ -417,7 +419,7 @@ milterを無効にしたら、milter-managerの設定を再読み込みします
 milter-managerはmilterが無効になったことを検出し、無効になったmilterと
 は接続しなくなります。
 
-  % sudo systemctl reload milter-greylist
+  % sudo systemctl reload milter-manager
 
 Postfixの/etc/postfix/main.cfを変更する必要はありません。
 
