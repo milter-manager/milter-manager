@@ -115,7 +115,7 @@ spamass-milterは以下のように設定します。
 
 spamass-milterを起動します。
 
-  % sudo systemctl status spamass-milter
+  % sudo systemctl start spamass-milter
 
 === clamav-milterの設定
 
@@ -143,8 +143,8 @@ ClamAVで使用するウィルス定義を自動更新する設定をします�
 
 clamdの設定をします。
 
-/etc/clamd/scan.confを次のように変更します。「Example」はコメントアウ
-トし、それ以外の項目はコメントを外しています。
+/etc/clamd.d/scan.confを次のように変更します。「Example」はコメントア
+ウトし、それ以外の項目はコメントを外しています。
 
 変更前:
   Example
@@ -171,13 +171,13 @@ clamav-milterのソケットを変更します。
 
 変更前:
   Example
-  #MilterSocket unix:/var/run/clamav-milter/clamav-milter.socket
+  #MilterSocket /var/run/clamav-milter/clamav-milter.socket
   #ClamdSocket tcp:scanner.mydomain:7357
   #LogFacility LOG_MAIL
 
 変更後:
   #Example
-  MilterSocket unix:/var/run/clamav-milter/clamav-milter.socket
+  MilterSocket /var/run/clamav-milter/clamav-milter.socket
   ClamdSocket unix:/var/run/clamd.scan/clamd.sock
   LogFacility LOG_MAIL
 
