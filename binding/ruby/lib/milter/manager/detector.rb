@@ -52,7 +52,9 @@ module Milter::Manager
     end
 
     def command
-      if have_service_command?
+      if have_systemctl_command?
+        systemctl_command
+      elsif have_service_command?
         service_command
       else
         run_command
@@ -60,7 +62,9 @@ module Milter::Manager
     end
 
     def command_options
-      if have_service_command?
+      if have_systemctl_command?
+        ["start", @script_name]
+      elsif have_service_command?
         [@script_name, "start"]
       else
         ["start"]
@@ -80,7 +84,7 @@ module Milter::Manager
     end
 
     def have_service_command?
-      service_command and File.exist?(service_command)
+      not service_command.nil?
     end
 
     def service_command
@@ -91,6 +95,20 @@ module Milter::Manager
 
     def candidate_service_commands
       ["/sbin/service", "/usr/sbin/service"]
+    end
+
+    def have_systemctl_command?
+      not systemctl_command.nil?
+    end
+
+    def systemctl_command
+      @systemctl_command ||= candidate_systemctl_commands.find do |command|
+        File.executable?(command)
+      end
+    end
+
+    def candidate_systemctl_commands
+      ["/usr/bin/systemctl"]
     end
 
     private

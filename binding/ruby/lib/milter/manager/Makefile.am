@@ -17,6 +17,7 @@ dist_binding_lib_milter_DATA =			\
 	redhat-detector.rb			\
 	redhat-init-detector.rb			\
 	redhat-upstart-detector.rb		\
+	redhat-systemd-detector.rb		\
 	address-matcher.rb			\
 	breaker.rb				\
 	exception.rb				\

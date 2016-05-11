@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2016  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -15,18 +15,22 @@
 
 require "milter/manager/redhat-init-detector"
 require "milter/manager/redhat-upstart-detector"
+require "milter/manager/redhat-systemd-detector"
 
 module Milter::Manager
   class RedHatDetector
     include Detector
 
     def detect
+      @systemd_detector.detect
       @upstart_detector.detect
       @init_detector.detect
     end
 
     def apply(loader, &block)
-      if @upstart_detector.enabled?
+      if @systemd_detector.enabled?
+        @systemd_detector.apply(loader, &block)
+      elsif @upstart_detector.enabled?
         @upstart_detector.apply(loader, &block)
       else
         @init_detector.apply(loader, &block)
@@ -34,7 +38,9 @@ module Milter::Manager
     end
 
     def run_command
-      if @upstart_detector.enabled?
+      if @systemd_detector.enabled?
+        @systemd_detector.command
+      elsif @upstart_detector.enabled?
         @upstart_detector.command
       else
         @init_detector.command
@@ -42,7 +48,9 @@ module Milter::Manager
     end
 
     def command_options
-      if @upstart_detector.enabled?
+      if @systemd_detector.enabled?
+        @systemd_detector.command_options
+      elsif @upstart_detector.enabled?
         @upstart_detector.command_options
       else
         @init_detector.command_options
@@ -50,7 +58,9 @@ module Milter::Manager
     end
 
     def enabled?
-      @upstart_detector.enabled? or @init_detector.enabled?
+      @systemd_detector.enabled? or
+        @upstart_detector.enabled? or
+        @init_detector.enabled?
     end
 
     private
@@ -59,6 +69,8 @@ module Milter::Manager
       @init_detector = RedHatInitDetector.new(@configuration, @script_name,
                                               &@connection_spec_detector)
       @upstart_detector = RedHatUpstartDetector.new(@configuration, @script_name,
+                                                    &@connection_spec_detector)
+      @systemd_detector = RedHatSystemdDetector.new(@configuration, @script_name,
                                                     &@connection_spec_detector)
     end
   end
