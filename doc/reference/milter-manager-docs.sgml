@@ -31,6 +31,7 @@
       <xi:include href="install-to-ubuntu.xml"/>
       <xi:include href="install-options-to-ubuntu.xml"/>
       <xi:include href="install-to-centos5.xml"/>
+      <xi:include href="install-to-centos6.xml"/>
       <xi:include href="install-to-centos.xml"/>
       <xi:include href="install-options-to-centos.xml"/>
       <xi:include href="install-to-freebsd.xml"/>
