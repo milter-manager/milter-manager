@@ -1,17 +1,17 @@
 # -*- rd -*-
 
-# TODO: Update for CentOS 7
-
-= Install to CentOS 6 --- How to install milter manager to CentOS 6
+= Install to CentOS 7 --- How to install milter manager to CentOS 7
 
 == About this document
 
-This document describes how to install milter manager to CentOS 6. See
-((<Install to CentOS 5|install-to-centos5.rd>)) for CentOS 5 specific
-install information. See ((<Install|install.rd>)) for general install
+This document describes how to install milter manager to CentOS 7. See
+((<Install to CentOS 6|install-to-centos6.rd>)) for CentOS 6 specific
+install information. See ((<Install to CentOS
+5|install-to-centos5.rd>)) for CentOS 5 specific install
+information. See ((<Install|install.rd>)) for general install
 information.
 
-In this document, CentOS 6.4 is used. Sudo is used to run a command
+In this document, CentOS 7.2 is used. Sudo is used to run a command
 with root privilege. If you don't use sudo, use su instead.
 
 == Install packages
@@ -19,23 +19,17 @@ with root privilege. If you don't use sudo, use su instead.
 Postfix is used as MTA because it's installed by default.
 
 Spamass-milter, clamav-milter and milter-greylist are used as
-milters. Milter packages registered in Repoforge are used.
+milters. Milter packages registered in EPEL are used.
 
-Register Repoforge like the following.
+Register EPEL like the following:
 
-On 32bit environment:
+  % sudo yum install -y epel-release
 
-  % sudo rpm -Uhv http://ftp.jaist.ac.jp/pub/Linux/Fedora/epel/6/i386/epel-release-6-8.noarch.rpm
+Now, you install milters:
 
-On 64bit environment:
+  % sudo yum install -y spamass-milter-postfix clamav-scanner-systemd clamav-update clamav-milter-systemd milter-greylist
 
-  % sudo rpm -Uhv http://ftp.jaist.ac.jp/pub/Linux/Fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
-
-Now, you can install milters:
-
-  % sudo yum install -y spamass-milter clamav-milter milter-greylist
-
-And you can install RRDtool for generating graphs:
+And you install RRDtool for generating graphs:
 
   % sudo yum install -y rrdtool
 
@@ -47,15 +41,13 @@ Register milter manager yum repository like the following:
 
   % sudo rpm -Uvh http://sourceforge.net/projects/milter-manager/files/centos/milter-manager-release-1.3.0-1.noarch.rpm
 
-Now, you can install milter manager:
+Now, you install milter manager:
 
   % sudo yum install -y milter-manager
 
 == Configuration
 
 Here is a basic configuration policy.
-
-IPv4 socket is used and connections only from localhost are accepted.
 
 milter-greylist should be applied only if
 ((<S25R|URL:http://gabacho.reto.jp/en/anti-spam/>))
@@ -88,7 +80,7 @@ After:
   # rewrite_header Subject [SPAM]
 
 Add the following configuration to
-/etc/spamassassin/local.cf. This configuration is for adding
+/etc/mail/spamassassin/local.cf. This configuration is for adding
 headers only if spam detected.
 
   remove_header ham Status
@@ -96,55 +88,106 @@ headers only if spam detected.
 
 Start spamd on startup:
 
-  % sudo /sbin/chkconfig spamassassin on
+  % sudo systemctl enable spamassassin
 
 Start spamd:
 
-  % sudo run_init /sbin/service spamassassin start
+  % sudo systemctl start spamassassin
 
 Here are spamass-milter's configuration items:
 
-  * Change socket address.
   * Disable needless body change feature.
   * Reject if score is larger than or equal to 15.
 
 Change /etc/sysconfig/spamass-milter:
 
 Before:
-  #SOCKET=/var/run/spamass.sock
   #EXTRA_FLAGS="-m -r 15"
 
 After:
-  SOCKET="inet:11120@[127.0.0.1]"
   EXTRA_FLAGS="-m -r 15"
 
 Start spamass-milter on startup:
 
-  % sudo /sbin/chkconfig spamass-milter on
+  % sudo systemctl enable spamass-milter
 
 Start spamass-milter:
 
-  % sudo run_init /sbin/service spamass-milter start
+  % sudo systemctl start spamass-milter
 
 === Configure clamav-milter
 
 Update ClamAV virus database and start clamd.
 
-  % sudo freshclam
-  % sudo run_init /sbin/service clamd start
-
-Edit /etc/clamav-milter.conf to change clamav-milter's
-socket address.
+Edit /etc/freshclam.conf like the following. It comments out
+"Example", changes "NotifyClamd" value and uncomments other
+items.
 
 Before:
-  #MilterSocketMode 0660
+  Example
+  #LogFacility LOG_MAIL
+  #AllowSupplementaryGroups yes
+  #NotifyClamd /path/to/clamd.conf
 
 After:
-  MilterSocketMode 0660
+  #Example
+  LogFacility LOG_MAIL
+  AllowSupplementaryGroups yes
+  NotifyClamd /etc/clamd.d/scan.conf
+
+Run freshclam by hand at the first time:
+
+  % sudo freshclam
+
+Configure clamd.
+
+Edit /etc/clamd.d/scan.conf like the following. It comments out
+"Example" and uncomments other items:
+
+Before:
+  Example
+  #LogFacility LOG_MAIL
+  #LocalSocket /var/run/clamd.scan/clamd.sock
+
+After:
+  #Example
+  LogFacility LOG_MAIL
+  LocalSocket /var/run/clamd.scan/clamd.sock
+
+Start clamd on startup:
+
+  % sudo systemctl enable clamd@scan
+
+Start clamd:
+
+  % sudo systemctl start clamd@scan
+
+Configure clamav-milter.
+
+Edit /etc/mail/clamav-milter.conf like the following. It comments out
+"Example", change "ClamdSocket" value and uncomments other items:
+
+Before:
+  Example
+  #MilterSocket /var/run/clamav-milter/clamav-milter.socket
+  #MilterSocketMode 660
+  #ClamdSocket tcp:scanner.mydomain:7357
+  #LogFacility LOG_MAIL
+
+After:
+  #Example
+  MilterSocket /var/run/clamav-milter/clamav-milter.socket
+  MilterSocketMode 660
+  ClamdSocket unix:/var/run/clamd.scan/clamd.sock
+  LogFacility LOG_MAIL
+
+Start clamav-milter on startup:
+
+  % sudo systemctl enable clamav-milter
 
 Start clamav-milter:
 
-  % sudo run_init /sbin/service clamav-milter start
+  % sudo systemctl start clamav-milter
 
 === Configure milter-greylist
 
@@ -157,6 +200,8 @@ configurations:
     minutes (default value) to avoid Greylist adverse effect.
   * increase auto whitelist period to a week from 1 day
     (default value) to avoid Greylist adverse effect.
+  * don't use Greylist when trusted domain passes SPF.
+    (Trusted domains are configured in milter manager)
   * use Greylist by default.
 
   # note
@@ -170,92 +215,97 @@ configurations:
   mail system that combines some anti-spam techniques.
 
 Before:
-  socket "/var/run/milter-greylist/milter-greylist.sock"
+  socket "/run/milter-greylist/milter-greylist.sock"
   # ...
   racl whitelist default
 
 After:
-  socket "/var/run/milter-greylist/milter-greylist.sock" 660
+  socket "/run/milter-greylist/milter-greylist.sock" 660
   # ...
   subnetmatch /24
   greylist 10m
   autowhite 1w
+  sm_macro "trusted_domain" "{trusted_domain}" "yes"
+  racl whitelist sm_macro "trusted_domain" spf pass
+  racl greylist sm_macro "trusted_domain" not spf pass
   racl greylist default
-
-"grmilter", the effective user of milter-grylist, only can access
-/var/run/milter-greylist/ directory. To access the socket file in
-/var/run/milter-greylist/ directory by milter-manager, add permission
-to the directory:
-
-  % sudo chmod +rx /var/run/milter-greylist/
 
 Start milter-greylist on startup:
 
-  % sudo /sbin/chkconfig milter-greylist on
+  % sudo systemctl enable milter-greylist
 
 Start milter-greylist:
 
-  % sudo run_init /sbin/service milter-greylist start
+  % sudo systemctl start milter-greylist
 
 === Configure milter manager
 
-Add 'milter-manager' user to 'clam' group to access
+Add "milter-manager" user to "clamilt" group to access
 clamav-milter's socket:
 
-  % sudo usermod -G clam -a milter-manager
+  % sudo usermod -G clamilt -a milter-manager
 
-Add 'milter-manager' user to 'grmilter' group to access
-milter-greylist's socket:
+Add "milter-manager" user to "mail" group and "grmilter" group to
+access milter-greylist's socket:
 
+  % sudo usermod -G mail -a milter-manager
   % sudo usermod -G grmilter -a milter-manager
+
+Add "milter-manager" user to "postfix"" group to access
+spamass-milter's socket:
+
+  % sudo usermod -G postfix -a milter-manager
 
 milter manager detects milters that installed in system.
 You can confirm spamass-milter, clamav-milter and
 milter-greylist are detected:
 
-  % sudo /usr/sbin/milter-manager -u milter-manager --show-config
+  % sudo /usr/sbin/milter-manager -u milter-manager -g milter-manager --show-config
 
 The following output shows milters are detected:
 
   ...
   define_milter("milter-greylist") do |milter|
-    milter.connection_spec = "inet:11122@[127.0.0.1]"
+    milter.connection_spec = "unix:/run/milter-greylist/milter-greylist.sock"
     ...
     milter.enabled = true
     ...
   end
   ...
   define_milter("clamav-milter") do |milter|
-    milter.connection_spec = "unix:/var/clamav/clmilter.socket"
+    milter.connection_spec = "unix:/var/run/clamav-milter/clamav-milter.socket"
     ...
     milter.enabled = true
     ...
   end
   ...
   define_milter("spamass-milter") do |milter|
-    milter.connection_spec = "inet:11120@[127.0.0.1]"
+    milter.connection_spec = "unix:/run/spamass-milter/postfix/sock"
     ...
     milter.enabled = true
     ...
   end
   ...
 
-You should confirm that milter's name, socket path and
-'enabled = true'. If the values are unexpected,
-you need to change
-/etc/milter-manager/milter-manager.conf.
-See ((<Configuration|configuration.rd>)) for details of
-milter-manager.conf.
+You should confirm that milter's name, socket path and "enabled =
+true". If the values are unexpected, you need to change
+/etc/milter-manager/milter-manager.local.conf. See
+((<Configuration|configuration.rd>)) for details of
+milter-manager.local.conf.
 
 But if we can, we want to use milter manager without editing
-miter-manager.conf. If you report your environment to the
-milter manager project, the milter manager project may
-improve detect method.
+miter-manager.local.conf. If you report your environment to the milter
+manager project, the milter manager project may improve detect method.
 
-milter manager's configuration is finished. Start to
-milter manager:
+milter manager's configuration is finished.
 
-  % sudo /sbin/service milter-manager restart
+Start to milter manager on startup:
+
+  % sudo systemctl enable milter-manager
+
+Start to milter manager:
+
+  % sudo systemctl start milter-manager
 
 milter-test-server is usuful to confirm milter manager was
 ran:
@@ -264,7 +314,7 @@ ran:
 
 Here is a sample success output:
 
-  status: pass
+  status: accept
   elapsed-time: 0.128 seconds
 
 If milter manager fails to run, the following message will
@@ -285,7 +335,7 @@ standard output:
 
 Restart milter manager:
 
-  % sudo run_init /sbin/service milter-manager restart
+  % sudo systemctl restart milter-manager
 
 Some logs are output if there is a problem. Running
 milter manager can be exitted by Ctrl+c.
@@ -297,15 +347,10 @@ milter manager.
 
 === Configure Postfix
 
-First, add 'postfix' user to 'milter-manager' group to access
-milter manager's socket:
-
-  % sudo usermod -G milter-manager -a postfix
-
 Enables Postfix:
 
-  % sudo /sbin/chkconfig --add postfix
-  % sudo run_init /sbin/service postfix start
+  % sudo systemctl enable postfix
+  % sudo systemctl start postfix
 
 Configure Postfix for milters. Append following lines to
 /etc/postfix/main.cf:
@@ -339,11 +384,12 @@ spamass-milter, clamav-milter and milter-greylist aren't needed to be
 registered because they are used via milter manager.
 
 Append following lines to /etc/postfix/main.cf:
+
   smtpd_milters = unix:/var/run/milter-manager/milter-manager.sock
 
 Reload Postfix's configuration.
 
-  % sudo /etc/init.d/postfix reload
+  % sudo systemctl reload postfix
 
 milter manager logs to syslog. If milter manager works well,
 some logs can be shown in /var/log/maillog. You need to send
@@ -365,12 +411,12 @@ milter manager also detects which '/sbin/chkconfig -add' is
 done or not. If you disable a milter, you use the following
 steps:
 
-  % sudo /sbin/service milter-greylist stop
-  % sudo /sbin/chkconfig --del milter-greylist
+  % sudo systemctl stop milter-greylist
+  % sudo systemctl disable milter-greylist
 
 You need to reload milter manager after you disable a milter.
 
-  % sudo /sbin/service milter-manager reload
+  % sudo systemctl reload milter-manager
 
 milter manager detects a milter is disabled and doesn't use
 it. You don't need to change /etc/postfix/main.cf.

@@ -5,6 +5,8 @@
 == このドキュメントについて
 
 CentOS 6に特化したmilter managerのインストール方法について説明します。
+CentOS 7に特化したmilter managerのインストール方法は((<CentOS 7へインス
+トール|install-to-centos.rd.ja>))を見てください。
 CentOS 5に特化したmilter managerのインストール方法は((<CentOS 5へインス
 トール|install-to-centos5.rd.ja>))を見てください。CentOSに依存しない一
 般的なインストール情報は((<インストール|install.rd.ja>))を見てください。

@@ -4,7 +4,9 @@
 
 == About this document
 
-This document describes how to install milter manager to CentOS 6. See
+This document describes how to install milter manager to CentOS 7. See
+((<Install to CentOS 7|install-to-centos.rd>)) for CentOS 7 specific
+install information. See
 ((<Install to CentOS 5|install-to-centos5.rd>)) for CentOS 5 specific
 install information. See ((<Install|install.rd>)) for general install
 information.
@@ -17,9 +19,9 @@ with root privilege. If you don't use sudo, use su instead.
 Postfix is used as MTA because it's installed by default.
 
 Spamass-milter, clamav-milter and milter-greylist are used as
-milters. Milter packages registered in Repoforge are used.
+milters. Milter packages registered in EPEL are used.
 
-Register Repoforge like the following.
+Register EPEL like the following.
 
 On 32bit environment:
 
