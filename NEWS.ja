@@ -2,6 +2,95 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-2-0-8] 2.0.8: 2016-05-XX
+
+2.0.7 のバグフィックスリリースです。
+
+すでにmilter-managerをインストールしている場合、パッケージを更新する前
+に次の作業が必要です。
+
+Debianの場合: /etc/apt/sources.list.d/milter-manager.listを更新する(以
+下はjessieの例です)
+
+  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable jessie main
+  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable jessie main
+
+CentOSの場合: milter-manager-releaseパッケージを1.3.0に更新する
+
+  % sudo rpm -Uvh \
+  http://sourceforge.net/projects/milter-manager/files/centos/milter-manager-release-1.3.0-1.noarch.rpm
+
+=== Package
+
+==== 修正
+
+  * debパッケージのlintianによるチェックで誤検出により警告がでていたの
+    を修正しました。[佐々木洋平さんがパッチを提供]
+  * debパッケージのビルド中に、ドキュメントを生成しなおすのに必要なファ
+    イルをdebian/ディレクトリ以下に保持するようにしました。これはdebパッ
+    ケージをクリーンビルドするのに必要です。[佐々木洋平さんがパッチを
+    提供]
+
+  * Debian向けのapt-lineを更新しました。SourceForget.netの仕様変更に対
+    応しています。/etc/apt/sources.list.d/milter-manager.listの更新が
+    必要です。
+
+  * CentOS向けのmilter-manager-releaseパッケージを更新しました。
+    SourceForget.netの仕様変更に対応しています。1.3.0より古いバージョ
+    ンではyum updateでmilter-managerを更新できません。
+
+==== 改善
+
+  * CentOS5のサポートをやめました
+  * CentOS7のサポートを追加しました
+
+=== milter manager
+
+==== 修正
+
+  * milter-manager-log-analyzerで未定義の値は0として扱うようにしました。
+    RRDtool 1.5でエラーになっていた不具合を修正しています。[Dave Doddさんが
+    報告][milter-manager-users-en]
+  * configureのオプション--with-bundled-ruby-glib2がBSDで正しく動作し
+    ない不具合を修正しました。
+  * milter-manager-log-analyzerでデータソース名に"-"ではなく、"_"を使
+    うようにしました。これはRRDtool 1.5の不具合を回避するためです。
+    [Dave Doddさんが報告][milter-manager-users-en]
+
+=== libmilter-compatible
+
+==== 修正
+
+  * smfi_settimout()でタイムアウト値を正しく設定できない不具合を修正し
+    ました。
+
+=== Ruby milter
+
+==== 修正
+
+  * --fallback-statusオプションの値が'temporary-failure'のときにエラー
+    が発生する問題を修正しました。[Nobuhiko MIYAHARAさんがパッチ提
+    供][GitHub #87]
+
+=== Document
+
+==== 改善
+
+  * リファレンスのIntroductionにロシア語に翻訳されたドキュメントへのリ
+    ンクを追加しました。[Alisa Bagriiさんが翻訳]
+  * Debian/Ubuntuで最近のclamav-milterでは設定変更が不要になっているの
+    でそれにあわせてドキュメントを更新しました。[西山和弘さんが報
+    告][GitHub #90]
+  * Debian/Ubuntuではソケットを作成するディレクトリーをインストール時
+    に作成するように手順を追加しました。[西山和弘さんが報告][GitHub #91]
+
+=== 感謝
+
+  * 佐々木洋平さん
+  * Nobuhiko MIYAHARAさん
+  * Alisa Bagriiさん
+  * 西山和弘さん
+
 == [release-2-0-7] 2.0.7: 2015-11-30
 
 2.0.6 のバグフィックスリリースです。
