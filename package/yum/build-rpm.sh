@@ -96,7 +96,7 @@ if test "$USE_EPEL" = "yes"; then
                 epel_url=http://ftp.iij.ad.jp/pub/linux/fedora/epel/6/i386/epel-release-6-8.noarch.rpm
                 ;;
             7.*)
-                epel_url=http://ftp.iij.ad.jp/pub/linux/fedora/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+                epel_url=http://ftp.iij.ad.jp/pub/linux/fedora/epel/7/x86_64/e/epel-release-7-6.noarch.rpm
                 ;;
         esac
         if test -n "$epel_url"; then
