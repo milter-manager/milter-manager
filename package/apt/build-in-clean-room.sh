@@ -66,19 +66,19 @@ build_by_pbuilder()
     OPTS+=( --distribution "$code_name" )
     OPTS+=( --architecture "$architecture" )
     OPTS+=( --basetgz "$basetgz" )
-    OPTS+=( --aptcache "$aptcache_dir")
+    OPTS+=( --aptcache "$aptcache_dir" )
     case $code_name in
         precise|trusty|vivid|wily)
             OPTS+=( --components 'main universe' )
             MIRROR=http://jp.archive.ubuntu.com/ubuntu
             OPTS+=( --mirror "$MIRROR" )
-            OPTS+=( --othermirror "deb $MIRROR $code_name-security main universe")
+            OPTS+=( --othermirror "deb $MIRROR $code_name-security main universe" )
             OPTS+=( --debootstrapopts --keyring=/usr/share/keyrings/ubuntu-archive-keyring.gpg )
             ;;
         jessie|stretch)
             MIRROR=http://ftp.jp.debian.org/debian
             OPTS+=( --mirror "$MIRROR" )
-            OPTS+=( --othermirror "deb http://security.debian.org $code_name/updates main")
+            OPTS+=( --othermirror "deb http://security.debian.org $code_name/updates main" )
             OPTS+=( --components main )
             ;;
         unstable|*)
