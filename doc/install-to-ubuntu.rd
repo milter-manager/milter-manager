@@ -16,64 +16,26 @@ You put the following content to /etc/apt/sources.list.d/milter-manager.list.
 You also enable the official backports repository to detect the latest
 viruses by the latest ClamAV.
 
-=== For Precise Pangolin
+=== PPA (Personal Package Archive)
 
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable precise universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable precise universe
+The milter-manager APT repository for Ubuntu uses PPA (Personal Package Archive) on Launchpad since milter-manager 2.0.8. You can install milter manager by APT from the PPA.
 
-If you don't enable the official backport repository, you need to
-create /etc/apt/sources.list.d/backports.list with the following
-content:
+Here are supported Ubuntu versions:
 
-  deb http://archive.ubuntu.com/ubuntu precise-backports main universe
+  * 12.04 LTS Precise Pangolin
+  * 14.04 LTS Trusty Tahr
+  * 15.10 Wily Werewolf
+  * 16.04 LTS Xenial Xerus
 
-=== For Trusty Tahr
+Add the (({ppa:milter-manager/ppa})) PPA to your system:
 
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable trusty universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable trusty universe
-
-If you don't enable the official backport repository, you need to
-create /etc/apt/sources.list.d/backports.list with the following
-content:
-
-  deb http://archive.ubuntu.com/ubuntu trusty-backports main universe
-
-=== For Vivid Vervet
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable vivid universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable vivid universe
-
-If you don't enable the official backport repository, you need to
-create /etc/apt/sources.list.d/backports.list with the following
-content:
-
-  deb http://archive.ubuntu.com/ubuntu vivid-backports main universe
-
-=== For Wily Werewolf
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable wily universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable wily universe
-
-If you don't enable the official backport repository, you need to
-create /etc/apt/sources.list.d/backports.list with the following
-content:
-
-  deb http://archive.ubuntu.com/ubuntu wily-backports main universe
-
-=== Install
-
-We register the key of the package repository:
-
-  % sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1BD22CD1
-
-We install milter manager package:
-
+  % sudo apt-get -y install software-properties-common
+  % sudo add-apt-repository -y ppa:milter-manager/ppa
   % sudo apt-get update
-  % sudo apt-get -V -y install milter-manager
+
+Then install:
+
+  % sudo apt-get -y install milter-manager
 
 We use Postfix as MTA:
 
