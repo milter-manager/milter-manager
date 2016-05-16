@@ -17,12 +17,6 @@ unstable, are distributed on the milter manager site.
 We put the following content to
 /etc/apt/sources.list.d/milter-manager.list:
 
-=== For wheezy
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable wheezy main
-  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable wheezy main
-
 === For jessie
 
 /etc/apt/sources.list.d/milter-manager.list:
