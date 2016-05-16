@@ -30,11 +30,11 @@ CentOSの場合: milter-manager-releaseパッケージを1.3.0に更新する
     イルをdebian/ディレクトリ以下に保持するようにしました。これはdebパッ
     ケージをクリーンビルドするのに必要です。[佐々木洋平さんがパッチを
     提供]
-  * Debian向けのapt-lineを更新しました。SourceForget.netの仕様変更に対
+  * Debian向けのapt-lineを更新しました。SourceForge.netの仕様変更に対
     応しています。/etc/apt/sources.list.d/milter-manager.listの更新が
     必要です。
   * CentOS向けのmilter-manager-releaseパッケージを更新しました。
-    SourceForget.netの仕様変更に対応しています。1.3.0より古いバージョ
+    SourceForge.netの仕様変更に対応しています。1.3.0より古いバージョ
     ンではyum updateでmilter-managerを更新できません。
 
 ==== 改善
