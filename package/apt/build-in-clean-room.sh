@@ -79,6 +79,7 @@ build_by_pbuilder()
             MIRROR=http://ftp.jp.debian.org/debian
             OPTS+=( --mirror "$MIRROR" )
             OPTS+=( --othermirror "deb http://security.debian.org $code_name/updates main")
+            OPTS+=( --components main )
             ;;
         unstable|*)
             MIRROR=http://ftp.jp.debian.org/debian
