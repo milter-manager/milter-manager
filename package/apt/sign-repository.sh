@@ -4,7 +4,7 @@
 script_base_dir=`dirname $0`
 GPG_UID=$1
 
-if [ $# != 1 ]; then
+if [ $# != 2 ]; then
     echo "Usage: $0 GPG_UID CODE_NAMES"
     echo " e.g.: $0 1BD22CD1 'lenny hardy lucid'"
     exit 1
