@@ -10,7 +10,7 @@ if [ $# != 2 ]; then
     exit 1
 fi
 
-CODE_NAMES=$1
+CODE_NAMES=$2
 
 run()
 {
