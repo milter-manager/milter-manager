@@ -23,7 +23,7 @@ run()
 
 for distribution in ${DISTRIBUTIONS}; do
     packages=()
-    for package in `find $script_base_dir/${distribution}/*/*/*/ -name \*.rpm -print`; do
+    for package in `find $script_base_dir/${distribution}/[67]/*/*/ -name \*.rpm -print`; do
         if ! rpm -Kv $package | grep -q -i signature; then
             packages=("${packages[@]}" "${package}")
         fi
