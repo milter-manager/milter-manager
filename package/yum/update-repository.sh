@@ -25,8 +25,6 @@ for distribution in ${DISTRIBUTIONS}; do
     for dir in $script_base_dir/${distribution}/*/*; do
         case $dir in
             *centos/5/*)
-                echo $dir
-                test -d $dir && run createrepo --checksum sha $dir
                 ;;
             *)
                 test -d $dir && run createrepo $dir
