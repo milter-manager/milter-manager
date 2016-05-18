@@ -26,12 +26,12 @@ for distribution in ${DISTRIBUTIONS}; do
     for package in `find $script_base_dir/${distribution}/*/*/*/ -name \*.rpm -print`; do
         case $package in
             *centos/5*)
-            ;;
+                ;;
             *)
-        if ! rpm -Kv $package | grep -q -i signature; then
-            packages=("${packages[@]}" "${package}")
-        fi
-        ;;
+                if ! rpm -Kv $package | grep -q -i signature; then
+                    packages=("${packages[@]}" "${package}")
+                fi
+                ;;
         esac
     done
     run rpm -D "_gpg_name ${GPG_UID}" \
