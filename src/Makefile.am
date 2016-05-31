@@ -4,12 +4,7 @@ AM_CPPFLAGS =					\
 
 AM_CFLAGS =				\
 	-DLOCALEDIR=\""$(localedir)"\"	\
-	$(MILTER_MANAGER_CFLAGS)	\
-	$(RUBY_CFLAGS)
-
-LIBS =						\
-	$(RUBY_LDFLAGS)				\
-	$(RUBY_LIBS)
+	$(MILTER_MANAGER_CFLAGS)
 
 CLEANFILES = *.gcno *.gcda
 

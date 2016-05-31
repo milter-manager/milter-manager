@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2016  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,15 +17,9 @@
  *
  */
 
-#include <ruby.h>
-#include <milter/manager.h>
+#include <stdlib.h>
 
-#ifndef RUBY_INIT_STACK
-#  define RUBY_INIT_STACK                       \
-    VALUE variable_in_this_stack_frame;         \
-    extern void Init_stack (VALUE *address);    \
-    Init_stack(&variable_in_this_stack_frame)
-#endif
+#include <milter/manager.h>
 
 int
 main (int argc, char **argv)
@@ -33,7 +27,8 @@ main (int argc, char **argv)
     gboolean success;
 
     {
-        RUBY_INIT_STACK;
+        gpointer stack_address;
+        milter_manager_set_stack_address(&stack_address);
         milter_manager_init(&argc, &argv);
         success = milter_manager_main();
         milter_manager_quit();

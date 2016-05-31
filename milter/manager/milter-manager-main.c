@@ -41,6 +41,8 @@
 
 #include "../manager.h"
 
+static gpointer *stack_address = NULL;
+
 static gboolean initialized = FALSE;
 static MilterManager *the_manager = NULL;
 static gchar *option_config_dir = NULL;
@@ -73,6 +75,18 @@ static gboolean set_sigusr1_action = TRUE;
         g_print("\n");                          \
     }                                           \
 } G_STMT_END
+
+gpointer *
+milter_manager_get_stack_address (void)
+{
+    return stack_address;
+}
+
+void
+milter_manager_set_stack_address (gpointer *stack_address_)
+{
+    stack_address = stack_address_;
+}
 
 static gboolean
 print_version (const gchar *option_name, const gchar *value,

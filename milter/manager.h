@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2016  Kouhei Sutou <kou@cozmixng.org>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -36,6 +36,9 @@
 #include <milter/manager/milter-manager.h>
 
 G_BEGIN_DECLS
+
+gpointer *milter_manager_get_stack_address (void);
+void milter_manager_set_stack_address (gpointer *stack_address);
 
 void milter_manager_init (int *argc, char ***argv);
 void milter_manager_quit (void);

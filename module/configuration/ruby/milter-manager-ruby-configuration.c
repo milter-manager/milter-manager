@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2016  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -339,6 +339,8 @@ init_ruby (void)
     int argc;
     static char args[sizeof "milter-manager\0-e;\0"];
     char *argv[3], *arg;
+
+    ruby_init_stack((VALUE *)milter_manager_get_stack_address());
 
     if (builtin_class && *builtin_class) {
         add_load_path();
