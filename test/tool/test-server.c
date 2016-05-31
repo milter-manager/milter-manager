@@ -567,6 +567,7 @@ setup_server (const gchar *spec, const gchar *option_string)
 {
     append_argument("--name");
     append_argument("milter-test-server");
+    append_argument("--color=yes");
     append_argument("-s");
     g_array_append_val(command, spec);
 
