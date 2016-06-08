@@ -142,7 +142,7 @@ mkdir -p rpm/SRPMS
 case $distribution_version in
   6.*)
     if ! rpm -q ruby2.2 > /dev/null 2>&1; then
-      wget http://cache.ruby-lang.org/pub/ruby/2.2/ruby-2.2.3.tar.gz -P rpm/SOURCES
+      wget http://cache.ruby-lang.org/pub/ruby/2.2/ruby-2.2.5.tar.gz -P rpm/SOURCES
       cp -a /tmp/ruby22.spec rpm/SPECS/ruby22.spec
       rpmbuild -ba rpm/SPECS/ruby22.spec
     fi
