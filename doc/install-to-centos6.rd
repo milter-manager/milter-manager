@@ -25,11 +25,11 @@ Register EPEL like the following.
 
 On 32bit environment:
 
-  % sudo rpm -Uhv http://ftp.jaist.ac.jp/pub/Linux/Fedora/epel/6/i386/epel-release-6-8.noarch.rpm
+  % sudo yum install -y http://ftp.jaist.ac.jp/pub/Linux/Fedora/epel/6/i386/epel-release-6-8.noarch.rpm
 
 On 64bit environment:
 
-  % sudo rpm -Uhv http://ftp.jaist.ac.jp/pub/Linux/Fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
+  % sudo yum install -y http://ftp.jaist.ac.jp/pub/Linux/Fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
 
 Now, you can install milters:
 
@@ -45,7 +45,7 @@ milter manager can be installed by yum.
 
 Register milter manager yum repository like the following:
 
-  % sudo rpm -Uvh http://sourceforge.net/projects/milter-manager/files/centos/milter-manager-release-1.3.0-1.noarch.rpm
+  % sudo yum install -y http://sourceforge.net/projects/milter-manager/files/centos/milter-manager-release-1.3.0-1.noarch.rpm
 
 Now, you can install milter manager:
 
