@@ -31,6 +31,8 @@ BuildRequires: glib2-devel
 BuildRequires: %{ruby_build_requires}
 %if %use_systemd
 BuildRequires: systemd-units
+BuildRequires: systemd
+%{systemd_requires}
 %endif
 Requires: %{name}-libs = %{version}-%{release}
 Requires: ruby-milter-client = %{version}-%{release}
@@ -282,7 +284,11 @@ if ! /usr/bin/id milter-manager &>/dev/null; then
 fi
 
 %post
+%if %use_systemd
+%systemd_post milter-manager.service
+%else
 /sbin/chkconfig --add milter-manager
+%endif
 /bin/mkdir -p /var/run/milter-manager
 /bin/chown -R milter-manager:milter-manager /var/run/milter-manager
 
@@ -307,16 +313,23 @@ fi
 %postun -n libmilter-server -p /sbin/ldconfig
 
 %preun
+%if %use_systemd
+%systemd_preun milter-manager.service
+%else
 if [ $1 -eq 0 ] ; then
     /sbin/service milter-manager stop > /dev/null 2>&1
     /sbin/chkconfig --del milter-manager
 fi
+%endif
 
 %postun
+%if %use_systemd
+%systemd_postun milter-manager.service
+%else
 if [ $1 -ge 1 ] ; then
     /sbin/service milter-manager condrestart > /dev/null 2>&1
 fi
-
+%endif
 if [ $1 -eq 0 ]; then
     /sbin/ldconfig
     /usr/sbin/userdel -r milter-manager || \
