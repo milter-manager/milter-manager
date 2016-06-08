@@ -1,8 +1,8 @@
-%define rubyver         2.2.3
+%define rubyver         2.2.5
 
 Name:           ruby2.2
 Version:        %{rubyver}
-Release:        3%{?dist}
+Release:        1%{?dist}
 License:        BSD
 URL:            http://www.ruby-lang.org/
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -56,6 +56,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}
 
 %changelog
+* Wed Jun 8 2016 Kenji Okimoto <okimoto@clear-code.com> - 2.2.5
+- Update ruby version to 2.2.5
+
 * Thu Nov 5 2015 Hiroshi Hatake <hatake@clear-code.com> - 2.2.3
 - Update ruby version to 2.2.3
 
