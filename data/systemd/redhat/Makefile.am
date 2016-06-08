@@ -1,6 +1,6 @@
 service = milter-manager.service
 
-if REDHAT_PLATFORM
+if REDHAT_SYSTEMD_PLATFORM
 initscript_DATA = $(service)
 initscriptdir = $(pkgdatadir)
 else
