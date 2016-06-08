@@ -359,9 +359,9 @@ fi
 %{_mandir}/ja/man1/milter-performance-check.*
 %{_mandir}/ja/man1/milter-report-statistics.*
 %{_mandir}/ja/man1/milter-manager.*
-%{_datadir}/milter-manager/milter-manager.service
 %if %use_systemd
 %{_unitdir}/milter-manager.service
+%{_datadir}/milter-manager/milter-manager.service
 %else
 %{_initrddir}/milter-manager
 %{_sysconfdir}/rc.d/init.d/
