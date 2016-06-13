@@ -4,7 +4,7 @@ set -e
 
 if [ "$1" = "purge" ]; then
         rm -f /var/run/milter-manager/*
-        dpkg-statoverride --remove /var/run/milter-manager
+        dpkg-statoverride --remove /var/run/milter-manager 2> /dev/null || :
 fi
 
 # Remove the file installed by 1.8.6 or earlier
