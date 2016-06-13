@@ -14,8 +14,6 @@ add_system_user() {
 fixperms() {
         dpkg-statoverride --list /var/run/milter-manager >/dev/null || \
                 dpkg-statoverride --update --add milter-manager milter-manager 0755 /var/run/milter-manager
-        dpkg-statoverride --list /var/spool/postfix/milter-manager >/dev/null || \
-                dpkg-statoverride --update --add milter-manager milter-manager 0755 /var/spool/postfix/milter-manager
 }
 
 remove_unused_file() {
