@@ -10,15 +10,19 @@ install information.
 
 == Install packages
 
-We provide milter manager deb packages for the following distributions.
-You put the following content to /etc/apt/sources.list.d/milter-manager.list.
+We provide milter manager deb packages for Ubuntu on
+((<Launchpad|https://launchpad.net>)).
 
 You also enable the official backports repository to detect the latest
 viruses by the latest ClamAV.
 
+  % sudo add-apt-repository -r "deb http://archive.ubuntu.com/ubuntu $(lsb_release -cs)-backports main universe"
+
 === PPA (Personal Package Archive)
 
-The milter-manager APT repository for Ubuntu uses PPA (Personal Package Archive) on Launchpad since milter-manager 2.0.8. You can install milter manager by APT from the PPA.
+The milter manager APT repository for Ubuntu uses PPA (Personal
+Package Archive) on ((<Launchpad|https://launchpad.net>)). You can
+install milter manager by APT from the PPA.
 
 Here are supported Ubuntu versions:
 
@@ -33,7 +37,9 @@ Add the (({ppa:milter-manager/ppa})) PPA to your system:
   % sudo add-apt-repository -y ppa:milter-manager/ppa
   % sudo apt-get update
 
-Then install:
+=== Install
+
+Install milter manager:
 
   % sudo apt-get -y install milter-manager
 
