@@ -11,11 +11,6 @@ add_system_user() {
         fi
 }
 
-fixperms() {
-        dpkg-statoverride --list /var/run/milter-manager >/dev/null || \
-                dpkg-statoverride --update --add milter-manager milter-manager 0755 /var/run/milter-manager
-}
-
 remove_unused_file() {
         if test -f /etc/cron.d/milter-manager; then
                 rm -f /etc/cron.d/milter-manager
@@ -25,7 +20,6 @@ remove_unused_file() {
 case "$1" in
         configure)
                 add_system_user
-                fixperms
                 remove_unused_file
                 ;;
         abort-upgrade|abort-deconfigure|abort-remove)
