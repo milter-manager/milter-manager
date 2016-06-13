@@ -1,0 +1,15 @@
+[Unit]
+Description=milter-manager server daemon
+After=syslog.target network-online.target
+
+[Service]
+Type=forking
+PIDFile=/run/milter-manager/milter-manager.pid
+EnvironmentFile=-/etc/default/milter-manager
+User=root
+Group=root
+ExecStart=/usr/sbin/milter-manager $OPTIONS --daemon --pid-file "/run/milter-manager/milter-manager.pid"
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target

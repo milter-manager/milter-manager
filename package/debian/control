@@ -5,6 +5,7 @@ Maintainer: Kouhei Sutou <kou@clear-code.com>
 Uploaders: Kenji Okimoto <okimoto@clear-code.com>, Youhei SASAKI <uwabami@gfd-dennou.org>
 Build-Depends:
 	debhelper (>= 9),
+	dh-systemd,
 	autotools-dev,
 	libglib2.0-dev,
 	libev-dev,
