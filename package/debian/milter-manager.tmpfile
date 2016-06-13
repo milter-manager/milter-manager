@@ -1,0 +1,2 @@
+# Directory for milter manager sockets and pid
+d /var/run/milter-manager 0775 milter-manager mail - -
