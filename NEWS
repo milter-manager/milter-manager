@@ -47,7 +47,7 @@ CentOS: Update milter-manager-release to 1.3.0
   * Add Ubuntu Xenial (16.04 LTS) support
   * Drop Ubuntu Wily (15.10) support
   * Drop Ubuntu Vivid (15.04) support
-  * Add systemd support for deb packagel (Except Ubuntu Precise(12.04))
+  * Add systemd support for deb packages (Except Ubuntu Precise(12.04))
   * Update Ruby to 2.2.5 on CentOS6
   * systemd support is stable on CentOS7
   * Arrange build script for CentOS
