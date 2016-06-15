@@ -215,7 +215,7 @@ apt ディレクトリに移動してからコマンドを実行すると、一�
 実行するコマンドは Makefile.am に書いてあるので head などで確認する。
 
   % make download
-  % make build PARALLEL=yes
+  % make build USE_TMPFS=yes
   % make update
   % make sign
   % make upload
@@ -223,6 +223,8 @@ apt ディレクトリに移動してからコマンドを実行すると、一�
 download を事前に実行しておかないと、アップロード済みの古いパッケージを
 全て削除してしまうので忘れずに実行する。
 make build に PARALLEL=yes を付けるとビルドが並列に走る。
+make build に USE_TMPFS=yes を付けると tmpfs を使用して高速にビルドする。
+PARALLEL=yes と USE_TMPFS=yes を両方付けると tmpfs が足りなくなる可能性がある。
 
 初めて実行するときは、chroot 環境を作るときにロケールなどを聞かれるので
 PARALLEL=yes をつけてはいけない。
