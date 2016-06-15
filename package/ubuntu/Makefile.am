@@ -33,7 +33,7 @@ upload-precise: source ensure-launchpad-configuration
 	sed -i \
 	  -e '/--enable-ruby-milter/i \\t\t--with-ruby=/usr/bin/ruby1.9.1 \\' \
 	  -e 's/ruby -rrbconfig/ruby1.9.1 -rrbconfig/g' \
-	  -e 's/ --with=sytemd//' \
+	  -e 's/ --with=systemd//' \
 	  precise/debian/rules
 	sed -i -e 's,^# ,,' precise/debian/ruby-milter-core.install
 	./upload.rb \
