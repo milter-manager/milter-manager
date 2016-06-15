@@ -425,8 +425,9 @@ module Milter
 
       def load_default
         platform = @configuration.package_platform
+        return if platform.nil?
         platform = "redhat" if platform.start_with?("centos")
-        load_if_exist("defaults/#{platform}.conf") if platform
+        load_if_exist("defaults/#{platform}.conf")
       end
 
       def define_milter(name, &block)
