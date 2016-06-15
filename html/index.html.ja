@@ -51,10 +51,7 @@
 	    <a href="reference/ja/install-to-ubuntu.html">Ubuntu</a>
 	  </li>
 	  <li>
-	    <a href="reference/ja/install-to-centos5.html">CentOS 5</a>
-	  </li>
-	  <li>
-	    <a href="reference/ja/install-to-centos.html">CentOS 6</a>
+	    <a href="reference/ja/install-to-centos.html">CentOS</a>
 	  </li>
 	  <li>
 	    <a href="reference/ja/install-to-freebsd.html">FreeBSD</a>
