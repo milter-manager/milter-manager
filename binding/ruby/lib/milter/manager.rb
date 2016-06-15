@@ -418,16 +418,22 @@ module Milter
 
       def load_if_exist(path)
         load(path)
+        true
       rescue NonexistentPath => e
         raise unless e.path == path
         # ignore. log this?
+        false
       end
 
       def load_default
         platform = @configuration.package_platform
         return if platform.nil?
-        platform = "redhat" if platform.start_with?("centos")
-        load_if_exist("defaults/#{platform}.conf")
+
+        return if load_if_exist("defaults/#{platform}.conf")
+
+        if platform.start_with?("centos")
+          load_if_exist("defaults/redhat.conf")
+        end
       end
 
       def define_milter(name, &block)
