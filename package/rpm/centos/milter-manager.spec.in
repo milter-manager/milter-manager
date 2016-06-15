@@ -523,7 +523,7 @@ fi
 
 
 %changelog
-* Sun May 29 2016 HAYASHI Kentaro <hayashi@clear-code.com> - 2.0.8-1
+* Wed Jun 15 2016 HAYASHI Kentaro <hayashi@clear-code.com> - 2.0.8-1
 - new upstream release.
 
 * Mon Nov 30 2015 Kenji Okimoto <okimoto@clear-code.com> - 2.0.7-1
