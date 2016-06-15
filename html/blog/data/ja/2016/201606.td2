@@ -5,6 +5,8 @@ Last-Modified: 1465957443
 Visible: true
 Format: RD
 
+= milter manager 2.0.8
+
 milter manager 2.0.8 をリリースしました。
 
 このリリースではパッケージのsystemd対応を改善しました。
