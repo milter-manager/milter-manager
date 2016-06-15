@@ -41,6 +41,7 @@ NOTE: apt で入れるパッケージと gem で入れるパッケージが被�
     --with-bundled-ruby-glib2 \
     --enable-gtk-doc --enable-coverage \
     --with-sf-user=sf_user_name \
+    --with-launchpad-uploader-pgp-key=KEY \
     --with-cutter-source-path=/path/to/cutter/source \
     --with-ruby=$(rbenv which ruby) \
     --with-rd2=$(rbenv which rd2) \
@@ -230,15 +231,24 @@ make sign したら sourceforge.net をエミュレートするウェブサー
 バをローカルに構築してパッケージの新規インストールと更新をテストする。
 
 ((<Debianへインストール|install-to-debian.rd.ja>)),
-((<Ubuntuへインストール|install-to-ubuntu.rd.ja>)),
 ((<Debianで更新|upgrade-on-debian.rd.ja>)),
-((<Ubuntuで更新|upgrade-on-ubuntu.rd.ja>))
 に書いてある手順でパッケージのインストールと更新ができることを確認する。
 
 make upload したらウェブブラウザで
 ((<URL:https://sourceforge.net/projects/milter-manager/files/debian/>)),
 ((<URL:https://sourceforge.net/projects/milter-manager/files/ubuntu/>))
 にアクセスしてパッケージがアップロードできていることを確認する。
+
+=== Ubuntu
+
+((<Launchpad|https://launchpad.net/~milter-manager>))でパッケージを配布する。
+
+  % cd package/ubuntu
+  % make upload
+
+((<Ubuntuへインストール|install-to-ubuntu.rd.ja>)),
+((<Ubuntuで更新|upgrade-on-ubuntu.rd.ja>))
+に書いてある手順でパッケージのインストールと更新ができることを確認する。
 
 === RedHat 系
 
