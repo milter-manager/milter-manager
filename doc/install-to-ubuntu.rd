@@ -11,7 +11,7 @@ install information.
 == Install packages
 
 We provide milter manager deb packages for Ubuntu on
-((<Launchpad|https://launchpad.net>)).
+((<Launchpad|URL:https://launchpad.net>)).
 
 You also enable the official backports repository to detect the latest
 viruses by the latest ClamAV.
@@ -21,7 +21,7 @@ viruses by the latest ClamAV.
 === PPA (Personal Package Archive)
 
 The milter manager APT repository for Ubuntu uses PPA (Personal
-Package Archive) on ((<Launchpad|https://launchpad.net>)). You can
+Package Archive) on ((<Launchpad|URL:https://launchpad.net>)). You can
 install milter manager by APT from the PPA.
 
 Here are supported Ubuntu versions:

@@ -11,7 +11,7 @@ Ubuntu Linuxに特化したmilter managerのインストール方法につい
 == パッケージのインストール
 
 Ubuntu向けのmilter managerのAPTリポジトリを
-((<Launchpad|https://launchpad.net>))上で提供しています。
+((<Launchpad|URL:https://launchpad.net>))上で提供しています。
 
 また、最新のClamAVを使ってウィルスチェックできるようにするため、バック
 ポートリポジトリも有効にします。
@@ -21,7 +21,7 @@ Ubuntu向けのmilter managerのAPTリポジトリを
 === PPA (Personal Package Archive)
 
 Ubuntu向けのmilter managerのAPTリポジトリは
-((<Launchpad|https://launchpad.net>))上にあります。
+((<Launchpad|URL:https://launchpad.net>))上にあります。
 
 サポートしているUbuntuのバージョン:
 

@@ -241,7 +241,7 @@ make upload したらウェブブラウザで
 
 === Ubuntu
 
-((<Launchpad|https://launchpad.net/~milter-manager>))でパッケージを配布する。
+((<Launchpad|URL:https://launchpad.net/~milter-manager>))でパッケージを配布する。
 
   % cd package/ubuntu
   % make upload
