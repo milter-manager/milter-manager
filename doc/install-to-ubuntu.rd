@@ -16,7 +16,7 @@ We provide milter manager deb packages for Ubuntu on
 You also enable the official backports repository to detect the latest
 viruses by the latest ClamAV.
 
-  % sudo add-apt-repository -r "deb http://archive.ubuntu.com/ubuntu $(lsb_release -cs)-backports main universe"
+  % sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -cs)-backports main universe"
 
 === PPA (Personal Package Archive)
 
