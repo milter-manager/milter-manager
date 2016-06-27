@@ -505,4 +505,13 @@ APTCACHEHARDLINK=no を pbuilderrc に追加しておくと以下のコマンド
 
   $ make build USE_TMPFS=yes
 
+=== Launchpad 上でのビルドに失敗したとき
+
+手動でバージョンを上げて再アップロードするしかない。
+upload.rb を修正してmake buildでやろうとすると、orig.tar.gzの内容が変わるらしくうまくいかない。
+一番後ろの数字を +1 する。
+
+  % dch --distribution precise --newversion 2.0.9-2~precise2 "Build for precise"
+  % debuild -S -sa -pgpg2 -kKEYID
+  % dput -f milter-manager-ppa ../milter-manager_2.0.9-2\~precise2_source.changes
 
