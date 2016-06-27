@@ -3,10 +3,12 @@ Description=milter-manager server daemon
 After=syslog.target network-online.target
 
 [Service]
+Type=forking
+PIDFile="/var/run/milter-manager/milter-manager.pid"
 EnvironmentFile=-/etc/sysconfig/milter-manager
-User=milter-manager
-Group=milter-manager
-ExecStart=/usr/sbin/milter-manager $OPTIONS --pid-file "/var/run/milter-manager/milter-manager.pid"
+User=root
+Group=root
+ExecStart=/usr/sbin/milter-manager --daemon --pid-file "/var/run/milter-manager/milter-manager.pid" --connection-spec ${CONNECTION_SPEC} --user-name ${USER} --group-name ${GROUP} --unix-socket-group ${SOCKET_GROUP} ${OPTION_ARGS}
 ExecReload=/bin/kill -HUP $MAINPID
 
 [Install]

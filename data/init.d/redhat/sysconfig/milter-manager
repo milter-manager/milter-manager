@@ -5,16 +5,16 @@
 # OPTION_ARGS="--verbose --no-daemon"
 
 # Effective user:
-# USER="milter-manager"
+USER="milter-manager"
 
 # Effective group:
-# GROUP="milter-manager"
+GROUP="milter-manager"
 
 # If CONNECTION_SPEC is "unix:", socket is chgrp-ed to $SOCKET_GROUP:
-# SOCKET_GROUP="milter-manager"
+SOCKET_GROUP="milter-manager"
 
 # Socket location to listen connection from MTA:
-# CONNECTION_SPEC=unix:/var/run/milter-manager/milter-manager.sock
+CONNECTION_SPEC=unix:/var/run/milter-manager/milter-manager.sock
 
 # PID file:
 # PIDFILE=/var/run/milter-manager/milter-manager.pid
