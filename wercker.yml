@@ -20,7 +20,7 @@ build:
         name: Install Ruby RPM
         code: |
           mkdir -p rpmbuild/SOURCES rpmbuild/SPECS
-          wget --quiet http://cache.ruby-lang.org/pub/ruby/2.2/ruby-2.2.3.tar.gz -P ~/rpmbuild/SOURCES
+          wget --quiet http://cache.ruby-lang.org/pub/ruby/2.2/ruby-2.2.5.tar.gz -P ~/rpmbuild/SOURCES
           rpmbuild -ba package/yum/vendor/ruby22.spec
           yum install -y ~/rpmbuild/RPMS/*/*.rpm
     - script:
