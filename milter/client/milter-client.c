@@ -2141,6 +2141,10 @@ client_run_workers (MilterClient *client, guint n_workers, GError **error)
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
     loop = milter_client_get_event_loop(client);
+    if (!loop) {
+        loop = milter_client_create_event_loop(client, FALSE);
+        milter_client_set_event_loop(client, loop);
+    }
     if (!priv->listen_channel) {
         GError *local_error = NULL;
         if (!milter_client_listen(client, &local_error)) {
