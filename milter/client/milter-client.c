@@ -2142,7 +2142,7 @@ client_run_workers (MilterClient *client, guint n_workers, GError **error)
 
     loop = milter_client_get_event_loop(client);
     if (!loop) {
-        loop = milter_client_create_event_loop(client, FALSE);
+        loop = milter_client_create_event_loop(client, TRUE);
         milter_client_set_event_loop(client, loop);
     }
     if (!priv->listen_channel) {
