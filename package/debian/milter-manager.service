@@ -8,6 +8,7 @@ PIDFile=/run/milter-manager/milter-manager.pid
 EnvironmentFile=-/etc/default/milter-manager
 User=root
 Group=root
+ExecStartPre=/usr/bin/install -d /var/run/milter-manager -o ${USER} -g ${GROUP}
 ExecStart=/usr/sbin/milter-manager --daemon --pid-file "/run/milter-manager/milter-manager.pid" --connection-spec ${CONNECTION_SPEC} --user-name ${USER} --group-name ${GROUP} --unix-socket-group ${SOCKET_GROUP} ${OPTION_ARGS}
 ExecReload=/bin/kill -HUP $MAINPID
 
