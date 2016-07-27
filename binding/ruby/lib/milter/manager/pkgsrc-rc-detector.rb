@@ -68,7 +68,7 @@ module Milter::Manager
 
     def milter_greylist_conf
       extract_parameter_from_flags(command_args, "-f") ||
-        File.join(package_prefix, "mail", "greylist.conf")
+        File.join(package_prefix, "greylist.conf")
     end
   end
 end
