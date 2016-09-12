@@ -79,6 +79,7 @@ G_BEGIN_DECLS
  **/
 #define MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT 300
 
+#define MILTER_SERVER_CONTEXT_DEFAULT_ALL_TIMEOUT     0xFFFFFFFF
 /**
  * MilterServerContextError:
  * @MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE: Indicates a
@@ -281,6 +282,9 @@ void                 milter_server_context_set_end_of_message_timeout
                                                        (MilterServerContext *context,
                                                         gdouble timeout);
 
+void                 milter_server_context_set_all_timeout
+                                                       (MilterServerContext *context,
+                                                        gdouble timeout);                                                       
 /**
  * milter_server_context_set_connection_spec:
  * @context: a %MilterServerContext.

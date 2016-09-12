@@ -3600,6 +3600,19 @@ milter_server_context_set_end_of_message_timeout (MilterServerContext *context,
     MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->end_of_message_timeout = timeout;
 }
 
+void
+milter_server_context_set_all_timeout (MilterServerContext *context,
+                                       gdouble timeout)
+{
+    if(timeout != 0xFFFFFFFF)
+    {
+        MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->connection_timeout = timeout;
+        MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->writing_timeout = timeout;
+        MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->reading_timeout = timeout;
+        MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->end_of_message_timeout = timeout;
+    }else{}
+}
+
 gboolean
 milter_server_context_get_skip_body (MilterServerContext *context)
 {
