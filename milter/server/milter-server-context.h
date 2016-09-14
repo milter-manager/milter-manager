@@ -79,7 +79,17 @@ G_BEGIN_DECLS
  **/
 #define MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT 300
 
-#define MILTER_SERVER_CONTEXT_DEFAULT_ALL_TIMEOUT     0xFFFFFFFF
+/**
+ * MILTER_SERVER_CONTEXT_DEFAULT_ALL_TIMEOUT:
+ *
+ * The default all timeout option value.
+ * if this value is a negative number, "all-timeout" option has been invalided.
+ * if this value is a natural number(include 0), "all-timeout" option has been valid 
+ * and this value is timeout by seconds.  
+**/
+#define MILTER_SERVER_CONTEXT_DEFAULT_ALL_TIMEOUT             -1
+
+
 /**
  * MilterServerContextError:
  * @MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE: Indicates a
@@ -281,7 +291,21 @@ void                 milter_server_context_set_reading_timeout
 void                 milter_server_context_set_end_of_message_timeout
                                                        (MilterServerContext *context,
                                                         gdouble timeout);
-
+/**
+ * milter_server_context_set_all_timeout:
+ * @context: a %MilterServerContext.
+ * @timeout: the timeout by seconds.
+ *           (default is
+ *           %MILTER_SERVER_CONTEXT_DEFAULT_ALL_TIMEOUT)
+ *
+ * Sets the timeout by seconds on connection timeout, writing timeout, reading timeout and end-of-timeout.
+ *
+ * #MilterServerContext::timeout signal is emitted for four reasons.
+ * 1. Doesn't receive response for end-of-message from client socket in @timeout seconds.
+ * 2. Doesn't connects to client in @timeout seconds.
+ * 3. Doesn't write to client socket in @timeout seconds.
+ * 4. Doesn't receive response from client socket in @timeout seconds.
+ */
 void                 milter_server_context_set_all_timeout
                                                        (MilterServerContext *context,
                                                         gdouble timeout);                                                       

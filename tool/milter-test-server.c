@@ -1606,7 +1606,8 @@ static const GOptionEntry option_entries[] =
     {"end-of-message-timeout", 0, 0, G_OPTION_ARG_DOUBLE, &writing_timeout,
      N_("Timeout after SECONDS seconds on end-of-message command."), "SECONDS"},
     {"all-timeout", 0, 0, G_OPTION_ARG_DOUBLE, &all_timeout,
-     N_("Timeout after SECONDS seconds on all(connection, reading, writing, end-of-message) timepout command."), "SECONDS"},     
+     N_("Set all timeout (connection-timeout, reading-timeout, writing-timeout, end-of-message-timeout)" 
+         "value on SECONDS seconds."), "SECONDS"},     
     {"threads", 't', 0, G_OPTION_ARG_INT, &n_threads,
      N_("Create N threads."), "N"},
     {"verbose", 'v', 0, G_OPTION_ARG_NONE, &verbose,
