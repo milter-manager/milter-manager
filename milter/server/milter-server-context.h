@@ -84,8 +84,8 @@ G_BEGIN_DECLS
  *
  * The default all timeout option value.
  * if this value is a negative number, "all-timeout" option has been invalided.
- * if this value is a natural number(include 0), "all-timeout" option has been valid 
- * and this value is timeout by seconds.  
+ * if this value is a natural number(include 0), "all-timeout" option has been valid
+ * and this value is timeout by seconds.
 **/
 #define MILTER_SERVER_CONTEXT_DEFAULT_ALL_TIMEOUT             -1
 
@@ -308,7 +308,7 @@ void                 milter_server_context_set_end_of_message_timeout
  */
 void                 milter_server_context_set_all_timeout
                                                        (MilterServerContext *context,
-                                                        gdouble timeout);                                                       
+                                                        gdouble timeout);
 /**
  * milter_server_context_set_connection_spec:
  * @context: a %MilterServerContext.
