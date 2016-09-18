@@ -3604,11 +3604,15 @@ void
 milter_server_context_set_all_timeout (MilterServerContext *context,
                                        gdouble timeout)
 {
+    MilterServerContextPrivate *priv;
+
+    priv = MILTER_SERVER_CONTEXT_GET_PRIVATE(context);
+
     if (timeout > MILTER_SERVER_CONTEXT_DEFAULT_ALL_TIMEOUT ) {
-        MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->connection_timeout = timeout;
-        MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->writing_timeout = timeout;
-        MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->reading_timeout = timeout;
-        MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->end_of_message_timeout = timeout;
+        priv->connection_timeout = timeout;
+        priv->writing_timeout = timeout;
+        priv->reading_timeout = timeout;
+        priv->end_of_message_timeout = timeout;
     }
 }
 
