@@ -82,10 +82,7 @@ G_BEGIN_DECLS
 /**
  * MILTER_SERVER_CONTEXT_DEFAULT_ALL_TIMEOUT:
  *
- * The default all timeout option value.
- * if this value is a negative number, "all-timeout" option has been invalided.
- * if this value is a natural number(include 0), "all-timeout" option has been valid
- * and this value is timeout by seconds.
+ * The default value for all timeout option.
 **/
 #define MILTER_SERVER_CONTEXT_DEFAULT_ALL_TIMEOUT             -1
 
