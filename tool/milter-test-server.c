@@ -43,6 +43,7 @@
 #include <milter/core/milter-glib-compatible.h>
 
 #define DEFAULT_NEGOTIATE_VERSION 6
+#define MILTER_TEST_SERVER_ALL_TIMEOUT_UNSPECIFIED -1.0
 
 static gboolean verbose = FALSE;
 static gboolean output_message = FALSE;
@@ -73,7 +74,7 @@ static gdouble connection_timeout = MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIM
 static gdouble writing_timeout = MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT;
 static gdouble reading_timeout = MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT;
 static gdouble end_of_message_timeout = MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT;
-static gdouble all_timeout = MILTER_SERVER_CONTEXT_DEFAULT_ALL_TIMEOUT;
+static gdouble all_timeout = MILTER_TEST_SERVER_ALL_TIMEOUT_UNSPECIFIED;
 
 #define MILTER_TEST_SERVER_ERROR                                \
     (g_quark_from_static_string("milter-test-server-error-quark"))

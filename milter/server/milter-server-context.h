@@ -80,14 +80,6 @@ G_BEGIN_DECLS
 #define MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT 300
 
 /**
- * MILTER_SERVER_CONTEXT_DEFAULT_ALL_TIMEOUT:
- *
- * The default value for all timeout option.
-**/
-#define MILTER_SERVER_CONTEXT_DEFAULT_ALL_TIMEOUT             -1
-
-
-/**
  * MilterServerContextError:
  * @MILTER_SERVER_CONTEXT_ERROR_CONNECTION_FAILURE: Indicates a
  * connection failure.
