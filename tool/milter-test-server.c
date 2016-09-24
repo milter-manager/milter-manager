@@ -2257,7 +2257,7 @@ setup_context (MilterServerContext *context, ProcessData *process_data)
     milter_server_context_set_writing_timeout(context, writing_timeout);
     milter_server_context_set_end_of_message_timeout(context,
                                                      end_of_message_timeout);
-    milter_server_context_set_all_timeout(context, all_timeout);
+    milter_server_context_set_all_timeouts(context, all_timeout);
 
     g_signal_connect(context, "ready", G_CALLBACK(cb_ready), process_data);
     g_signal_connect(context, "error", G_CALLBACK(cb_connection_error), process_data);

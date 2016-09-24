@@ -289,7 +289,7 @@ void                 milter_server_context_set_end_of_message_timeout
                                                        (MilterServerContext *context,
                                                         gdouble timeout);
 /**
- * milter_server_context_set_all_timeout:
+ * milter_server_context_set_all_timeouts:
  * @context: a %MilterServerContext.
  * @timeout: the timeout in seconds.
  *           (default is
@@ -303,7 +303,7 @@ void                 milter_server_context_set_end_of_message_timeout
  *  3.milter_server_context_set_reading_timeout
  *  4.milter_server_context_set_end_of_message_timeout
  */
-void                 milter_server_context_set_all_timeout
+void                 milter_server_context_set_all_timeouts
                                                        (MilterServerContext *context,
                                                         gdouble timeout);
 /**
