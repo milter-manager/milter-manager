@@ -3602,7 +3602,7 @@ milter_server_context_set_end_of_message_timeout (MilterServerContext *context,
 
 void
 milter_server_context_set_all_timeouts (MilterServerContext *context,
-                                       gdouble timeout)
+                                        gdouble timeout)
 {
     MilterServerContextPrivate *priv;
 
