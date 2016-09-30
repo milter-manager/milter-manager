@@ -43,7 +43,7 @@
 #include <milter/core/milter-glib-compatible.h>
 
 #define DEFAULT_NEGOTIATE_VERSION 6
-#define MILTER_TEST_SERVER_ALL_TIMEOUT_UNSPECIFIED -1.0
+#define MILTER_TEST_SERVER_ALL_TIMEOUTS_UNSPECIFIED -1.0
 
 static gboolean verbose = FALSE;
 static gboolean output_message = FALSE;
@@ -74,7 +74,7 @@ static gdouble connection_timeout = MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIM
 static gdouble writing_timeout = MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT;
 static gdouble reading_timeout = MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT;
 static gdouble end_of_message_timeout = MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT;
-static gdouble all_timeout = MILTER_TEST_SERVER_ALL_TIMEOUT_UNSPECIFIED;
+static gdouble all_timeouts = MILTER_TEST_SERVER_ALL_TIMEOUTS_UNSPECIFIED;
 
 #define MILTER_TEST_SERVER_ERROR                                \
     (g_quark_from_static_string("milter-test-server-error-quark"))
@@ -1606,8 +1606,8 @@ static const GOptionEntry option_entries[] =
      N_("Timeout after SECONDS seconds on writing a command."), "SECONDS"},
     {"end-of-message-timeout", 0, 0, G_OPTION_ARG_DOUBLE, &writing_timeout,
      N_("Timeout after SECONDS seconds on end-of-message command."), "SECONDS"},
-    {"all-timeout", 0, 0, G_OPTION_ARG_DOUBLE, &all_timeout,
-     N_("Set all timeout (connection-timeout, reading-timeout, writing-timeout, end-of-message-timeout"),
+    {"all-timeouts", 0, 0, G_OPTION_ARG_DOUBLE, &all_timeouts,
+     N_("Set all timeouts (connection-timeout, reading-timeout, writing-timeout, end-of-message-timeout"),
      "SECONDS"},
     {"threads", 't', 0, G_OPTION_ARG_INT, &n_threads,
      N_("Create N threads."), "N"},
@@ -2259,8 +2259,8 @@ setup_context (MilterServerContext *context, ProcessData *process_data)
     milter_server_context_set_end_of_message_timeout(context,
                                                      end_of_message_timeout);
 
-    if (all_timeout >= 0.0) {
-        milter_server_context_set_all_timeouts(context, all_timeout);
+    if (all_timeouts >= 0.0) {
+        milter_server_context_set_all_timeouts(context, all_timeouts);
     }
 
 

@@ -290,7 +290,7 @@ automated unit tests.
 
     The default is 300 seconds. (5 minutes)
 
-: --all-timeout=SECONDS
+: --all-timeouts=SECONDS
 
     Specifies timeout to --connection-timeout, --reading-timeout, --writing-timeout
     and --end-of-message-timeout at once.
