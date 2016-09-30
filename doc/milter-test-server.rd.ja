@@ -291,6 +291,12 @@ milter-test-serverはヘッダや本文が変更された場合は、変更さ�
 
     既定値は300秒（5分）です。
 
+: --all-timeout=SECONDS
+
+    --connection-timeout, --reading-timeout, --writing-timeout,
+    --end-of-message-timeout の全てのタイムアウトの値を一括で設定しま
+    す。
+
 : --threads=N
 
    Nスレッドで同時にリクエストを送ります。
