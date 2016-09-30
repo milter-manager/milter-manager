@@ -54,28 +54,28 @@ G_BEGIN_DECLS
 /**
  * MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT:
  *
- * The default connection timeout by seconds.
+ * The default connection timeout in seconds.
  **/
 #define MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT     300
 
 /**
  * MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT:
  *
- * The default writing timeout by seconds.
+ * The default writing timeout in seconds.
  **/
 #define MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT         10
 
 /**
  * MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT:
  *
- * The default reading timeout by seconds.
+ * The default reading timeout in seconds.
  **/
 #define MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT         10
 
 /**
  * MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT:
  *
- * The default end-of-message response timeout by seconds.
+ * The default end-of-message response timeout in seconds.
  **/
 #define MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT 300
 
@@ -226,10 +226,10 @@ MilterServerContext *milter_server_context_new         (void);
 /**
  * milter_server_context_set_connection_timeout:
  * @context: a %MilterServerContext.
- * @timeout: the connection timeout by seconds. (default is
+ * @timeout: the connection timeout in seconds. (default is
  *           %MILTER_SERVER_CONTEXT_DEFAULT_CONNECTION_TIMEOUT)
  *
- * Sets the timeout by seconds on connection. If @context
+ * Sets the timeout in seconds on connection. If @context
  * doesn't connects to client in @timeout seconds,
  * #MilterServerContext::timeout signal is emitted.
  */
@@ -240,10 +240,10 @@ void                 milter_server_context_set_connection_timeout
 /**
  * milter_server_context_set_writing_timeout:
  * @context: a %MilterServerContext.
- * @timeout: the writing timeout by seconds. (default is
+ * @timeout: the writing timeout in seconds. (default is
  *           %MILTER_SERVER_CONTEXT_DEFAULT_WRITING_TIMEOUT)
  *
- * Sets the timeout by seconds on writing. If @context
+ * Sets the timeout in seconds on writing. If @context
  * doesn't write to client socket in @timeout seconds,
  * #MilterServerContext::timeout signal is emitted.
  */
@@ -254,10 +254,10 @@ void                 milter_server_context_set_writing_timeout
 /**
  * milter_server_context_set_reading_timeout:
  * @context: a %MilterServerContext.
- * @timeout: the reading timeout by seconds. (default is
+ * @timeout: the reading timeout in seconds. (default is
  *           %MILTER_SERVER_CONTEXT_DEFAULT_READING_TIMEOUT)
  *
- * Sets the timeout by seconds on reading. If @context
+ * Sets the timeout in seconds on reading. If @context
  * doesn't receive response from client socket in @timeout
  * seconds, #MilterServerContext::timeout signal is emitted.
  */
@@ -268,11 +268,11 @@ void                 milter_server_context_set_reading_timeout
 /**
  * milter_server_context_set_end_of_message_timeout:
  * @context: a %MilterServerContext.
- * @timeout: the timeout by seconds on end-of-message.
+ * @timeout: the timeout in seconds on end-of-message.
  *           (default is
  *           %MILTER_SERVER_CONTEXT_DEFAULT_END_OF_MESSAGE_TIMEOUT)
  *
- * Sets the timeout by seconds on end-of-message. If
+ * Sets the timeout in seconds on end-of-message. If
  * @context doesn't receive response for end-of-message from
  * client socket in @timeout seconds,
  * #MilterServerContext::timeout signal is emitted.
