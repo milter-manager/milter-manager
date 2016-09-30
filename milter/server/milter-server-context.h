@@ -285,8 +285,8 @@ void                 milter_server_context_set_end_of_message_timeout
  * @context: a %MilterServerContext.
  * @timeout: the timeout in seconds.
  *
- * Sets the timeout in seconds on connection timeout, writing timeout,
- * reading timeout and end-of-timeout all at once.
+ * Sets the timeout in seconds on connection, writing, reading and
+ * end-of-message at once.
  *
  * See the comments of the fllowing functions about each timeout:
  *
