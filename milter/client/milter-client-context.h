@@ -41,38 +41,122 @@ G_BEGIN_DECLS
  * %MilterClientContext. %MilterClientContext has signals
  * that correspond to milter protocol events:
  *
- * <rd>
- * : ((<xxfi_negotiate|URL:https://www.milter.org/developers/api/xxfi_negotiate>))
- *    #MilterClientContext::negotiate
- * : ((<xxfi_connect|URL:https://www.milter.org/developers/api/xxfi_connect>))
- *    #MilterClientContext::connect
- * : ((<xxfi_helo|URL:https://www.milter.org/developers/api/xxfi_helo>))
- *    #MilterClientContext::helo
- * : ((<xxfi_envfrom|URL:https://www.milter.org/developers/api/xxfi_envfrom>))
- *    #MilterClientContext::envelope-from
- * : ((<xxfi_envrcpt|URL:https://www.milter.org/developers/api/xxfi_envrcpt>))
- *    #MilterClientContext::envelope-recipient
- * : ((<xxfi_data|URL:https://www.milter.org/developers/api/xxfi_data>))
- *    #MilterClientContext::data
- * : ((<xxfi_unknown|URL:https://www.milter.org/developers/api/xxfi_unknown>))
- *    #MilterClientContext::unknown
- * : ((<xxfi_header|URL:https://www.milter.org/developers/api/xxfi_header>))
- *    #MilterClientContext::header
- * : ((<xxfi_eoh|URL:https://www.milter.org/developers/api/xxfi_eoh>))
- *    #MilterClientContext::end-of-header
- * : ((<xxfi_body|URL:https://www.milter.org/developers/api/xxfi_body>))
- *    #MilterClientContext::body
- * : ((<xxfi_eom|URL:https://www.milter.org/developers/api/xxfi_eom>))
- *    #MilterClientContext::end-of-message
- * : ((<xxfi_abort|URL:https://www.milter.org/developers/api/xxfi_abort>))
- *    #MilterClientContext::abort.
+ * <variablelist>
+ *   <varlistentry>
+ *     <term>
+ *       <ulink url="https://www.milter.org/developers/api/xxfi_negotiate">
+ *         xxfi_negotiate
+ *       </ulink>
+ *     </term>
+ *     <listitem><para>#MilterClientContext::negotiate</para></listitem>
+ *   </varlistentry>
+ *   <varlistentry>
+ *     <term>
+ *       <ulink url="https://www.milter.org/developers/api/xxfi_connect">
+ *         xxfi_connect
+ *       </ulink>
+ *     </term>
+ *     <listitem><para>#MilterClientContext::connect</para></listitem>
+ *   </varlistentry>
+ *   <varlistentry>
+ *     <term>
+ *       <ulink url="https://www.milter.org/developers/api/xxfi_helo">
+ *         xxfi_helo
+ *       </ulink>
+ *     </term>
+ *     <listitem><para>#MilterClientContext::helo</para></listitem>
+ *   </varlistentry>
+ *   <varlistentry>
+ *     <term>
+ *       <ulink url="https://www.milter.org/developers/api/xxfi_envfrom">
+ *         xxfi_envfrom
+ *       </ulink>
+ *     </term>
+ *     <listitem><para>#MilterClientContext::envelope-from</para></listitem>
+ *   </varlistentry>
+ *   <varlistentry>
+ *     <term>
+ *       <ulink url="https://www.milter.org/developers/api/xxfi_envrcpt">
+ *         xxfi_envrcpt
+ *       </ulink>
+ *     </term>
+ *     <listitem><para>#MilterClientContext::envelope-recipient</para></listitem>
+ *   </varlistentry>
+ *   <varlistentry>
+ *     <term>
+ *       <ulink url="https://www.milter.org/developers/api/xxfi_data">
+ *         xxfi_data
+ *       </ulink>
+ *     </term>
+ *     <listitem><para>#MilterClientContext::data</para></listitem>
+ *   </varlistentry>
+ *   <varlistentry>
+ *     <term>
+ *       <ulink url="https://www.milter.org/developers/api/xxfi_unknown">
+ *         xxfi_unknown
+ *       </ulink>
+ *     </term>
+ *     <listitem><para>#MilterClientContext::unknown</para></listitem>
+ *   </varlistentry>
+ *   <varlistentry>
+ *     <term>
+ *       <ulink url="https://www.milter.org/developers/api/xxfi_header">
+ *         xxfi_header
+ *       </ulink>
+ *     </term>
+ *     <listitem><para>#MilterClientContext::header</para></listitem>
+ *   </varlistentry>
+ *   <varlistentry>
+ *     <term>
+ *       <ulink url="https://www.milter.org/developers/api/xxfi_eoh">
+ *         xxfi_eoh
+ *       </ulink>
+ *     </term>
+ *     <listitem><para>#MilterClientContext::end-of-header</para></listitem>
+ *   </varlistentry>
+ *   <varlistentry>
+ *     <term>
+ *       <ulink url="https://www.milter.org/developers/api/xxfi_body">
+ *         xxfi_body
+ *       </ulink>
+ *     </term>
+ *     <listitem><para>#MilterClientContext::body</para></listitem>
+ *   </varlistentry>
+ *   <varlistentry>
+ *     <term>
+ *       <ulink url="https://www.milter.org/developers/api/xxfi_eom">
+ *         xxfi_eom
+ *       </ulink>
+ *     </term>
+ *     <listitem><para>#MilterClientContext::end-of-message</para></listitem>
+ *   </varlistentry>
+ *   <varlistentry>
+ *     <term>
+ *       <ulink url="https://www.milter.org/developers/api/xxfi_abort">
+ *         xxfi_abort
+ *       </ulink>
+ *     </term>
+ *     <listitem><para>#MilterClientContext::abort</para></listitem>
+ *   </varlistentry>
+ * </variablelist>
  *
- *    NOTE: You will need to check whether the current state is
- *    message processing or not. You can use
- *    %MILTER_CLIENT_CONTEXT_STATE_IN_MESSAGE_PROCESSING for it.
- * : ((<xxfi_close|URL:https://www.milter.org/developers/api/xxfi_close>))
- *    #MilterFinishedEmittable::finished
- * </rd>
+ * <note>
+ *   <para>
+ *     NOTE: You will need to check whether the current state is
+ *     message processing or not. You can use
+ *     %MILTER_CLIENT_CONTEXT_STATE_IN_MESSAGE_PROCESSING for it.
+ *   </para>
+ *   <variablelist>
+ *     <varlistentry>
+ *       <term>
+ *         <ulink url="https://www.milter.org/developers/api/xxfi_close">
+ *           xxfi_close
+ *         </ulink>
+ *       </term>
+ *       <listitem><para>#MilterFinishedEmittable::finished</para></listitem>
+ *     </varlistentry>
+ *   </variablelist>
+ * </note>
  *
  * Here is an example to connect signals. It connects all
  * signals and each connected signal handler prints its
