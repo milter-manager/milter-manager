@@ -290,10 +290,12 @@ void                 milter_server_context_set_end_of_message_timeout
  *
  * See the comments of the fllowing functions about each timeout:
  *
- *  1.milter_server_context_set_connection_timeout
- *  2.milter_server_context_set_writing_timeout
- *  3.milter_server_context_set_reading_timeout
- *  4.milter_server_context_set_end_of_message_timeout
+ *  1. milter_server_context_set_connection_timeout()
+ *  2. milter_server_context_set_writing_timeout()
+ *  3. milter_server_context_set_reading_timeout()
+ *  4. milter_server_context_set_end_of_message_timeout()
+ *
+ * Since: 2.1.0
  */
 void                 milter_server_context_set_all_timeouts
                                                        (MilterServerContext *context,
