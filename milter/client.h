@@ -40,8 +40,7 @@ G_BEGIN_DECLS
  * accepts n-connections from MTA and each connection is
  * processed by %MilterClientContext.
  *
- * <rd>
- * == Usage overview
+ * ## Usage overview
  *
  * You need to set connection spec and connect
  * #MilterClient::connection-established signal before
@@ -110,7 +109,7 @@ G_BEGIN_DECLS
  * }
  * ]|
  *
- * == Processing model
+ * ## Processing model
  *
  * The libmilter provided by Sendmail uses a thread for each
  * connection model. But the milter-client library doesn't
@@ -130,7 +129,7 @@ G_BEGIN_DECLS
  * model. Because the libmilter's model creates a thread but
  * the milter-client library just allocate
  * %MilterClientContext. But in many case, this difference
- * is not bottleneck. :-|</rd>
+ * is not bottleneck. :-|
  */
 
 /**
