@@ -58,7 +58,6 @@
     <xi:include href="maintenance-policy.xml"/>
   </part>
 
-  <!--
   <part id="reference">
     <title>Reference</title>
     <chapter id="libmilter">
@@ -81,7 +80,6 @@
       <xi:include href="xml/milter-server-context.xml"/>
     </chapter>
   </part>
-  -->
 
   <part id="ruby">
     <title>Ruby support</title>
