@@ -602,8 +602,6 @@ add_timeout_full (MilterEventLoop *loop,
     MilterLibevEventLoopPrivate *priv;
 
     priv = MILTER_LIBEV_EVENT_LOOP_GET_PRIVATE(loop);
-    if (interval_in_seconds < 0)
-        return 0;
 
     watcher_priv = g_new0(TimerWatcherPrivate, 1);
     watcher_priv->function = function;
