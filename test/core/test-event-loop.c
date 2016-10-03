@@ -9,12 +9,10 @@
 
 #include <gcutter.h>
 
-void test_glib_add_timeout (void);
-void test_glib_add_timeout_zero (void);
-void test_glib_add_timeout_negative_value (void);
-void test_libev_add_timeout (void);
-void test_libev_add_timeout_zero (void);
-void test_libev_add_timeout_negative_value (void);
+void data_add_timeout (void);
+void test_add_timeout (gconstpointer data);
+void data_add_timeout_negative (void);
+void test_add_timeout_negative (gconstpointer data);
 
 static gboolean timeout_waiting;
 static guint n_timeouts;
@@ -36,12 +34,36 @@ cut_setup (void)
     n_timeouts = 0;
 }
 
-void
-test_glib_add_timeout (void)
+void data_add_timeout (void)
 {
-    MilterEventLoop *loop = milter_glib_event_loop_new(NULL);
+#define ADD_DATUM(label, event_loop_type, interval) \
+    gcut_add_datum(label, \
+                   "event-loop-type", G_TYPE_GTYPE, MILTER_TYPE_ ## event_loop_type ##  _EVENT_LOOP, \
+                   "interval", G_TYPE_INT, interval, \
+                   NULL)
 
-    guint id = milter_event_loop_add_timeout(loop, 1, cb_timeout, &timeout_waiting);
+    ADD_DATUM("glib 0", GLIB, 0);
+    ADD_DATUM("glib 1", GLIB, 1);
+    ADD_DATUM("libev 0", LIBEV, 0);
+    ADD_DATUM("libev 1", LIBEV, 1);
+
+
+#undef ADD_DATUM
+}
+
+void test_add_timeout (gconstpointer data)
+{
+    MilterEventLoop *loop = NULL;
+    GType event_loop_type = gcut_data_get_type(data, "event-loop-type");
+    gint interval = gcut_data_get_int(data, "interval");
+
+    if (event_loop_type == MILTER_TYPE_GLIB_EVENT_LOOP) {
+        loop = milter_glib_event_loop_new(NULL);
+    } else if (event_loop_type == MILTER_TYPE_LIBEV_EVENT_LOOP) {
+        loop = milter_libev_event_loop_new();
+    }
+
+    guint id = milter_event_loop_add_timeout(loop, interval, cb_timeout, &timeout_waiting);
     while (timeout_waiting) {
         milter_event_loop_iterate(loop, TRUE);
     }
@@ -50,59 +72,33 @@ test_glib_add_timeout (void)
 }
 
 void
-test_glib_add_timeout_zero (void)
+data_add_timeout_negative (void)
 {
-    MilterEventLoop *loop = milter_glib_event_loop_new(NULL);
+#define ADD_DATUM(label, event_loop_type, interval) \
+    gcut_add_datum(label, \
+                   "event-loop-type", G_TYPE_GTYPE, MILTER_TYPE_ ## event_loop_type ##  _EVENT_LOOP, \
+                   "interval", G_TYPE_INT, interval, \
+                   NULL)
 
-    guint id = milter_event_loop_add_timeout(loop, 0, cb_timeout, &timeout_waiting);
-    while (timeout_waiting) {
-        milter_event_loop_iterate(loop, TRUE);
+    ADD_DATUM("glib -1", GLIB, -1);
+    ADD_DATUM("libev -1", LIBEV, -1);
+
+
+#undef ADD_DATUM
+}
+
+void test_add_timeout_negative (gconstpointer data)
+{
+    MilterEventLoop *loop = NULL;
+    GType event_loop_type = gcut_data_get_type(data, "event-loop-type");
+    gint interval = gcut_data_get_int(data, "interval");
+
+    if (event_loop_type == MILTER_TYPE_GLIB_EVENT_LOOP) {
+        loop = milter_glib_event_loop_new(NULL);
+    } else if (event_loop_type == MILTER_TYPE_LIBEV_EVENT_LOOP) {
+        loop = milter_libev_event_loop_new();
     }
-    milter_event_loop_remove(loop, id);
-    cut_assert_false(timeout_waiting, cut_message("timeout"));
-}
 
-void
-test_glib_add_timeout_negative_value (void)
-{
-    MilterEventLoop *loop = milter_glib_event_loop_new(NULL);
-
-    guint id = milter_event_loop_add_timeout(loop, -1, cb_timeout, &timeout_waiting);
-    cut_assert_equal_uint(0, id);
-}
-
-
-void
-test_libev_add_timeout (void)
-{
-    MilterEventLoop *loop = milter_libev_event_loop_new();
-
-    guint id = milter_event_loop_add_timeout(loop, 1, cb_timeout, &timeout_waiting);
-    while (timeout_waiting) {
-        milter_event_loop_iterate(loop, TRUE);
-    }
-    milter_event_loop_remove(loop, id);
-    cut_assert_false(timeout_waiting, cut_message("timeout"));
-}
-
-void
-test_libev_add_timeout_zero (void)
-{
-    MilterEventLoop *loop = milter_libev_event_loop_new();
-
-    guint id = milter_event_loop_add_timeout(loop, 0, cb_timeout, &timeout_waiting);
-    while (timeout_waiting) {
-        milter_event_loop_iterate(loop, TRUE);
-    }
-    milter_event_loop_remove(loop, id);
-    cut_assert_false(timeout_waiting, cut_message("timeout"));
-}
-
-void
-test_libev_add_timeout_negative_value (void)
-{
-    MilterEventLoop *loop = milter_libev_event_loop_new();
-
-    guint id = milter_event_loop_add_timeout(loop, -1, cb_timeout, &timeout_waiting);
+    guint id = milter_event_loop_add_timeout(loop, interval, cb_timeout, &timeout_waiting);
     cut_assert_equal_uint(0, id);
 }
