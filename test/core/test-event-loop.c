@@ -69,6 +69,7 @@ void test_add_timeout (gconstpointer data)
     }
     milter_event_loop_remove(loop, id);
     cut_assert_false(timeout_waiting, cut_message("timeout"));
+    milter_event_loop_quit(loop);
 }
 
 void
@@ -101,4 +102,5 @@ void test_add_timeout_negative (gconstpointer data)
 
     guint id = milter_event_loop_add_timeout(loop, interval, cb_timeout, &timeout_waiting);
     cut_assert_equal_uint(0, id);
+    milter_event_loop_quit(loop);
 }
