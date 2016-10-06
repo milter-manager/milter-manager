@@ -2,6 +2,7 @@ if WITH_CUTTER
 noinst_LTLIBRARIES =			\
 	test-decoder.la			\
 	test-command-decoder.la		\
+	test-event-loop.la		\
 	test-reply-decoder.la		\
 	test-encoder.la			\
 	test-command-encoder.la		\
@@ -42,6 +43,7 @@ LIBS =							\
 
 test_decoder_la_SOURCES			= test-decoder.c
 test_command_decoder_la_SOURCES		= test-command-decoder.c
+test_event_loop_la_SOURCES		= test-event-loop.c
 test_reply_decoder_la_SOURCES		= test-reply-decoder.c
 test_encoder_la_SOURCES			= test-encoder.c
 test_command_encoder_la_SOURCES		= test-command-encoder.c

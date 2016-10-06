@@ -396,6 +396,7 @@ milter_event_loop_add_timeout_full (MilterEventLoop *loop,
     MilterEventLoopClass *loop_class;
 
     g_return_val_if_fail(loop != NULL, 0);
+    g_return_val_if_fail(interval_in_seconds >= 0, 0);
 
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
     return loop_class->add_timeout_full(loop, priority, interval_in_seconds,
