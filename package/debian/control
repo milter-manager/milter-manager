@@ -72,7 +72,7 @@ Description: Development files to extend milter manager by C
  milter manager administrates milters instead of MTA to reduce milter
  administration cost and combine milters flexibly.
  .
- This provides development environemnt to extend milter manager by C.
+ This provides development environment to extend milter manager by C.
  Normally, milter manager can be extended by Ruby.
 
 Package: milter-manager-munin-plugins
