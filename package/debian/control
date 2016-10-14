@@ -202,9 +202,9 @@ Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	libmilter-client0 (= ${binary:Version})
-Description: Milter library which has ABI compatiblity with Sendmail's libmilter
+Description: Milter library which has ABI compatibility with Sendmail's libmilter
  libmilter-compatible is a milter toolkit based library which has ABI
- compatiblity with Sendmail's libmilter. It can be used with a milter
+ compatibility with Sendmail's libmilter. It can be used with a milter
  which is built with Sendmail's libmilter. To use LD_PRELOAD is the
  most easy way to use libmilter-compatible.
 
@@ -215,7 +215,7 @@ Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	libmilter-compatible (= ${binary:Version})
-Description: Milter development files which have API compatiblity with Sendmail's libmilter
+Description: Milter development files which have API compatibility with Sendmail's libmilter
  This provides API that is compatible with Sendmail's libmilter. Milters can
  be built and run with libmilter-compatible-dev and libmilter-compatible.
 
