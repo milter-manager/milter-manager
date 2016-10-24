@@ -310,34 +310,59 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %MILTER_STATUS_ALL_OPTIONS
-     *    Enables all available actions and steps.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *        %MILTER_STATUS_ALL_OPTIONS
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Enables all available actions and steps.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_REJECT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current session.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current session with
+     *         actions, steps and macros requests that are
+     *         specified by @option and @macros_requests.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_PROGRESS
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         It means that the processing in callback is in
+     *         progress and returning response status is
+     *         pending. The main loop for the milter is
+     *         continued.
      *
-     * : %MILTER_STATUS_REJECT
-     *    Rejects the current session.
+     *         If you returns this status, you need to emit
+     *         #MilterClientContext::negotiate-response signal by
+     *         yourself with one of the above
+     *         %MilterStatus<!-- -->es.
      *
-     * : %MILTER_STATUS_CONTINUE
-     *    Continues processing the current session with
-     *    actions, steps and macros requests that are
-     *    specified by @option and @macros_requests.
-     *
-     * : %MILTER_STATUS_PROGRESS
-     *    It means that the processing in callback is in
-     *    progress and returning response status is
-     *    pending. The main loop for the milter is
-     *    continued.
-     *
-     *    If you returns this status, you need to emit
-     *    #MilterClientContext::negotiate-response signal by
-     *    yourself with one of the above
-     *    %MilterStatus<!-- -->es.
-     *
-     *    This status may be used for a milter that has IO
-     *    wait. (e.g. The milter may need to connect to the
-     *    its server like clamav-milter) Normally, this
-     *    status will not be used.
-     * </rd>
+     *         This status may be used for a milter that has IO
+     *         wait. (e.g. The milter may need to connect to the
+     *         its server like clamav-milter) Normally, this
+     *         status will not be used.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_negotiate">
@@ -417,49 +442,86 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %MILTER_STATUS_CONTINUE
-     *    Continues processing the current connection.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current connection.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_REJECT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current connection.
      *
-     * : %MILTER_STATUS_REJECT
-     *    Rejects the current connection.
+     *         #MilterFinishedEmittable::finished will be emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_ACCEPT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current connection without further
+     *         more processing.
      *
-     *    #MilterFinishedEmittable::finished will be emitted.
+     *         #MilterFinishedEmittable::finished will be emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_TEMPORARY_FAILURE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current connection with a temporary
+     *         failure. (i.e. 4xx status code in SMTP)
      *
-     * : %MILTER_STATUS_ACCEPT
-     *    Accepts the current connection without further
-     *    more processing.
+     *         #MilterFinishedEmittable::finished will be emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_NO_REPLY
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Doesn't send a reply back to MTA.
      *
-     *    #MilterFinishedEmittable::finished will be emitted.
+     *         The milter must set %MILTER_STEP_NO_REPLY_CONNECT
+     *         in #MilerClientContext::negotiate handler.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_PROGRESS
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         It means that the processing in callback is in
+     *         progress and returning response status is
+     *         pending. The main loop for the milter is
+     *         continued.
      *
-     * : %MILTER_STATUS_TEMPORARY_FAILURE
-     *    Rejects the current connection with a temporary
-     *    failure. (i.e. 4xx status code in SMTP)
+     *         If you returns this status, you need to emit
+     *         #MilterClientContext::connect-response signal by
+     *         yourself with one of the above
+     *         %MilterStatus<!-- -->es.
      *
-     *    #MilterFinishedEmittable::finished will be emitted.
-     *
-     * : %MILTER_STATUS_NO_REPLY
-     *    Doesn't send a reply back to MTA.
-     *
-     *    The milter must set %MILTER_STEP_NO_REPLY_CONNECT
-     *    in #MilerClientContext::negotiate handler.
-     *
-     * : %MILTER_STATUS_PROGRESS
-     *    It means that the processing in callback is in
-     *    progress and returning response status is
-     *    pending. The main loop for the milter is
-     *    continued.
-     *
-     *    If you returns this status, you need to emit
-     *    #MilterClientContext::connect-response signal by
-     *    yourself with one of the above
-     *    %MilterStatus<!-- -->es.
-     *
-     *    This status may be used for a milter that has IO
-     *    wait. (e.g. The milter may need to connect to the
-     *    its server like clamav-milter) Normally, this
-     *    status will not be used.
-     * </rd>
+     *         This status may be used for a milter that has IO
+     *         wait. (e.g. The milter may need to connect to the
+     *         its server like clamav-milter) Normally, this
+     *         status will not be used.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_connect">
@@ -513,49 +575,86 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %MILTER_STATUS_CONTINUE
-     *    Continues processing the current connection.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current connection.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_REJECT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current connection.
      *
-     * : %MILTER_STATUS_REJECT
-     *    Rejects the current connection.
+     *         #MilterFinishedEmittable::finished will be emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_ACCEPT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current connection without further
+     *         more processing.
      *
-     *    #MilterFinishedEmittable::finished will be emitted.
+     *         #MilterFinishedEmittable::finished will be emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_TEMPORARY_FAILURE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current connection with a temporary
+     *         failure. (i.e. 4xx status code in SMTP)
      *
-     * : %MILTER_STATUS_ACCEPT
-     *    Accepts the current connection without further
-     *    more processing.
+     *         #MilterFinishedEmittable::finished will be emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_NO_REPLY
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Doesn't send a reply back to MTA.
      *
-     *    #MilterFinishedEmittable::finished will be emitted.
+     *         The milter must set %MILTER_STEP_NO_REPLY_HELO in
+     *         #MilerClientContext::negotiate handler.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_PROGRESS
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         It means that the processing in callback is in
+     *         progress and returning response status is
+     *         pending. The main loop for the milter is
+     *         continued.
      *
-     * : %MILTER_STATUS_TEMPORARY_FAILURE
-     *    Rejects the current connection with a temporary
-     *    failure. (i.e. 4xx status code in SMTP)
+     *         If you returns this status, you need to emit
+     *         #MilterClientContext::helo-response signal by
+     *         yourself with one of the above
+     *         %MilterStatus<!-- -->es.
      *
-     *    #MilterFinishedEmittable::finished will be emitted.
-     *
-     * : %MILTER_STATUS_NO_REPLY
-     *    Doesn't send a reply back to MTA.
-     *
-     *    The milter must set %MILTER_STEP_NO_REPLY_HELO in
-     *    #MilerClientContext::negotiate handler.
-     *
-     * : %MILTER_STATUS_PROGRESS
-     *    It means that the processing in callback is in
-     *    progress and returning response status is
-     *    pending. The main loop for the milter is
-     *    continued.
-     *
-     *    If you returns this status, you need to emit
-     *    #MilterClientContext::helo-response signal by
-     *    yourself with one of the above
-     *    %MilterStatus<!-- -->es.
-     *
-     *    This status may be used for a milter that has IO
-     *    wait. (e.g. The milter may need to connect to the
-     *    its server like clamav-milter) Normally, this
-     *    status will not be used.
-     * </rd>
+     *         This status may be used for a milter that has IO
+     *         wait. (e.g. The milter may need to connect to the
+     *         its server like clamav-milter) Normally, this
+     *         status will not be used.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_helo">
@@ -607,58 +706,101 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %MILTER_STATUS_CONTINUE
-     *    Continues processing the current message.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current message.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_REJECT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current envelope from address and
+     *         message. A new envelope from may be specified.
      *
-     * : %MILTER_STATUS_REJECT
-     *    Rejects the current envelope from address and
-     *    message. A new envelope from may be specified.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_DISCARD
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message and discards it silently.
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_ACCEPT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message without further
+     *         more processing.
      *
-     * : %MILTER_STATUS_DISCARD
-     *    Accepts the current message and discards it silently.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_TEMPORARY_FAILURE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current envelope from address and
+     *         message with temporary failure. (i.e. 4xx
+     *         status code in SMTP) A new envelope from address
+     *         may be specified.
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_NO_REPLY
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Doesn't send a reply back to MTA.
      *
-     * : %MILTER_STATUS_ACCEPT
-     *    Accepts the current message without further
-     *    more processing.
+     *         The milter must set
+     *         %MILTER_STEP_NO_REPLY_ENVELOPE_FROM in
+     *         #MilerClientContext::negotiate handler.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_PROGRESS
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         It means that the processing in callback is in
+     *         progress and returning response status is
+     *         pending. The main loop for the milter is
+     *         continued.
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         If you returns this status, you need to emit
+     *         #MilterClientContext::envelope-from-response
+     *         signal by yourself with one of the above
+     *         %MilterStatus<!-- -->es.
      *
-     * : %MILTER_STATUS_TEMPORARY_FAILURE
-     *    Rejects the current envelope from address and
-     *    message with temporary failure. (i.e. 4xx
-     *    status code in SMTP) A new envelope from address
-     *    may be specified.
-     *
-     *    #MilterClientContext::abort is not emitted.
-     *
-     * : %MILTER_STATUS_NO_REPLY
-     *    Doesn't send a reply back to MTA.
-     *
-     *    The milter must set
-     *    %MILTER_STEP_NO_REPLY_ENVELOPE_FROM in
-     *    #MilerClientContext::negotiate handler.
-     *
-     * : %MILTER_STATUS_PROGRESS
-     *    It means that the processing in callback is in
-     *    progress and returning response status is
-     *    pending. The main loop for the milter is
-     *    continued.
-     *
-     *    If you returns this status, you need to emit
-     *    #MilterClientContext::envelope-from-response
-     *    signal by yourself with one of the above
-     *    %MilterStatus<!-- -->es.
-     *
-     *    This status may be used for a milter that has IO
-     *    wait. (e.g. The milter may need to connect to the
-     *    its server like clamav-milter) Normally, this
-     *    status will not be used.
-     * </rd>
+     *         This status may be used for a milter that has IO
+     *         wait. (e.g. The milter may need to connect to the
+     *         its server like clamav-milter) Normally, this
+     *         status will not be used.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_envfrom">
@@ -711,57 +853,100 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %MILTER_STATUS_CONTINUE
-     *    Continues processing the current message.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current message.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_REJECT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current envelope recipient
+     *         address. Processing the current messages is
+     *         continued.
      *
-     * : %MILTER_STATUS_REJECT
-     *    Rejects the current envelope recipient
-     *    address. Processing the current messages is
-     *    continued.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_DISCARD
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message and discards it silently.
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_ACCEPT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current envelope recipient.
      *
-     * : %MILTER_STATUS_DISCARD
-     *    Accepts the current message and discards it silently.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_TEMPORARY_FAILURE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current envelope recipient address
+     *         with temporary failure. (i.e. 4xx status code in
+     *         SMTP) Processing the current message is continued.
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_NO_REPLY
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Doesn't send a reply back to MTA.
      *
-     * : %MILTER_STATUS_ACCEPT
-     *    Accepts the current envelope recipient.
+     *         The milter must set
+     *         %MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT in
+     *         #MilerClientContext::negotiate handler.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_PROGRESS
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         It means that the processing in callback is in
+     *         progress and returning response status is
+     *         pending. The main loop for the milter is
+     *         continued.
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         If you returns this status, you need to emit
+     *         #MilterClientContext::envelope-recipient-response
+     *         signal by yourself with one of the above
+     *         %MilterStatus<!-- -->es.
      *
-     * : %MILTER_STATUS_TEMPORARY_FAILURE
-     *    Rejects the current envelope recipient address
-     *    with temporary failure. (i.e. 4xx status code in
-     *    SMTP) Processing the current message is continued.
-     *
-     *    #MilterClientContext::abort is not emitted.
-     *
-     * : %MILTER_STATUS_NO_REPLY
-     *    Doesn't send a reply back to MTA.
-     *
-     *    The milter must set
-     *    %MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT in
-     *    #MilerClientContext::negotiate handler.
-     *
-     * : %MILTER_STATUS_PROGRESS
-     *    It means that the processing in callback is in
-     *    progress and returning response status is
-     *    pending. The main loop for the milter is
-     *    continued.
-     *
-     *    If you returns this status, you need to emit
-     *    #MilterClientContext::envelope-recipient-response
-     *    signal by yourself with one of the above
-     *    %MilterStatus<!-- -->es.
-     *
-     *    This status may be used for a milter that has IO
-     *    wait. (e.g. The milter may need to connect to the
-     *    its server like clamav-milter) Normally, this
-     *    status will not be used.
-     * </rd>
+     *         This status may be used for a milter that has IO
+     *         wait. (e.g. The milter may need to connect to the
+     *         its server like clamav-milter) Normally, this
+     *         status will not be used.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_envrcpt">
@@ -813,53 +998,85 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %MILTER_STATUS_CONTINUE
-     *    Continues processing the current message.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current message.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_REJECT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current message.
      *
-     * : %MILTER_STATUS_REJECT
-     *    Rejects the current message.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_DISCARD
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message and discards it silently.
      *
-     *    #MilterClientContext::abort is not emitted.
-     *
-     * : %MILTER_STATUS_DISCARD
-     *    Accepts the current message and discards it silently.
-     *
-     *    #MilterClientContext::abort is not emitted.
-     *
-     * : %MILTER_STATUS_ACCEPT
-     *    Accepts the current envelope recipient.
-     *
-     *    #MilterClientContext::abort is not emitted.
-     *
-     * : %MILTER_STATUS_TEMPORARY_FAILURE
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_TEMPORARY_FAILURE
+     *     </term>
+     *     <listitem>
+     *       <para>
      *    Rejects the current message with temporary
      *    failure. (i.e. 4xx status code in SMTP)
      *
      *    #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_NO_REPLY
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Doesn't send a reply back to MTA.
      *
-     * : %MILTER_STATUS_NO_REPLY
-     *    Doesn't send a reply back to MTA.
+     *         The milter must set %MILTER_STEP_NO_REPLY_DATA
+     *         in #MilerClientContext::negotiate handler.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_PROGRESS
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         It means that the processing in callback is in
+     *         progress and returning response status is
+     *         pending. The main loop for the milter is
+     *         continued.
      *
-     *    The milter must set %MILTER_STEP_NO_REPLY_DATA
-     *    in #MilerClientContext::negotiate handler.
+     *         If you returns this status, you need to emit
+     *         #MilterClientContext::data-response
+     *         signal by yourself with one of the above
+     *         %MilterStatus<!-- -->es.
      *
-     * : %MILTER_STATUS_PROGRESS
-     *    It means that the processing in callback is in
-     *    progress and returning response status is
-     *    pending. The main loop for the milter is
-     *    continued.
-     *
-     *    If you returns this status, you need to emit
-     *    #MilterClientContext::data-response
-     *    signal by yourself with one of the above
-     *    %MilterStatus<!-- -->es.
-     *
-     *    This status may be used for a milter that has IO
-     *    wait. (e.g. The milter may need to connect to the
-     *    its server like clamav-milter) Normally, this
-     *    status will not be used.
-     * </rd>
+     *         This status may be used for a milter that has IO
+     *         wait. (e.g. The milter may need to connect to the
+     *         its server like clamav-milter) Normally, this
+     *         status will not be used.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_data">
@@ -910,40 +1127,65 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %MILTER_STATUS_REJECT
-     *    Rejects the current message.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_REJECT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current message.
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_TEMPORARY_FAILURE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current message with temporary
+     *         failure. (i.e. 4xx status code in SMTP)
      *
-     * : %MILTER_STATUS_TEMPORARY_FAILURE
-     *    Rejects the current message with temporary
-     *    failure. (i.e. 4xx status code in SMTP)
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_NO_REPLY
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Doesn't send a reply back to MTA.
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         The milter must set %MILTER_STEP_NO_REPLY_DATA
+     *         in #MilerClientContext::negotiate handler.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_PROGRESS
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         It means that the processing in callback is in
+     *         progress and returning response status is
+     *         pending. The main loop for the milter is
+     *         continued.
      *
-     * : %MILTER_STATUS_NO_REPLY
-     *    Doesn't send a reply back to MTA.
+     *         If you returns this status, you need to emit
+     *         #MilterClientContext::unknown-response
+     *         signal by yourself with one of the above
+     *         %MilterStatus<!-- -->es.
      *
-     *    The milter must set %MILTER_STEP_NO_REPLY_DATA
-     *    in #MilerClientContext::negotiate handler.
-     *
-     * : %MILTER_STATUS_PROGRESS
-     *    It means that the processing in callback is in
-     *    progress and returning response status is
-     *    pending. The main loop for the milter is
-     *    continued.
-     *
-     *    If you returns this status, you need to emit
-     *    #MilterClientContext::unknown-response
-     *    signal by yourself with one of the above
-     *    %MilterStatus<!-- -->es.
-     *
-     *    This status may be used for a milter that has IO
-     *    wait. (e.g. The milter may need to connect to the
-     *    its server like clamav-milter) Normally, this
-     *    status will not be used.
-     * </rd>
+     *         This status may be used for a milter that has IO
+     *         wait. (e.g. The milter may need to connect to the
+     *         its server like clamav-milter) Normally, this
+     *         status will not be used.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * Note that the unknown or unimplemented SMTP command
      * will always be rejected by MTA.
@@ -1025,54 +1267,97 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %MILTER_STATUS_CONTINUE
-     *    Continues processing the current message.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current message.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_REJECT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current message.
      *
-     * : %MILTER_STATUS_REJECT
-     *    Rejects the current message.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_DISCARD
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message and discards it silently.
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_ACCEPT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message without further
+     *         more processing.
      *
-     * : %MILTER_STATUS_DISCARD
-     *    Accepts the current message and discards it silently.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_TEMPORARY_FAILURE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current message with temporary
+     *         failure. (i.e. 4xx status code in SMTP)
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_NO_REPLY
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Doesn't send a reply back to MTA.
      *
-     * : %MILTER_STATUS_ACCEPT
-     *    Accepts the current message without further
-     *    more processing.
+     *         The milter must set %MILTER_STEP_NO_REPLY_HEADER
+     *         in #MilerClientContext::negotiate handler.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_PROGRESS
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         It means that the processing in callback is in
+     *         progress and returning response status is
+     *         pending. The main loop for the milter is
+     *         continued.
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         If you returns this status, you need to emit
+     *         #MilterClientContext::header-response
+     *         signal by yourself with one of the above
+     *         %MilterStatus<!-- -->es.
      *
-     * : %MILTER_STATUS_TEMPORARY_FAILURE
-     *    Rejects the current message with temporary
-     *    failure. (i.e. 4xx status code in SMTP)
-     *
-     *    #MilterClientContext::abort is not emitted.
-     *
-     * : %MILTER_STATUS_NO_REPLY
-     *    Doesn't send a reply back to MTA.
-     *
-     *    The milter must set %MILTER_STEP_NO_REPLY_HEADER
-     *    in #MilerClientContext::negotiate handler.
-     *
-     * : %MILTER_STATUS_PROGRESS
-     *    It means that the processing in callback is in
-     *    progress and returning response status is
-     *    pending. The main loop for the milter is
-     *    continued.
-     *
-     *    If you returns this status, you need to emit
-     *    #MilterClientContext::header-response
-     *    signal by yourself with one of the above
-     *    %MilterStatus<!-- -->es.
-     *
-     *    This status may be used for a milter that has IO
-     *    wait. (e.g. The milter may need to connect to the
-     *    its server like clamav-milter) Normally, this
-     *    status will not be used.
-     * </rd>
+     *         This status may be used for a milter that has IO
+     *         wait. (e.g. The milter may need to connect to the
+     *         its server like clamav-milter) Normally, this
+     *         status will not be used.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_header">
@@ -1121,55 +1406,98 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %MILTER_STATUS_CONTINUE
-     *    Continues processing the current message.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current message.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_REJECT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current message.
      *
-     * : %MILTER_STATUS_REJECT
-     *    Rejects the current message.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_DISCARD
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message and discards it silently.
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_ACCEPT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message without further
+     *         more processing.
      *
-     * : %MILTER_STATUS_DISCARD
-     *    Accepts the current message and discards it silently.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_TEMPORARY_FAILURE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current message with temporary
+     *         failure. (i.e. 4xx status code in SMTP)
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_NO_REPLY
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Doesn't send a reply back to MTA.
      *
-     * : %MILTER_STATUS_ACCEPT
-     *    Accepts the current message without further
-     *    more processing.
+     *         The milter must set
+     *         %MILTER_STEP_NO_REPLY_END_OF_HEADER
+     *         in #MilerClientContext::negotiate handler.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_PROGRESS
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         It means that the processing in callback is in
+     *         progress and returning response status is
+     *         pending. The main loop for the milter is
+     *         continued.
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         If you returns this status, you need to emit
+     *         #MilterClientContext::end-of-header-response
+     *         signal by yourself with one of the above
+     *         %MilterStatus<!-- -->es.
      *
-     * : %MILTER_STATUS_TEMPORARY_FAILURE
-     *    Rejects the current message with temporary
-     *    failure. (i.e. 4xx status code in SMTP)
-     *
-     *    #MilterClientContext::abort is not emitted.
-     *
-     * : %MILTER_STATUS_NO_REPLY
-     *    Doesn't send a reply back to MTA.
-     *
-     *    The milter must set
-     *    %MILTER_STEP_NO_REPLY_END_OF_HEADER
-     *    in #MilerClientContext::negotiate handler.
-     *
-     * : %MILTER_STATUS_PROGRESS
-     *    It means that the processing in callback is in
-     *    progress and returning response status is
-     *    pending. The main loop for the milter is
-     *    continued.
-     *
-     *    If you returns this status, you need to emit
-     *    #MilterClientContext::end-of-header-response
-     *    signal by yourself with one of the above
-     *    %MilterStatus<!-- -->es.
-     *
-     *    This status may be used for a milter that has IO
-     *    wait. (e.g. The milter may need to connect to the
-     *    its server like clamav-milter) Normally, this
-     *    status will not be used.
-     * </rd>
+     *         This status may be used for a milter that has IO
+     *         wait. (e.g. The milter may need to connect to the
+     *         its server like clamav-milter) Normally, this
+     *         status will not be used.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_eof">
@@ -1224,59 +1552,108 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %MILTER_STATUS_CONTINUE
-     *    Continues processing the current message.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current message.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_REJECT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current message.
      *
-     * : %MILTER_STATUS_REJECT
-     *    Rejects the current message.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_DISCARD
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message and discards it silently.
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_ACCEPT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message without further
+     *         more processing.
      *
-     * : %MILTER_STATUS_DISCARD
-     *    Accepts the current message and discards it silently.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_TEMPORARY_FAILURE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current message with temporary
+     *         failure. (i.e. 4xx status code in SMTP)
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_SKIP
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Skips further body
+     *         processing. #MilterClientContext::end-of-message
+     *         is emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_NO_REPLY
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Doesn't send a reply back to MTA.
      *
-     * : %MILTER_STATUS_ACCEPT
-     *    Accepts the current message without further
-     *    more processing.
+     *         The milter must set %MILTER_STEP_NO_REPLY_BODY
+     *         in #MilerClientContext::negotiate handler.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_PROGRESS
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         It means that the processing in callback is in
+     *         progress and returning response status is
+     *         pending. The main loop for the milter is
+     *         continued.
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         If you returns this status, you need to emit
+     *         #MilterClientContext::body-response
+     *         signal by yourself with one of the above
+     *         %MilterStatus<!-- -->es.
      *
-     * : %MILTER_STATUS_TEMPORARY_FAILURE
-     *    Rejects the current message with temporary
-     *    failure. (i.e. 4xx status code in SMTP)
-     *
-     *    #MilterClientContext::abort is not emitted.
-     *
-     * : %MILTER_STATUS_SKIP
-     *    Skips further body
-     *    processing. #MilterClientContext::end-of-message
-     *    is emitted.
-     *
-     * : %MILTER_STATUS_NO_REPLY
-     *    Doesn't send a reply back to MTA.
-     *
-     *    The milter must set %MILTER_STEP_NO_REPLY_BODY
-     *    in #MilerClientContext::negotiate handler.
-     *
-     * : %MILTER_STATUS_PROGRESS
-     *    It means that the processing in callback is in
-     *    progress and returning response status is
-     *    pending. The main loop for the milter is
-     *    continued.
-     *
-     *    If you returns this status, you need to emit
-     *    #MilterClientContext::body-response
-     *    signal by yourself with one of the above
-     *    %MilterStatus<!-- -->es.
-     *
-     *    This status may be used for a milter that has IO
-     *    wait. (e.g. The milter may need to connect to the
-     *    its server like clamav-milter) Normally, this
-     *    status will not be used.
-     * </rd>
+     *         This status may be used for a milter that has IO
+     *         wait. (e.g. The milter may need to connect to the
+     *         its server like clamav-milter) Normally, this
+     *         status will not be used.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_body">
@@ -1336,43 +1713,74 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %MILTER_STATUS_CONTINUE
-     *    Continues processing the current message.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current message.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_DISCARD
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message and discards it silently.
      *
-     * : %MILTER_STATUS_DISCARD
-     *    Accepts the current message and discards it silently.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_ACCEPT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message without further
+     *         more processing.
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_TEMPORARY_FAILURE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current message with temporary
+     *         failure. (i.e. 4xx status code in SMTP)
      *
-     * : %MILTER_STATUS_ACCEPT
-     *    Accepts the current message without further
-     *    more processing.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_PROGRESS
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         It means that the processing in callback is in
+     *         progress and returning response status is
+     *         pending. The main loop for the milter is
+     *         continued.
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         If you returns this status, you need to emit
+     *         #MilterClientContext::end-of-message-response
+     *         signal by yourself with one of the above
+     *         %MilterStatus<!-- -->es.
      *
-     * : %MILTER_STATUS_TEMPORARY_FAILURE
-     *    Rejects the current message with temporary
-     *    failure. (i.e. 4xx status code in SMTP)
-     *
-     *    #MilterClientContext::abort is not emitted.
-     *
-     * : %MILTER_STATUS_PROGRESS
-     *    It means that the processing in callback is in
-     *    progress and returning response status is
-     *    pending. The main loop for the milter is
-     *    continued.
-     *
-     *    If you returns this status, you need to emit
-     *    #MilterClientContext::end-of-message-response
-     *    signal by yourself with one of the above
-     *    %MilterStatus<!-- -->es.
-     *
-     *    This status may be used for a milter that has IO
-     *    wait. (e.g. The milter may need to connect to the
-     *    its server like clamav-milter) Normally, this
-     *    status will not be used.
-     * </rd>
+     *         This status may be used for a milter that has IO
+     *         wait. (e.g. The milter may need to connect to the
+     *         its server like clamav-milter) Normally, this
+     *         status will not be used.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_eom">
@@ -1444,43 +1852,74 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %MILTER_STATUS_CONTINUE
-     *    Continues processing the current message.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current message.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_DISCARD
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message and discards it silently.
      *
-     * : %MILTER_STATUS_DISCARD
-     *    Accepts the current message and discards it silently.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_ACCEPT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message without further
+     *         more processing.
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_TEMPORARY_FAILURE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current message with temporary
+     *         failure. (i.e. 4xx status code in SMTP)
      *
-     * : %MILTER_STATUS_ACCEPT
-     *    Accepts the current message without further
-     *    more processing.
+     *         #MilterClientContext::abort is not emitted.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %MILTER_STATUS_PROGRESS
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         It means that the processing in callback is in
+     *         progress and returning response status is
+     *         pending. The main loop for the milter is
+     *         continued.
      *
-     *    #MilterClientContext::abort is not emitted.
+     *         If you returns this status, you need to emit
+     *         #MilterClientContext::end-of-message-response
+     *         signal by yourself with one of the above
+     *         %MilterStatus<!-- -->es.
      *
-     * : %MILTER_STATUS_TEMPORARY_FAILURE
-     *    Rejects the current message with temporary
-     *    failure. (i.e. 4xx status code in SMTP)
-     *
-     *    #MilterClientContext::abort is not emitted.
-     *
-     * : %MILTER_STATUS_PROGRESS
-     *    It means that the processing in callback is in
-     *    progress and returning response status is
-     *    pending. The main loop for the milter is
-     *    continued.
-     *
-     *    If you returns this status, you need to emit
-     *    #MilterClientContext::end-of-message-response
-     *    signal by yourself with one of the above
-     *    %MilterStatus<!-- -->es.
-     *
-     *    This status may be used for a milter that has IO
-     *    wait. (e.g. The milter may need to connect to the
-     *    its server like clamav-milter) Normally, this
-     *    status will not be used.
-     * </rd>
+     *         This status may be used for a milter that has IO
+     *         wait. (e.g. The milter may need to connect to the
+     *         its server like clamav-milter) Normally, this
+     *         status will not be used.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_abort">
