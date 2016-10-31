@@ -941,6 +941,41 @@ AC_SUBST(SF_FRS_PATH)
 SF_FRS="$SF_FRS_HOST:$SF_FRS_PATH"
 AC_SUBST(SF_FRS)
 
+dnl **************************************************************
+dnl Check for osdn.net.
+dnl **************************************************************
+
+OSDN_PROJECT_ID="milter-manager"
+AC_SUBST(OSDN_PROJECT_ID)
+OSDN_PROJECT_NAME="milter manager"
+AC_SUBST(OSDN_PROJECT_NAME)
+
+AC_ARG_WITH([osdn-user],
+            AS_HELP_STRING([--with-osdn-user=NAME],
+                           [Use NAME to access osdn.net]),
+            [OSDN_USER="$withval"])
+AC_SUBST(OSDN_USER)
+
+OSDN_USER_OPTION=""
+if test -n "$OSDN_USER"; then
+    OSDN_USER_OPTION="--username $OSDN_USER"
+fi
+AC_SUBST(OSDN_USER_OPTION)
+
+OSDN_WEB_HOST="shell.osdn.net"
+if test -n "$OSDN_USER"; then
+    OSDN_WEB_HOST="$OSDN_USER@$OSDN_WEB_HOST"
+fi
+AC_SUBST(OSDN_WEB_HOST)
+
+OSDN_PROJECT_ID_HEAD_1=`echo $OSDN_PROJECT_ID | sed -e 's/^\(.\).*/\1/'`
+OSDN_PROJECT_ID_HEAD_2=`echo $OSDN_PROJECT_ID | sed -e 's/^\(..\).*/\1/'`
+OSDN_HTDOCS_PATH="/home/groups/${OSDN_PROJECT_ID_HEAD_1}/${OSDN_PROJECT_ID_HEAD_2}/${OSDN_PROJECT_ID}/htdocs"
+AC_SUBST(OSDN_HTDOCS_PATH)
+OSDN_HTDOCS="$OSDN_WEB_HOST:$OSDN_HTDOCS_PATH"
+AC_SUBST(OSDN_HTDOCS)
+
+
 MILTER_TOOLKIT_CFLAGS="\$(GLIB_CFLAGS) -DG_DISABLE_DEPRECATED"
 MILTER_RUBY_CFLAGS="\$(RUBY_GLIB2_CFLAGS) \$(RUBY_CFLAGS)"
 MILTER_MANAGER_CFLAGS="\$(MILTER_TOOLKIT_CFLAGS)"
