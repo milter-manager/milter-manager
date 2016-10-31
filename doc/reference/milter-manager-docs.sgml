@@ -58,7 +58,6 @@
     <xi:include href="maintenance-policy.xml"/>
   </part>
 
-  <!--
   <part id="reference">
     <title>Reference</title>
     <chapter id="libmilter">
@@ -68,6 +67,8 @@
     <chapter id="milter-core">
       <title>milter-core</title>
       <xi:include href="xml/core.xml"/>
+      <xi:include href="xml/milter-protocol.xml"/>
+      <xi:include href="xml/milter-finished-emittable.xml"/>
       <xi:include href="xml/milter-error-emittable.xml"/>
       <xi:include href="xml/milter-finished-emittable.xml"/>
     </chapter>
@@ -81,7 +82,6 @@
       <xi:include href="xml/milter-server-context.xml"/>
     </chapter>
   </part>
-  -->
 
   <part id="ruby">
     <title>Ruby support</title>

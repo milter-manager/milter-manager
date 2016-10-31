@@ -139,7 +139,6 @@ typedef struct smfiDesc	*smfiDesc_ptr;
  *
  * Indicates response status returned by callback.
  *
- * <rd>
  * Available response status is one of the followings:
  *
  *   * %SMFIS_CONTINUE
@@ -150,7 +149,6 @@ typedef struct smfiDesc	*smfiDesc_ptr;
  *   * %SMFIS_NOREPLY
  *   * %SMFIS_SKIP
  *   * %SMFIS_ALL_OPTS
- * </rd>
  */
 typedef int sfsistat;
 
@@ -215,7 +213,6 @@ typedef int sfsistat;
  *
  * @xxfi_version must be specified %SMFI_VERSION.
  *
- * <rd>
  * Here are the available @xxfi_flags values:
  *
  *   * %SMFIF_ADDHDRS: The milter may call smfi_addheader().
@@ -229,7 +226,6 @@ typedef int sfsistat;
  *   * %SMFIF_SETSMLIST: The milter may call smfi_setsymlist().
  *
  * They can be used together by bitwise OR.
- * </rd>
  *
  * All callbacks (e.g. xxfi_helo(), xxfi_envfrom() and so
  * on) may be %NULL. If a callback is %NULL, the event is
@@ -252,27 +248,58 @@ struct smfiDesc
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %SMFIS_CONTINUE
-     *    Continues processing the current connection.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current connection.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_REJECT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current connection.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_ACCEPT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current connection without further
+     *         more processing.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_TEMPFAIL
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current connection with a temporary
+     *         failure. (i.e. 4xx status code in SMTP)
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_NOREPLY
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Doesn't send a reply back to MTA.
      *
-     * : %SMFIS_REJECT
-     *    Rejects the current connection.
-     *
-     * : %SMFIS_ACCEPT
-     *    Accepts the current connection without further
-     *    more processing.
-     *
-     * : %SMFIS_TEMPFAIL
-     *    Rejects the current connection with a temporary
-     *    failure. (i.e. 4xx status code in SMTP)
-     *
-     * : %SMFIS_NOREPLY
-     *    Doesn't send a reply back to MTA.
-     *
-     *    The milter must set %SMFIP_NR_CONN flag to
-     *    %smfiDesc::xxfi_flags.
-     * </rd>
+     *         The milter must set %SMFIP_NR_CONN flag to
+     *         %smfiDesc::xxfi_flags.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_connect">xxfi_connect
@@ -294,27 +321,58 @@ struct smfiDesc
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %SMFIS_CONTINUE
-     *    Continues processing the current connection.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current connection.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_REJECT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current connection.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_ACCEPT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current connection without further
+     *         more processing.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_TEMPFAIL
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current connection with a temporary
+     *         failure. (i.e. 4xx status code in SMTP)
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_NOREPLY
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Doesn't send a reply back to MTA.
      *
-     * : %SMFIS_REJECT
-     *    Rejects the current connection.
-     *
-     * : %SMFIS_ACCEPT
-     *    Accepts the current connection without further
-     *    more processing.
-     *
-     * : %SMFIS_TEMPFAIL
-     *    Rejects the current connection with a temporary
-     *    failure. (i.e. 4xx status code in SMTP)
-     *
-     * : %SMFIS_NOREPLY
-     *    Doesn't send a reply back to MTA.
-     *
-     *    The milter must set %SMFIP_NR_HELO flag to
-     *    %smfiDesc::xxfi_flags.
-     * </rd>
+     *         The milter must set %SMFIP_NR_HELO flag to
+     *         %smfiDesc::xxfi_flags.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_helo">
@@ -336,33 +394,70 @@ struct smfiDesc
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %SMFIS_CONTINUE
-     *    Continues processing the current message.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current message.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_REJECT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current envelope from address and
+     *         message. A new envelope from may be specified.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_DISCARD
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message and discards it silently.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_ACCEPT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message without further
+     *         more processing.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_TEMPFAIL
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current envelope from address and
+     *         message with temporary failure. (i.e. 4xx
+     *         status code in SMTP) A new envelope from address
+     *         may be specified.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_NOREPLY
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Doesn't send a reply back to MTA.
      *
-     * : %SMFIS_REJECT
-     *    Rejects the current envelope from address and
-     *    message. A new envelope from may be specified.
-     *
-     * : %SMFIS_DISCARD
-     *    Accepts the current message and discards it silently.
-     *
-     * : %SMFIS_ACCEPT
-     *    Accepts the current message without further
-     *    more processing.
-     *
-     * : %SMFIS_TEMPFAIL
-     *    Rejects the current envelope from address and
-     *    message with temporary failure. (i.e. 4xx
-     *    status code in SMTP) A new envelope from address
-     *    may be specified.
-     *
-     * : %SMFIS_NOREPLY
-     *    Doesn't send a reply back to MTA.
-     *
-     *    The milter must set %SMFIP_NR_MAIL flag to
-     *    %smfiDesc::xxfi_flags.
-     * </rd>
+     *         The milter must set %SMFIP_NR_MAIL flag to
+     *         %smfiDesc::xxfi_flags.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_envfrom">
@@ -385,32 +480,70 @@ struct smfiDesc
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %SMFIS_CONTINUE
-     *    Continues processing the current message.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current message.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_REJECT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current envelope from address and
+     *         message. A new envelope from may be specified.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_DISCARD
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message and discards it silently.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_ACCEPT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message without further
+     *         more processing.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_TEMPFAIL
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current envelope from address and
+     *         message with temporary failure. (i.e. 4xx
+     *         status code in SMTP) A new envelope from address
+     *         may be specified.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_NOREPLY
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Doesn't send a reply back to MTA.
      *
-     * : %SMFIS_REJECT
-     *    Rejects the current envelope recipient
-     *    address. Processing the current messages is
-     *    continued.
-     *
-     * : %SMFIS_DISCARD
-     *    Accepts the current message and discards it silently.
-     *
-     * : %SMFIS_ACCEPT
-     *    Accepts the current envelope recipient.
-     *
-     * : %SMFIS_TEMPFAIL
-     *    Rejects the current envelope recipient address
-     *    with temporary failure. (i.e. 4xx status code in
-     *    SMTP) Processing the current message is continued.
-     *
-     * : %SMFIS_NOREPLY
-     *    Doesn't send a reply back to MTA.
-     *
-     *    The milter must set %SMFIP_NR_RCPT flag to
-     *    %smfiDesc::xxfi_flags.
-     * </rd>
+     *         The milter must set %SMFIP_NR_MAIL flag to
+     *         %smfiDesc::xxfi_flags.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_envrcpt">
@@ -460,30 +593,70 @@ struct smfiDesc
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %SMFIS_CONTINUE
-     *    Continues processing the current message.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current message.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_REJECT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current envelope from address and
+     *         message. A new envelope from may be specified.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_DISCARD
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message and discards it silently.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_ACCEPT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message without further
+     *         more processing.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_TEMPFAIL
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current envelope from address and
+     *         message with temporary failure. (i.e. 4xx
+     *         status code in SMTP) A new envelope from address
+     *         may be specified.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_NOREPLY
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Doesn't send a reply back to MTA.
      *
-     * : %SMFIS_REJECT
-     *    Rejects the current message.
-     *
-     * : %SMFIS_DISCARD
-     *    Accepts the current message and discards it silently.
-     *
-     * : %SMFIS_ACCEPT
-     *    Accepts the current message without further
-     *    more processing.
-     *
-     * : %SMFIS_TEMPFAIL
-     *    Rejects the current message with temporary
-     *    failure. (i.e. 4xx status code in SMTP)
-     *
-     * : %SMFIS_NOREPLY
-     *    Doesn't send a reply back to MTA.
-     *
-     *    The milter must set %SMFIP_NR_HDR flag to
-     *    %smfiDesc::xxfi_flags.
-     * </rd>
+     *         The milter must set %SMFIP_NR_MAIL flag to
+     *         %smfiDesc::xxfi_flags.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_header">
@@ -503,30 +676,70 @@ struct smfiDesc
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %SMFIS_CONTINUE
-     *    Continues processing the current message.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current message.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_REJECT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current envelope from address and
+     *         message. A new envelope from may be specified.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_DISCARD
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message and discards it silently.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_ACCEPT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message without further
+     *         more processing.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_TEMPFAIL
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current envelope from address and
+     *         message with temporary failure. (i.e. 4xx
+     *         status code in SMTP) A new envelope from address
+     *         may be specified.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_NOREPLY
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Doesn't send a reply back to MTA.
      *
-     * : %SMFIS_REJECT
-     *    Rejects the current message.
-     *
-     * : %SMFIS_DISCARD
-     *    Accepts the current message and discards it silently.
-     *
-     * : %SMFIS_ACCEPT
-     *    Accepts the current message without further
-     *    more processing.
-     *
-     * : %SMFIS_TEMPFAIL
-     *    Rejects the current message with temporary
-     *    failure. (i.e. 4xx status code in SMTP)
-     *
-     * : %SMFIS_NOREPLY
-     *    Doesn't send a reply back to MTA.
-     *
-     *    The milter must set %SMFIP_NR_EOH flag to
-     *    %smfiDesc::xxfi_flags.
-     * </rd>
+     *         The milter must set %SMFIP_NR_MAIL flag to
+     *         %smfiDesc::xxfi_flags.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_eof">
@@ -548,34 +761,77 @@ struct smfiDesc
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %SMFIS_CONTINUE
-     *    Continues processing the current message.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current message.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_REJECT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current message.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_DISCARD
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message and discards it silently.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_ACCEPT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message without further
+     *         more processing.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_TEMPFAIL
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current message with temporary
+     *         failure. (i.e. 4xx status code in SMTP)
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_SKIP
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Skips further body
+     *         processing. xxfi_eom() is called.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_NOREPLY
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Doesn't send a reply back to MTA.
      *
-     * : %SMFIS_REJECT
-     *    Rejects the current message.
-     *
-     * : %SMFIS_DISCARD
-     *    Accepts the current message and discards it silently.
-     *
-     * : %SMFIS_ACCEPT
-     *    Accepts the current message without further
-     *    more processing.
-     *
-     * : %SMFIS_TEMPFAIL
-     *    Rejects the current message with temporary
-     *    failure. (i.e. 4xx status code in SMTP)
-     *
-     * : %SMFIS_SKIP
-     *    Skips further body
-     *    processing. xxfi_eom() is called.
-     *
-     * : %SMFIS_NOREPLY
-     *    Doesn't send a reply back to MTA.
-     *
-     *    The milter must set %SMFIP_NR_BODY flag to
-     *    %smfiDesc::xxfi_flags.
-     * </rd>
+     *         The milter must set %SMFIP_NR_BODY flag to
+     *         %smfiDesc::xxfi_flags.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_body">
@@ -598,21 +854,46 @@ struct smfiDesc
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %SMFIS_CONTINUE
-     *    Continues processing the current message.
-     *
-     * : %SMFIS_DISCARD
-     *    Accepts the current message and discards it silently.
-     *
-     * : %SMFIS_ACCEPT
-     *    Accepts the current message without further
-     *    more processing.
-     *
-     * : %SMFIS_TEMPFAIL
-     *    Rejects the current message with temporary
-     *    failure. (i.e. 4xx status code in SMTP)
-     * </rd>
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current message.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_DISCARD
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message and discards it silently.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_ACCEPT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message without further
+     *         more processing.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_TEMPFAIL
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current message with temporary
+     *         failure. (i.e. 4xx status code in SMTP)
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_eom">
@@ -642,21 +923,46 @@ struct smfiDesc
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %SMFIS_CONTINUE
-     *    Continues processing the current message.
-     *
-     * : %SMFIS_DISCARD
-     *    Accepts the current message and discards it silently.
-     *
-     * : %SMFIS_ACCEPT
-     *    Accepts the current message without further
-     *    more processing.
-     *
-     * : %SMFIS_TEMPFAIL
-     *    Rejects the current message with temporary
-     *    failure. (i.e. 4xx status code in SMTP)
-     * </rd>
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current message.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_DISCARD
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message and discards it silently.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_ACCEPT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message without further
+     *         more processing.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_TEMPFAIL
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current message with temporary
+     *         failure. (i.e. 4xx status code in SMTP)
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_abort">
@@ -695,20 +1001,39 @@ struct smfiDesc
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %SMFIS_REJECT
-     *    Rejects the current message.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_REJECT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current message.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_TEMPFAIL
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current message with temporary
+     *         failure. (i.e. 4xx status code in SMTP)
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_NOREPLY
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Doesn't send a reply back to MTA.
      *
-     * : %SMFIS_TEMPFAIL
-     *    Rejects the current message with temporary
-     *    failure. (i.e. 4xx status code in SMTP)
-     *
-     * : %SMFIS_NOREPLY
-     *    Doesn't send a reply back to MTA.
-     *
-     *    The milter must set %SMFIP_NR_UNKN flag to
-     *    %smfiDesc::xxfi_flags.
-     * </rd>
+     *         The milter must set %SMFIP_NR_UNKN flag to
+     *         %smfiDesc::xxfi_flags.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * Note that the unknown or unimplemented SMTP command
      * will always be rejected by MTA.
@@ -730,29 +1055,66 @@ struct smfiDesc
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %SMFIS_CONTINUE
-     *    Continues processing the current message.
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current message.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_REJECT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current message.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_DISCARD
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current message and discards it silently.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_ACCEPT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Accepts the current envelope recipient.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_TEMPFAIL
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current message with temporary
+     *         failure. (i.e. 4xx status code in SMTP)
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_NOREPLY
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Doesn't send a reply back to MTA.
      *
-     * : %SMFIS_REJECT
-     *    Rejects the current message.
-     *
-     * : %SMFIS_DISCARD
-     *    Accepts the current message and discards it silently.
-     *
-     * : %SMFIS_ACCEPT
-     *    Accepts the current envelope recipient.
-     *
-     * : %SMFIS_TEMPFAIL
-     *    Rejects the current message with temporary
-     *    failure. (i.e. 4xx status code in SMTP)
-     *
-     * : %SMFIS_NOREPLY
-     *    Doesn't send a reply back to MTA.
-     *
-     *    The milter must set %SMFIP_NR_DATA flag to
-     *    %smfiDesc::xxfi_flags.
-     * </rd>
+     *         The milter must set %SMFIP_NR_DATA flag to
+     *         %smfiDesc::xxfi_flags.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_data">
@@ -783,17 +1145,36 @@ struct smfiDesc
      *
      * All available response statuses are the followings:
      *
-     * <rd>
-     * : %SMFIS_ALL_OPTS
-     *    Enables all available actions and steps.
-     *
-     * : %SMFIS_REJECT
-     *    Rejects the current session.
-     *
-     * : %SMFIS_CONTINUE
-     *    Continues processing the current session with
-     *    @actions_output and @steps_output.
-     * </rd>
+     * <variablelist>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_ALL_OPTS
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Enables all available actions and steps.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_REJECT
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Rejects the current session.
+     *       </para>
+     *   </varlistentry>
+     *   <varlistentry>
+     *     <term>
+     *       %SMFIS_CONTINUE
+     *     </term>
+     *     <listitem>
+     *       <para>
+     *         Continues processing the current session with
+     *         @actions_output and @steps_output.
+     *       </para>
+     *   </varlistentry>
+     * </variablelist>
      *
      * See also <ulink
      * url="https://www.milter.org/developers/api/xxfi_negotiate">
@@ -825,7 +1206,6 @@ struct smfiDesc
  * explicitly. The socket is created in smfi_main()
  * implicitly.
  *
- * <rd>
  * Here are the fail conditions:
  *   * smfi_register() hasn't called successfully.
  *   * smfi_setconn() hasn't called successfully.
@@ -833,7 +1213,6 @@ struct smfiDesc
  *     domain socket if connection spec is for UNIX domain
  *     socket and @remove_socket is true.
  *   * smfi_opensocket() fails to create the new socket.
- * </rd>
  *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_opensocket">
@@ -850,11 +1229,9 @@ int smfi_opensocket (bool             remove_socket);
  *
  * Registers the milter implementation as callbacks.
  *
- * <rd>
  * Here are the fail conditions:
  *   * incompatible xxfi_version.
  *   * illegal xxfi_flags value.
- * </rd>
  *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_register">
@@ -872,10 +1249,8 @@ int smfi_register   (struct smfiDesc  description);
  * with smfi_register(), smfi_setconn() and so on before
  * smfi_main() is called.
  *
- * <rd>
  * Here are the fail conditions:
  *   * failed to create the socket.
- * </rd>
  *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_main">
@@ -893,10 +1268,8 @@ int smfi_main       (void);
  * Sets the milters' backlog value that is used for
  * listen(2).
  *
- * <rd>
  * Here are the fail conditions:
  *   * @backlog <= 0.
- * </rd>
  *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_setbacklog">
@@ -947,20 +1320,16 @@ int smfi_settimeout (int              timeout);
  *
  * Sets the connection spec.
  *
- * <rd>
  * @connection_spec format is one of them:
  *   * "unix:/PATH/TO/SOCKET": UNIX domain socket.
  *   * "inet:PORT", "inet:PORT&commat;HOST_NAME" or
  *     "inet:PORT&commat;IP_ADDRESS": IPv4.
  *   * "inet6:PORT", "inet6:PORT&commat;HOST_NAME" or
  *     "inet6:PORT&commat;IP_ADDRESS": IPv6.
- * </rd>
  *
- * <rd>
  * Here are the fail conditions:
  *   * invalid format.
  *   * @connection_spec is %NULL.
- * </rd>
  *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_setconn">
@@ -1518,11 +1887,9 @@ char   *smfi_getsymval   (SMFICTX        *context,
  * %SMFIS_TEMPFAIL. 5xx @return_code is used on
  * %SMFIS_REJECT.
  *
- * <rd>
  * Here are the fail conditions:
  *   * @return_code is neither 4xx nor 5xx.
  *   * @extended_code is neither 4.x.x nor 5.x.x.
- * </rd>
  *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_setreply">
@@ -1551,11 +1918,9 @@ int     smfi_setreply    (SMFICTX        *context,
  * %SMFIS_TEMPFAIL. 5xx @return_code is used on
  * %SMFIS_REJECT.
  *
- * <rd>
  * Here are the fail conditions:
  *   * @return_code is neither 4xx nor 5xx.
  *   * @extended_code is neither 4.x.x nor 5.x.x.
- * </rd>
  *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_setmlreply">
@@ -1577,7 +1942,6 @@ int     smfi_setmlreply  (SMFICTX        *context,
  * Adds a header to the current message's header
  * list. smfi_addheader() can be called in xxfi_eom().
  *
- * <rd>
  * Here are the fail conditions:
  *   * @name is %NULL.
  *   * @value is %NULL.
@@ -1585,7 +1949,6 @@ int     smfi_setmlreply  (SMFICTX        *context,
  *   * %SMFIF_ADDHDRS flag isn't set in smfi_register() or
  *     xxfi_negotiate().
  *   * network error is occurred.
- * </rd>
  *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_addheader">
@@ -1611,14 +1974,12 @@ int     smfi_addheader   (SMFICTX        *context,
  * header is deleted. smfi_chgheader() can be called in
  * xxfi_eom().
  *
- * <rd>
  * Here are the fail conditions:
  *   * @name is %NULL.
  *   * called in except xxfi_eom(). FIXME: not-implemented yet.
  *   * %SMFIF_CHGHDRS flag isn't set in smfi_register() or
  *     xxfi_negotiate(). FIXME: not-implemented yet.
  *   * network error is occurred.
- * </rd>
  *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_chgheader">
@@ -1642,7 +2003,6 @@ int     smfi_chgheader   (SMFICTX        *context,
  * Inserts a header to @index in headers. smfi_insheader()
  * can be called in xxfi_eom().
  *
- * <rd>
  * Here are the fail conditions:
  *   * @name is %NULL.
  *   * @value is %NULL. FIXME: not-implemented yet.
@@ -1650,7 +2010,6 @@ int     smfi_chgheader   (SMFICTX        *context,
  *   * %SMFIF_ADDHDRS flag isn't set in smfi_register() or
  *     xxfi_negotiate(). FIXME: not-implemented yet.
  *   * network error is occurred.
- * </rd>
  *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_insheader">
@@ -1672,14 +2031,12 @@ int     smfi_insheader   (SMFICTX        *context,
  * Changes a sender address. smfi_chgfrom() can be called in
  * xxfi_eom().
  *
- * <rd>
  * Here are the fail conditions:
  *   * @mail is %NULL. FIXME: not-implemented yet.
  *   * called in except xxfi_eom(). FIXME: not-implemented yet.
  *   * %SMFIF_CHGFROM flag isn't set in smfi_register() or
  *     xxfi_negotiate(). FIXME: not-implemented yet.
  *   * network error is occurred.
- * </rd>
  *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_chgfrom">
@@ -1699,14 +2056,12 @@ int     smfi_chgfrom     (SMFICTX        *context,
  * Adds a recipient address. smfi_addrcpt() can be called in
  * xxfi_eom().
  *
- * <rd>
  * Here are the fail conditions:
  *   * @recipient is %NULL. FIXME: not-implemented yet.
  *   * called in except xxfi_eom(). FIXME: not-implemented yet.
  *   * %SMFIF_ADDRCPT flag isn't set in smfi_register() or
  *     xxfi_negotiate(). FIXME: not-implemented yet.
  *   * network error is occurred.
- * </rd>
  *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_addrcpt">
@@ -1727,14 +2082,12 @@ int     smfi_addrcpt     (SMFICTX        *context,
  * arguments. smfi_addrcpt_par() can be called in
  * xxfi_eom().
  *
- * <rd>
  * Here are the fail conditions:
  *   * @recipient is %NULL. FIXME: not-implemented yet.
  *   * called in except xxfi_eom(). FIXME: not-implemented yet.
  *   * %SMFIF_ADDRCPT_PAR flag isn't set in smfi_register() or
  *     xxfi_negotiate(). FIXME: not-implemented yet.
  *   * network error is occurred.
- * </rd>
  *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_addrcpt_par">
@@ -1754,14 +2107,12 @@ int     smfi_addrcpt_par (SMFICTX        *context,
  * Deletes a recipient address. smfi_delrcpt() can be called in
  * xxfi_eom().
  *
- * <rd>
  * Here are the fail conditions:
  *   * @recipient is %NULL. FIXME: not-implemented yet.
  *   * called in except xxfi_eom(). FIXME: not-implemented yet.
  *   * %SMFIF_DELRCPT flag isn't set in smfi_register() or
  *     xxfi_negotiate(). FIXME: not-implemented yet.
  *   * network error is occurred.
- * </rd>
  *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_delrcpt">
@@ -1779,11 +2130,9 @@ int     smfi_delrcpt     (SMFICTX        *context,
  * Keeps the current connection. smfi_progress() can be called in
  * xxfi_eom().
  *
- * <rd>
  * Here are the fail conditions:
  *   * called in except xxfi_eom(). FIXME: not-implemented yet.
  *   * network error is occurred.
- * </rd>
  *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_progress">
@@ -1803,7 +2152,6 @@ int     smfi_progress    (SMFICTX        *context);
  * @new_body. smfi_replacebody() can be called in
  * xxfi_eom().
  *
- * <rd>
  * Here are the fail conditions:
  *   * @new_body == %NULL and @new_body_size > 0. FIXME:
  *     not-implemented yet.
@@ -1811,7 +2159,6 @@ int     smfi_progress    (SMFICTX        *context);
  *   * %SMFIF_CHGBODY flag isn't set in smfi_register() or
  *     xxfi_negotiate(). FIXME: not-implemented yet.
  *   * network error is occurred.
- * </rd>
  *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_replacebody">
@@ -1831,14 +2178,12 @@ int     smfi_replacebody (SMFICTX        *context,
  * Quarantines the current message with
  * @reason. smfi_quarantine() can be called in xxfi_eom().
  *
- * <rd>
  * Here are the fail conditions:
  *   * @reason is %NULL or empty. FIXME: not-implemented yet.
  *   * called in except xxfi_eom(). FIXME: not-implemented yet.
  *   * %SMFIF_QUARANTINE flag isn't set in smfi_register() or
  *     xxfi_negotiate(). FIXME: not-implemented yet.
  *   * network error is occurred.
- * </rd>
  *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_quarantine">
@@ -1856,10 +2201,8 @@ int     smfi_quarantine  (SMFICTX        *context,
  *
  * Sets the private data.
  *
- * <rd>
  * Here are the fail conditions:
  *   * @context is invalid. FIXME: not-implemented yet.
- * </rd>
  *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_setpriv">
@@ -1876,10 +2219,8 @@ int     smfi_setpriv     (SMFICTX        *context,
  *
  * Gets the private data.
  *
- * <rd>
  * Here are the fail conditions:
  *   * @context is invalid. FIXME: not-implemented yet.
- * </rd>
  *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_getpriv">
@@ -1899,7 +2240,6 @@ void   *smfi_getpriv     (SMFICTX        *context);
  * Sets the list of requested macros. smfi_setsymlist() can
  * be called in xxfi_negotiate().
  *
- * <rd>
  * Here are the fail conditions:
  *   * @state is not a valid value. FIXME: not-implemented yet.
  *   * @macros is %NULL or empty. FIXME: not-implemented yet.
@@ -1907,7 +2247,6 @@ void   *smfi_getpriv     (SMFICTX        *context);
  *     not-implemented yet.
  *   * called in except xxfi_negotiate(). FIXME: not-implemented yet.
  *   * network error is occurred.
- * </rd>
  *
  * See also <ulink
  * url="https://www.milter.org/developers/api/smfi_setsymlist">

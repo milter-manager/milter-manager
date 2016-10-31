@@ -29,6 +29,14 @@
 
 G_BEGIN_DECLS
 
+/**
+ * SECTION: milter-protocol
+ * @title: MilterProtocol
+ * @short_description: Milter protocol
+ *
+ * TODO
+ */
+
 #define MILTER_CHUNK_SIZE 65535
 
 typedef enum

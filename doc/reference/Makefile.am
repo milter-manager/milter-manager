@@ -8,7 +8,8 @@ DOC_MAIN_SGML_FILE = milter-manager-docs.sgml
 
 # Extra options to supply to gtkdoc-scan
 SCAN_OPTIONS =							\
-	--deprecated-guards="MILTER_DISABLE_DEPRECATED"
+	--deprecated-guards="MILTER_DISABLE_DEPRECATED"		\
+	--rebuild-sections
 
 # The directory containing the source code. Relative to $(srcdir)
 DOC_SOURCE_DIR =	\
@@ -190,7 +191,9 @@ generated_xml_files =				\
 
 MAINTAINERCLEANFILES +=			\
 	$(generated_xml_files)		\
-	$(generated_image_files)
+	$(generated_image_files)	\
+	milter-manager-sections.txt	\
+	milter-manager.types
 
 # Other files to distribute
 EXTRA_DIST +=					\
