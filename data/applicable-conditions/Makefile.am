@@ -7,4 +7,5 @@ dist_conditions_DATA =			\
 	authentication.conf		\
 	restrict-accounts.conf		\
 	stress.conf			\
-	trust.conf
+	trust.conf			\
+	dnsbl.conf
