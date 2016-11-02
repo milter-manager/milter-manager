@@ -68,7 +68,7 @@ upload-doc:
 	cd doc/reference && $(MAKE) $(AM_MAKEFLAGS) upload
 
 upload-coverage: coverage-force
-	rsync -avz coverage/ $(SF_HTDOCS)/coverage/
+	rsync -avz coverage/ $(OSDN_HTDOCS)/coverage/
 
 update-po:
 	cd $(top_srcdir) &&				\
