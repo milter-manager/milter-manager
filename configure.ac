@@ -873,48 +873,6 @@ esac
 AC_SUBST(CUTTER_SOURCE_PATH)
 
 dnl **************************************************************
-dnl Check for SF.net.
-dnl **************************************************************
-
-SF_PROJECT_ID="milter-manager"
-AC_SUBST(SF_PROJECT_ID)
-SF_PROJECT_NAME="milter manager"
-AC_SUBST(SF_PROJECT_NAME)
-
-AC_ARG_WITH([sf-user],
-            AS_HELP_STRING([--with-sf-user=NAME],
-                           [Use NAME to access sf.net]),
-            [SF_USER="$withval"])
-AC_SUBST(SF_USER)
-
-SF_USER_OPTION=""
-if test -n "$SF_USER"; then
-   SF_USER_OPTION="--username $SF_USER"
-fi
-AC_SUBST(SF_USER_OPTION)
-
-SF_WEB_HOST="web.sourceforge.net"
-SF_FRS_HOST="frs.sourceforge.net"
-if test -n "$SF_USER"; then
-   SF_WEB_HOST="$SF_USER,$SF_PROJECT_ID@$SF_WEB_HOST"
-   SF_FRS_HOST="$SF_USER,$SF_PROJECT_ID@$SF_FRS_HOST"
-fi
-AC_SUBST(SF_WEB_HOST)
-AC_SUBST(SF_FRS_HOST)
-
-SF_PROJECT_ID_HEAD_1=`echo $SF_PROJECT_ID | sed -e 's/^\(.\).*/\1/'`
-SF_PROJECT_ID_HEAD_2=`echo $SF_PROJECT_ID | sed -e 's/^\(..\).*/\1/'`
-SF_HTDOCS_PATH="/home/groups/${SF_PROJECT_ID_HEAD_1}/${SF_PROJECT_ID_HEAD_2}/${SF_PROJECT_ID}/htdocs"
-AC_SUBST(SF_HTDOCS_PATH)
-SF_HTDOCS="$SF_WEB_HOST:$SF_HTDOCS_PATH"
-AC_SUBST(SF_HTDOCS)
-
-SF_FRS_PATH="/home/frs/project/${SF_PROJECT_ID_HEAD_1}/${SF_PROJECT_ID_HEAD_2}/${SF_PROJECT_ID}"
-AC_SUBST(SF_FRS_PATH)
-SF_FRS="$SF_FRS_HOST:$SF_FRS_PATH"
-AC_SUBST(SF_FRS)
-
-dnl **************************************************************
 dnl Check for osdn.net.
 dnl **************************************************************
 
