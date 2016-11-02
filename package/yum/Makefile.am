@@ -39,7 +39,7 @@ download:
 	    $(SERVER_PATH)/$${distribution}/ $${distribution};	\
 	done
 
-build: build-in-chroot build-release-rpm
+build: build-in-chroot
 
 build-in-chroot:
 	./build-in-chroot.sh			\
@@ -54,14 +54,6 @@ build-in-chroot:
 	  '$(USE_RPMFORGE)'			\
 	  '$(USE_ATRPMS)'			\
 	  '$(USE_EPEL)'
-
-build-release-rpm: RPM-GPG-KEY-$(PACKAGE)
-	./build-release-rpm.sh		\
-	  $(PACKAGE)				\
-	  '$(PACKAGE_TITLE)'			\
-	  $(BASE_URL_PREFIX)			\
-	  '$(DISTRIBUTIONS)'			\
-	  $(HAVE_DEVELOPMENT_BRANCH)
 
 ensure-public-key:
 	gpg --list-keys '$(GPG_UID)' > /dev/null ||			\
