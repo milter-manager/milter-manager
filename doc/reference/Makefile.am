@@ -507,4 +507,4 @@ upload: docs
 	  --template-directory=$(srcdir) --title "$(PACKAGE_TITLE)"	\
 	  --language=ja --suffix=$(RELEASE_TYPE) tmp/reference/ja/*.html
 	rsync -avz --delete tmp/reference/		\
-	  $(SF_HTDOCS)$(RELEASE_TYPE_PATH)/reference/
+	  $(OSDN_HTDOCS)$(RELEASE_TYPE_PATH)/reference/
