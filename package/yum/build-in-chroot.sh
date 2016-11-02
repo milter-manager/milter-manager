@@ -2,8 +2,8 @@
 # -*- indent-tabs-mode: nil; sh-basic-offset: 4; sh-indentation: 4 -*-
 
 if [ $# != 11 ]; then
-    echo "Usage: $0 PACKAGE VERSION SOURCE_BASE_NAME SPEC_DIR CHROOT_BASE ARCHITECTURES DISTRIBUTIONS HAVE_DEVELOPMENT_BRANCH USE_RPMFORGE USE_ATRPMS USE_EPEL"
-    echo " e.g.: $0 milter-manager 1.1.1 ../milter-manager ../rpm /var/lib/chroot 'i386 x86_64' 'fedora centos' yes no no"
+    echo "Usage: $0 PACKAGE VERSION SOURCE_BASE_NAME SPEC_DIR CHROOT_BASE ARCHITECTURES DISTRIBUTIONS USE_RPMFORGE USE_ATRPMS USE_EPEL"
+    echo " e.g.: $0 milter-manager 1.1.1 ../milter-manager ../rpm /var/lib/chroot 'i386 x86_64' 'fedora centos' no no"
     exit 1
 fi
 
@@ -14,10 +14,9 @@ SPEC_DIR=$4
 CHROOT_BASE=$5
 ARCHITECTURES=$6
 DISTRIBUTIONS=$7
-HAVE_DEVELOPMENT_BRANCH=$8
-USE_RPMFORGE=$9
-USE_ATRPMS=$10
-USE_EPEL=$11
+USE_RPMFORGE=$8
+USE_ATRPMS=$9
+USE_EPEL=$10
 
 PATH=/usr/local/sbin:/usr/sbin:$PATH
 
@@ -95,16 +94,7 @@ build()
         rpm_dir=${rpm_base_dir}/RPMS/i686
     fi
     srpm_dir=${rpm_base_dir}/SRPMS
-    pool_base_dir=${distribution}/${distribution_version}
-    if test "${HAVE_DEVELOPMENT_BRANCH}" = "yes"; then
-        minor_version=$(echo $VERSION | ruby -pe '$_.gsub!(/\A\d+\.(\d+)\..*/, "\\1")')
-        if test $(expr ${minor_version} % 2) -eq 0; then
-            branch_name=stable
-        else
-            branch_name=development
-        fi
-        pool_base_dir=${pool_base_dir}/${branch_name}
-    fi
+    pool_base_dir=${distribution}/${distribution_version}/stable
     binary_pool_dir=$pool_base_dir/$architecture/Packages
     source_pool_dir=$pool_base_dir/source/SRPMS
     if test -f ${SOURCE_BASE_NAME}-${VERSION}-*.src.rpm; then

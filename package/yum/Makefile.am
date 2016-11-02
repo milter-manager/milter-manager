@@ -5,7 +5,6 @@ CENTOS_VERSIONS= 6 7
 ARCHITECTURES = i386 x86_64
 CHROOT_BASE = /var/lib/chroot
 BASE_URL_PREFIX = http://downloads.sourceforge.net/project/$(PACKAGE)
-HAVE_DEVELOPMENT_BRANCH = yes
 USE_RPMFORGE = no
 USE_ATRPMS = no
 USE_EPEL = yes
@@ -44,7 +43,6 @@ build-in-chroot:
 	  $(CHROOT_BASE)			\
 	  '$(ARCHITECTURES)'			\
 	  '$(DISTRIBUTIONS)'			\
-	  '$(HAVE_DEVELOPMENT_BRANCH)'		\
 	  '$(USE_RPMFORGE)'			\
 	  '$(USE_ATRPMS)'			\
 	  '$(USE_EPEL)'
