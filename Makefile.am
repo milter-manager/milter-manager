@@ -50,9 +50,9 @@ EXTRA_DIST =					\
 upload: upload-doc upload-coverage
 
 release: dist
-	$(CUTTER_SOURCE_PATH)/misc/release.rb			\
-	  $(SF_USER) '$(SF_PROJECT_ID)' '$(SF_PROJECT_NAME)'	\
-	  '$(PACKAGE_TITLE)' $(VERSION) README NEWS		\
+	$(CUTTER_SOURCE_PATH)/misc/release-to-osdn.rb \
+	  $(OSDN_USER) '$(OSDN_PROJECT_ID)' '$(OSDN_PROJECT_NAME)' \
+	  '$(PACKAGE_TITLE)' $(VERSION) README NEWS \
 	  $(PACKAGE)-$(VERSION).tar.gz
 
 release-github: dist
