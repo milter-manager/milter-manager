@@ -1,8 +1,8 @@
-SERVER_PATH = $(SF_FRS)
 DISTRIBUTIONS = debian
 ARCHITECTURES = i386 amd64
 CODE_NAMES = jessie stretch unstable
 CLEAN_ROOM_BASE = /var/cache/pbuilder
+RELEASE = 1
 
 release: build update sign upload
 
@@ -17,33 +17,14 @@ remove-existing-packages:
 
 update:
 	./update-repository.sh \
-	  '$(SF_PROJECT_NAME)' '$(PACKAGE_TITLE)' '$(CODE_NAMES)'
+	  '$(OSDN_PROJECT_NAME)' '$(PACKAGE_TITLE)' '$(CODE_NAMES)'
 
 sign:
 	./sign-repository.sh $(GPG_UID) '$(CODE_NAMES)'
 
 upload:
-	for distribution in $(DISTRIBUTIONS); do		\
-	  (cd $${distribution} &&				\
-	   rsync -avz --exclude .svn --delete			\
-	     .htaccess dists pool stable development	\
-	     $(SERVER_PATH)/$${distribution};			\
-	  );							\
-	done
-
-download:
-	for distribution in $(DISTRIBUTIONS); do			\
-	  (mkdir -p $${distribution} &&					\
-	   cd $${distribution} &&					\
-	   rm -rf pool dists &&						\
-	   ln -fs stable/pool pool &&					\
-	   ln -fs stable/dists dists &&					\
-	   rsync -avz $(SERVER_PATH)/$${distribution}/stable/		\
-	     stable &&							\
-	   rsync -avz $(SERVER_PATH)/$${distribution}/development/	\
-	     development;						\
-	  );								\
-	done
+	./upload-packages.sh 					\
+	  $(VERSION) $(RELEASE) '$(ARCHITECTURES)' '$(CODE_NAMES)'
 
 build:
 	./build-in-clean-room.sh \
