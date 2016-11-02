@@ -104,8 +104,8 @@ update-latest-release:
 	  html/index.html					\
 	  html/index.html.ja					\
 	  html/blog/tdiary.conf					\
-	  doc/reference/header$(RELEASE_TYPE_SUFFIX).html	\
-	  doc/reference/header$(RELEASE_TYPE_SUFFIX)-ja.html	\
+	  doc/reference/header.html	\
+	  doc/reference/header-ja.html	\
 	  doc/install-to-centos.rd				\
 	  doc/install-to-centos.rd.ja				\
 	  doc/install-to-freebsd.rd				\

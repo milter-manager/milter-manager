@@ -19,34 +19,7 @@ AM_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE(tar-pax)
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
-if test "`expr milter_manager_version_minor % 2`" = "1"; then
-  DEVELOPMENT_RELEASE=yes
-else
-  DEVELOPMENT_RELEASE=no
-fi
-AC_SUBST(DEVELOPMENT_RELEASE)
-
-if test "$DEVELOPMENT_RELEASE" = "yes"; then
-  RELEASE_TYPE=dev
-  RELEASE_TYPE_SUFFIX=-dev
-else
-  RELEASE_TYPE=
-  RELEASE_TYPE_SUFFIX=
-fi
-AC_SUBST(RELEASE_TYPE)
-AC_SUBST(RELEASE_TYPE_SUFFIX)
-
-if test -n $RELEASE_TYPE; then
-   RELEASE_TYPE_PATH="/$RELEASE_TYPE"
-else
-   RELEASE_TYPE_PATH=""
-fi
-AC_SUBST(RELEASE_TYPE_PATH)
-
 PACKAGE_TITLE="milter manager"
-if test "$DEVELOPMENT_RELEASE" = "yes"; then
-   PACKAGE_TITLE="$PACKAGE_TITLE (dev)"
-fi
 AC_SUBST(PACKAGE_TITLE)
 
 MILTER_MANAGER_VERSION_MAJOR=milter_manager_version_major

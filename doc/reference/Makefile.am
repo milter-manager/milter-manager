@@ -502,9 +502,9 @@ upload: docs
 	chmod -R g+w tmp/reference
 	ruby $(CUTTER_SOURCE_PATH)/misc/prepare-gtk-doc-html-for-publishing.rb	\
 	  --template-directory=$(srcdir) --title "$(PACKAGE_TITLE)"	\
-	  --suffix=$(RELEASE_TYPE) tmp/reference/*.html
+	  tmp/reference/*.html
 	ruby $(CUTTER_SOURCE_PATH)/misc/prepare-gtk-doc-html-for-publishing.rb	\
 	  --template-directory=$(srcdir) --title "$(PACKAGE_TITLE)"	\
-	  --language=ja --suffix=$(RELEASE_TYPE) tmp/reference/ja/*.html
+	  --language=ja tmp/reference/ja/*.html
 	rsync -avz --delete tmp/reference/		\
-	  $(OSDN_HTDOCS)$(RELEASE_TYPE_PATH)/reference/
+	  $(OSDN_HTDOCS)/reference/
