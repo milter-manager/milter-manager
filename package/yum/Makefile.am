@@ -1,6 +1,7 @@
 SERVER_PATH = $(SF_FRS)
 # DISTRIBUTIONS = fedora centos
 DISTRIBUTIONS = centos
+CENTOS_VERSIONS= 6 7
 ARCHITECTURES = i386 x86_64
 CHROOT_BASE = /var/lib/chroot
 BASE_URL_PREFIX = http://downloads.sourceforge.net/project/$(PACKAGE)
@@ -8,6 +9,7 @@ HAVE_DEVELOPMENT_BRANCH = yes
 USE_RPMFORGE = no
 USE_ATRPMS = no
 USE_EPEL = yes
+RELASE = 1
 
 release: build sign update upload
 
@@ -28,15 +30,7 @@ update:
 
 upload:
 	for distribution in $(DISTRIBUTIONS); do		\
-	  rsync -avz --delete					\
-	    --exclude .gitignore --exclude .svn			\
-	    $${distribution}/ $(SERVER_PATH)/$${distribution};	\
-	done
-
-download:
-	for distribution in $(DISTRIBUTIONS); do		\
-	  rsync -avz --delete						\
-	    $(SERVER_PATH)/$${distribution}/ $${distribution};	\
+	  ./upload-packages.sh $distribution '$(CENTOS_VERSIONS)' $(OSDN_PROJECT_ID) $(VERSION) $(RELEASE) \
 	done
 
 build: build-in-chroot
