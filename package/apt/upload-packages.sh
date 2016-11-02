@@ -1,17 +1,17 @@
 #!/bin/bash
 # -*- indent-tabs-mode: nil; sh-basic-offset: 4; sh-indentation: 4 -*-
 
-if [ $# != 3 ]; then
-    echo "Usage: $0 VERSION RELEASE ARCHITECTURES CODES"
-    echo "Usage: $0 2.1.0 1 'i386 amd64' 'jessie stretch unstable'"
+if [ $# != 5 ]; then
+    echo "Usage: $0 PACKAGE VERSION RELEASE ARCHITECTURES CODES"
+    echo "Usage: $0 milter-manager 2.1.0 1 'i386 amd64' 'jessie stretch'"
     exit 1
 fi
 
-PACKAGE=milter-manager
-VERSION=$1
-RELEASE=$2
-ARCHITECTURES=$3
-CODES=$4
+PACKAGE=$1
+VERSION=$2
+RELEASE=$3
+ARCHITECTURES=$4
+CODES=$5
 
 script_base_dir=$(dirname $(realpath -e $0))
 

@@ -24,7 +24,7 @@ sign:
 
 upload:
 	./upload-packages.sh 					\
-	  $(VERSION) $(RELEASE) '$(ARCHITECTURES)' '$(CODE_NAMES)'
+	  $(OSDN_PROJECT_ID) $(VERSION) $(RELEASE) '$(ARCHITECTURES)' '$(CODE_NAMES)'
 
 build:
 	./build-in-clean-room.sh \
