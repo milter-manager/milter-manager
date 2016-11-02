@@ -25,6 +25,7 @@ images =					\
 	famfamfam-logo.png			\
 	tango-logo.png				\
 	github-logo.png				\
+	packagecloud-logo.png			\
 	jp.png					\
 	us.png					\
 	reference.png				\
