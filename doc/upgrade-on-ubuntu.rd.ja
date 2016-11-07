@@ -14,42 +14,6 @@ Ubuntu Linuxに特化したmilter managerの更新方法について説明し
 
   % sudo apt-get -V -y upgrade
 
-=== 1.8.0 以前からの更新
-
-2011-11-15 にパッケージの署名に使用している鍵を変更したので、新しい鍵を
-登録してください。古い鍵はもう使えません。
-
-  % sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1BD22CD1
-
-sources.list に指定する URI を変更しました。しばらくは以前のものも使用で
-きますが、1.9 系列をリリースするときには削除する予定です。
-
-1.8.0 以前からのユーザは早めに source.list を変更してください。
-
-=== Precise Pangolinの場合
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable precise universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable precise universe
-
-=== Trusty Tahrの場合
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable trusty universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable trusty universe
-
-=== Vivid Vervetの場合
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable vivid universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable vivid universe
-
-=== Wily Werewolfの場合
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable wily universe
-  deb-src http://downloads.sourceforge.net/project/milter-manager/ubuntu/stable wily universe
-
 == まとめ
 
 milter managerは簡単に更新することができる、メンテナンスコス

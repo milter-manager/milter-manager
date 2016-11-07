@@ -17,29 +17,19 @@ unstable, are distributed on the milter manager site.
 We put the following content to
 /etc/apt/sources.list.d/milter-manager.list:
 
-=== For jessie
+  % curl -s https://packagecloud.io/install/repositories/milter-manager/repos/script.deb.sh | sudo bash
 
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable jessie main
-  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable jessie main
-
-=== For stretch
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable stretch main
-  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable stretch main
+See also: https://packagecloud.io/milter-manager/repos/install#deb
 
 === For sid
+
+((*NOTE: packagecloud doesn't support sid for now.*))
 
 /etc/apt/sources.list.d/milter-manager.list:
   deb http://downloads.sourceforge.net/project/milter-manager/debian/stable unstable main
   deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable unstable main
 
 === Install
-
-We register the key of the package repository:
-
-  % sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1BD22CD1
 
 We install milter manager package:
 

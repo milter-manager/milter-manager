@@ -15,41 +15,13 @@ We just upgrade milter manager package.
 
   % sudo aptitude -V -D -y safe-upgrade
 
-=== Upgrade from before 1.8.0
+=== Upgrade from before 2.1.0
 
-We have changed the GPG key to sign packages on 2011-11-15.
-Please import new GPG key.
+We have provided packages on
+((<packagecloud|URL:https://packagecloud.io/milter-manager/repos>))
+since 2.1.0. So we need to update repository information.
 
-  % sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1BD22CD1
-
-We have changed sources.list URI. We are going to delete old URI
-support, when we release milter manager 1.9.0.
-
-Please update your source.list as soon as possible.
-
-=== For wheezy
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable wheezy main
-  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable wheezy main
-
-=== For jessie
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable jessie main
-  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable jessie main
-
-=== For stretch
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable stretch main
-  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable stretch main
-
-=== For sid
-
-/etc/apt/sources.list.d/milter-manager.list:
-  deb http://downloads.sourceforge.net/project/milter-manager/debian/stable unstable main
-  deb-src http://downloads.sourceforge.net/project/milter-manager/debian/stable unstable main
+We cannot provide packages for sid on packagecloud.
 
 == Conclusion
 

@@ -10,18 +10,17 @@ newly install information.
 
 == Upgrade
 
-If we are using 1.8.1 or earlier, we need to install
-milter-manager-release at first. If we are using 1.8.2 or
-later, we doesn't need to this operation.
-
-We need to disable GPG key check because the new repository
-uses a new GPG key and a new GPG key is included in the
-package.
-
-  % sudo yum install --nogpgcheck -y milter-manager-release
-
 We just upgrade milter manager package.
   % sudo yum update -y milter-manager
+
+=== Upgrade from before 2.1.0
+
+We have provided packages on
+((<packagecloud|URL:https://packagecloud.io/milter-manager/repos>))
+since 2.1.0. So we need to update repository information. We can
+remove milter-manager-release package.
+
+  % sudo yum remove milter-manager-release
 
 == Conclusion
 

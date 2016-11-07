@@ -51,7 +51,9 @@ milter managerはyumでインストールできます。
 
 まず、yumリポジトリを登録します。
 
-  % sudo rpm -Uvh http://sourceforge.net/projects/milter-manager/files/centos/milter-manager-release-1.3.0-1.noarch.rpm
+  % curl -s https://packagecloud.io/install/repositories/milter-manager/repos/script.rpm.sh | sudo bash
+
+参考: https://packagecloud.io/milter-manager/repos/install#rpm
 
 登録が完了したらmilter managerをインストールできます。
 
