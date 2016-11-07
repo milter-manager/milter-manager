@@ -237,8 +237,7 @@ make sign したら sourceforge.net をエミュレートするウェブサー
 に書いてある手順でパッケージのインストールと更新ができることを確認する。
 
 make upload したらウェブブラウザで
-((<URL:https://sourceforge.net/projects/milter-manager/files/debian/>)),
-((<URL:https://sourceforge.net/projects/milter-manager/files/ubuntu/>))
+((<URL:https://packagecloud.io/milter-manager/repos?filter=debs>)),
 にアクセスしてパッケージがアップロードできていることを確認する。
 
 === Ubuntu
@@ -281,7 +280,7 @@ make sign したら sourceforge.net をエミュレートするウェブサー
 に書いてある手順でパッケージのインストールと更新ができることを確認する。
 
 make upload したらウェブブラウザで
-((<URL:https://sourceforge.net/projects/milter-manager/files/centos/>))
+((<URL:https://packagecloud.io/milter-manager/repos?filter=rpms>))
 にアクセスしてパッケージがアップロードできていることを確認する。
 
 == ソースアーカイブのアップロード
@@ -292,7 +291,7 @@ make upload したらウェブブラウザで
   % make release
 
 ウェブブラウザで
-((<URL:https://sourceforge.net/projects/milter-manager/files/milter%20manager/>))
+((<URL:https://osdn.net/projects/milter-manager/releases/>))
 にアクセスして新しいバージョンのファイルが追加されていることを確認する。
 
 == サイトの更新
@@ -302,7 +301,7 @@ make upload したらウェブブラウザで
   % make upload-doc
   % make upload-coverage
 
-ウェブブラウザで ((<URL:http://milter-manager.sourceforge.net/>)) にア
+ウェブブラウザで ((<URL:http://milter-manager.osdn.jp/>)) にア
 クセスして新しいドキュメントがアップロードできていることを確認する。
 
 == リモートリポジトリにタグを打つ
@@ -349,8 +348,8 @@ URL やバージョンを変更して使う。
   ○○です。
   
   milter manager <new-version> をリリースしました。
-    http://milter-manager.sourceforge.net/index.html.ja
-    http://milter-manager.sourceforge.net/blog/ja/
+    http://milter-manager.osdn.jp/index.html.ja
+    http://milter-manager.osdn.jp/blog/ja/
 
   = ハイライト
 
@@ -369,12 +368,12 @@ URL やバージョンを変更して使う。
   
   すでにインストールしているmilter managerをアップグレードする
   場合はこちらのドキュメントを参考にしてください。
-    http://milter-manager.sourceforge.net/reference/ja/upgrade.html
+    http://milter-manager.osdn.jp/reference/ja/upgrade.html
   
   = 変更点
 
   <old-version>からの変更点は以下の通りです。
-    http://milter-manager.sourceforge.net/reference/ja/news.html#news.release-1-8-0
+    http://milter-manager.osdn.jp/reference/ja/news.html#news.release-1-8-0
 
   [ここに NEWS.ja の内容をペーストする]
 
@@ -387,7 +386,7 @@ URL やバージョンを変更して使う。
   Hi,
   
   milter manager <new-version> has been released.
-    http://milter-manager.sourceforge.net/
+    http://milter-manager.osdn.jp/
   
   = Highlight
 
@@ -401,21 +400,21 @@ URL やバージョンを変更して使う。
   = Install
   
   Here are documents for installation:
-    http://milter-manager.sourceforge.net/reference/install-to.html
+    http://milter-manager.osdn.jp/reference/install-to.html
   
   Here are documents for upgrading:
-    http://milter-manager.sourceforge.net/reference/upgrade.html
+    http://milter-manager.osdn.jp/reference/upgrade.html
   
   = Changes
   
   Here are changes since <old-version>:
-    http://milter-manager.sourceforge.net/reference/news.html#news.release-1-8-0
+    http://milter-manager.osdn.jp/reference/news.html#news.release-1-8-0
   
   [ここに NEWS の内容をペーストする]
 
 == ブログでもリリースをアナウンスする
 
-((<URL:http://milter-manager.sourceforge.net/blog/ja/>))
+((<URL:http://milter-manager.osdn.jp/blog/ja/>))
 
 ((<URL:http://www.tdiary.org/>)) から最新版の tDiary をダウンロードして
 セットアップする。
