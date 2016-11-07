@@ -123,11 +123,13 @@ installed into bin/.
 == Mailing list
 
 There is
-((<milter-manager-users-en|URL:https://lists.sourceforge.net/lists/listinfo/milter-manager-users-en>))
+((<milter-manager-users-en|URL:http://lists.osdn.me/mailman/listinfo/milter-manager-users-en>))
 mailing list. Questions and bug reports are accepted on
 it. New release announce is also done on the mailing
 list. If you are using milter manager, it's a good idea that
 you subscribe the mailling list.
+
+Old: ((<milter-manager-users-en|URL:https://lists.sourceforge.net/lists/listinfo/milter-manager-users-en>))
 
 == Source code
 

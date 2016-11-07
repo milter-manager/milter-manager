@@ -94,7 +94,7 @@
 
 	<h2 id="support">サポート</h2>
 	<p>
-	  <a href="https://lists.sourceforge.net/lists/listinfo/milter-manager-users-ja">メーリングリスト</a>で質問・バグレポートを受け付けています。新バージョンのアナウンスもメーリングリストに告知されるので、milter managerを利用している場合はメーリングリストの購読を検討してください。
+	  <a href="http://lists.osdn.me/mailman/listinfo/milter-manager-users-ja">メーリングリスト</a>で質問・バグレポートを受け付けています。新バージョンのアナウンスもメーリングリストに告知されるので、milter managerを利用している場合はメーリングリストの購読を検討してください。
 	</p>
 	<p>
 	  企業導入など有償でのサポートや導入支援が必要な場合は<a href="http://www.clear-code.com/services/milter-manager.html">クリアコードが提供するmilter manager関連サービス</a>を検討してください。
@@ -160,7 +160,7 @@ deb-src http://milter-manager.sourceforge.net/debian/development/ lenny main</pr
 	<p>
 	  milter managerはGitHubの<a href="https://github.com/milter-manager/milter-manager">gitリポジトリ</a>を利用して開発を行っています。ソースコードは以下のように取得できます。
 	  <pre class="command">% git clone https://github.com/milter-manager/milter-manager.git</pre>
-	  新機能や問題修正のパッチがある場合は、リポジトリをforkしてpull requestを送ってください。または<a href="https://lists.sourceforge.net/lists/listinfo/milter-manager-users-ja">メーリングリスト</a>でも受け付けています。
+	  新機能や問題修正のパッチがある場合は、リポジトリをforkしてpull requestを送ってください。または<a href="http://lists.osdn.me/mailman/listinfo/milter-manager-users-ja">メーリングリスト</a>でも受け付けています。
 	</p>
       </div>
 
@@ -232,9 +232,9 @@ deb-src http://milter-manager.sourceforge.net/debian/development/ lenny main</pr
         <div class="sidebar-item">
 	  <h2>プロジェクト情報</h2>
 	  <ul>
-	    <li><a href="http://sourceforge.net/projects/milter-manager/">プロジェクトページ</a></li>
+	    <li><a href="http://osdn.net/projects/milter-manager/">プロジェクトページ</a></li>
 	    <li>
-	      <a href="https://lists.sourceforge.net/lists/listinfo/milter-manager-users-ja">メーリングリスト</a>
+	      <a href="http://lists.osdn.me/mailman/listinfo/milter-manager-users-en">メーリングリスト</a>
 	    </li>
 	    <li>
 	      <a href="coverage/">カバレッジ</a>

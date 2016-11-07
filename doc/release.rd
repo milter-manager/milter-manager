@@ -209,8 +209,8 @@ You can check new version tag on
 
 Write release announce in Japanese and English.
 
-  * milter-manager-users-ja@lists.sourceforge.net
-  * milter-manager-users-en@lists.sourceforge.net
+  * milter-manager-users-ja@lists.osdn.me
+  * milter-manager-users-en@lists.osdn.me
 
 == Write a blog entry
 

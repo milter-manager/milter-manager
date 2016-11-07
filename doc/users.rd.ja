@@ -19,7 +19,7 @@ milter managerを導入している企業です。
       clamav-milter, 商用アンチウィルスmilter
     * プラットフォーム: FreeBSD
   * ...（リストに載せてもよい企業の方は((<メーリングリスト
-    |URL:https://lists.sourceforge.net/lists/listinfo/milter-manager-users-ja>))
+    |URL:http://lists.osdn.me/mailman/listinfo/milter-manager-users-ja>))
     またはkou@clear-code.comへのメールでお知らせください。）
 
 == その他
@@ -40,5 +40,5 @@ milter managerはフリーソフトウェア・オープンソースソフトウ
   * ((<危うくサーバーを壊すところだった - www.ikezoe.net|URL:http://www.ikezoe.net/2009/03/post-894.html>)): 2009/03/23
   * ((<COZMIXNG|URL:http://www.cozmixng.org/>)): 2009/01くらい
   * ...（リストにない記述を見かけた方は((<メーリングリスト
-    |URL:https://lists.sourceforge.net/lists/listinfo/milter-manager-users-ja>))
+    |URL:http://lists.osdn.me/mailman/listinfo/milter-manager-users-ja>))
     またはkou@clear-code.comへのメールでお知らせください。）

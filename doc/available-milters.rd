@@ -9,8 +9,8 @@ with milter manager.
 
 Milters that not listed here will be able to work with
 milter manager. If you can work a milter not listed here
-with milter manager, please report the milter to ((<mailing
-list|URL:https://lists.sourceforge.net/lists/listinfo/milter-manager-users-en>))
+with milter manager, please report the milter to
+((<milter-manager-users-en|URL:http://lists.osdn.me/mailman/listinfo/milter-manager-users-en>))
 .
 
 == Anti spam
@@ -52,7 +52,7 @@ list|URL:https://lists.sourceforge.net/lists/listinfo/milter-manager-users-en>))
 
 If you confirm that they can work with milter manager,
 please report it to ((<mailing
-list|URL:https://lists.sourceforge.net/lists/listinfo/milter-manager-users-en>)).
+list|URL:http://lists.osdn.me/mailman/listinfo/milter-manager-users-en>)).
 
   * ((<AntiVir MailGate|URL:http://www.avira.com/en/products/avira_antivir_mailgate.html>))
   * ((<milter-regex|URL:http://www.benzedrine.cx/milter-regex.html>))

@@ -125,10 +125,12 @@ milter managerにはいくつか便利なツールが付属されていて、bin
 
 == メーリングリスト
 
-((<milter-manager-users-ja|URL:https://lists.sourceforge.net/lists/listinfo/milter-manager-users-ja>))
+((<milter-manager-users-ja:URL:http://lists.osdn.me/mailman/listinfo/milter-manager-users-ja>))
 があり、質問・バグレポートを受け付けています。新バージョンの
 アナウンスもメーリングリストに告知されるので、milter manager
 を利用している場合はメーリングリストの購読を検討してください。
+
+旧: ((<milter-manager-users-ja|URL:https://lists.sourceforge.net/lists/listinfo/milter-manager-users-ja>))
 
 == ソースコード
 
