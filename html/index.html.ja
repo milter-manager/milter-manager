@@ -100,62 +100,6 @@
 	  企業導入など有償でのサポートや導入支援が必要な場合は<a href="http://www.clear-code.com/services/milter-manager.html">クリアコードが提供するmilter manager関連サービス</a>を検討してください。
 	</p>
 
-	<h2 id="development-release">開発版リリース</h2>
-	<p>
-	  2010-08-03に開発版1.5.3がリリースされました。開発版には多くの新機能が含まれていますが、安定して動作しない可能性があります。実運用には安定版を利用してください。
-        </p>
-	<ul>
-          <li><a href="http://sourceforge.net/projects/milter-manager/files/milter-manager+%28dev%29/1.5.3/milter-manager-1.5.3.tar.gz">ダウンロード</a></li>
-          <li><a href="dev/reference/ja/news.html#news.release-1-5-3">変更点</a></li>
-          <li><a href="dev/reference/ja/">ドキュメント</a></li>
-	</ul>
-
-	<h3>Ubuntu 8.04 LTS Hardy Heron用開発版パッケージ</h3>
-	<p>
-	  apt-line:
-	  <pre class="file">deb http://milter-manager.sourceforge.net/ubuntu/development/ hardy universe
-deb-src http://milter-manager.sourceforge.net/ubuntu/development/ hardy universe</pre>
-	</p>
-	<p>
-	  パッケージはmilter managerリリース用の鍵でサインされています。信用する場合は鍵を登録します。
-	  <pre class="command">% gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1BD22CD1
-% gpg --export 1BD22CD1 | sudo apt-key add -</pre>
-	</p>
-
-	<h3>Ubuntu 10.04 LTS Lucid Lynx用開発版パッケージ</h3>
-	<p>
-	  apt-line:
-	  <pre class="file">deb http://milter-manager.sourceforge.net/ubuntu/development/ lucid universe
-deb-src http://milter-manager.sourceforge.net/ubuntu/development/ lucid universe</pre>
-	</p>
-	<p>
-	  パッケージはmilter managerリリース用の鍵でサインされています。信用する場合は鍵を登録します。
-	  <pre class="command">% gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1BD22CD1
-% gpg --export 1BD22CD1 | sudo apt-key add -</pre>
-	</p>
-
-	<h3>Debian GNU/Linux lenny用開発版パッケージ</h3>
-	<p>
-	  apt-line:
-	  <pre class="file">deb http://milter-manager.sourceforge.net/debian/development/ lenny main
-deb-src http://milter-manager.sourceforge.net/debian/development/ lenny main</pre>
-	</p>
-	<p>
-	  パッケージはmilter managerリリース用の鍵でサインされています。信用する場合は鍵を登録します。
-	  <pre class="command">% gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1BD22CD1
-% gpg --export 1BD22CD1 | sudo apt-key add -</pre>
-	</p>
-
-	<h3>CentOS 5.5用開発版パッケージ</h3>
-	<p>
-	  yumでインストールできます。まず、milter managerのyumリポジトリを登録します。これは最初の1度だけ行います。
-	  <pre class="command">% sudo rpm -Uvh http://milter-manager.sourceforge.net/centos/5/milter-manager-repository-1.0.0-0.noarch.rpm</pre>
-	</p>
-	<p>
-	  yumリポジトリを登録したら以下のコマンドでインストールできます。
-	  <pre class="command">% sudo yum install --enablerepo=milter-manager-development -y milter-manager</pre>
-	</p>
-
 	<h2 id="development">milter managerの開発に参加</h2>
 	<p>
 	  milter managerはGitHubの<a href="https://github.com/milter-manager/milter-manager">gitリポジトリ</a>を利用して開発を行っています。ソースコードは以下のように取得できます。

@@ -105,63 +105,6 @@
 	  Questions and bug reports are accepted on <a href="http://lists.osdn.me/mailman/listinfo/milter-manager-users-en">mailing list</a>. New release announce is also done on the mailing list. If you are using milter manager, it's a good idea that you subscribe the mailling list.
 	</p>
 
-	<h2 id="development-release">Development release</h2>
-	<p>
-	  1.5.3 is the latest development release. It had been released at 2010-08-03.
-	  Development seriese includes many new features but it may not work stably. You should use the latest stable release for production.
-        </p>
-	<ul>
-          <li><a href="http://sourceforge.net/projects/milter-manager/files/milter-manager+%28dev%29/1.5.3/milter-manager-1.5.3.tar.gz">Download</a></li>
-          <li><a href="dev/reference/news.html#news.release-1-5-3">Changes</a></li>
-          <li><a href="dev/reference/">Documents</a></li>
-	</ul>
-
-	<h3>Packages of development releases for Ubuntu 8.04 LTS Hardy Heron</h3>
-	<p>
-	  apt-line for:
-	  <pre class="file">deb http://milter-manager.sourceforge.net/ubuntu/development/ hardy universe
-deb-src http://milter-manager.sourceforge.net/ubuntu/development/ hardy universe</pre>
-	</p>
-	<p>
-	  Packages are signed by key of milter manager. If you trust the key, you can register the key:
-	  <pre class="command">% gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1BD22CD1
-% gpg --export 1BD22CD1 | sudo apt-key add -</pre>
-	</p>
-
-	<h3>Packages of development releases for Ubuntu 10.4 LTS Lucid Lynx</h3>
-	<p>
-	  apt-line for:
-	  <pre class="file">deb http://milter-manager.sourceforge.net/ubuntu/development/ lucid universe
-deb-src http://milter-manager.sourceforge.net/ubuntu/development/ lucid universe</pre>
-	</p>
-	<p>
-	  Packages are signed by key of milter manager. If you trust the key, you can register the key:
-	  <pre class="command">% gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1BD22CD1
-% gpg --export 1BD22CD1 | sudo apt-key add -</pre>
-	</p>
-
-	<h3>Packages of development releases for Debian GNU/Linux lenny</h3>
-	<p>
-	  apt-line:
-	  <pre class="file">deb http://milter-manager.sourceforge.net/debian/development/ lenny main
-deb-src http://milter-manager.sourceforge.net/debian/development/ lenny main</pre>
-	</p>
-	<p>
-	  Packages are signed by key of milter manager. If you trust the key, you can register the key:
-	  <pre class="command">% gpg --keyserver hkp://subkeys.pgp.net --recv-keys 1BD22CD1
-% gpg --export 1BD22CD1 | sudo apt-key add -</pre>
-	</p>
-
-	<h3>Packages of development releases for CentOS 5.5</h3>
-	<p>
-	  Packages are provided as yum repository. You need to register milter manager yum repository at the first time:
-	  <pre class="command">% sudo rpm -Uvh http://milter-manager.sourceforge.net/centos/5/milter-manager-repository-1.0.0-1.noarch.rpm</pre>
-	</p>
-	<p>
-	  You can install milter manager from the yum repository by the following command:
-	  <pre class="command">% sudo yum install --enablerepo=milter-manager-development -y milter-manager</pre>
-	</p>
-
 	<h2 id="development">Join milter manager developement</h2>
 	<p>
 	  milter manager uses <a href="https://github.com/milter-manager/milter-manager">git repository</a> on GitHub. You can get the latest milter manager source code by the following command:
