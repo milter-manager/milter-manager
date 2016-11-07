@@ -206,12 +206,6 @@ EXTRA_DIST +=					\
 	header-ja.html				\
 	footer.html				\
 	footer-ja.html				\
-	head-dev.html				\
-	head-dev-ja.html			\
-	header-dev.html				\
-	header-dev-ja.html			\
-	footer-dev.html				\
-	footer-dev-ja.html			\
 	ja.po
 
 $(DOC_MODULE).pot: sgml-build.stamp
