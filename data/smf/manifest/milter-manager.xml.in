@@ -53,8 +53,8 @@
             section='1'
             manpath='@prefix@/share/man' />
           <doc_link
-            name='milter-manager.sourceforge.net'
-            uri='http://milter-manager.sourceforge.net/' />
+            name='milter-manager.osdn.jp'
+            uri='http://milter-manager.osdn.jp/' />
         </documentation>
       </template>
     </instance>

@@ -13,7 +13,7 @@ Build-Depends:
 	ruby-gnome2-dev,
 	intltool
 Standards-Version: 3.9.5
-Homepage: http://milter-manager.sourceforge.net/
+Homepage: http://milter-manager.osdn.jp/
 
 Package: milter-manager
 Architecture: any
