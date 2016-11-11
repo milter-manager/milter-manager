@@ -26,7 +26,7 @@
         <li id="menu-introduction"><a href="reference/ja/introduction.html">はじめに</a></li>
         <li id="menu-install"><a href="reference/ja/install-to.html">インストール</a></li>
         <li id="menu-document"><a href="reference/ja/">ドキュメント</a></li>
-        <li id="menu-download"><a href="http://sourceforge.net/projects/milter-manager/files/milter%20manager/2.0.9/milter-manager-2.0.9.tar.gz">ダウンロード</a></li>
+        <li id="menu-download"><a href="https://osdn.net/dl/milter-manager/milter-manager-2.0.9.tar.gz">ダウンロード</a></li>
         <li id="menu-blog"><a href="blog/ja/">ブログ</a></li>
       </ul>
     </div>
@@ -39,7 +39,7 @@
         </p>
         <ul>
           <li><a href="reference/ja/news.html#news.release-2-0-9">変更点</a></li>
-          <li><a href="http://sourceforge.net/projects/milter-manager/files/milter-manager/2.0.9/milter-manager-2.0.9.tar.gz">ダウンロード</a></li>
+          <li><a href="https://osdn.net/dl/milter-manager/milter-manager-2.0.9.tar.gz">ダウンロード</a></li>
         </ul>
 
         <p>環境毎のインストール方法です。</p>
