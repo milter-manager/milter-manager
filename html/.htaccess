@@ -1,3 +1,0 @@
-Redirect permanent /debian/ http://sourceforge.net/projects/milter-manager/files/debian/
-Redirect permanent /ubuntu/ http://sourceforge.net/projects/milter-manager/files/ubuntu/
-Redirect permanent /centos/ http://sourceforge.net/projects/milter-manager/files/centos/
