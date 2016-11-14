@@ -32,6 +32,7 @@ extern "C" {
 /**
  * SECTION: mfapi
  * @title: libmilter/mfapi.h
+ * @section_id: libmilter-mfapi.h
  * @short_description: libmilter compatible API.
  *
  * libmilter/mfapi.h provides Sendmail's libmilter
