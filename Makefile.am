@@ -47,6 +47,8 @@ EXTRA_DIST =					\
 	NEWS					\
 	NEWS.ja
 
+OSDN_CREDENTIAL_FILE = $(HOME)/.config/osdn/credential.yml
+
 upload: upload-doc upload-coverage
 
 release: dist
@@ -62,6 +64,15 @@ release-github: dist
 	  --news-file=NEWS \
 	  --asset-file=$(PACKAGE)-$(VERSION).tar.gz \
 	  --access-token-file=$(ACCESS_TOKEN_FILE)
+
+release-osdn: dist
+	$(CUTTER_SOURCE_PATH)/misc/release-to-osdn.rb \
+	  --credential=$(OSDN_CREDENTIAL_FILE) \
+	  --project=$(PACKAGE) \
+	  --new-version=$(VERSION) \
+	  --news-file=NEWS \
+	  --package=$(PACKAGE) \
+	  --asset-file=$(PACKAGE)-$(VERSION).tar.gz
 
 upload-doc:
 	cd html && $(MAKE) $(AM_MAKEFLAGS) upload
