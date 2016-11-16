@@ -51,11 +51,7 @@ OSDN_CREDENTIAL_FILE = $(HOME)/.config/osdn/credential.yml
 
 upload: upload-doc upload-coverage
 
-release: dist
-	$(CUTTER_SOURCE_PATH)/misc/release-to-osdn.rb \
-	  $(OSDN_USER) '$(OSDN_PROJECT_ID)' '$(OSDN_PROJECT_NAME)' \
-	  '$(PACKAGE_TITLE)' $(VERSION) README NEWS \
-	  $(PACKAGE)-$(VERSION).tar.gz
+release: release-osdn
 
 release-github: dist
 	$(CUTTER_SOURCE_PATH)/misc/release-to-github.rb \
