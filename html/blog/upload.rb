@@ -5,10 +5,10 @@ require 'pathname'
 require 'optparse'
 
 def main
-  sf_user = nil
+  osdn_user = nil
   parser = OptionParser.new
-  parser.on("--sf-user=[USER]", "Specify sf.net user") do |user|
-    sf_user = user
+  parser.on("--osdn-user=[USER]", "Specify sf.net user") do |user|
+    osdn_user = user
   end
 
   begin
@@ -34,11 +34,11 @@ def main
     tdiary_compiled_dir = (blog_base_dir + "blog-html/ja").to_s
   end
 
-  sf_project = "milter-manager"
-  sf_host = "web.sourceforge.net"
-  sf_htdocs_path = "/home/groups/m/mi/milter-manager/htdocs"
+  osdn_project = "milter-manager"
+  osdn_host = "shell.osdn.net"
+  osdn_htdocs_path = "/home/groups/#{osdn_project[0]}/#{osdn_project[0..1]}/#{osdn_project}/htdocs"
   system("rsync", "-avz", "--delete", tdiary_compiled_dir,
-         "#{sf_user},#{sf_project}@#{sf_host}:#{sf_htdocs_path}/blog/")
+         "#{osdn_user}@#{osdn_host}:#{osdn_htdocs_path}/blog/")
 end
 
 main

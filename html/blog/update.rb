@@ -5,10 +5,10 @@ require 'fileutils'
 require 'optparse'
 
 def main
-  sf_user = nil
+  osdn_user = nil
   parser = OptionParser.new
-  parser.on("--sf-user=USER", "Update and upload to sf.net") do |user|
-    sf_user = user
+  parser.on("--osdn-user=USER", "Update and upload to sf.net") do |user|
+    osdn_user = user
   end
 
   begin
@@ -23,8 +23,8 @@ def main
 
   update(tdiary_dir_map)
 
-  if sf_user
-    run("./upload.rb", "--sf-user=#{sf_user}", tdiary_dir_map[:tdiary_compiled_dir].to_s)
+  if osdn_user
+    run("./upload.rb", "--osdn-user=#{osdn_user}", tdiary_dir_map[:tdiary_compiled_dir].to_s)
   end
 end
 
