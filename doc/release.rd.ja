@@ -4,7 +4,7 @@
 == テストの実行
 
 以降の作業をする前にテストを実行する。rdtool, ruby-gettext, rr が必要な
-ので無ければ入れておく。sf_user_name には sourceforge.net のアカウント
+ので無ければ入れておく。osdn_user_name には osdn.net のアカウント
 名を指定する。
 
 rbenv を使用している場合は、以下のように ruby コマンドと rd2 コマンドの
@@ -34,13 +34,13 @@ NOTE: apt で入れるパッケージと gem で入れるパッケージが被�
     ruby-fast-gettext \
     inkscape \
     rrdtool
-  % gem install rdtool rttool gettext fast_gettext mechanize test-unit test-unit-rr
+  % gem install rdtool rttool gettext fast_gettext mechanize test-unit test-unit-rr osdn-cli octokit
   % ACLOCAL_OPTIONS="-I $HOME/opt/cutter/share/aclocal" ./autogen.sh --no-update
   % ./configure --prefix=/tmp/local \
     --enable-ruby-milter \
     --with-bundled-ruby-glib2 \
     --enable-gtk-doc --enable-coverage \
-    --with-sf-user=sf_user_name \
+    --with-osdn-user=osdn_user_name \
     --with-launchpad-uploader-pgp-key=KEY \
     --with-cutter-source-path=/path/to/cutter/source \
     --with-ruby=$(rbenv which ruby) \
@@ -132,33 +132,19 @@ OLD_RELEASE_DATE は debian/changelog をチェックすればわかる。
 
 初回のみ必要な作業である。
 
-=== sourceforge.net への SSH アクセス
+=== OSDN への SSH アクセス
 
-公開鍵認証でアクセスするので、設定が必要である。User には
-sourceforge.net のアカウント名とプロジェクト名をコンマでつないだ文字列
-を指定する必要がある。(ex. hoge,milter-manager)
+公開鍵認証でアクセスするので設定が必要である。
+各自、公開鍵を登録しプロジェクトへの参加申請をosdn.net上で行う。
 
-$HOME/ssh/config:
-  ...
-  Host: frs.sourceforge.net
-    User: <username>,<project-name>
-    IdentityFile: </path/to/secret_key>
-  Host: *.sourceforge.net
-    User: <username>
-    IdentityFile: </path/to/secret_key>
-  ...
+shell.osdn.net へ SSH で接続できればよい。
 
-このようにメッセージが表示できていれば、問題ない。
-  % ssh frs.sourceforge.net
-  Welcome!
-  
-  This is a restricted Shell Account.
-  You can only copy files to/from here.
-  
-  Connection to frs.sourceforge.net closed.
+$ groups
+users milter-manager
 
+のように milter-manager グループに登録されていることを確認する。
 
-アクセスできない場合はプロジェクト管理者に連絡する。
+できない場合はプロジェクト管理者に相談する。
 
 === 必須パッケージのインストール
 
@@ -166,6 +152,8 @@ $HOME/ssh/config:
   % sudo apt-get install -y rinse createrepo rpm
 
 === GPG 鍵ペアの作成
+
+(2.1.0以降では使用しない)
 
 GPG 鍵ペアを持っていない場合は、作成する。以下のコマンドを実行すると、
 対話的に鍵ペアを作成できる。
@@ -177,6 +165,8 @@ GPG 鍵ペアを持っていない場合は、作成する。以下のコマン�
   % gpg --keyserver pgp.mit.edu --send-keys <key-id>
 
 === milter manager リリース用鍵
+
+(2.1.0以降では使用しない)
 
 milter-manager のリリース用鍵の情報を暗号化しておく。UID の公開鍵があれ
 ば、UID 用に暗号化できる。
@@ -208,20 +198,14 @@ milter-manager のリリース用鍵の情報を暗号化しておく。UID の�
 apt ディレクトリに移動してからコマンドを実行すると、一連のリリース作業
 を実行するが、途中で失敗することもあるので、順番に作業した方がよい。
 
-  % make download
   % make release
 
 順番に作業する場合は以下のようにする。
 実行するコマンドは Makefile.am に書いてあるので head などで確認する。
 
-  % make download
   % make build USE_TMPFS=yes
   % make update
-  % make sign
-  % make upload
 
-download を事前に実行しておかないと、アップロード済みの古いパッケージを
-全て削除してしまうので忘れずに実行する。
 make build に PARALLEL=yes を付けるとビルドが並列に走る。
 make build に USE_TMPFS=yes を付けると tmpfs を使用して高速にビルドする。
 PARALLEL=yes と USE_TMPFS=yes を両方付けると tmpfs が足りなくなる可能性がある。
@@ -229,6 +213,8 @@ PARALLEL=yes と USE_TMPFS=yes を両方付けると tmpfs が足りなくなる
 初めて実行するときは、chroot 環境を作るときにロケールなどを聞かれるので
 PARALLEL=yes をつけてはいけない。
 
+
+TODO: 確認方法の更新
 make sign したら sourceforge.net をエミュレートするウェブサー
 バをローカルに構築してパッケージの新規インストールと更新をテストする。
 
@@ -239,6 +225,9 @@ make sign したら sourceforge.net をエミュレートするウェブサー
 make upload したらウェブブラウザで
 ((<URL:https://packagecloud.io/milter-manager/repos?filter=debs>)),
 にアクセスしてパッケージがアップロードできていることを確認する。
+
+sid については packagecloud が対応していないためアップロードできない。
+これについては、速やかに ITP を成功させて解決する方向に進めたい。
 
 === Ubuntu
 
@@ -256,22 +245,19 @@ make upload したらウェブブラウザで
 yum ディレクトリに移動してからコマンドを実行すると、一連のリリース作業
 を実行するが、途中で失敗することもあるので順番に作業した方がよい。
 
-  % make download
   % make release
 
 順番に作業する場合は以下のようにする。
 実行するコマンドは Makefile.am に書いてあるので head などで確認する。
 
-  % make download
   % make build PARALLEL=yes
-  % make sign
-  % make update
   % make upload
 
 download を事前に実行しておかないと、アップロード済みの古いパッケージを
 全て削除してしまうので忘れずに実行する。
 make build に PARALLEL=yes を付けるとビルドが並列に走る。
 
+TODO: 確認方法の更新
 make sign したら sourceforge.net をエミュレートするウェブサー
 バをローカルに構築してパッケージの新規インストールと更新をテストする。
 
@@ -287,6 +273,10 @@ make upload したらウェブブラウザで
 
 ソースアーカイブの作成はもうできているのでアップロードする。
 トップディレクトリでコマンドを実行する。
+
+OSDNのアクセストークンは事前に更新しておく必要がある。以下のコマンドを実行してアクセストークンを更新しておく。
+
+  % osdn login
 
   % make release
 
@@ -442,7 +432,7 @@ CGI で動かすよりも Rack で動かした方が便利なのでそうする�
 ウェブブラウザから新しい日記を投稿するとGitリポジトリにコミットしてプッ
 シュまでしてくれる。日記投稿後、次のコマンドを実行する。
 
-  % ./update.rb --sf-user=sf_user_name
+  % ./update.rb --osdn-user=osdn_user_name
 
 == メジャーバージョンリリース時の追加作業
 
