@@ -1,7 +1,7 @@
 #!/bin/sh
 # -*- indent-tabs-mode: nil; sh-basic-offset: 4; sh-indentation: 4 -*-
 
-if [ $# != 11 ]; then
+if [ $# != 10 ]; then
     echo "Usage: $0 PACKAGE VERSION SOURCE_BASE_NAME SPEC_DIR CHROOT_BASE ARCHITECTURES DISTRIBUTIONS USE_RPMFORGE USE_ATRPMS USE_EPEL"
     echo " e.g.: $0 milter-manager 1.1.1 ../milter-manager ../rpm /var/lib/chroot 'i386 x86_64' 'fedora centos' no no"
     exit 1
