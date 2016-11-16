@@ -4,7 +4,7 @@ CODE_NAMES = jessie stretch unstable
 CLEAN_ROOM_BASE = /var/cache/pbuilder
 RELEASE = 1
 
-release: build update sign upload
+release: build upload
 
 dist:
 	cd ${top_builddir} && $(MAKE) dist

@@ -9,7 +9,7 @@ USE_ATRPMS = no
 USE_EPEL = yes
 RELASE = 1
 
-release: build sign update upload
+release: build upload
 
 dist:
 	cd ${top_builddir} && $(MAKE) dist
