@@ -2,6 +2,56 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-2-1-0] 2.1.0: 2016-11-21
+
+2.0.9 のバクフィックスリリースです。
+
+プロジェクトのサイトを sourceforge.net から OSDN に移行しました。
+
+OSDN上では、以下の機能を利用します:
+
+  * ファイルリリース
+    * 過去に sourceforge.net にリリースしたファイルは全て移行しました
+  * メーリングリスト
+    * 自動的な移行は行わない予定です
+    * アーカイブの移行は行いません
+  * ニュース
+    * 過去の記事は移行しません
+
+deb/rpm の配布場所は以下の通りです:
+
+  * Ubuntu 向けの deb パッケージ: lauchpad.net
+  * Debian 向けの deb パッケージ: packagecloud
+    * 移行方法: https://packagecloud.io/milter-manager/repos/install
+  * RPMパッケージ: packagecloud
+    * 移行方法: https://packagecloud.io/milter-manager/repos/install
+
+=== milter manager
+
+==== 修正
+
+  * CentOS7でホストを再起動したときに自動的に起動しない問題を修正した
+  * FreeBSD で milter-greylist のデフォルトの設定ファイルのパスを修正した
+    [OBATA AkioさんがPull request][GitHub #99]
+
+==== 改善
+
+  * DNSBLを利用する適用条件を追加した
+    [Yuto HayamizuさんがPull request][GitHub #108]
+
+=== milter client
+
+==== 修正
+
+  * --n-workers=1 以上を指定すると起動しない問題を修正した
+
+=== milter server
+
+==== 改善
+
+  * milter-test-server コマンドに --all-timeout オプションを追加した
+    [HorimotoYasuhiro さんがPull request][GitHub #101]
+
 == [release-2-0-9] 2.0.9: 2016-06-15
 
 2.0.8 のバグフィックスリリースです。

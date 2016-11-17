@@ -2,6 +2,45 @@
 
 = NEWS --- The history of milter manager
 
+== [release-2-1-0] 2.1.0: 2016-11-21
+
+A bug fix release of 2.0.9
+
+Move to OSDN from sourceforge.net
+
+We are using following features on OSDN:
+
+  * File release
+    * We've already copied all released contents to OSDN
+  * Mailing list
+  * News
+
+=== milter manager
+
+==== Fixes
+
+  * Boot automatically after reboot the CentOS7 host
+  * Fix milter-greylist default config file path for pkgsrc
+    [Pull request by OBATA Akio][GitHub #99]
+
+==== Improvements
+
+  * Add DNSBL applicable condition
+    [Pull request by Yuto Hayamizu][GitHub #108]
+
+=== milter client
+
+==== Fixes
+
+  * Fix the bug that milter cannot run with --n-workers=1 or more
+
+=== milter serever
+
+==== Improvements
+
+  * Add --all-timeout option to milter-test-server command
+    [Pull request by HorimotoYasuhiro][GitHub #101]
+
 == [release-2-0-9] 2.0.9: 2016-06-15
 
 A bug fix release of 2.0.8
