@@ -8,12 +8,30 @@ A bug fix release of 2.0.9
 
 Move to OSDN from sourceforge.net
 
+See https://milter-manager.osdn.net/
+
 We are using following features on OSDN:
 
+  * Web site
+    * Redirect to milter-manager.osdn.net from milter-manager.sourceforge.net
   * File release
     * We've already copied all released contents to OSDN
   * Mailing list
+    * We will not transfer accounts automatically
+    * We will not transfer mailing list archives
   * News
+    * sourceforge.net does not have this feature
+
+Download packages:
+
+  * deb packages for Ubuntu: launchpad.net
+    * https://launchpad.net/~milter-manager/+archive/ubuntu/ppa/+packages
+  * deb packages for Debian: packagecloud
+    * https://packagecloud.io/milter-manager/repos/install
+  * RPM: packagecloud
+    * https://packagecloud.io/milter-manager/repos/install
+  * tar ball: OSDN
+    * https://osdn.net/projects/milter-manager/releases/
 
 === milter manager
 
@@ -40,6 +58,12 @@ We are using following features on OSDN:
 
   * Add --all-timeout option to milter-test-server command
     [Pull request by HorimotoYasuhiro][GitHub #101]
+
+=== Thanks
+
+  * OBATA Akio
+  * Yuto Hayamizu
+  * Horimoto Yasuhiro
 
 == [release-2-0-9] 2.0.9: 2016-06-15
 
