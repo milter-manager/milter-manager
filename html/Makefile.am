@@ -3,7 +3,6 @@ EXTRA_DIST =					\
 	$(svg_images)
 
 web_contents =					\
-	.htaccess				\
 	index.html				\
 	index.html.ja				\
 	milter-manager.css			\
