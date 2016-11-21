@@ -523,6 +523,9 @@ fi
 
 
 %changelog
+* Mon Nov 21 2016 Kenji Okimoto <okimoto@clear-code.com> - 2.1.0-1
+- new upstream release.
+
 * Wed Jun 15 2016 Kenji Okimoto <okimoto@clear-code.com> - 2.0.9-1
 - new upstream release.
 
