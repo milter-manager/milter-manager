@@ -35,6 +35,9 @@ upload_packages()
             component=main
             ;;
     esac
+    if test ${code_name} = "unstable"; then
+        return
+    fi
     status=stable
     package_initial=$(echo ${PACKAGE} | sed -e 's/\(.\).*/\1/')
     pool_dir=${script_base_dir}/${distribution}/${status}/pool
