@@ -44,7 +44,7 @@ upload_packages()
     pool_dir=${pool_dir}/${code_name}/${component}/${package_initial}/${PACKAGE}
 
     for package in $(sed -ne "/^Files:/,$ p" $pool_dir/${PACKAGE}_${VERSION}-${RELEASE}_${architecture}.changes | grep -E "(\.deb|\.dsc)$" | cut -d" " -f6); do
-        if test -f $package; then
+        if test -f $pool_dir/$package; then
             package_cloud push $PACKAGE/repos/${distribution}/${code_name} $pool_dir/$package
         else
             echo "Missing: ${package}"
