@@ -7,7 +7,7 @@ BASE_URL_PREFIX = http://downloads.sourceforge.net/project/$(PACKAGE)
 USE_RPMFORGE = no
 USE_ATRPMS = no
 USE_EPEL = yes
-RELASE = 1
+RELEASE = 1
 
 release: build upload
 
@@ -28,7 +28,7 @@ update:
 
 upload:
 	for distribution in $(DISTRIBUTIONS); do		\
-	  ./upload-packages.sh $distribution '$(CENTOS_VERSIONS)' $(OSDN_PROJECT_ID) $(VERSION) $(RELEASE) \
+	  ./upload-packages.sh $distribution '$(CENTOS_VERSIONS)' $(OSDN_PROJECT_ID) $(VERSION) $(RELEASE); \
 	done
 
 build: build-in-chroot
