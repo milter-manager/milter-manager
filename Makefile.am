@@ -53,22 +53,27 @@ upload: upload-doc upload-coverage
 
 release: release-osdn
 
-release-github: dist
+release-github: sign-archive
 	$(CUTTER_SOURCE_PATH)/misc/release-to-github.rb \
 	  --repository=milter-manager/milter-manager \
 	  --tag=$(VERSION) \
 	  --news-file=NEWS \
 	  --asset-file=$(PACKAGE)-$(VERSION).tar.gz \
+	  --asset-file=$(PACKAGE)-$(VERSION).tar.gz.asc
 	  --access-token-file=$(ACCESS_TOKEN_FILE)
 
-release-osdn: dist
+release-osdn: sign-archive
 	$(CUTTER_SOURCE_PATH)/misc/release-to-osdn.rb \
 	  --credential=$(OSDN_CREDENTIAL_FILE) \
 	  --project=$(PACKAGE) \
 	  --new-version=$(VERSION) \
 	  --news-file=NEWS \
 	  --package=$(PACKAGE) \
-	  --asset-file=$(PACKAGE)-$(VERSION).tar.gz
+	  --asset-file=$(PACKAGE)-$(VERSION).tar.gz \
+	  --asset-file=$(PACKAGE)-$(VERSION).tar.gz.asc
+
+sign-archive: dist
+	gpg2 --local-user $(GPG_UID) --armor --detach-sign $(PACKAGE)-$(VERSION).tar.gz
 
 upload-doc:
 	cd html && $(MAKE) $(AM_MAKEFLAGS) upload
