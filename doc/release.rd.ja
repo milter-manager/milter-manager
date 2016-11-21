@@ -204,7 +204,7 @@ apt ディレクトリに移動してからコマンドを実行すると、一�
 実行するコマンドは Makefile.am に書いてあるので head などで確認する。
 
   % make build USE_TMPFS=yes
-  % make update
+  % make upload
 
 make build に PARALLEL=yes を付けるとビルドが並列に走る。
 make build に USE_TMPFS=yes を付けると tmpfs を使用して高速にビルドする。
