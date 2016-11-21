@@ -32,6 +32,12 @@ OSDN上では、以下の機能を利用します:
   * tar ball: OSDN
     * https://osdn.net/projects/milter-manager/releases/
 
+=== Package
+
+==== 改善
+
+  * Ubuntu Yakkety (16.10) サポート追加
+
 === milter manager
 
 ==== 修正

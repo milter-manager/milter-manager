@@ -33,6 +33,12 @@ Download packages:
   * tar ball: OSDN
     * https://osdn.net/projects/milter-manager/releases/
 
+=== Package
+
+==== Improvements
+
+* Add Ubuntu Yakkety (16.10) support
+
 === milter manager
 
 ==== Fixes
