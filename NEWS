@@ -17,7 +17,7 @@ We are using following features on OSDN:
   * File release
     * We've already copied all released contents to OSDN
   * Mailing list
-    * We will not transfer accounts automatically
+    * We will transfer accounts automatically
     * We will not transfer mailing list archives
   * News
     * sourceforge.net does not have this feature
