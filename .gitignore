@@ -12,6 +12,9 @@
 .test-result
 /aclocal.m4
 /autom4te.cache
+/binding/ruby/**/*.time
+/binding/ruby/**/*.log
+/binding/ruby/**/*.trs
 /binding/ruby/glib-2.2.5/Makefile.lib
 /binding/ruby/glib-2.2.5/ext/glib2/glib-enum-types.c
 /binding/ruby/glib-2.2.5/ext/glib2/glib-enum-types.h
@@ -38,6 +41,7 @@
 /dist/
 /doc/*.jman
 /doc/*.man
+/doc/*.stamp
 /doc/reference/*.bak
 /doc/reference/*.stamp
 /doc/reference/.xml2po.mo
@@ -167,3 +171,5 @@ stamp-*-enum-types-*
 /libev-4.19/missing
 /libev-4.19/mkinstalldirs
 /milter-manager-*/
+/package/milter-manager-*.tar.gz
+/package/ubuntu/milter-manager*
