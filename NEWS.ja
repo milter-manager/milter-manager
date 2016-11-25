@@ -24,7 +24,7 @@ OSDN上では、以下の機能を利用します:
 
 パッケージの配布場所は以下の通りです:
 
-  * Ubuntu 向けの deb パッケージ: lauchpad.net
+  * Ubuntu 向けの deb パッケージ: launchpad.net
   * Debian 向けの deb パッケージ: packagecloud
     * 移行方法: https://packagecloud.io/milter-manager/repos/install
   * RPMパッケージ: packagecloud
