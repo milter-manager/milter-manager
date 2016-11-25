@@ -1,7 +1,7 @@
 TDIARY2.01.00
 Date: 20161121
 Title: 
-Last-Modified: 1480032929
+Last-Modified: 1480033099
 Visible: true
 Format: RD
 
@@ -20,45 +20,14 @@ milter manager 2.1.0 をリリースしました。
   * ファイルリリース
     * 過去に sourceforge.net にリリースしたファイルは全て移行しました
   * メーリングリスト
-    * 自動的な移行は行わない予定です
+    * 登録済みメンバーの移行は行いました
     * アーカイブの移行は行いません
 
 パッケージの配布場所は以下の通りです:
 
   * Ubuntu 向けの deb パッケージ: ((<launchpad.net|URL:https://launchpad.net/~milter-manager/+archive/ubuntu/ppa/+packages>))
-  * Debian 向けの deb パッケージ: ((<packagecloud|URL:https://packagecloud.io/milter-manager/repos?filter=debs>))
-    * 移行方法: https://packagecloud.io/milter-manager/repos/install
-  * RPMパッケージ: ((<packagecloud|URL:https://packagecloud.io/milter-manager/repos?filter=rpms>))
-    * 移行方法: https://packagecloud.io/milter-manager/repos/install
-  * tar ball: OSDN
-    * https://osdn.net/projects/milter-manager/releases/
-
-= milter manager 2.1.0
-
-milter manager 2.1.0 をリリースしました。
-
-プロジェクトサイトを sourceforge.net から OSDN に移行しました。
-
-  * https://milter-manager.osdn.jp/
-
-以下の各機能をsourceforge.netから移行しました。
-
-  * ウェブサイト
-    * milter-manager.sourceforge.net から milter-manager.osdn.jp に移行しました
-  * ファイルリリース
-    * 過去に sourceforge.net にリリースしたファイルは全て移行しました
-  * メーリングリスト
-    * 自動的な移行は行わない予定です
-    * アーカイブの移行は行いません
-
-パッケージの配布場所は以下の通りです:
-
-  * Ubuntu 向けの deb パッケージ: ((<launchpad.net|URL:https://launchpad.net/~milter-manager/+archive/ubuntu/ppa/+packages>))
-  * Debian 向けの deb パッケージ: ((<packagecloud|URL:https://packagecloud.io/milter-manager/repos?filter=debs>))
-    * 移行方法: https://packagecloud.io/milter-manager/repos/install
-  * RPMパッケージ: ((<packagecloud|URL:https://packagecloud.io/milter-manager/repos?filter=rpms>))
-    * 移行方法: https://packagecloud.io/milter-manager/repos/install
-  * tar ball: OSDN
-    * https://osdn.net/projects/milter-manager/releases/
+  * Debian 向けの deb パッケージ: ((<packagecloud|URL:https://packagecloud.io/milter-manager/repos?filter=debs>)) ((<移行方法|URL:https://packagecloud.io/milter-manager/repos/install>))
+  * RPMパッケージ: ((<packagecloud|URL:https://packagecloud.io/milter-manager/repos?filter=rpms>)) ((<移行方法|URL:https://packagecloud.io/milter-manager/repos/install>))
+  * tar ball: ((<OSDN|URL:https://osdn.net/projects/milter-manager/releases/>))
 
 .
