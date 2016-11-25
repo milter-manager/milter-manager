@@ -7,7 +7,7 @@ require 'optparse'
 def main
   osdn_user = nil
   parser = OptionParser.new
-  parser.on("--osdn-user=[USER]", "Specify sf.net user") do |user|
+  parser.on("--osdn-user=[USER]", "Specify OSDN user") do |user|
     osdn_user = user
   end
 

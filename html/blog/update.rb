@@ -7,7 +7,7 @@ require 'optparse'
 def main
   osdn_user = nil
   parser = OptionParser.new
-  parser.on("--osdn-user=USER", "Update and upload to sf.net") do |user|
+  parser.on("--osdn-user=USER", "Update and upload to OSDN") do |user|
     osdn_user = user
   end
 
