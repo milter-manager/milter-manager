@@ -1,0 +1,6 @@
+[submodule "binding/ruby/test-unit"]
+	path = binding/ruby/test-unit
+	url = https://github.com/test-unit/test-unit.git
+[submodule "html/blog/clear-code"]
+	path = html/blog/clear-code
+	url = https://github.com/clear-code/tdiary.git

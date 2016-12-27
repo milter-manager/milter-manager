@@ -1,7 +1,5 @@
 #!/bin/sh
 
-update=yes
-
 run()
 {
     $@
@@ -11,37 +9,13 @@ run()
     fi
 }
 
-git_update()
-{
-    local repository="$1"
-    local dir="${2-`basename $repository`}"
-    if [ $update != yes -a -d "$dir" ]; then
-	return
-    fi
-    if test -d "$dir/.git"; then
-	(cd "$dir" && git pull --rebase)
-    else
-	rm -rf "$dir"
-	git clone "$repository" "$dir"
-    fi
-}
-
 # for old intltoolize
 if [ ! -d config/po ]; then
     mkdir -p config
     ln -s ../po config/po
 fi
 
-if [ x"$1" = x--no-update ]; then
-    shift
-    update=no
-fi
-
-clear_code_tdiary_repository=https://github.com/clear-code/tdiary
-run git_update ${clear_code_tdiary_repository} html/blog/clear-code
-
-test_unit_repository=https://github.com/test-unit/test-unit.git
-run git_update ${test_unit_repository} binding/ruby/test-unit
+git submodule update --init
 
 run ${ACLOCAL:-aclocal} $ACLOCAL_OPTIONS
 run ${LIBTOOLIZE:-libtoolize} --copy --force

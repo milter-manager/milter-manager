@@ -25,7 +25,6 @@
 /binding/ruby/ruby-milter/milter/client.rb
 /binding/ruby/ruby-milter/milter/core.rb
 /binding/ruby/ruby-milter/milter/server.rb
-/binding/ruby/test-unit/
 /build
 /config
 /config.h
@@ -115,7 +114,6 @@
 /doc/reference/users.xml*
 /doc/reference/version.xml
 /doc/reference/xml/
-/html/blog/clear-code/
 /html/blog/data/ja/cache/
 /html/blog/data/ja/category/
 /html/blog/data/ja/log/
