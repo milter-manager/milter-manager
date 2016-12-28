@@ -118,7 +118,7 @@ spamass-milterを起動します。
 
 clamdを起動する前に最新の定義ファイルを取得します。
 
-  % sudo /usr/local/bin/freshcram
+  % sudo /usr/local/bin/freshclam
 
 clamdとfreshclamを起動します。
 

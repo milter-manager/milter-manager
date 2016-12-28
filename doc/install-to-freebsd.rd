@@ -116,7 +116,7 @@ freshclam:
 
 Get the latest definition files before run clamd:
 
-  % sudo /usr/local/bin/freshcram
+  % sudo /usr/local/bin/freshclam
 
 clamd and freshclam should be started:
 
