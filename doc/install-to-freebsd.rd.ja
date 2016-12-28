@@ -22,7 +22,7 @@ MTAはPostfixを利用することとします。
 milterはspamass-milter、clamav-milter、milter-greylistを使用
 することとします。
 
-  % sudo pkg install --yes spamass-milter mitler-greylist clamav-milter
+  % sudo pkg install --yes spamass-milter milter-greylist clamav-milter
 
 milter-manager をインストールします。
 

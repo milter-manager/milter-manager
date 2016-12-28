@@ -22,7 +22,7 @@ We use Postfix as MTA:
 We use spamass-milter, clamav-milter and milter-greylist as
 milters:
 
-  % sudo pkg install --yes spamass-milter mitler-greylist clamav-milter
+  % sudo pkg install --yes spamass-milter milter-greylist clamav-milter
 
 Install milter-manager.
 
