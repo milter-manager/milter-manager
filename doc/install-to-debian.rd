@@ -19,7 +19,7 @@ We put the following content to
 
   % curl -s https://packagecloud.io/install/repositories/milter-manager/repos/script.deb.sh | sudo bash
 
-See also: https://packagecloud.io/milter-manager/repos/install#deb
+See also: ((<URL:https://packagecloud.io/milter-manager/repos/install>))
 
 === For sid
 
