@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2017  Kouhei Sutou <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -15,6 +15,7 @@
 
 require 'milter/manager/rcng-detector'
 require 'milter/manager/enma-socket-detector'
+require 'milter/manager/rmilter-socket-detector'
 
 module Milter::Manager
   module FreeBSDRCBaseDetector
@@ -54,6 +55,14 @@ module Milter::Manager
       @script_name == "milter-opendkim" or @name == "milteropendkim"
     end
 
+    def detect_rmilter_connection_spec
+      Milter::Manager::RmilterSocketDetector.new(rmilter_conf).detect
+    end
+
+    def rmilter?
+      @script_name == "rmilter" or @name == "rmilter"
+    end
+
     private
     def enma_conf
       @variables["cfgfile"] ||
@@ -79,6 +88,11 @@ module Milter::Manager
         "/usr/local/etc/opendkim.conf"
     end
 
+    def rmilter_conf
+      extract_parameter_from_flags(command_args, "-c") ||
+        "/usr/local/etc/rmilter.conf"
+    end
+
     def parse_rc_conf_unknown_line(line)
       case line
       when /\Arcvar=`set_rcvar`/
@@ -93,6 +107,7 @@ module Milter::Manager
       spec ||= detect_enma_connection_spec if enma?
       spec ||= detect_clamav_milter_connection_spec if clamav_milter?
       spec ||= detect_opendkim_connection_spec if opendkim?
+      spec ||= detect_rmilter_connection_spec if rmilter?
       spec
     end
   end
