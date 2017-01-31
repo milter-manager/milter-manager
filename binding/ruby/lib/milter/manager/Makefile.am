@@ -25,4 +25,5 @@ dist_binding_lib_milter_DATA =			\
 	postfix-condition-table-parser.rb	\
 	postfix-cidr-table.rb			\
 	postfix-regexp-table.rb			\
-	file-reader.rb
+	file-reader.rb				\
+	rmilter-socket-detector.rb
