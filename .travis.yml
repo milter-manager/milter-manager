@@ -19,9 +19,8 @@ env:
 install:
   - curl https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh
   - sudo apt-get update
-  - sudo apt-get install -y debhelper dh-systemd autotools-dev libglib2.0-dev libev-dev ruby ruby-dev ruby-gnome2-dev intltool cutter-testing-framework lcov
+  - sudo apt-get install -y debhelper dh-systemd autotools-dev libglib2.0-dev libev-dev ruby ruby-dev ruby-gnome2-dev intltool cutter-testing-framework lcov pkg-config
   - gem install coveralls-lcov --version 1.1.0
-  - gem install pkg-config
   - echo "::1 ip6-localhost" | sudo tee --append /etc/hosts
 before_script:
   - ./autogen.sh
