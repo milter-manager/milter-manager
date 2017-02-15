@@ -224,6 +224,112 @@ AC_SUBST(CONFIG_FILE_NAME)
 AC_SUBST(CUSTOM_CONFIG_FILE_NAME)
 
 dnl **************************************************************
+dnl Check for package platform.
+dnl **************************************************************
+
+AC_MSG_CHECKING(package-platform)
+AC_ARG_WITH([package-platform],
+            AS_HELP_STRING([--with-package-platform=PLATFORM],
+                           [Package platform.
+                            e.g. debian, redhat, freebsd, pkgsrc, ...
+                            (default: auto-detect)]),
+            [MILTER_MANAGER_PACKAGE_PLATFORM="$withval"])
+
+if test -z "$MILTER_MANAGER_PACKAGE_PLATFORM"; then
+  case `uname` in
+  Linux)
+    if test -f /etc/debian_version -o -x /usr/bin/dpkg; then
+      MILTER_MANAGER_PACKAGE_PLATFORM="debian"
+    elif test -f /etc/redhat-release; then
+      MILTER_MANAGER_PACKAGE_PLATFORM="redhat"
+    fi
+    ;;
+  FreeBSD)
+    MILTER_MANAGER_PACKAGE_PLATFORM="freebsd"
+    ;;
+  NetBSD|DragonFly)
+    MILTER_MANAGER_PACKAGE_PLATFORM="pkgsrc"
+    ;;
+  SunOS)
+    MILTER_MANAGER_PACKAGE_PLATFORM="solaris"
+    ;;
+  esac
+fi
+
+if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat"; then
+  distribution=$(cut -d " " -f 1 /etc/redhat-release | tr "A-Z" "a-z")
+  case "$distribution" in
+    centos)
+      if grep -q Linux /etc/redhat-release; then
+        distribution_version=$(cut -d " " -f 4 /etc/redhat-release)
+      else
+        distribution_version=$(cut -d " " -f 3 /etc/redhat-release)
+      fi
+    ;;
+    *)
+      : # do nothing
+    ;;
+  esac
+  distribution_version=$(echo "$distribution_version" | cut -d "." -f 1)
+  MILTER_MANAGER_PACKAGE_PLATFORM="${distribution}${distribution_version}"
+fi
+
+if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = ""; then
+  MILTER_MANAGER_PACKAGE_PLATFORM="unknown"
+fi
+AC_MSG_RESULT($MILTER_MANAGER_PACKAGE_PLATFORM)
+
+AM_CONDITIONAL(DEBIAN_PLATFORM,
+               [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "debian"])
+AM_CONDITIONAL(REDHAT_PLATFORM,
+               [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat" \
+                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos6" \
+                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos7"])
+AM_CONDITIONAL(REDHAT_SYSVINIT_PLATFORM,
+               [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos6"])
+AM_CONDITIONAL(REDHAT_SYSTEMD_PLATFORM,
+               [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos7"])
+AM_CONDITIONAL(FREEBSD_PLATFORM,
+               [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "freebsd"])
+AM_CONDITIONAL(SOLARIS_PLATFORM,
+               [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "solaris"])
+
+AC_ARG_WITH([rcddir],
+             AS_HELP_STRING([--with-rcddir=DIR],
+                            [Synonym for --with-packege-options=rcddir=DIR.
+                             This option is for pkgsrc platform.
+                             (default: none)]))
+AC_MSG_CHECKING(package-options)
+AC_ARG_WITH([package-options],
+            AS_HELP_STRING([--with-package-options=OPTIONS],
+                           [Package platform dependent options.
+			    OPTIONS format is VAR1=VAL1,VAR2=VAL2,....
+                            (default: none)]),
+            [MILTER_MANAGER_PACKAGE_OPTIONS="$withval"])
+if test -n "$with_rcddir"; then
+  if test -n "$MILTER_MANAGER_PACKAGE_OPTIONS"; then
+    MILTER_MANAGER_PACKAGE_OPTIONS="rcddir=$with_rcddir,$MILTER_MANAGER_PACKAGE_OPTIONS"
+  else
+    MILTER_MANAGER_PACKAGE_OPTIONS="rcddir=$with_rcddir"
+  fi
+fi
+AC_MSG_RESULT($MILTER_MANAGER_PACKAGE_OPTIONS)
+
+
+MILTER_MANAGER_PACKAGE_PLATFORM_C_STRING="\\\"\$(MILTER_MANAGER_PACKAGE_PLATFORM)\\\""
+
+if test "$MILTER_MANAGER_PACKAGE_OPTIONS" = ""; then
+  MILTER_MANAGER_PACKAGE_OPTIONS_C_STRING="NULL"
+else
+  MILTER_MANAGER_PACKAGE_OPTIONS_C_STRING="\\\"\$(MILTER_MANAGER_PACKAGE_OPTIONS)\\\""
+fi
+
+AC_SUBST(MILTER_MANAGER_PACKAGE_PLATFORM)
+AC_SUBST(MILTER_MANAGER_PACKAGE_PLATFORM_C_STRING)
+AC_SUBST(MILTER_MANAGER_PACKAGE_OPTIONS)
+AC_SUBST(MILTER_MANAGER_PACKAGE_OPTIONS_C_STRING)
+
+dnl **************************************************************
 dnl Check for Ruby
 dnl **************************************************************
 ruby_available="no"
@@ -245,7 +351,7 @@ else
                 [AC_MSG_WARN([$RUBY is not found. Disable milter manager.])])
 fi
 
-bundled_latest_ruby_glib2_version=2.2.5
+bundled_latest_ruby_glib2_version=3.1.1
 if test "$ruby_available" = "yes"; then
   rbconfig="$RUBY -rrbconfig -rshellwords -e "
 
@@ -404,7 +510,12 @@ if test "$ruby_available" = "yes"; then
 
   if test "x$use_bundled_ruby_glib2" != "xno" -a \
           "x$ruby_glib2_available" != "xyes"; then
-    ac_used_bundled_ruby_glib2_version=${bundled_latest_ruby_glib2_version}
+    if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = centos6 -o \
+            "$ruby_version" -lt 210; then
+      ac_used_bundled_ruby_glib2_version=2.2.5
+    else
+      ac_used_bundled_ruby_glib2_version=${bundled_latest_ruby_glib2_version}
+    fi
     if test "x$use_bundled_ruby_glib2" != "xauto" -a \
             "x$use_bundled_ruby_glib2" != "xyes" -a \
             "x$use_bundled_ruby_glib2" != "xno"; then
@@ -516,6 +627,8 @@ sample_rubydir="\$(pkgdatadir)/sample/ruby"
 AC_SUBST(sample_rubydir)
 
 AM_CONDITIONAL([WITH_RUBY], [test "$ruby_available" = "yes"])
+AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_2_2_5],
+               [test "$ac_used_bundled_ruby_glib2_version" = "2.2.5"])
 AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_LATEST],
                [test "$ac_used_bundled_ruby_glib2_version" = "${bundled_latest_ruby_glib2_version}"])
 AM_CONDITIONAL([WITH_RUBY_MILTER], [test -n "$ruby_milterdir"])
@@ -663,112 +776,6 @@ AC_SUBST(LIBEV_INCLUDES)
 AC_SUBST(LIBEV_CFLAGS)
 AC_SUBST(LIBEV_LA)
 AC_SUBST(LIBEV_LIBS)
-
-dnl **************************************************************
-dnl Check for package platform.
-dnl **************************************************************
-
-AC_MSG_CHECKING(package-platform)
-AC_ARG_WITH([package-platform],
-            AS_HELP_STRING([--with-package-platform=PLATFORM],
-                           [Package platform.
-                            e.g. debian, redhat, freebsd, pkgsrc, ...
-                            (default: auto-detect)]),
-            [MILTER_MANAGER_PACKAGE_PLATFORM="$withval"])
-
-if test -z "$MILTER_MANAGER_PACKAGE_PLATFORM"; then
-  case `uname` in
-  Linux)
-    if test -f /etc/debian_version -o -x /usr/bin/dpkg; then
-      MILTER_MANAGER_PACKAGE_PLATFORM="debian"
-    elif test -f /etc/redhat-release; then
-      MILTER_MANAGER_PACKAGE_PLATFORM="redhat"
-    fi
-    ;;
-  FreeBSD)
-    MILTER_MANAGER_PACKAGE_PLATFORM="freebsd"
-    ;;
-  NetBSD|DragonFly)
-    MILTER_MANAGER_PACKAGE_PLATFORM="pkgsrc"
-    ;;
-  SunOS)
-    MILTER_MANAGER_PACKAGE_PLATFORM="solaris"
-    ;;
-  esac
-fi
-
-if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat"; then
-  distribution=$(cut -d " " -f 1 /etc/redhat-release | tr "A-Z" "a-z")
-  case "$distribution" in
-    centos)
-      if grep -q Linux /etc/redhat-release; then
-        distribution_version=$(cut -d " " -f 4 /etc/redhat-release)
-      else
-        distribution_version=$(cut -d " " -f 3 /etc/redhat-release)
-      fi
-    ;;
-    *)
-      : # do nothing
-    ;;
-  esac
-  distribution_version=$(echo "$distribution_version" | cut -d "." -f 1)
-  MILTER_MANAGER_PACKAGE_PLATFORM="${distribution}${distribution_version}"
-fi
-
-if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = ""; then
-  MILTER_MANAGER_PACKAGE_PLATFORM="unknown"
-fi
-AC_MSG_RESULT($MILTER_MANAGER_PACKAGE_PLATFORM)
-
-AM_CONDITIONAL(DEBIAN_PLATFORM,
-               [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "debian"])
-AM_CONDITIONAL(REDHAT_PLATFORM,
-               [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat" \
-                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos6" \
-                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos7"])
-AM_CONDITIONAL(REDHAT_SYSVINIT_PLATFORM,
-               [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos6"])
-AM_CONDITIONAL(REDHAT_SYSTEMD_PLATFORM,
-               [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos7"])
-AM_CONDITIONAL(FREEBSD_PLATFORM,
-               [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "freebsd"])
-AM_CONDITIONAL(SOLARIS_PLATFORM,
-               [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "solaris"])
-
-AC_ARG_WITH([rcddir],
-             AS_HELP_STRING([--with-rcddir=DIR],
-                            [Synonym for --with-packege-options=rcddir=DIR.
-                             This option is for pkgsrc platform.
-                             (default: none)]))
-AC_MSG_CHECKING(package-options)
-AC_ARG_WITH([package-options],
-            AS_HELP_STRING([--with-package-options=OPTIONS],
-                           [Package platform dependent options.
-			    OPTIONS format is VAR1=VAL1,VAR2=VAL2,....
-                            (default: none)]),
-            [MILTER_MANAGER_PACKAGE_OPTIONS="$withval"])
-if test -n "$with_rcddir"; then
-  if test -n "$MILTER_MANAGER_PACKAGE_OPTIONS"; then
-    MILTER_MANAGER_PACKAGE_OPTIONS="rcddir=$with_rcddir,$MILTER_MANAGER_PACKAGE_OPTIONS"
-  else
-    MILTER_MANAGER_PACKAGE_OPTIONS="rcddir=$with_rcddir"
-  fi
-fi
-AC_MSG_RESULT($MILTER_MANAGER_PACKAGE_OPTIONS)
-
-
-MILTER_MANAGER_PACKAGE_PLATFORM_C_STRING="\\\"\$(MILTER_MANAGER_PACKAGE_PLATFORM)\\\""
-
-if test "$MILTER_MANAGER_PACKAGE_OPTIONS" = ""; then
-  MILTER_MANAGER_PACKAGE_OPTIONS_C_STRING="NULL"
-else
-  MILTER_MANAGER_PACKAGE_OPTIONS_C_STRING="\\\"\$(MILTER_MANAGER_PACKAGE_OPTIONS)\\\""
-fi
-
-AC_SUBST(MILTER_MANAGER_PACKAGE_PLATFORM)
-AC_SUBST(MILTER_MANAGER_PACKAGE_PLATFORM_C_STRING)
-AC_SUBST(MILTER_MANAGER_PACKAGE_OPTIONS)
-AC_SUBST(MILTER_MANAGER_PACKAGE_OPTIONS_C_STRING)
 
 dnl **************************************************************
 dnl Check for default configuration.

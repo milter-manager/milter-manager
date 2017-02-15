@@ -1,6 +1,10 @@
 SUBDIRS =
 
 if WITH_BUNDLED_RUBY_GLIB2_LATEST
+SUBDIRS += glib-3.1.1
+endif
+
+if WITH_BUNDLED_RUBY_GLIB2_2_2_5
 SUBDIRS += glib-2.2.5
 endif
 
@@ -12,14 +16,13 @@ SUBDIRS +=					\
 	sample
 
 EXTRA_DIST =					\
-	$(test_unit_files)
-
-if WITH_BUNDLED_RUBY_GLIB2_LATEST
-EXTRA_DIST += $(ruby_glib2_latest_files)
-endif
+	$(test_unit_files)			\
+	$(ruby_glib2_latest_files)		\
+	$(ruby_glib2_2_2_5_files)
 
 DISTCLEANFILES =				\
-	glib-2.2.5/Makefile
+	glib-2.2.5/Makefile			\
+	glib-3.1.1/Makefile
 
 echo-abs-top-builddir:
 	@echo $(abs_top_builddir)
@@ -170,18 +173,13 @@ test_unit_files =						\
 
 # % find glib-2.2.5 -type f | sort
 # Use region and C-c C-\ for adding backslashes to the above list.
-ruby_glib2_latest_files =						\
+ruby_glib2_2_2_5_files =						\
 	glib-2.2.5/COPYING.LIB						\
-	glib-2.2.5/Makefile						\
-	glib-2.2.5/Makefile.lib						\
 	glib-2.2.5/README						\
 	glib-2.2.5/Rakefile						\
 	glib-2.2.5/TODO							\
-	glib-2.2.5/ext/glib2/Makefile					\
 	glib-2.2.5/ext/glib2/depend					\
 	glib-2.2.5/ext/glib2/extconf.rb					\
-	glib-2.2.5/ext/glib2/glib-enum-types.c				\
-	glib-2.2.5/ext/glib2/glib-enum-types.h				\
 	glib-2.2.5/ext/glib2/glib2.def					\
 	glib-2.2.5/ext/glib2/rbgcompat.h				\
 	glib-2.2.5/ext/glib2/rbglib.c					\
@@ -248,7 +246,6 @@ ruby_glib2_latest_files =						\
 	glib-2.2.5/ext/glib2/rbgutil_list.h				\
 	glib-2.2.5/ext/glib2/rbgutildeprecated.c			\
 	glib-2.2.5/ext/glib2/rbgutildeprecated.h			\
-	glib-2.2.5/ext/glib2/ruby-glib2.pc				\
 	glib-2.2.5/extconf.rb						\
 	glib-2.2.5/lib/glib-mkenums.rb					\
 	glib-2.2.5/lib/glib2.rb						\
@@ -295,3 +292,141 @@ ruby_glib2_latest_files =						\
 	glib-2.2.5/test/test_utils.rb					\
 	glib-2.2.5/test/test_value.rb					\
 	glib-2.2.5/test/test_win32.rb
+
+# % find glib-3.1.1 -type f | sort
+# Use region and C-c C-\ for adding backslashes to the above list.
+ruby_glib2_latest_files =							\
+	glib-3.1.1/COPYING.LIB							\
+	glib-3.1.1/README.md							\
+	glib-3.1.1/Rakefile							\
+	glib-3.1.1/TODO								\
+	glib-3.1.1/ext/glib2/depend						\
+	glib-3.1.1/ext/glib2/extconf.rb						\
+	glib-3.1.1/ext/glib2/glib2.def						\
+	glib-3.1.1/ext/glib2/rbgcompat.h					\
+	glib-3.1.1/ext/glib2/rbglib-variant-type.c				\
+	glib-3.1.1/ext/glib2/rbglib-variant.c					\
+	glib-3.1.1/ext/glib2/rbglib.c						\
+	glib-3.1.1/ext/glib2/rbglib.h						\
+	glib-3.1.1/ext/glib2/rbglib2conversions.h				\
+	glib-3.1.1/ext/glib2/rbglib_bookmarkfile.c				\
+	glib-3.1.1/ext/glib2/rbglib_convert.c					\
+	glib-3.1.1/ext/glib2/rbglib_datetime.c					\
+	glib-3.1.1/ext/glib2/rbglib_error.c					\
+	glib-3.1.1/ext/glib2/rbglib_fileutils.c					\
+	glib-3.1.1/ext/glib2/rbglib_gettext.c					\
+	glib-3.1.1/ext/glib2/rbglib_i18n.c					\
+	glib-3.1.1/ext/glib2/rbglib_int64.c					\
+	glib-3.1.1/ext/glib2/rbglib_io_constants.c				\
+	glib-3.1.1/ext/glib2/rbglib_iochannel.c					\
+	glib-3.1.1/ext/glib2/rbglib_iochannel_win32_socket.c			\
+	glib-3.1.1/ext/glib2/rbglib_iochannelerror.c				\
+	glib-3.1.1/ext/glib2/rbglib_keyfile.c					\
+	glib-3.1.1/ext/glib2/rbglib_maincontext.c				\
+	glib-3.1.1/ext/glib2/rbglib_mainloop.c					\
+	glib-3.1.1/ext/glib2/rbglib_matchinfo.c					\
+	glib-3.1.1/ext/glib2/rbglib_messages.c					\
+	glib-3.1.1/ext/glib2/rbglib_pollfd.c					\
+	glib-3.1.1/ext/glib2/rbglib_regex.c					\
+	glib-3.1.1/ext/glib2/rbglib_shell.c					\
+	glib-3.1.1/ext/glib2/rbglib_shellerror.c				\
+	glib-3.1.1/ext/glib2/rbglib_source.c					\
+	glib-3.1.1/ext/glib2/rbglib_spawn.c					\
+	glib-3.1.1/ext/glib2/rbglib_spawnerror.c				\
+	glib-3.1.1/ext/glib2/rbglib_threads.c					\
+	glib-3.1.1/ext/glib2/rbglib_timer.c					\
+	glib-3.1.1/ext/glib2/rbglib_timezone.c					\
+	glib-3.1.1/ext/glib2/rbglib_ucs4.c					\
+	glib-3.1.1/ext/glib2/rbglib_unichar.c					\
+	glib-3.1.1/ext/glib2/rbglib_unicode.c					\
+	glib-3.1.1/ext/glib2/rbglib_utf16.c					\
+	glib-3.1.1/ext/glib2/rbglib_utf8.c					\
+	glib-3.1.1/ext/glib2/rbglib_utils.c					\
+	glib-3.1.1/ext/glib2/rbglib_win32.c					\
+	glib-3.1.1/ext/glib2/rbglibdeprecated.c					\
+	glib-3.1.1/ext/glib2/rbglibdeprecated.h					\
+	glib-3.1.1/ext/glib2/rbgobj_binding.c					\
+	glib-3.1.1/ext/glib2/rbgobj_boxed.c					\
+	glib-3.1.1/ext/glib2/rbgobj_closure.c					\
+	glib-3.1.1/ext/glib2/rbgobj_convert.c					\
+	glib-3.1.1/ext/glib2/rbgobj_enumflags.c					\
+	glib-3.1.1/ext/glib2/rbgobj_enums.c					\
+	glib-3.1.1/ext/glib2/rbgobj_flags.c					\
+	glib-3.1.1/ext/glib2/rbgobj_object.c					\
+	glib-3.1.1/ext/glib2/rbgobj_param.c					\
+	glib-3.1.1/ext/glib2/rbgobj_paramspecs.c				\
+	glib-3.1.1/ext/glib2/rbgobj_signal.c					\
+	glib-3.1.1/ext/glib2/rbgobj_strv.c					\
+	glib-3.1.1/ext/glib2/rbgobj_type.c					\
+	glib-3.1.1/ext/glib2/rbgobj_typeinstance.c				\
+	glib-3.1.1/ext/glib2/rbgobj_typeinterface.c				\
+	glib-3.1.1/ext/glib2/rbgobj_typemodule.c				\
+	glib-3.1.1/ext/glib2/rbgobj_typeplugin.c				\
+	glib-3.1.1/ext/glib2/rbgobj_value.c					\
+	glib-3.1.1/ext/glib2/rbgobj_valuearray.c				\
+	glib-3.1.1/ext/glib2/rbgobj_valuetypes.c				\
+	glib-3.1.1/ext/glib2/rbgobject.c					\
+	glib-3.1.1/ext/glib2/rbgobject.h					\
+	glib-3.1.1/ext/glib2/rbgprivate.h					\
+	glib-3.1.1/ext/glib2/rbgutil.c						\
+	glib-3.1.1/ext/glib2/rbgutil.h						\
+	glib-3.1.1/ext/glib2/rbgutil_callback.c					\
+	glib-3.1.1/ext/glib2/rbgutil_list.c					\
+	glib-3.1.1/ext/glib2/rbgutil_list.h					\
+	glib-3.1.1/ext/glib2/rbgutildeprecated.c				\
+	glib-3.1.1/ext/glib2/rbgutildeprecated.h				\
+	glib-3.1.1/extconf.rb							\
+	glib-3.1.1/lib/glib-mkenums.rb						\
+	glib-3.1.1/lib/glib2.rb							\
+	glib-3.1.1/lib/glib2/deprecatable.rb					\
+	glib-3.1.1/lib/glib2/regex.rb						\
+	glib-3.1.1/lib/glib2/version.rb						\
+	glib-3.1.1/lib/gnome2-raketask.rb					\
+	glib-3.1.1/lib/gnome2/rake/external-package.rb				\
+	glib-3.1.1/lib/gnome2/rake/native-binary-build-task.rb			\
+	glib-3.1.1/lib/gnome2/rake/package-task.rb				\
+	glib-3.1.1/lib/gnome2/rake/package.rb					\
+	glib-3.1.1/lib/gnome2/rake/source-download-task.rb			\
+	glib-3.1.1/lib/gnome2/rake/windows-binary-build-task.rb			\
+	glib-3.1.1/lib/gnome2/rake/windows-binary-download-task.rb		\
+	glib-3.1.1/lib/mkmf-gnome2.rb						\
+	glib-3.1.1/patches/glib-2.48.0-add-missing-exeext.diff			\
+	glib-3.1.1/patches/guile-2.0.11-remove-needless-mkstemp-check.diff	\
+	glib-3.1.1/sample/bookmarkfile.rb					\
+	glib-3.1.1/sample/idle.rb						\
+	glib-3.1.1/sample/iochannel.rb						\
+	glib-3.1.1/sample/keyfile.rb						\
+	glib-3.1.1/sample/shell.rb						\
+	glib-3.1.1/sample/spawn.rb						\
+	glib-3.1.1/sample/timeout.rb						\
+	glib-3.1.1/sample/timeout2.rb						\
+	glib-3.1.1/sample/timer.rb						\
+	glib-3.1.1/sample/type-register.rb					\
+	glib-3.1.1/sample/type-register2.rb					\
+	glib-3.1.1/sample/utils.rb						\
+	glib-3.1.1/test/glib-test-init.rb					\
+	glib-3.1.1/test/glib-test-utils.rb					\
+	glib-3.1.1/test/run-test.rb						\
+	glib-3.1.1/test/test-binding.rb						\
+	glib-3.1.1/test/test-date-time.rb					\
+	glib-3.1.1/test/test-match-info.rb					\
+	glib-3.1.1/test/test-regex.rb						\
+	glib-3.1.1/test/test-time-zone.rb					\
+	glib-3.1.1/test/test-variant-type.rb					\
+	glib-3.1.1/test/test-version.rb						\
+	glib-3.1.1/test/test_enum.rb						\
+	glib-3.1.1/test/test_file_utils.rb					\
+	glib-3.1.1/test/test_flags.rb						\
+	glib-3.1.1/test/test_glib2.rb						\
+	glib-3.1.1/test/test_iochannel.rb					\
+	glib-3.1.1/test/test_key_file.rb					\
+	glib-3.1.1/test/test_mkenums.rb						\
+	glib-3.1.1/test/test_poll_fd.rb						\
+	glib-3.1.1/test/test_signal.rb						\
+	glib-3.1.1/test/test_source.rb						\
+	glib-3.1.1/test/test_spawn.rb						\
+	glib-3.1.1/test/test_timeout.rb						\
+	glib-3.1.1/test/test_unicode.rb						\
+	glib-3.1.1/test/test_utils.rb						\
+	glib-3.1.1/test/test_value.rb						\
+	glib-3.1.1/test/test_win32.rb
