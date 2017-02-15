@@ -1,3 +1,4 @@
+dist: trusty
 notifications:
   recipients:
     - travis@clear-code.com
