@@ -510,7 +510,11 @@ if test "$ruby_available" = "yes"; then
 
   if test "x$use_bundled_ruby_glib2" != "xno" -a \
           "x$ruby_glib2_available" != "xyes"; then
-    ac_used_bundled_ruby_glib2_version=${bundled_latest_ruby_glib2_version}
+    if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = centos6; then
+      ac_used_bundled_ruby_glib2_version=2.2.5
+    else
+      ac_used_bundled_ruby_glib2_version=${bundled_latest_ruby_glib2_version}
+    fi
     if test "x$use_bundled_ruby_glib2" != "xauto" -a \
             "x$use_bundled_ruby_glib2" != "xyes" -a \
             "x$use_bundled_ruby_glib2" != "xno"; then
@@ -622,6 +626,8 @@ sample_rubydir="\$(pkgdatadir)/sample/ruby"
 AC_SUBST(sample_rubydir)
 
 AM_CONDITIONAL([WITH_RUBY], [test "$ruby_available" = "yes"])
+AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_2_2_5],
+               [test "$ac_used_bundled_ruby_glib2_version" = "2.2.5"])
 AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_LATEST],
                [test "$ac_used_bundled_ruby_glib2_version" = "${bundled_latest_ruby_glib2_version}"])
 AM_CONDITIONAL([WITH_RUBY_MILTER], [test -n "$ruby_milterdir"])
