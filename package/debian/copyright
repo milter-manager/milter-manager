@@ -2,6 +2,13 @@ Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: milter manager project
 Source: https://github.com/milter-manager/milter-manager
 
+Files: *
+Copyright: 2008-2009, Kouhei Sutou <kou@cozmixng.org>
+           2008-2009, Hiroyuki Ikezoe <poincare@ikezoe.net>
+License: LGPL-3+
+Comment: On Debian GNU/Linux systems, the complete text of the
+ GNU General Public License can be found in /usr/share/common-licenses/LGPL-3
+
 Files: src/* tool/*
 Copyright: 2008-2009, Kouhei Sutou <kou@cozmixng.org>
            2008-2009, Hiroyuki Ikezoe <poincare@ikezoe.net>
@@ -44,13 +51,6 @@ Comment: On Debian GNU/Linux systems, the complete text of the
 Files: doc/*.svg doc/*.png html/*.svg html/*.png
 Copyright: 2008-2014, Kouhei Sutou <kou@cozmixng.org>
 License: public-domain
-
-Files: others than those above
-Copyright: 2008-2009, Kouhei Sutou <kou@cozmixng.org>
-           2008-2009, Hiroyuki Ikezoe <poincare@ikezoe.net>
-License: LGPL-3+
-Comment: On Debian GNU/Linux systems, the complete text of the
- GNU General Public License can be found in /usr/share/common-licenses/LGPL-3
 
 License: GPL-3+
   This program is free software: you can redistribute it and/or modify
