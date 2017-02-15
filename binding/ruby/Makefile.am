@@ -175,16 +175,11 @@ test_unit_files =						\
 # Use region and C-c C-\ for adding backslashes to the above list.
 ruby_glib2_2_2_5_files =						\
 	glib-2.2.5/COPYING.LIB						\
-	glib-2.2.5/Makefile						\
-	glib-2.2.5/Makefile.lib						\
 	glib-2.2.5/README						\
 	glib-2.2.5/Rakefile						\
 	glib-2.2.5/TODO							\
-	glib-2.2.5/ext/glib2/Makefile					\
 	glib-2.2.5/ext/glib2/depend					\
 	glib-2.2.5/ext/glib2/extconf.rb					\
-	glib-2.2.5/ext/glib2/glib-enum-types.c				\
-	glib-2.2.5/ext/glib2/glib-enum-types.h				\
 	glib-2.2.5/ext/glib2/glib2.def					\
 	glib-2.2.5/ext/glib2/rbgcompat.h				\
 	glib-2.2.5/ext/glib2/rbglib.c					\
@@ -251,7 +246,6 @@ ruby_glib2_2_2_5_files =						\
 	glib-2.2.5/ext/glib2/rbgutil_list.h				\
 	glib-2.2.5/ext/glib2/rbgutildeprecated.c			\
 	glib-2.2.5/ext/glib2/rbgutildeprecated.h			\
-	glib-2.2.5/ext/glib2/ruby-glib2.pc				\
 	glib-2.2.5/extconf.rb						\
 	glib-2.2.5/lib/glib-mkenums.rb					\
 	glib-2.2.5/lib/glib2.rb						\
@@ -303,18 +297,12 @@ ruby_glib2_2_2_5_files =						\
 # Use region and C-c C-\ for adding backslashes to the above list.
 ruby_glib2_latest_files =							\
 	glib-3.1.1/COPYING.LIB							\
-	glib-3.1.1/Makefile							\
-	glib-3.1.1/Makefile.lib							\
 	glib-3.1.1/README.md							\
 	glib-3.1.1/Rakefile							\
 	glib-3.1.1/TODO								\
-	glib-3.1.1/ext/glib2/Makefile						\
 	glib-3.1.1/ext/glib2/depend						\
 	glib-3.1.1/ext/glib2/extconf.rb						\
-	glib-3.1.1/ext/glib2/glib-enum-types.c					\
-	glib-3.1.1/ext/glib2/glib-enum-types.h					\
 	glib-3.1.1/ext/glib2/glib2.def						\
-	glib-3.1.1/ext/glib2/mkmf.log						\
 	glib-3.1.1/ext/glib2/rbgcompat.h					\
 	glib-3.1.1/ext/glib2/rbglib-variant-type.c				\
 	glib-3.1.1/ext/glib2/rbglib-variant.c					\
@@ -387,7 +375,6 @@ ruby_glib2_latest_files =							\
 	glib-3.1.1/ext/glib2/rbgutil_list.h					\
 	glib-3.1.1/ext/glib2/rbgutildeprecated.c				\
 	glib-3.1.1/ext/glib2/rbgutildeprecated.h				\
-	glib-3.1.1/ext/glib2/ruby-glib2.pc					\
 	glib-3.1.1/extconf.rb							\
 	glib-3.1.1/lib/glib-mkenums.rb						\
 	glib-3.1.1/lib/glib2.rb							\
