@@ -21,6 +21,7 @@ install:
   - sudo apt-get update
   - sudo apt-get install -y debhelper dh-systemd autotools-dev libglib2.0-dev libev-dev ruby ruby-dev ruby-gnome2-dev intltool cutter-testing-framework lcov
   - gem install coveralls-lcov --version 1.1.0
+  - gem install pkg-config
   - echo "::1 ip6-localhost" | sudo tee --append /etc/hosts
 before_script:
   - ./autogen.sh
