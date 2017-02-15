@@ -510,7 +510,8 @@ if test "$ruby_available" = "yes"; then
 
   if test "x$use_bundled_ruby_glib2" != "xno" -a \
           "x$ruby_glib2_available" != "xyes"; then
-    if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = centos6; then
+    if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = centos6 -o \
+            "$ruby_version" -lt 210; then
       ac_used_bundled_ruby_glib2_version=2.2.5
     else
       ac_used_bundled_ruby_glib2_version=${bundled_latest_ruby_glib2_version}
