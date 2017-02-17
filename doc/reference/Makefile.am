@@ -502,3 +502,6 @@ upload: docs
 	  --language=ja tmp/reference/ja/*.html
 	rsync -avz --delete tmp/reference/		\
 	  $(OSDN_HTDOCS)/reference/
+
+dist-hook:
+	rm -f $(distdir)/version.xml
