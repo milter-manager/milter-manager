@@ -390,6 +390,7 @@ ruby_glib2_latest_files =							\
 	glib-3.1.1/lib/gnome2/rake/windows-binary-build-task.rb			\
 	glib-3.1.1/lib/gnome2/rake/windows-binary-download-task.rb		\
 	glib-3.1.1/lib/mkmf-gnome2.rb						\
+	glib-3.1.1/lib/pkg-config.rb						\
 	glib-3.1.1/patches/glib-2.48.0-add-missing-exeext.diff			\
 	glib-3.1.1/patches/guile-2.0.11-remove-needless-mkstemp-check.diff	\
 	glib-3.1.1/sample/bookmarkfile.rb					\
