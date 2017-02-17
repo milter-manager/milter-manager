@@ -352,6 +352,7 @@ else
 fi
 
 bundled_latest_ruby_glib2_version=3.1.1
+bundled_available_ruby_glib2_versions="3.1.1 2.2.5"
 if test "$ruby_available" = "yes"; then
   rbconfig="$RUBY -rrbconfig -rshellwords -e "
 
@@ -577,15 +578,17 @@ EOM
     fi
   fi
 
-  if test "$ac_used_bundled_ruby_glib2_version" != "${bundled_latest_ruby_glib2_version}"; then
-    $RUBY -run -e mkdir -- -p binding/ruby/glib-${bundled_latest_ruby_glib2_version}
-    cat <<EOM > binding/ruby/glib-${bundled_latest_ruby_glib2_version}/Makefile
+  for bundled_available_ruby_glib2_version in ${bundled_available_ruby_glib2_versions}; do
+    if test "$ac_used_bundled_ruby_glib2_version" != "${bundled_available_ruby_glib2_version}"; then
+      $RUBY -run -e mkdir -- -p binding/ruby/glib-${bundled_available_ruby_glib2_version}
+      cat <<EOM > binding/ruby/glib-${bundled_available_ruby_glib2_version}/Makefile
 all:
 distdir:
 distclean:
 uninstall:
 EOM
-  fi
+    fi
+  done
 
   if test "$ruby_glib2_available" != "yes"; then
     AC_MSG_ERROR([Ruby/GLib2 is required.])
