@@ -105,3 +105,6 @@ libmilter_core_la_DEPENDENCIES =	\
 
 include $(top_srcdir)/build/enum-types.mk
 include $(top_srcdir)/build/marshal.mk
+
+dist-hook:
+	rm -f $(distdir)/milter-version.h
