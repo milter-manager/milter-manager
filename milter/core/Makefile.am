@@ -54,8 +54,9 @@ marshal_prefix = _milter_marshal
 milter_core_includedir=$(pkgincludedir)/milter/core
 milter_core_include_HEADERS =		\
 	milter-enum-types.h		\
-	milter-version.h		\
 	$(milter_core_public_headers)
+nodist_milter_core_include_HEADERS =	\
+	milter-version.h
 
 lib_LTLIBRARIES =		\
 	libmilter-core.la
@@ -105,6 +106,3 @@ libmilter_core_la_DEPENDENCIES =	\
 
 include $(top_srcdir)/build/enum-types.mk
 include $(top_srcdir)/build/marshal.mk
-
-dist-hook:
-	rm -f $(distdir)/milter-version.h
