@@ -31,7 +31,7 @@ EXTRA_DIST = 				\
 	$(DOC_MODULE)-sections.txt	\
 	$(DOC_MODULE)-overrides.txt
 
-DOC_STAMPS=scan-build.stamp tmpl-build.stamp sgml-build.stamp html-build.stamp \
+DOC_STAMPS=scan-build.stamp tmpl-build.stamp sgml-build.stamp \
 	   $(srcdir)/tmpl.stamp $(srcdir)/sgml.stamp $(srcdir)/html.stamp
 
 SCANOBJ_FILES = 		 \
@@ -192,6 +192,7 @@ distclean-local:
 	  $(DOC_MODULE)-decl-list.txt $(DOC_MODULE)-decl.txt
 
 maintainer-clean-local: clean
+	rm -f html-build.stamp
 	rm -rf xml html
 
 install-data-local:
