@@ -188,7 +188,7 @@ clean-local:
 	rm -rf .libs
 
 distclean-local:
-	rm -rf xml $(REPORT_FILES) \
+	rm -rf $(REPORT_FILES) \
 	  $(DOC_MODULE)-decl-list.txt $(DOC_MODULE)-decl.txt
 
 maintainer-clean-local: clean
