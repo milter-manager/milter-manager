@@ -4,3 +4,6 @@
 [submodule "html/blog/clear-code"]
 	path = html/blog/clear-code
 	url = https://github.com/clear-code/tdiary.git
+[submodule "vendor/cutter-source"]
+	path = vendor/cutter-source
+	url = https://github.com/clear-code/cutter.git
