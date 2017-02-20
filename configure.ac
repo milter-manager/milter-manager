@@ -1056,7 +1056,8 @@ AC_CONFIG_FILES([Makefile
 		 package/ubuntu/Makefile
 		 package/rpm/Makefile
 		 package/rpm/centos/Makefile
-		 package/yum/Makefile])
+		 package/yum/Makefile
+                 vendor/Makefile])
 
 AC_OUTPUT
 

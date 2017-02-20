@@ -21,7 +21,8 @@ SUBDIRS +=					\
 	doc					\
 	html					\
 	license					\
-	package
+	package					\
+	vendor
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA =				\
