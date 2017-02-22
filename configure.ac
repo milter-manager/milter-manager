@@ -871,8 +871,12 @@ AC_ARG_WITH([cutter-source-path],
             AS_HELP_STRING([--with-cutter-source-path=PATH],
                              [Specify Cutter source path for
                              milter-manager's release manager.]),
-              [CUTTER_SOURCE_PATH="$withval"])
+              [CUTTER_SOURCE_PATH="$withval"],
+              [CUTTER_SOURCE_PATH="auto"])
 case "$CUTTER_SOURCE_PATH" in
+auto)
+  CUTTER_SOURCE_PATH="\$(top_builddir)/venoor/cutter-source"
+  ;;
 ""|/*)
   : # do nothing
   ;;
