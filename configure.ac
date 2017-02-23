@@ -875,7 +875,7 @@ AC_ARG_WITH([cutter-source-path],
               [CUTTER_SOURCE_PATH="auto"])
 case "$CUTTER_SOURCE_PATH" in
 auto)
-  CUTTER_SOURCE_PATH="\$(top_builddir)/vendor/cutter-source"
+  CUTTER_SOURCE_PATH="\$(top_srcdir)/vendor/cutter-source"
   ;;
 ""|/*)
   : # do nothing
