@@ -503,5 +503,5 @@ upload: docs
 	rsync -avz --delete tmp/reference/		\
 	  $(OSDN_HTDOCS)/reference/
 
-dist-hook:
+dist-hook-local:
 	rm -f $(distdir)/version.xml
