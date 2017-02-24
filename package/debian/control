@@ -12,7 +12,7 @@ Build-Depends:
 	ruby (>= 1:1.9.3), ruby-dev (>= 1:1.9.3),
 	ruby-gnome2-dev,
 	intltool
-Standards-Version: 3.9.5
+Standards-Version: 3.9.8
 Homepage: http://milter-manager.osdn.jp/
 
 Package: milter-manager
