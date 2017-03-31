@@ -321,7 +321,7 @@ wait_for_manager_ready (const gchar *spec)
                                  &error);
     gcut_assert_error(error);
 
-    timeout_waiting_id = milter_event_loop_add_timeout(loop, 1,
+    timeout_waiting_id = milter_event_loop_add_timeout(loop, 3,
                                                        cb_timeout_emitted,
                                                        &timeout_emitted);
     do {
