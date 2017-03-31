@@ -29,6 +29,7 @@ Here are supported Ubuntu versions:
   * 14.04 LTS Trusty Tahr
   * 16.04 LTS Xenial Xerus
   * 16.10 Yakkety Yak
+  * 17.04 Zesty Zapus
 
 Add the (({ppa:milter-manager/ppa})) PPA to your system:
 
