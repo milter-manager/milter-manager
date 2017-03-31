@@ -68,7 +68,7 @@ build_by_pbuilder()
     OPTS+=( --basetgz "$basetgz" )
     OPTS+=( --aptcache "$aptcache_dir" )
     case $code_name in
-        precise|trusty|xenial|yakkety)
+        trusty|xenial|yakkety)
             OPTS+=( --components 'main universe' )
             MIRROR=http://jp.archive.ubuntu.com/ubuntu
             OPTS+=( --mirror "$MIRROR" )
@@ -100,25 +100,6 @@ build_by_pbuilder()
     )
     run cp -rp ${source_dir}/package/debian $builddir/${PACKAGE}-${VERSION}/
 
-    case $code_name in
-        precise)
-            sed -i \
-                -e 's/ruby (>= 1:1.9.3)/ruby1.9.1 (>= 1.9.1)/g' \
-                -e 's/ruby-dev (>= 1:1.9.3)/ruby1.9.1-dev (>= 1.9.1)/g' \
-                -e '/ruby-gnome2-dev/d' \
-                -e '/ruby-glib2/d' \
-                -e '/dh-systemd/d' \
-                $builddir/${PACKAGE}-${VERSION}/debian/control
-            sed -i \
-                -e '/--enable-ruby-milter/i \\t\t--with-ruby=/usr/bin/ruby1.9.1 \\' \
-                -e 's/ruby -rrbconfig/ruby1.9.1 -rrbconfig/g' \
-                -e 's/ --with=systemd//' \
-                $builddir/${PACKAGE}-${VERSION}/debian/rules
-            sed -i -e 's,^# ,,' $builddir/${PACKAGE}-${VERSION}/debian/ruby-milter-core.install
-            ;;
-        *)
-            ;;
-    esac
     ( cd $builddir/${PACKAGE}-${VERSION} && \
         run_sudo pdebuild \
             --pbuilder pbuilder --buildresult ../../${pool_dir}/  \
