@@ -64,14 +64,13 @@ module Milter::Manager
       @script_name == "opendkim"
     end
 
-    def detect_rmilter_connection_spec
-      conf_file = @variables["rmilter_CONF_FILE"] ||
-        etc_file("rmilter", "rmilter.conf.sysvinit")
-      Milter::Manager::RmilterSocketDetector.new(conf_file).detect
-    end
-
     def rmilter?
       @script_name == "rmilter"
+    end
+
+    def rmilter_conf
+      @variables["rmilter_CONF_FILE"] ||
+        etc_file("rmilter", "rmilter.conf.sysvinit")
     end
 
     private

@@ -57,6 +57,10 @@ module Milter::Manager
       @script_name == "opendkim"
     end
 
+    def rmilter?
+      @script_name == "rmilter"
+    end
+
     private
     def init_variables
       super
@@ -114,6 +118,11 @@ module Milter::Manager
         etc_file("opendkim.conf")
     end
 
+    def rmilter_conf
+      extract_parameter_from_flags(@exec, "-c") ||
+        etc_file("rmilter", "rmilter.conf")
+    end
+
     def guess_spec
       spec = nil
       spec ||= guess_application_specific_spec
@@ -129,6 +138,7 @@ module Milter::Manager
       spec ||= detect_clamav_milter_connection_spec if clamav_milter?
       spec ||= detect_milter_greylist_connection_spec if milter_greylist?
       spec ||= detect_opendkim_connection_spec if opendkim?
+      spec ||= detect_rmilter_connection_spec if rmilter?
       spec
     end
 
