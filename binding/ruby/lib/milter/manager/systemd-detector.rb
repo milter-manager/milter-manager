@@ -3,6 +3,7 @@ require 'milter/manager/detector'
 module Milter::Manager
   module SystemdDetector
     include Detector
+
     def detect
       return unless unit_file_readable?
 
