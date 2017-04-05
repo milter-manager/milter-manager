@@ -1,4 +1,4 @@
-FROM: ubuntu:trusty
+FROM ubuntu:trusty
 
 RUN apt-get update && \
     apt-get install -qq -y debhelper dh-systemd autotools-dev libglib2.0-dev libev-dev ruby ruby-dev ruby-gnome2-dev intltool cutter-testing-framework lcov && \
