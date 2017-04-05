@@ -1,0 +1,15 @@
+version: "2"
+services:
+  ubuntu-trusty:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile-ubuntu-trusty
+    command: tail -f /dev/null
+
+  ubuntu-xenial:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile-ubuntu-xenial
+    command: tail -f /dev/null
+
+

@@ -1,0 +1,10 @@
+FROM: ubuntu:xenial
+
+RUN apt-get update && \
+    apt-get install -qq -y debhelper dh-systemd autotools-dev libglib2.0-dev libev-dev ruby ruby-dev ruby-gnome2-dev intltool cutter-testing-framework lcov && \
+    curl https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh && \
+    gem install coveralls-lcov && \
+    gem install pkg-config
+
+WORKDIR /app
+COPY . .
