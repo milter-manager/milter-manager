@@ -33,6 +33,7 @@ class TestFreeBSDRCDetector < Test::Unit::TestCase
   end
 
   def test_rc_script_readable?
+    omit("root user can read all files") if Etc.getpwuid.uid.zero?
     detector = freebsd_rc_detector("milter-manager")
     assert_false(detector.rc_script_readable?)
     (@rc_d + "milter-manager").open("w") {}
