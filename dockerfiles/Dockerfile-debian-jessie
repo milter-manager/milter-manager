@@ -1,0 +1,13 @@
+FROM debian:jessie
+
+RUN apt-get update && \
+    apt-get install -qq -y \
+      debhelper dh-systemd autotools-dev \
+      libglib2.0-dev libev-dev ruby ruby-dev ruby-gnome2-dev \
+      intltool lcov git libtool && \
+    curl -L https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh && \
+    gem install --no-rdoc --no-ri coveralls-lcov && \
+    gem install --no-rdoc --no-ri pkg-config
+
+WORKDIR /app
+COPY . .

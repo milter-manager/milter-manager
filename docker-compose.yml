@@ -12,4 +12,27 @@ services:
       dockerfile: dockerfiles/Dockerfile-ubuntu-xenial
     command: tail -f /dev/null
 
+  ubuntu-zesty:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile-ubuntu-zesty
+    command: tail -f /dev/null
+
+  debian-jessie:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile-debian-jessie
+    command: tail -f /dev/null
+
+  debian-stretch:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile-debian-stretch
+    command: tail -f /dev/null
+
+  debian-sid:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile-debian-sid
+    command: tail -f /dev/null
 
