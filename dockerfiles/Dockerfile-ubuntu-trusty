@@ -8,8 +8,7 @@ RUN apt-get update && \
     curl -L https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh && \
     gem install --no-rdoc --no-ri coveralls-lcov && \
     gem install --no-rdoc --no-ri pkg-config && \
-    useradd -m --user-group --shell /bin/bash milter-manager && \
-    service rsyslog start
+    useradd -m --user-group --shell /bin/bash milter-manager
 
 WORKDIR /home/milter-manager/milter-manager
 COPY . .
