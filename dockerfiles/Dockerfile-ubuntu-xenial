@@ -7,7 +7,11 @@ RUN apt-get update && \
       intltool lcov git libtool && \
     curl https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh && \
     gem install --no-rdoc --no-ri coveralls-lcov && \
-    gem install --no-rdoc --no-ri pkg-config
+    gem install --no-rdoc --no-ri pkg-config && \
+    useradd -m --user-group --shell /bin/bash milter-manager && \
+    systemctl start rsyslog
 
-WORKDIR /app
+WORKDIR /home/milter-manager/milter-manager
 COPY . .
+RUN chown -R milter-manager:milter-manager .
+USER milter-manager
