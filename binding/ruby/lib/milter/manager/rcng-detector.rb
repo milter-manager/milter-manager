@@ -36,6 +36,14 @@ module Milter::Manager
       rc_script
     end
 
+    def command
+      run_command
+    end
+
+    def command_options
+      ["start"]
+    end
+
     def detect
       init_variables
       return unless rc_script_readable?

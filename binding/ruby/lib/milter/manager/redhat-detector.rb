@@ -63,6 +63,18 @@ module Milter::Manager
         @init_detector.enabled?
     end
 
+    def systemd?
+      @systemd_detector.enabled?
+    end
+
+    def upstart?
+      @upstart_detector.enabled?
+    end
+
+    def sysv_init?
+      @init_detector.enabled?
+    end
+
     private
     def init_variables
       super

@@ -32,6 +32,14 @@ module Milter::Manager
       init_script
     end
 
+    def command
+      init_script
+    end
+
+    def command_options
+      ["start"]
+    end
+
     def init_script_readable?
       File.readable?(init_script)
     end
