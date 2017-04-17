@@ -194,8 +194,8 @@ bindingdir='$(pkglibdir)/binding'
 expanded_bindingdir="${milter_manager_libdir}/${PACKAGE_NAME}/binding"
 binding_extdir='$(bindingdir)/ext'
 binding_libdir='$(bindingdir)/lib'
-expanded_binding_extdir="${expanded_bindingdir}/ext"
-expanded_binding_libdir="${expanded_bindingdir}/lib"
+expanded_binding_extdir="${expanded_bindingdir}/ruby/ext"
+expanded_binding_libdir="${expanded_bindingdir}/ruby/lib"
 AC_SUBST(bindingdir)
 AC_SUBST(binding_extdir)
 AC_SUBST(binding_libdir)
