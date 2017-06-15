@@ -18,6 +18,7 @@ env:
     - TARGET_DISTRIBUTION=debian-jessie
     # - TARGET_DISTRIBUTION=debian-stretch
     # - TARGET_DISTRIBUTION=debian-sid
+    - TARGET_DISTRIBUTION=centos6
     - TARGET_DISTRIBUTION=centos7
 
 before_install:

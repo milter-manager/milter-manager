@@ -36,6 +36,12 @@ services:
       dockerfile: dockerfiles/Dockerfile-debian-sid
     command: tail -f /dev/null
 
+  centos6:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile-centos6
+    command: tail -f /dev/null
+
   centos7:
     build:
       context: .
