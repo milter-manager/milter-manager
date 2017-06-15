@@ -147,7 +147,7 @@ Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	libmilter-core0 (= ${binary:Version})
-Description: Libraries and tools for implementing milter protocol
+Description: Libraries and tools for implementing milter protocol (client-side)
  milter "client" library is a library which implements client-side
  (milter-side) milter protocol.
 
@@ -176,7 +176,7 @@ Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	libmilter-core0 (= ${binary:Version})
-Description: Libraries and tools for implementing milter protocol
+Description: Libraries and tools for implementing milter protocol (server-side)
  milter "server" library is a library which implements server-side
  (MTA-side) milter protocol.
 
