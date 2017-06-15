@@ -5,6 +5,8 @@
 #export DH_VERBOSE=1
 # This has to be exported to make some magic below work.
 export DH_OPTIONS
+# Keep debug symbols
+export CFLAGS += -g
 # search rbgobject.h
 export CFLAGS += -I$(ruby -rrbconfig -e 'print RbConfig::CONFIG["vendorarchdir"]')
 # Workaround ev.h path
