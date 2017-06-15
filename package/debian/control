@@ -102,7 +102,7 @@ Depends:
 	rrdtool,
 	librrd-ruby1.9.1,
 	ruby (>= 1:1.9.3)
-Description: Analyze milter-manager's log.
+Description: Analyze milter-manager's log
  milter manager administrates milters instead of MTA to reduce milter
  administration cost and combine milters flexibly.
  .
