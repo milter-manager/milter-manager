@@ -14,7 +14,7 @@ env:
   matrix:
     - TARGET_DISTRIBUTION=ubuntu-trusty
     - TARGET_DISTRIBUTION=ubuntu-xenial
-    # - TARGET_DISTRIBUTION=ubuntu-zesty
+    - TARGET_DISTRIBUTION=ubuntu-zesty
     - TARGET_DISTRIBUTION=debian-jessie
     # - TARGET_DISTRIBUTION=debian-stretch
     # - TARGET_DISTRIBUTION=debian-sid
