@@ -234,6 +234,8 @@ Depends:
 Description: Ruby bindings for milter core library (Ruby interface)
  milter "core" library is a common library for mitler "client" and
  milter "server" libraries.
+ .
+ This provides Ruby bindings for libmilter-core.
 
 Package: ruby-milter-client
 Section: ruby
