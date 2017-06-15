@@ -28,6 +28,15 @@ Suggests: postfix | sendmail, spamass-milter, clamav-milter, milter-greylist
 Description: Milter to use milters effectively
  milter manager administrates milters instead of MTA to reduce milter
  administration cost and combine milters flexibly.
+ .
+ milter manager is a milter that provides an effective
+ anti-spam and anti-virus solution with milters.
+ .
+ milter manager provides a platform to use milters
+ effectively and flexibly. milter-manager has embedded Ruby
+ interpreter that is used for dynamic milter applicable
+ condition. milter-manager can provide the platform by
+ embedded Ruby interpreter.
 
 Package: milter-manager-doc
 Section: doc
