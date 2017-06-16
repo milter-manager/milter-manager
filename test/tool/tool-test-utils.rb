@@ -18,9 +18,6 @@ require 'tempfile'
 require 'fileutils'
 require 'stringio'
 
-require 'rubygems'
-require 'rr'
-
 load 'milter-manager-log-analyzer'
 
 module RRD

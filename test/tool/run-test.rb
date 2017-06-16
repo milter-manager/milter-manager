@@ -23,6 +23,7 @@ test_unit_dir = top + "binding" + "ruby" + "test-unit" + "lib"
 
 $LOAD_PATH.unshift(test_unit_dir.to_s)
 require 'test/unit'
+require 'test/unit/rr'
 
 $LOAD_PATH.unshift((top + "tool").to_s)
 

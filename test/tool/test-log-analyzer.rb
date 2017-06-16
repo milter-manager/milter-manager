@@ -14,19 +14,6 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 class TestLogAnalyzer < Test::Unit::TestCase
-  include RR::Adapters::RRMethods
-
-  RR.trim_backtrace = true
-  setup :setup_rr
-  def setup_rr
-    RR.reset
-  end
-
-  def run_test
-    super
-    RR.verify
-  end
-
   def setup
     base = Pathname(__FILE__).dirname
     @data_dir = base + "fixtures"
