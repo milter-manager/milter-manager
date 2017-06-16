@@ -248,11 +248,11 @@ package.platform = #{@configuration.package_platform.inspect}
 package.options = #{@configuration.package_options.inspect}
 
 # default
-security.privilege_mode = false
+security.privilege_mode = #{@configuration.privilege_mode?}
 # default
-security.effective_user = nil
+security.effective_user = #{@configuration.effective_user.inspect}
 # default
-security.effective_group = nil
+security.effective_group = #{@configuration.effective_group.inspect}
 
 # default
 log.level = "none"
@@ -268,7 +268,7 @@ manager.connection_spec = #{@configuration.manager_connection_spec.inspect}
 # default
 manager.unix_socket_mode = 0660
 # default
-manager.unix_socket_group = nil
+manager.unix_socket_group = #{@configuration.manager_unix_socket_group.inspect}
 # default
 manager.remove_unix_socket_on_create = true
 # default
@@ -276,7 +276,7 @@ manager.remove_unix_socket_on_close = true
 # default
 manager.daemon = false
 # default
-manager.pid_file = nil
+manager.pid_file = #{@configuration.pid_file.inspect}
 # default
 manager.maintenance_interval = 10
 # default

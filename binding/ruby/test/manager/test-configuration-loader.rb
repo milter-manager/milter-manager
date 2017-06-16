@@ -38,14 +38,16 @@ class TestConfigurationLoader < Test::Unit::TestCase
   end
 
   def test_security_effective_user
-    assert_nil(@configuration.effective_user)
+    original = @configuration.effective_user
     @loader.security.effective_user = "nobody"
+    assert_not_equal(original, @configuration.effective_user)
     assert_equal("nobody", @configuration.effective_user)
   end
 
   def test_security_effective_group
-    assert_nil(@configuration.effective_group)
+    original = @configuration.effective_group
     @loader.security.effective_group = "nogroup"
+    assert_not_equal(original, @configuration.effective_group)
     assert_equal("nogroup", @configuration.effective_group)
   end
 
@@ -56,8 +58,9 @@ class TestConfigurationLoader < Test::Unit::TestCase
   end
 
   def test_manager_unix_socket_group
-    assert_nil(@configuration.manager_unix_socket_group)
+    original = @configuration.manager_unix_socket_group
     @loader.manager.unix_socket_group = "nogroup"
+    assert_not_equal(original, @configuration.manager_unix_socket_group)
     assert_equal("nogroup", @configuration.manager_unix_socket_group)
   end
 
@@ -112,8 +115,9 @@ class TestConfigurationLoader < Test::Unit::TestCase
   end
 
   def test_manager_pid_file
-    assert_nil(@configuration.pid_file)
+    original = @configuration.pid_file
     @loader.manager.pid_file = "/var/run/milter-manager.pid"
+    assert_not_equal(original, @configuration.pid_file)
     assert_equal("/var/run/milter-manager.pid", @configuration.pid_file)
     assert_equal(@configuration.pid_file, @loader.manager.pid_file)
   end
