@@ -31,4 +31,5 @@ $LOAD_PATH.unshift(base.to_s)
 require 'tool-test-utils'
 
 ARGV.unshift("--priority-mode")
+ARGV.unshift("--max-diff-target-string-size=5000")
 exit Test::Unit::AutoRunner.run(true, base)
