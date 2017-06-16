@@ -9,9 +9,12 @@ Build-Depends:
 	autotools-dev,
 	libglib2.0-dev,
 	libev-dev,
+	libcutter-dev,
 	ruby (>= 1:1.9.3), ruby-dev (>= 1:1.9.3),
+	ruby-rr,
 	ruby-gnome2-dev,
-	intltool
+	intltool,
+	rrdtool
 Standards-Version: 3.9.8
 Homepage: http://milter-manager.osdn.jp/
 
