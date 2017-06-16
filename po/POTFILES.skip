@@ -15,3 +15,17 @@ gio-unix-compatible/gio/gsocketoutputstream.c
 gio-unix-compatible/gio/gtcpconnection.c
 gio-unix-compatible/gio/gunixconnection.c
 gio-unix-compatible/gio/gunixsocketaddress.c
+vendor/cutter-source/cutter/cut-console.c
+vendor/cutter-source/cutter/cut-diff.c
+vendor/cutter-source/cutter/cut-main.c
+vendor/cutter-source/cutter/cut-report-factory-builder.c
+vendor/cutter-source/cutter/cut-stream-factory-builder.c
+vendor/cutter-source/cutter/cut-test-context.c
+vendor/cutter-source/cutter/cut-ui-factory-builder.c
+vendor/cutter-source/glib-compatible/gregex.c
+vendor/cutter-source/glib-compatible/pcre/pcre_compile.c
+vendor/cutter-source/module/report/cut-pdf-report-factory.c
+vendor/cutter-source/module/report/cut-xml-report-factory.c
+vendor/cutter-source/module/stream/cut-xml-stream-factory.c
+vendor/cutter-source/module/ui/cut-console-ui-factory.c
+vendor/cutter-source/module/ui/cut-gtk-ui.c
