@@ -11,7 +11,7 @@ Build-Depends:
 	libev-dev,
 	libcutter-dev,
 	ruby (>= 1:1.9.3), ruby-dev (>= 1:1.9.3),
-	ruby-rr,
+	ruby-test-unit-rr,
 	ruby-gnome2-dev,
 	intltool,
 	rrdtool
