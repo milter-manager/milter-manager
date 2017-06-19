@@ -10,6 +10,8 @@ Build-Depends:
 	libglib2.0-dev,
 	libev-dev,
 	libcutter-dev,
+	cutter-testing-framework-bin,
+	cutter-glib-support,
 	ruby (>= 1:1.9.3), ruby-dev (>= 1:1.9.3),
 	ruby-test-unit-rr,
 	ruby-gnome2-dev,
