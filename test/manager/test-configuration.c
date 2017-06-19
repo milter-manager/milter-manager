@@ -236,7 +236,7 @@ void
 test_effective_user (void)
 {
     cut_assert_equal_string(
-        NULL,
+        MILTER_MANAGER_DEFAULT_EFFECTIVE_USER,
         milter_manager_configuration_get_effective_user(config));
     milter_manager_configuration_set_effective_user(config, "nobody");
     cut_assert_equal_string(
@@ -248,7 +248,7 @@ void
 test_effective_group (void)
 {
     cut_assert_equal_string(
-        NULL,
+        MILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP,
         milter_manager_configuration_get_effective_group(config));
     milter_manager_configuration_set_effective_group(config, "nogroup");
     cut_assert_equal_string(
@@ -284,7 +284,7 @@ void
 test_manager_unix_socket_group (void)
 {
     cut_assert_equal_string(
-        NULL,
+        MILTER_MANAGER_DEFAULT_SOCKET_GROUP,
         milter_manager_configuration_get_manager_unix_socket_group(config));
     milter_manager_configuration_set_manager_unix_socket_group(config, "nobody");
     cut_assert_equal_string(
@@ -349,7 +349,7 @@ test_pid_file (void)
 {
     const gchar pid_file[] = "/var/run/milter-manager.pid";
 
-    cut_assert_equal_string(NULL,
+    cut_assert_equal_string(MILTER_MANAGER_DEFAULT_PID_FILE,
                             milter_manager_configuration_get_pid_file(config));
     milter_manager_configuration_set_pid_file(config, pid_file);
     cut_assert_equal_string(pid_file,
@@ -655,13 +655,13 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
         NULL,
         milter_manager_configuration_get_controller_connection_spec(config));
     cut_assert_equal_string(
-        NULL,
+        MILTER_MANAGER_DEFAULT_EFFECTIVE_USER,
         milter_manager_configuration_get_effective_user(config));
     cut_assert_equal_string(
-        NULL,
+        MILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP,
         milter_manager_configuration_get_effective_group(config));
     cut_assert_equal_string(
-        NULL,
+        MILTER_MANAGER_DEFAULT_PID_FILE,
         milter_manager_configuration_get_pid_file(config));
     cut_assert_equal_string(
         NULL,
@@ -671,7 +671,7 @@ milter_assert_default_configuration_helper (MilterManagerConfiguration *config)
         0660,
         milter_manager_configuration_get_manager_unix_socket_mode(config));
     cut_assert_equal_string(
-        NULL,
+        MILTER_MANAGER_DEFAULT_SOCKET_GROUP,
         milter_manager_configuration_get_manager_unix_socket_group(config));
     cut_assert_equal_uint(
         0660,
