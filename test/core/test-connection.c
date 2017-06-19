@@ -550,6 +550,10 @@ test_listen_remove_failure (void)
     GError *error = NULL;
     struct sockaddr_un *address_un = NULL;
 
+    if (geteuid() == 0) {
+        cut_omit("Root user cannot succeed this test.");
+    }
+
     socket_path = cut_take_printf("%s/milter.sock", tmp_dir);
     spec = cut_take_printf("unix:%s", socket_path);
     g_file_set_contents(socket_path, "", 0, &error);

@@ -232,6 +232,10 @@ test_set_configuration_failed (void)
     GString *output;
     guint packet_size_space;
 
+    if (geteuid() == 0) {
+        cut_omit("Root user cannot succeed this test.");
+    }
+
     config = milter_manager_get_configuration(manager);
     milter_manager_configuration_clear_load_paths(config);
     milter_manager_configuration_prepend_load_path(config, tmp_dir);
