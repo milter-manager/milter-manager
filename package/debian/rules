@@ -27,6 +27,9 @@ override_dh_auto_configure:
 		--with-default-connection-spec=unix:/run/milter-manager/milter-manager.sock \
 		--enable-ruby-milter=$$(ruby -rrbconfig -e 'print RbConfig::CONFIG["vendordir"]')
 
+override_dh_auto_test:
+	TZ=Asia/Tokyo dh_auto_test
+
 override_dh_install:
 	find $(CURDIR)/debian/tmp/usr/lib/ -name *.la -delete
 	dh_install
