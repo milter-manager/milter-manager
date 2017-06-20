@@ -59,12 +59,10 @@ setup_syslog (void)
             break;
         }
     }
-    cut_set_message("syslog file name candidates: [%s]",
-                    cut_take_string(g_strjoinv(", ", candidates)));
     if (!syslog_file_name) {
-        cut_omit("syslog file name candidates not found.");
+        cut_omit("syslog file isn't found in candidates: [%s]",
+                 cut_take_string(g_strjoinv(", ", candidates)));
     }
-    cut_assert_not_null(syslog_file_name);
 
     cut_assert_equal_int(0, g_lstat(syslog_file_name, &status));
     first_log_file_size = status.st_size;
