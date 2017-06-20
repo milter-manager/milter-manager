@@ -1,7 +1,8 @@
 dist: trusty
 notifications:
-  recipients:
-    - travis@clear-code.com
+  email:
+    recipients:
+      - milter-manager@ml.commit-email.info
 rvm:
   - 2.1
   - 2.2
