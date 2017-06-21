@@ -37,8 +37,7 @@ before_script:
   - docker-compose exec ${TARGET_DISTRIBUTION} make
 
 script:
-  - docker-compose exec ${TARGET_DISTRIBUTION} test/run-test.sh
-  - docker-compose exec ${TARGET_DISTRIBUTION} binding/ruby/test/run-test.sh
+  - docker-compose exec ${TARGET_DISTRIBUTION} make check
 
 after_success:
   - docker-compose exec ${TARGET_DISTRIBUTION} lcov --compat-libtool --directory . --capture --output-file coverage.info
