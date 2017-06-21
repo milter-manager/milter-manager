@@ -1,9 +1,10 @@
 SUBDIRS = fixtures
 
-TESTS = run-test.rb
+TESTS = run-test.sh
 
 EXTRA_DIST =					\
 	run-test.rb				\
+	run-test.sh				\
 	tool-test-utils.rb			\
 	test-log-analyzer.rb			\
 	test-report-graph-generator.rb
@@ -34,3 +35,6 @@ LIBS =								\
 	$(GCUTTER_LIBS)
 
 test_server_la_SOURCES = test-server.c
+
+echo-abs-top-builddir:
+	@echo $(abs_top_builddir)
