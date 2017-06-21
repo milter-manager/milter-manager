@@ -8,7 +8,7 @@ RUN yum update -q -y && \
     yum makecache && \
     yum install -q -y lcov && \
     yum install -q -y cutter && \
-    gem install --no-rdoc --no-ri coveralls-lcov pkg-config && \
+    gem install --no-rdoc --no-ri coveralls-lcov pkg-config test-unit-rr && \
     useradd -m --user-group --shell /bin/bash milter-manager
 
 WORKDIR /home/milter-manager/milter-manager

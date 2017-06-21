@@ -21,7 +21,7 @@ RUN mkdir -p ~/rpmbuild/SOURCES ~/rpmbuild/SPECS && \
     rpmbuild --quiet -ba /tmp/ruby22.spec && \
     yum install -q -y ~/rpmbuild/RPMS/*/*.rpm
 
-RUN gem2.2 install --no-rdoc --no-ri coveralls-lcov pkg-config
+RUN gem2.2 install --no-rdoc --no-ri coveralls-lcov pkg-config test-unit-rr
 
 
 WORKDIR /home/milter-manager/milter-manager
