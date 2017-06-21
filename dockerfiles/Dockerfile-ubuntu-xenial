@@ -3,7 +3,7 @@ FROM ubuntu:xenial
 RUN apt-get update && \
     apt-get install -qq -y \
       debhelper dh-systemd autotools-dev \
-      libglib2.0-dev libev-dev ruby ruby-dev ruby-gnome2-dev \
+      libglib2.0-dev libev-dev ruby ruby-dev ruby-gnome2-dev ruby-test-unit-rr \
       intltool lcov git libtool lsb-release sudo rsyslog && \
     curl -L https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh && \
     gem install --no-rdoc --no-ri coveralls-lcov && \

@@ -5,7 +5,7 @@ ENV CODE_NAME=unstable
 RUN apt-get update && \
     apt-get install -qq -y \
       debhelper dh-systemd autotools-dev \
-      libglib2.0-dev libev-dev ruby ruby-dev ruby-gnome2-dev \
+      libglib2.0-dev libev-dev ruby ruby-dev ruby-gnome2-dev ruby-test-unit-rr \
       intltool lcov git libtool sudo lsb-release apt-transport-https \
       rsyslog && \
     curl -L https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh && \
