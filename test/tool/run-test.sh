@@ -1,5 +1,8 @@
 #!/bin/bash
 
+unset MAKELEVEL
+unset MAKEFLAGS
+
 if gmake --version > /dev/null 2>&1; then
     MAKE=${MAKE:-"gmake"}
 else
