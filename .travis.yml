@@ -1,37 +1,52 @@
 dist: trusty
+sudo: required
 notifications:
   email:
     recipients:
       - milter-manager@ml.commit-email.info
-rvm:
-  - 2.1
-  - 2.2
-  - 2.3.4
-  - 2.4.1
-# - ruby-head
+
+services:
+  - docker
+
 env:
-  - MILTER_EVENT_LOOP_BACKEND=glib
-#  - MILTER_EVENT_LOOP_BACKEND=libev
-# matrix:
-#   allow_failures:
-#     - rvm: 2.2
-#       env: MILTER_EVENT_LOOP_BACKEND=glib
-#     - rvm: ruby-head
-#       env: MILTER_EVENT_LOOP_BACKEND=glib
-install:
-  - curl https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh
-  - sudo apt-get update
-  - sudo apt-get install -y debhelper dh-systemd autotools-dev libglib2.0-dev libev-dev ruby ruby-dev ruby-gnome2-dev intltool cutter-testing-framework lcov
-  - gem install coveralls-lcov --version 1.1.0
-  - gem install pkg-config
-  - echo -e "\n::1 ip6-localhost" | sudo tee --append /etc/hosts
+  global:
+    DOCKER_COMPOSE_VERSION: 1.8.1
+  matrix:
+    - TARGET_DISTRIBUTION=ubuntu-trusty
+    - TARGET_DISTRIBUTION=ubuntu-xenial
+    - TARGET_DISTRIBUTION=ubuntu-zesty
+    - TARGET_DISTRIBUTION=debian-jessie
+    # - TARGET_DISTRIBUTION=debian-stretch
+    # - TARGET_DISTRIBUTION=debian-sid
+    - TARGET_DISTRIBUTION=centos6 EXTRA_CONFIGURE_OPTIONS="--with-ruby=/usr/bin/ruby2.2 --with-bundled-ruby-glib2"
+    - TARGET_DISTRIBUTION=centos7
+
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m) > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin/
+
 before_script:
-  - ./autogen.sh
-  - ./configure --enable-coverage --with-default-connection-spec="inet:10025@[127.0.0.1]"
-  - make
+  - docker-compose build ${TARGET_DISTRIBUTION}
+  - docker-compose ps
+  - docker-compose up -d ${TARGET_DISTRIBUTION}
+  - docker-compose exec --user root ${TARGET_DISTRIBUTION} rsyslogd -f /etc/rsyslog.conf
+  - docker-compose exec ${TARGET_DISTRIBUTION} ./autogen.sh
+  - docker-compose exec ${TARGET_DISTRIBUTION} ./configure --enable-coverage --with-default-connection-spec="inet:10025@[127.0.0.1]" ${EXTRA_CONFIGURE_OPTIONS}
+  - docker-compose exec ${TARGET_DISTRIBUTION} make
+
 script:
-  - test/run-test.sh
-  - binding/ruby/test/run-test.sh
+  #- docker-compose exec ${TARGET_DISTRIBUTION} env TZ=Asia/Tokyo make check
+  - docker-compose exec ${TARGET_DISTRIBUTION} ./binding/ruby/test/run-test.sh
+  - docker-compose exec ${TARGET_DISTRIBUTION} ./test/run-test.sh
+  #- docker-compose exec ${TARGET_DISTRIBUTION}./test/tool/run-test.sh
+
 after_success:
-  - lcov --compat-libtool --directory . --capture --output-file coverage.info
-  - coveralls-lcov -v coverage.info
+  - docker-compose exec ${TARGET_DISTRIBUTION} lcov --compat-libtool --directory . --capture --output-file coverage.info
+  - docker-compose exec ${TARGET_DISTRIBUTION} coveralls-lcov -v coverage.info
+
+# after_failure:
+#   - docker-compose exec ${TARGET_DISTRIBUTION} cat test/test-suite.log
+#   - docker-compose exec ${TARGET_DISTRIBUTION} cat binding/ruby/test/test-suite.log
+#   - docker-compose exec ${TARGET_DISTRIBUTION} cat test/tool/test-suite.log

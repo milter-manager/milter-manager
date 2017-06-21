@@ -30,6 +30,10 @@ module Milter::Manager
       "/sbin/start"
     end
 
+    def command
+      run_command
+    end
+
     def command_options
       if have_service_command?
         super
