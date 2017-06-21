@@ -10,7 +10,7 @@ RUN apt-get update && \
     gem install --no-rdoc --no-ri pkg-config && \
     useradd -m --user-group --shell /bin/bash milter-manager
 
-RUN curl -L https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh
+RUN curl -L https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | env CUTTER_MASTER=yes sh
 
 WORKDIR /home/milter-manager/milter-manager
 COPY . .
