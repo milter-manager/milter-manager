@@ -10,40 +10,54 @@ services:
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile-ubuntu-xenial
+    environment:
+      TZ: Asia/Tokyo
     command: tail -f /dev/null
 
   ubuntu-zesty:
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile-ubuntu-zesty
+    environment:
+      TZ: Asia/Tokyo
     command: tail -f /dev/null
 
   debian-jessie:
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile-debian-jessie
+    environment:
+      TZ: Asia/Tokyo
     command: tail -f /dev/null
 
   debian-stretch:
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile-debian-stretch
+    environment:
+      TZ: Asia/Tokyo
     command: tail -f /dev/null
 
   debian-sid:
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile-debian-sid
+    environment:
+      TZ: Asia/Tokyo
     command: tail -f /dev/null
 
   centos6:
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile-centos6
+    environment:
+      TZ: Asia/Tokyo
     command: tail -f /dev/null
 
   centos7:
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile-centos7
+    environment:
+      TZ: Asia/Tokyo
     command: tail -f /dev/null
