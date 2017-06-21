@@ -5,7 +5,7 @@ RUN apt-get update && \
       debhelper dh-systemd autotools-dev \
       libglib2.0-dev libev-dev ruby ruby-dev ruby-gnome2-dev ruby-test-unit-rr \
       intltool lcov git libtool sudo lsb-release apt-transport-https \
-      rsyslog && \
+      rrdtool rsyslog && \
     gem install --no-rdoc --no-ri coveralls-lcov && \
     gem install --no-rdoc --no-ri pkg-config && \
     useradd -m --user-group --shell /bin/bash milter-manager
