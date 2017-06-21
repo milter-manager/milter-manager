@@ -42,3 +42,8 @@ script:
 after_success:
   - docker-compose exec ${TARGET_DISTRIBUTION} lcov --compat-libtool --directory . --capture --output-file coverage.info
   - docker-compose exec ${TARGET_DISTRIBUTION} coveralls-lcov -v coverage.info
+
+after_failure:
+  - docker-compose exec ${TARGET_DISTRIBUTION} cat test/tool/test-suite.log
+  - docker-compose exec ${TARGET_DISTRIBUTION} cat test/test-suite.log
+  - docker-compose exec ${TARGET_DISTRIBUTION} cat binding/ruby/test/test-suite.log
