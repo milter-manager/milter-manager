@@ -36,5 +36,8 @@ LIBS =								\
 
 test_server_la_SOURCES = test-server.c
 
-echo-abs-top-builddir:
-	@echo $(abs_top_builddir)
+echo-abs-top-srcdir:
+	@echo $(abs_top_srcdir)
+
+echo-ruby:
+	@echo $(RUBY)

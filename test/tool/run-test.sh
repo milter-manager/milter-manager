@@ -9,14 +9,14 @@ else
     MAKE=${MAKE:-"make"}
 fi
 
-if test -z "$abs_top_builddir"; then
-    abs_top_builddir="$(${MAKE} -s echo-abs-top-builddir)"
+if test -z "$abs_top_srcdir"; then
+    abs_top_srcdir="$(${MAKE} -s echo-abs-top-srcdir)"
 fi
 
-BASE_DIR="$abs_top_builddir/test/tool"
+BASE_DIR="$abs_top_srcdir/test/tool"
 
 if test -z "$RUBY"; then
-    RUBY="$(${MAKE} -s -C "$abs_top_builddir" echo-ruby)"
+    RUBY="$(${MAKE} -s echo-ruby)"
 fi
 
 ${RUBY} ${BASE_DIR}/run-test.rb
