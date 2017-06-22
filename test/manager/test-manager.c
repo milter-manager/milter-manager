@@ -428,7 +428,11 @@ test_unknown_option (void)
             "Unknown option --nonexistent\n"
             "\n"
             "Usage:\n"
+#if GLIB_CHECK_VERSION(2, 52, 0)
+            "  %s [OPTION…]\n"
+#else
             "  %s [OPTION...]\n"
+#endif
             "\n"
             "Help Options:\n"
             "  -h, --help                                     "
