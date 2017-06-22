@@ -416,6 +416,9 @@ void
 test_unknown_option (void)
 {
     GError *error = NULL;
+#if GLIB_CHECK_VERSION(2, 52, 0)
+    cut_pend("GLib 2.52.0 uses Unicode string in message.");
+#endif
 
     setup_process(manager_data, "--nonexistent", NULL);
     gcut_process_run(manager_process, &error);
