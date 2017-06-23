@@ -38,6 +38,14 @@ services:
       TZ: Asia/Tokyo
     command: tail -f /dev/null
 
+  debian-buster:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile-debian-buster
+    environment:
+      TZ: Asia/Tokyo
+    command: tail -f /dev/null
+
   debian-sid:
     build:
       context: .
