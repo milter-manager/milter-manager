@@ -73,6 +73,10 @@ module Milter::Manager
         etc_file("rmilter", "rmilter.conf.sysvinit")
     end
 
+    def rspamd_proxy?
+      @script_name == "rspamd"
+    end
+
     private
     def parse_custom_conf
       parse_sysconfig(sysconfig)
@@ -170,6 +174,7 @@ module Milter::Manager
       end
       spec ||= detect_opendkim_connection_spec if opendkim?
       spec ||= detect_rmilter_connection_spec if rmilter?
+      spec ||= detect_rspamd_proxy_connection_spec if rspamd_proxy?
       spec
     end
 
