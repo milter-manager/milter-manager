@@ -20,7 +20,7 @@
 
 === milter manager
 
-  * Support auto detection for ((<Rmilter|URL:https://rspamd.com/rmilter/>))
+  * Support auto detection for ((<Rmilter|URL:https://rspamd.com/rmilter/>)) (experimental)
     * Rmilter has been obsolete since Rspamd 1.6, use ((<Rspamd proxy|URL:https://rspamd.com/doc/workers/rspamd_proxy.html>))
 
 == [release-2-1-0] 2.1.0: 2016-11-21

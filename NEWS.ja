@@ -20,7 +20,7 @@
 
 === milter manager
 
-  * ((<Rmilter|URL:https://rspamd.com/rmilter/>))の自動検出をサポートしました
+  * ((<Rmilter|URL:https://rspamd.com/rmilter/>))の自動検出をサポートしました (実験的)
     * Rspamd 1.6 以降では非推奨なので((<Rspamd proxy|URL:https://rspamd.com/doc/workers/rspamd_proxy.html>))を使用してください
 
 == [release-2-1-0] 2.1.0: 2016-11-21
