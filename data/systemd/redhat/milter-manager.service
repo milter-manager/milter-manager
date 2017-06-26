@@ -4,7 +4,7 @@ After=network-online.target
 
 [Service]
 Type=forking
-PIDFile="/var/run/milter-manager/milter-manager.pid"
+PIDFile=/var/run/milter-manager/milter-manager.pid
 EnvironmentFile=-/etc/sysconfig/milter-manager
 User=root
 Group=root
