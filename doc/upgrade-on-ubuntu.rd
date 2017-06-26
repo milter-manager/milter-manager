@@ -13,7 +13,7 @@ information.
 
 We just upgrade milter manager package.
 
-  % sudo apt-get -V -y upgrade
+  % sudo apt -V -y upgrade
 
 == Conclusion
 

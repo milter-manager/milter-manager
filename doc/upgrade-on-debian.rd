@@ -13,7 +13,7 @@ information.
 
 We just upgrade milter manager package.
 
-  % sudo aptitude -V -D -y safe-upgrade
+  % sudo apt -y upgrade
 
 === Upgrade from before 2.1.0
 

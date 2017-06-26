@@ -35,7 +35,7 @@ milter-manager-log-analyzerが出力するグラフは同じホストにWeb
 
 WebサーバとしてApacheを使います。
 
-  % sudo aptitude -V -D -y install apache2
+  % sudo apt -y install apache2
 
 ==== milter-manager-log-analyzerの設定
 
@@ -66,7 +66,7 @@ WebサーバとしてApacheを使います。
 milter-manager-log-analyzerが収集した統計情報をMuninに提供す
 るmilter-manager-munin-pluginsパッケージをインストールします。
 
-  % sudo aptitude -V -D -y install milter-manager-munin-plugins
+  % sudo apt -y install milter-manager-munin-plugins
 
 ((*注: Muninに統計情報を提供する場合はmilter manager 1.5.0以
 降のmilter-manager-log-analyzerが生成したデータベースを使う
@@ -95,7 +95,7 @@ GNU/Linuxで動いているとします。
 
 まず、muninをインストールします。
 
-  monitoring-server% sudo aptitude -V -D -y install munin
+  monitoring-server% sudo apt -y install munin
 
 muninの監視対象にmunin-nodeが動いているメールサーバを追加しま
 す。メールサーバが以下の場合の/etc/munin/munin.confへ追加する

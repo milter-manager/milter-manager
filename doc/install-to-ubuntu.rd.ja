@@ -32,25 +32,25 @@ Ubuntu向けのmilter managerのAPTリポジトリは
 
 (({ppa:milter-manager/ppa})) PPAを追加します:
 
-  % sudo apt-get -y install software-properties-common
+  % sudo apt -y install software-properties-common
   % sudo add-apt-repository -y ppa:milter-manager/ppa
-  % sudo apt-get update
+  % sudo apt update
 
 === インストール
 
 milter managerをインストールします。
 
-  % sudo apt-get update
-  % sudo apt-get -V -y install milter-manager
+  % sudo apt update
+  % sudo apt -V -y install milter-manager
 
 MTAはPostfixを利用することとします。
 
-  % sudo apt-get -V -y install postfix
+  % sudo apt -V -y install postfix
 
 milterはspamass-milter、clamav-milter、milter-greylistを使用
 することとします。
 
-  % sudo apt-get -V -y install spamass-milter clamav-milter milter-greylist
+  % sudo apt -V -y install spamass-milter clamav-milter milter-greylist
 
 == 設定
 

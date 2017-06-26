@@ -12,7 +12,7 @@ Ubuntu Linuxに特化したmilter managerの更新方法について説明し
 
 パッケージを更新するだけで、追加の作業は必要ありません。
 
-  % sudo apt-get -V -y upgrade
+  % sudo apt -V -y upgrade
 
 == まとめ
 

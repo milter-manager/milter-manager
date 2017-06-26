@@ -33,24 +33,24 @@ Here are supported Ubuntu versions:
 
 Add the (({ppa:milter-manager/ppa})) PPA to your system:
 
-  % sudo apt-get -y install software-properties-common
+  % sudo apt -y install software-properties-common
   % sudo add-apt-repository -y ppa:milter-manager/ppa
-  % sudo apt-get update
+  % sudo apt update
 
 === Install
 
 Install milter manager:
 
-  % sudo apt-get -y install milter-manager
+  % sudo apt -y install milter-manager
 
 We use Postfix as MTA:
 
-  % sudo apt-get -V -y install postfix
+  % sudo apt -V -y install postfix
 
 We use spamass-milter, clamav-milter and milter-greylist as
 milters:
 
-  % sudo apt-get -V -y install spamass-milter clamav-milter milter-greylist
+  % sudo apt -V -y install spamass-milter clamav-milter milter-greylist
 
 == Configuration
 

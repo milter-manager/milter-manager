@@ -38,7 +38,7 @@ explained, then a way that using Munin will be explained.
 
 We use Apache as Web server.
 
-  % sudo apt-get -V -y install apache2
+  % sudo apt -V -y install apache2
 
 ==== Configure milter-manager-log-analyzer
 
@@ -70,7 +70,7 @@ We install milter-manager-munin-plugins package that
 provides statistics data collected by
 milter-manager-log-analyzer to Munin:
 
-  % sudo apt-get -V -y install milter-manager-munin-plugins
+  % sudo apt -V -y install milter-manager-munin-plugins
 
 ((*NOTE: We need to use databases created by
 milter-manager-log-analyzer bundled with milter manager
@@ -101,7 +101,7 @@ that system monitor server works on Ubuntu.
 
 First, we install munin and Apache:
 
-  monitoring-server% sudo apt-get -V -y install munin apache2
+  monitoring-server% sudo apt -V -y install munin apache2
 
 We add our mail server that works munin-node to munin's
 monitor target. We assume that mail server has the following
