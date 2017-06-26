@@ -56,6 +56,7 @@ static MilterManagerTestScenario *main_scenario;
 static gchar *milter_manager_program_name;
 
 static gchar *original_lang;
+static gchar *original_charset;
 
 static gchar *tmp_dir;
 
@@ -177,6 +178,8 @@ cut_setup (void)
 
     original_lang = g_strdup(g_getenv("LANG"));
     g_setenv("LANG", "C", TRUE);
+    original_charset = g_strdup(g_getenv("CHARSET"));
+    g_setenv("CHARSET", "UTF-8", TRUE);
 
     scenario_dir = g_build_filename(milter_test_get_source_dir(),
                                     "test",
@@ -229,6 +232,13 @@ cut_teardown (void)
         g_free(original_lang);
     } else {
         g_unsetenv("LANG");
+    }
+
+    if (original_charset) {
+        g_setenv("CHARSET", original_charset, TRUE);
+        g_free(original_charset);
+    } else {
+        g_unsetenv("CHARSET");
     }
 
     if (loop)
@@ -428,7 +438,11 @@ test_unknown_option (void)
             "Unknown option --nonexistent\n"
             "\n"
             "Usage:\n"
+#if GLIB_CHECK_VERSION(2, 52, 0)
+            "  %s [OPTION…]\n"
+#else
             "  %s [OPTION...]\n"
+#endif
             "\n"
             "Help Options:\n"
             "  -h, --help                                     "

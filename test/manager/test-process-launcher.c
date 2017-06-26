@@ -262,7 +262,11 @@ data_launch_error (void)
                         g_quark_to_string(G_SHELL_ERROR),
                         G_SHELL_ERROR_BAD_QUOTING,
                         "Text ended before matching quote was found for \".",
+#if GLIB_CHECK_VERSION(2, 52, 0)
+                        "The text was “/bin/echo \"-n”"));
+#else
                         "The text was '/bin/echo \"-n'"));
+#endif
 
     ADD("nonexistent user",
         "/bin/echo",
@@ -273,7 +277,11 @@ data_launch_error (void)
         "/bin/oecho",
         g_get_user_name(),
         cut_take_printf("Couldn't start new process: </bin/oecho>: "
+#if GLIB_CHECK_VERSION(2, 52, 0)
+                        "%s:%d: %s “%s” (%s)",
+#else
                         "%s:%d: %s \"%s\" (%s)",
+#endif
                         g_quark_to_string(G_SPAWN_ERROR),
                         G_SPAWN_ERROR_NOENT,
                         "Failed to execute child process",
