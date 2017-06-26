@@ -16,6 +16,7 @@
 require "milter/manager/file-reader"
 
 module Milter::Manager
+  # Rmilter has been obsolete since Rspamd 1.6
   class RmilterSocketDetector
     def initialize(conf_file)
       @conf_file = conf_file
