@@ -56,7 +56,7 @@ static MilterManagerTestScenario *main_scenario;
 static gchar *milter_manager_program_name;
 
 static gchar *original_lang;
-static gchar *oririnal_charset;
+static gchar *original_charset;
 
 static gchar *tmp_dir;
 
