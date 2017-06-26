@@ -13,7 +13,7 @@ module Milter::Manager
       workers = config["worker"]
       return unless workers
       rspamd_proxy = workers.detect do |worker|
-        worker.key?("rspamd_proxy") && worker.dig("rspamd_proxy", "milter")
+        worker.key?("rspamd_proxy") && worker["rspamd_proxy"]["milter"]
       end
       host, port = rspamd_proxy["bind_socket"].split(":", 2)
       if host == "*"
