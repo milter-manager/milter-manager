@@ -2,6 +2,27 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-2-1-1] 2.1.1: 2017-06-27
+
+=== Package
+
+==== 改善
+
+  * Ubuntu Precise Pangolin (12.04) サポートをやめました
+  * Ubuntu Zesty Zapus (17.04) サポート追加
+  * Debian Buster サポート追加
+
+=== milter core
+
+==== 改善
+
+  * binding ruby: 同梱している ruby-gnome2 を 3.1.1 に更新しました
+
+=== milter manager
+
+  * ((<Rmilter|URL:https://rspamd.com/rmilter/>))の自動検出をサポートしました
+    * Rspamd 1.6 以降では非推奨なので((<Rspamd proxy|URL:https://rspamd.com/doc/workers/rspamd_proxy.html>))を使用してください
+
 == [release-2-1-0] 2.1.0: 2016-11-21
 
 2.0.9 のバクフィックスリリースです。

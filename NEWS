@@ -2,6 +2,27 @@
 
 = NEWS --- The history of milter manager
 
+== [release-2-1-1] 2.1.1: 2017-06-27
+
+=== Package
+
+==== Improvements
+
+  * Drop Ubuntu Precise Pangolin (12.04) support
+  * Add Ubuntu Zesty Zapus (17.04) support
+  * Add Debian Buster support
+
+=== milter core
+
+==== Improvements
+
+  * binding ruby: Update bundled ruby-gnome2 to 3.1.1
+
+=== milter manager
+
+  * Support auto detection for ((<Rmilter|URL:https://rspamd.com/rmilter/>))
+    * Rmilter has been obsolete since Rspamd 1.6, use ((<Rspamd proxy|URL:https://rspamd.com/doc/workers/rspamd_proxy.html>))
+
 == [release-2-1-0] 2.1.0: 2016-11-21
 
 A bug fix release of 2.0.9
@@ -27,7 +48,7 @@ Download packages:
   * deb packages for Ubuntu: launchpad.net
     * https://launchpad.net/~milter-manager/+archive/ubuntu/ppa/+packages
   * deb packages for Debian: packagecloud
-    * https://packagecloud.io/milter-manager/repos/install
+    * httpps://packagecloud.io/milter-manager/repos/install
   * RPM: packagecloud
     * https://packagecloud.io/milter-manager/repos/install
   * tar ball: OSDN
