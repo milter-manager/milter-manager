@@ -23,6 +23,7 @@ top = (base + "..").expand_path
 test_unit_dir = top + "test-unit" + "lib"
 $LOAD_PATH.unshift(test_unit_dir.to_s)
 require 'test/unit'
+require 'test/unit/rr'
 
 require 'milter/manager'
 
