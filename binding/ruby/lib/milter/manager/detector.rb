@@ -17,6 +17,7 @@ require 'milter/manager/clamav-milter-config-parser'
 require 'milter/manager/milter-greylist-config-parser'
 require 'milter/manager/opendkim-config-parser'
 require 'milter/manager/rmilter-socket-detector'
+require 'milter/manager/rspamd-proxy-detector'
 
 module Milter::Manager
   module Detector
@@ -86,6 +87,10 @@ module Milter::Manager
 
     def detect_rmilter_connection_spec
       Milter::Manager::RmilterSocketDetector.new(rmilter_conf).detect
+    end
+
+    def detect_rspamd_proxy_connection_spec
+      Milter::Manager::RspamdProxyDetector.new(rspamadm_path).detect
     end
 
     def have_service_command?
