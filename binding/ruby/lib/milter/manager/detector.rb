@@ -90,7 +90,7 @@ module Milter::Manager
     end
 
     def detect_rspamd_proxy_connection_spec
-      Milter::Manager::RspamdProxyDetector.new(rspamadm_path).detect
+      Milter::Manager::RspamdProxyDetector.new(rspamadm_command).detect
     end
 
     def have_service_command?
@@ -119,6 +119,16 @@ module Milter::Manager
 
     def candidate_systemctl_commands
       ["/usr/bin/systemctl"]
+    end
+
+    def rspamadm_command
+      @rspamadm_command ||= candidate_rspamadm_commands.find do |command|
+        File.executable?(command)
+      end
+    end
+
+    def candidate_rspamadm_commands
+      ["/usr/bin/rspamadm"]
     end
 
     private
