@@ -45,8 +45,8 @@ module Milter::Manager
       @script_name == "rmilter"
     end
 
-    def rspamd_proxy?
-      @script_name == "rspamd_proxy"
+    def rspamd?
+      @script_name == "rspamd"
     end
 
     private
@@ -107,7 +107,7 @@ module Milter::Manager
       spec ||= detect_milter_greylist_connection_spec if milter_greylist?
       spec ||= detect_opendkim_connection_spec if opendkim?
       spec ||= detect_rmilter_connection_spec if rmilter?
-      spec ||= detect_rspamd_proxy_connection_spec if rspamd_proxy?
+      spec ||= detect_rspamd_proxy_connection_spec if rspamd?
       spec
     end
 
