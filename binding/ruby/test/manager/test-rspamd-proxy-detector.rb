@@ -4,7 +4,7 @@ class TestRspamdProxyDetector < Test::Unit::TestCase
   test "detect" do |(bind_socket, expected)|
     detector = ::Milter::Manager::RspamdProxyDetector.new
     stub(File).executable?("/usr/bin/rspamadm") { true }
-    stub(detector).__double_definition_create__.call("`".to_sym, "/usr/bin/rspamadm configdump --json") do
+    stub(detector).`("/usr/bin/rspamadm configdump --json") do
       {
         "worker" => [
           {
