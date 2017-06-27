@@ -64,7 +64,7 @@ module Milter::Manager
     end
 
     def rspamd_proxy?
-      @script_name == "rspamd" or @name == "rspamd"
+      @script_name == "rspamd_proxy" or @name == "rspamd_proxy"
     end
 
     private
