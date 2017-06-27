@@ -3,7 +3,7 @@ require 'milter/manager/systemd-detector'
 
 module Milter::Manager
   class DebianSystemdDetector
-    include SytemdDetector
+    include SystemdDetector
 
     private
     def clamav_milter_conf
