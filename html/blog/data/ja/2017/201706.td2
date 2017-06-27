@@ -1,0 +1,23 @@
+TDIARY2.01.00
+Date: 20170628
+Title: 
+Last-Modified: 1498549568
+Visible: true
+Format: RD
+
+= milter manager 2.1.1
+
+milter manager 2.1.1 をリリースしました。
+
+サポートしているディストリビューションを整理しました。
+
+  * Ubuntu Precise Pangolin (12.04) サポートをやめました
+  * Ubuntu Zesty Zapus (17.04) サポート追加
+  * Debian Buster サポート追加
+
+実験的に((<Rmilter|URL:https://rspamd.com/rmilter/>))と((<Rspamd proxy|URL:https://rspamd.com/doc/workers/rspamd_proxy.html>))の自動検出をサポートしました。
+RmilterはRspamd1.6から非推奨なのでRspamdを使うようにしてください。
+
+デフォルトではRmilterとRspamd proxyの両方を検出するようになっているので、使わない方を検出しないようにするか、使わないようにmilter-manager.local.confに設定を書くとよいと思います。
+
+.
