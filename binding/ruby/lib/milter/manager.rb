@@ -35,7 +35,7 @@ require 'milter/manager/policy-manager'
 require 'milter/manager/address-matcher'
 require 'milter/manager/breaker'
 
-require 'milter/manager/debian-init-detector'
+require 'milter/manager/debian-detector'
 require 'milter/manager/redhat-detector'
 require 'milter/manager/freebsd-rc-detector'
 require 'milter/manager/pkgsrc-rc-detector'

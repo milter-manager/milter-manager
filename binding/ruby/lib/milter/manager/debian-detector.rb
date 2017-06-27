@@ -1,3 +1,7 @@
+require "milter/manager/detector"
+require "milter/manager/debian-init-detector"
+require "milter/manager/debian-systemd-detector"
+
 module Milter::Manager
   class DebianDetector
     include Detector
