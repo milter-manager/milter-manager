@@ -13,6 +13,7 @@ dist_binding_lib_milter_DATA =			\
 	freebsd-rc-detector.rb			\
 	pkgsrc-rc-detector.rb			\
 	init-detector.rb			\
+	debian-detector.rb			\
 	debian-init-detector.rb			\
 	debian-systemd-detector.rb		\
 	redhat-detector.rb			\
