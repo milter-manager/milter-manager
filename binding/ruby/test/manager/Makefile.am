@@ -24,6 +24,7 @@ test_files =					\
 	test-breaker.rb				\
 	test-postfix-cidr-table.rb		\
 	test-postfix-regexp-table.rb		\
+	test-rspamd-proxy-detector.rb		\
 	test-gstring.rb
 
 EXTRA_DIST =		\
