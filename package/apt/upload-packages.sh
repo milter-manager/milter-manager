@@ -30,7 +30,7 @@ upload_packages()
     code_name=$2
 
     case ${code_name} in
-        jessie|stretch|unstable)
+        jessie|stretch|buster|unstable)
             distribution=debian
             component=main
             ;;
