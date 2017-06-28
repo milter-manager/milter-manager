@@ -22,14 +22,6 @@ services:
       TZ: Asia/Tokyo
     command: tail -f /dev/null
 
-  debian-jessie:
-    build:
-      context: .
-      dockerfile: dockerfiles/Dockerfile-debian-jessie
-    environment:
-      TZ: Asia/Tokyo
-    command: tail -f /dev/null
-
   debian-stretch:
     build:
       context: .
