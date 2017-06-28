@@ -43,7 +43,7 @@ build_by_pbuilder()
     code_name=$2
     source_dir=${script_base_dir}/../..
     case ${code_name} in
-        jessie|stretch|unstable)
+        jessie|stretch|buster|unstable)
             distribution=debian
             component=main
             ;;
