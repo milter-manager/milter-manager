@@ -10,9 +10,8 @@ install information.
 
 == Install packages
 
-Packages for jessie, the current stable release, for stretch,
-the current testing release, and for sid, the eternal
-unstable, are distributed on the milter manager site.
+Packages for stretch, the current stable release, for buster,
+the current testing release are distributed.
 
 We put the following content to
 /etc/apt/sources.list.d/milter-manager.list:
