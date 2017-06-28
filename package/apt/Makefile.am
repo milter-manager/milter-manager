@@ -1,6 +1,6 @@
 DISTRIBUTIONS = debian
 ARCHITECTURES = i386 amd64
-CODE_NAMES = jessie stretch unstable
+CODE_NAMES = jessie stretch buster unstable
 CLEAN_ROOM_BASE = /var/cache/pbuilder
 RELEASE = 1
 
