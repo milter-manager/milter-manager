@@ -23,7 +23,7 @@ run()
 
 for code_name in ${CODE_NAMES}; do
     case ${code_name} in
-        jessie|stretch|buster|unstable)
+        stretch|buster|unstable)
             distribution=debian
             ;;
         *)
