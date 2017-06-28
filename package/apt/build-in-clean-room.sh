@@ -99,6 +99,12 @@ build_by_pbuilder()
         ${PACKAGE}_${VERSION}.orig.tar.gz
     )
     run cp -rp ${source_dir}/package/debian $builddir/${PACKAGE}-${VERSION}/
+    if test "$SKIP_TEST" = "yes"; then
+        ( cd $builddir/${PACKAGE}-${VERSION}/ && \
+            sed -i -s -e '/cutter/d' debian/control && \
+            sed -i -s -e '/TZ=Asia/d' debian/rules
+        )
+    fi
 
     ( cd $builddir/${PACKAGE}-${VERSION} && \
         run_sudo pdebuild \
