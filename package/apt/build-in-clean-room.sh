@@ -115,7 +115,7 @@ build_by_pbuilder()
     run_sudo rm -fr $builddir
 }
 
-: ${TMPFS_SIZE:=2g}
+: ${TMPFS_SIZE:=4g}
 buildplace=$CHROOT_BASE/build/
 if test "$USE_TMPFS" = "yes"; then
     run_sudo mount -t tmpfs -o size=$TMPFS_SIZE tmpfs $buildplace
