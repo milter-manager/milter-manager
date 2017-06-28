@@ -10,12 +10,16 @@ ensure-launchpad-configuration:
 	fi
 
 upload: source ensure-launchpad-configuration
+	rm -rf debian
+	cp -a '$(srcdir)/../debian' debian
+	sed -i -e '/cutter/d' debian/control
+	sed -i -e '/TZ=Asia/d' debian/rules
 	./upload.rb \
 	  --package '$(PACKAGE)' \
 	  --version '$(VERSION)' \
 	  --source-archive '$(SOURCE)' \
 	  --code-names '$(CODE_NAMES)' \
-	  --debian-directory '$(srcdir)/../debian/' \
+	  --debian-directory 'debian' \
 	  --pgp-sign-key '$(LAUNCHPAD_UPLOADER_PGP_KEY)'
 
 source: $(SOURCE)
