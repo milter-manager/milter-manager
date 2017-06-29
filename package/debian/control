@@ -19,7 +19,7 @@ Build-Depends:
 	ruby-gnome2-dev,
 	intltool,
 	rrdtool
-Standards-Version: 3.9.8
+Standards-Version: 4.0.0
 Homepage: http://milter-manager.osdn.jp/
 
 Package: milter-manager
