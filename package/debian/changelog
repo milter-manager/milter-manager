@@ -1,8 +1,13 @@
-milter-manager (2.1.1-1) unstable; urgency=low
+milter-manager (2.1.1-1) unstable; urgency=medium
 
+  [Kenji Okimoto]
   * New upstream release.
 
- -- Kenji Okimoto <okimoto@clear-code.com>  Wed, 28 Jun 2017 00:00:00 +0900
+  [Youhei SASAKI]
+  * Add ITP number (Closes: #726789)
+  * Add Vcs-{Git|Browser} Field
+
+ -- Youhei SASAKI <uwabami@gfd-dennou.org>  Fri, 30 Jun 2017 02:02:31 +0900
 
 milter-manager (2.1.0-1) unstable; urgency=low
 
