@@ -3,6 +3,8 @@ Section: mail
 Priority: optional
 Maintainer: Kouhei Sutou <kou@clear-code.com>
 Uploaders: Kenji Okimoto <okimoto@clear-code.com>, Youhei SASAKI <uwabami@gfd-dennou.org>
+Vcs-Git: https://anonscm.debian.org/git/collab-maint/milter-manager.git
+Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/milter-manager.git
 Build-Depends:
 	debhelper (>= 9),
 	dh-systemd,
