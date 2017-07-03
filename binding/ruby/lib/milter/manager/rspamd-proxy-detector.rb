@@ -7,6 +7,7 @@ module Milter::Manager
     end
 
     def detect
+      return unless @rspamadm_path
       return unless File.executable?(@rspamadm_path)
 
       config = JSON.parse(`#{@rspamadm_path} configdump --json` || "{}")

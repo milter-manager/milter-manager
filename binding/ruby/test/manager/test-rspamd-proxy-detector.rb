@@ -19,4 +19,9 @@ class TestRspamdProxyDetector < Test::Unit::TestCase
 
     assert_equal(expected, detector.detect)
   end
+
+  test "detect w/ rspamadm_path is nil" do
+    detector = ::Milter::Manager::RspamdProxyDetector.new(nil)
+    assert_equal(nil, detector.detect)
+  end
 end
