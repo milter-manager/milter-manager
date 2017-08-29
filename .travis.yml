@@ -44,7 +44,7 @@ script:
 
 after_success:
   - docker-compose exec ${TARGET_DISTRIBUTION} lcov --compat-libtool --directory . --capture --rc lcov_branch_coverage=1 --output-file coverage.info
-  - docker-compose exec ${TARGET_DISTRIBUTION} coveralls-lcov -v coverage.info
+  - docker-compose exec ${TARGET_DISTRIBUTION} coveralls-lcov -v --service-job-id=${TRAVIS_JOB_ID} coverage.info
 
 # after_failure:
 #   - docker-compose exec ${TARGET_DISTRIBUTION} cat test/test-suite.log
