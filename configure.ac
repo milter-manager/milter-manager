@@ -677,7 +677,7 @@ dnl Checks for gtk-doc
 dnl **************************************************************
 
 m4_ifdef([GTK_DOC_CHECK], [
-GTK_DOC_CHECK([1.8])
+GTK_DOC_CHECK([1.8], [--flavour no-tmpl])
 ], [enable_gtk_doc=no])
 AM_CONDITIONAL([ENABLE_GTK_DOC], [test "$enable_gtk_doc" != no])
 AM_CONDITIONAL([GTK_DOC_USE_LIBTOOL], [test "$enable_gtk_doc" != no])
