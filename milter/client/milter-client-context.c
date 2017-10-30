@@ -319,6 +319,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *       <para>
      *         Enables all available actions and steps.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -328,6 +329,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *       <para>
      *         Rejects the current session.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -339,6 +341,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         actions, steps and macros requests that are
      *         specified by @option and @macros_requests.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -361,6 +364,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         its server like clamav-milter) Normally, this
      *         status will not be used.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      * </variablelist>
      *
@@ -451,6 +455,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *       <para>
      *         Continues processing the current connection.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -462,6 +467,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterFinishedEmittable::finished will be emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -474,6 +480,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterFinishedEmittable::finished will be emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -486,6 +493,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterFinishedEmittable::finished will be emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -498,6 +506,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         The milter must set %MILTER_STEP_NO_REPLY_CONNECT
      *         in #MilerClientContext::negotiate handler.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -520,6 +529,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         its server like clamav-milter) Normally, this
      *         status will not be used.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      * </variablelist>
      *
@@ -584,6 +594,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *       <para>
      *         Continues processing the current connection.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -595,6 +606,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterFinishedEmittable::finished will be emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -607,6 +619,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterFinishedEmittable::finished will be emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -619,6 +632,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterFinishedEmittable::finished will be emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -631,6 +645,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         The milter must set %MILTER_STEP_NO_REPLY_HELO in
      *         #MilerClientContext::negotiate handler.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -653,6 +668,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         its server like clamav-milter) Normally, this
      *         status will not be used.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      * </variablelist>
      *
@@ -715,6 +731,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *       <para>
      *         Continues processing the current message.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -727,6 +744,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -738,6 +756,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -750,6 +769,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -764,6 +784,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -777,6 +798,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         %MILTER_STEP_NO_REPLY_ENVELOPE_FROM in
      *         #MilerClientContext::negotiate handler.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -799,6 +821,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         its server like clamav-milter) Normally, this
      *         status will not be used.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      * </variablelist>
      *
@@ -862,6 +885,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *       <para>
      *         Continues processing the current message.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -875,6 +899,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -886,6 +911,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -897,6 +923,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -910,6 +937,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -923,6 +951,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         %MILTER_STEP_NO_REPLY_ENVELOPE_RECIPIENT in
      *         #MilerClientContext::negotiate handler.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -945,6 +974,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         its server like clamav-milter) Normally, this
      *         status will not be used.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      * </variablelist>
      *
@@ -1007,6 +1037,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *       <para>
      *         Continues processing the current message.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1018,6 +1049,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1029,6 +1061,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1041,6 +1074,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *    #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1053,6 +1087,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         The milter must set %MILTER_STEP_NO_REPLY_DATA
      *         in #MilerClientContext::negotiate handler.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1075,6 +1110,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         its server like clamav-milter) Normally, this
      *         status will not be used.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      * </variablelist>
      *
@@ -1138,6 +1174,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1150,6 +1187,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1162,6 +1200,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         The milter must set %MILTER_STEP_NO_REPLY_DATA
      *         in #MilerClientContext::negotiate handler.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1184,6 +1223,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         its server like clamav-milter) Normally, this
      *         status will not be used.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      * </variablelist>
      *
@@ -1276,6 +1316,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *       <para>
      *         Continues processing the current message.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1287,6 +1328,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1298,6 +1340,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1310,6 +1353,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1322,6 +1366,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1334,6 +1379,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         The milter must set %MILTER_STEP_NO_REPLY_HEADER
      *         in #MilerClientContext::negotiate handler.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1356,6 +1402,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         its server like clamav-milter) Normally, this
      *         status will not be used.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      * </variablelist>
      *
@@ -1415,6 +1462,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *       <para>
      *         Continues processing the current message.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1426,6 +1474,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1437,6 +1486,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1449,6 +1499,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1461,6 +1512,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1474,6 +1526,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         %MILTER_STEP_NO_REPLY_END_OF_HEADER
      *         in #MilerClientContext::negotiate handler.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1496,6 +1549,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         its server like clamav-milter) Normally, this
      *         status will not be used.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      * </variablelist>
      *
@@ -1561,6 +1615,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *       <para>
      *         Continues processing the current message.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1572,6 +1627,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1583,6 +1639,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1595,6 +1652,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1607,6 +1665,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1618,6 +1677,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         processing. #MilterClientContext::end-of-message
      *         is emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1630,6 +1690,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         The milter must set %MILTER_STEP_NO_REPLY_BODY
      *         in #MilerClientContext::negotiate handler.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1652,6 +1713,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         its server like clamav-milter) Normally, this
      *         status will not be used.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      * </variablelist>
      *
@@ -1722,6 +1784,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *       <para>
      *         Continues processing the current message.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1733,6 +1796,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1745,6 +1809,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1757,6 +1822,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1779,6 +1845,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         its server like clamav-milter) Normally, this
      *         status will not be used.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      * </variablelist>
      *
@@ -1861,6 +1928,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *       <para>
      *         Continues processing the current message.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1872,6 +1940,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1884,6 +1953,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1896,6 +1966,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      *         #MilterClientContext::abort is not emitted.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      *   <varlistentry>
      *     <term>
@@ -1918,6 +1989,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *         its server like clamav-milter) Normally, this
      *         status will not be used.
      *       </para>
+     *     </listitem>
      *   </varlistentry>
      * </variablelist>
      *
