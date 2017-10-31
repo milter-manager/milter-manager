@@ -79,6 +79,7 @@
 /doc/reference/milter-manager-log-analyzer-graphs.png
 /doc/reference/milter-manager-log-analyzer.xml
 /doc/reference/milter-manager-log-analyzer.xml.ja
+/doc/reference/milter-manager-sections.txt
 /doc/reference/milter-manager-undeclared.txt
 /doc/reference/milter-manager-undocumented.txt
 /doc/reference/milter-manager-unused.txt
@@ -88,6 +89,7 @@
 /doc/reference/milter-manager.pot
 /doc/reference/milter-manager.prerequisites
 /doc/reference/milter-manager.signals
+/doc/reference/milter-manager.types
 /doc/reference/milter-manager.xml
 /doc/reference/milter-manager.xml.ja
 /doc/reference/milter-performance-check.xml
