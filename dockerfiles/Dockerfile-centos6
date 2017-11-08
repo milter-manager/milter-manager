@@ -6,9 +6,8 @@ RUN yum update -y && \
       lcov rsyslog sudo git epel-release gtk-doc \
       readline-devel ncurses-devel gdbm-devel tcl-devel openssl-devel db4-devel \
       libyaml libyaml-devel libffi-devel byacc \
-      wget pyliblzma rrdtool \
-RUN yum install -q -y http://ftp.iij.ad.jp/pub/linux/fedora/epel/6/i386/epel-release-6-8.noarch.rpm && \
-    yum install -q -y http://sourceforge.net/projects/cutter/files/centos/cutter-release-1.3.0-1.noarch.rpm && \
+      wget pyliblzma rrdtool
+RUN yum install -q -y http://sourceforge.net/projects/cutter/files/centos/cutter-release-1.3.0-1.noarch.rpm && \
     yum makecache && \
     yum install -q -y lcov && \
     yum install -q -y cutter && \
