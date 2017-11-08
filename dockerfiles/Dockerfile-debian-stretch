@@ -2,7 +2,7 @@ FROM debian:stretch
 
 RUN apt-get update && \
     apt-get install -qq -y \
-      debhelper dh-systemd autotools-dev \
+      debhelper dh-systemd autotools-dev gtk-doc-tools \
       libglib2.0-dev libev-dev ruby ruby-dev ruby-gnome2-dev ruby-test-unit-rr \
       intltool lcov git libtool sudo lsb-release apt-transport-https \
       rrdtool rsyslog && \

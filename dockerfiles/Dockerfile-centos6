@@ -3,7 +3,7 @@ FROM centos:6
 RUN yum update -y && \
     yum install -q -y \
       libtool intltool gettext gcc make glib2-devel git tar rpm-build \
-      lcov rsyslog sudo git epel-release \
+      lcov rsyslog sudo git epel-release gtk-doc \
       readline-devel ncurses-devel gdbm-devel tcl-devel openssl-devel db4-devel \
       libyaml libyaml-devel libffi-devel byacc \
       wget pyliblzma rrdtool \
