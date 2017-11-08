@@ -18,6 +18,10 @@
   * Fix a bug that Rspamd auto detection failure [Reported by whyscream][GitHub #128]
 
 
+=== Thanks
+
+  * whyscream
+
 == [release-2-1-1] 2.1.1: 2017-06-27
 
 === Package

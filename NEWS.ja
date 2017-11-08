@@ -17,6 +17,10 @@
 
   * Rspamd の自動検出に失敗する問題を修正しました [Reported by whyscream][GitHub #128]
 
+=== 感謝
+
+  * whyscreamさん
+
 == [release-2-1-1] 2.1.1: 2017-06-27
 
 === Package
@@ -101,7 +105,7 @@ OSDN上では、以下の機能を利用します:
   * milter-test-server コマンドに --all-timeout オプションを追加した
     [HorimotoYasuhiro さんがPull request][GitHub #101]
 
-=== Thanks
+=== 感謝
 
   * おばたさん
   * はやみずさん
