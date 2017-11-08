@@ -18,7 +18,7 @@ env:
     - TARGET_DISTRIBUTION=debian-stretch
     - TARGET_DISTRIBUTION=debian-buster
     - TARGET_DISTRIBUTION=debian-sid
-    - TARGET_DISTRIBUTION=centos6 EXTRA_CONFIGURE_OPTIONS="--with-ruby=/usr/bin/ruby2.2 --with-bundled-ruby-glib2"
+    - TARGET_DISTRIBUTION=centos6 EXTRA_CONFIGURE_OPTIONS="--with-ruby=/usr/bin/ruby2.3 --with-bundled-ruby-glib2"
     - TARGET_DISTRIBUTION=centos7
 
 before_install:

@@ -14,11 +14,11 @@ RUN yum install -q -y http://ftp.iij.ad.jp/pub/linux/fedora/epel/6/i386/epel-rel
     yum install -q -y cutter && \
     useradd -m --user-group --shell /bin/bash milter-manager
 
-COPY ./package/yum/vendor/ruby22.spec /tmp/
+COPY ./package/yum/vendor/ruby23.spec /tmp/
 
 RUN mkdir -p ~/rpmbuild/SOURCES ~/rpmbuild/SPECS && \
-    wget --quiet http://cache.ruby-lang.org/pub/ruby/2.2/ruby-2.2.5.tar.gz -P ~/rpmbuild/SOURCES && \
-    rpmbuild --quiet -ba /tmp/ruby22.spec && \
+    wget --quiet http://cache.ruby-lang.org/pub/ruby/2.3/ruby-2.3.5.tar.gz -P ~/rpmbuild/SOURCES && \
+    rpmbuild --quiet -ba /tmp/ruby23.spec && \
     yum install -q -y ~/rpmbuild/RPMS/*/*.rpm
 
 RUN gem2.2 install --no-rdoc --no-ri coveralls-lcov pkg-config test-unit-rr
