@@ -1,17 +1,18 @@
-%define rubyver         2.2.5
+%define ruby_version         2.3.5
+%define ruby_api_version     2.3
 
-Name:           ruby2.2
+Name:           ruby2.3
 Version:        %{rubyver}
 Release:        1%{?dist}
 License:        BSD
 URL:            http://www.ruby-lang.org/
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:  readline readline-devel ncurses ncurses-devel gdbm gdbm-devel glibc-devel tcl-devel gcc unzip openssl-devel db4-devel byacc make libyaml libyaml-devel libffi libffi-devel
-Source0:        ftp://ftp.ruby-lang.org/pub/ruby/ruby-%{rubyver}.tar.gz
+Source0:        https://cache.ruby-lang.org/pub/ruby/%{ruby_api_version}/ruby-%{ruby_version}.tar.gz
 Summary:        An interpreter of object-oriented scripting language
 Group:          Development/Languages
-Provides: ruby(abi) = 2.2
-Obsoletes: ruby1.9 ruby2.1
+Provides: ruby(abi) = %{ruby_api_version}
+Obsoletes: ruby1.9 ruby2.1 ruby2.2
 
 %description
 Ruby is the interpreted scripting language for quick and easy
@@ -32,8 +33,8 @@ export CFLAGS="$RPM_OPT_FLAGS -Wall -fno-strict-aliasing"
   --without-tk \
   --includedir=%{_includedir}/ruby \
   --libdir=%{_libdir} \
-  --with-soname=ruby-2.2 \
-  --program-suffix=2.2
+  --with-soname=ruby-%{ruby_api_version} \
+  --program-suffix=%{ruby_api_version}
 
 make %{?_smp_mflags}
 
@@ -56,6 +57,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}
 
 %changelog
+* Wed Nov 8 2017 Kenji Okimoto <okimoto@clear-code.com> - 2.3.5
+- Update ruby version to 2.3.5
+
 * Wed Jun 8 2016 Kenji Okimoto <okimoto@clear-code.com> - 2.2.5
 - Update ruby version to 2.2.5
 
