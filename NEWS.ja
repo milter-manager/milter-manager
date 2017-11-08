@@ -2,6 +2,21 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-2-1-2] 2.1.2: 2017-11-09
+
+=== Package
+
+==== 改善
+
+  * Ubuntu Yakkety Yak (16.10) のサポートをやめました
+  * Ubuntu Artful Aardvark (17.10) のサポートを追加しました
+  * Debian Jessie のサポートをやめました
+  * CentOS6で使うRubyを2.3.5に更新しました
+
+=== milter manager
+
+  * Rspamd の自動検出に失敗する問題を修正しました [Reported by whyscream][GitHub #128]
+
 == [release-2-1-1] 2.1.1: 2017-06-27
 
 === Package
