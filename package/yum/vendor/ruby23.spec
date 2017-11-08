@@ -2,7 +2,7 @@
 %define ruby_api_version     2.3
 
 Name:           ruby2.3
-Version:        %{rubyver}
+Version:        %{ruby_version}
 Release:        1%{?dist}
 License:        BSD
 URL:            http://www.ruby-lang.org/
@@ -21,7 +21,7 @@ files and to do system management tasks (as in Perl).  It is simple,
 straight-forward, and extensible.
 
 %prep
-%setup -n ruby-%{rubyver}
+%setup -n ruby-%{ruby_version}
 
 %build
 export CFLAGS="$RPM_OPT_FLAGS -Wall -fno-strict-aliasing"
