@@ -17,10 +17,13 @@ fi
 
 git submodule update --init
 
-run ${ACLOCAL:-aclocal} $ACLOCAL_OPTIONS
-run ${LIBTOOLIZE:-libtoolize} --copy --force
+run mkdir -p m4
+
 run ${INTLTOOLIZE:-intltoolize} --force --copy
-#run ${GTKDOCIZE:-gtkdocize} --copy
+run ${GTKDOCIZE:-gtkdocize} --copy
+run ${LIBTOOLIZE:-libtoolize} --copy --force
+run ${ACLOCAL:-aclocal} -I m4 $ACLOCAL_OPTIONS
 run ${AUTOHEADER:-autoheader}
 run ${AUTOMAKE:-automake} --add-missing --foreign --copy
 run ${AUTOCONF:-autoconf}
+# run ${AUTORECONF:-autoreconf} --force --install --verbose
