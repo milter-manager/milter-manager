@@ -13,11 +13,11 @@ newly install information.
 We just upgrade milter manager package.
   % sudo yum update -y milter-manager
 
-=== Upgrade from before 2.1.1
+=== Upgrade from before 2.1.2
 
 We have provided packages on
 ((<packagecloud|URL:https://packagecloud.io/milter-manager/repos>))
-since 2.1.1. So we need to update repository information. We can
+since 2.1.2. So we need to update repository information. We can
 remove milter-manager-release package.
 
   % sudo yum remove milter-manager-release

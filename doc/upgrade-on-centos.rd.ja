@@ -14,9 +14,9 @@ CentOSに特化したmilter managerの更新方法について説明します。
 
   % sudo yum update -y milter-manager
 
-=== 2.1.1 以前からの更新
+=== 2.1.2 以前からの更新
 
-2.1.1から
+2.1.2から
 ((<packagecloud|URL:https://packagecloud.io/milter-manager/repos>))で
 パッケージを配布しているので、リポジトリの情報を更新する必要があります。
 milter-manager-releaseパッケージは削除してください。
