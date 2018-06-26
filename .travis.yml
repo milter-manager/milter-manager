@@ -16,6 +16,7 @@ env:
     - TARGET_DISTRIBUTION=ubuntu-xenial
     - TARGET_DISTRIBUTION=ubuntu-zesty
     - TARGET_DISTRIBUTION=ubuntu-artful
+    - TARGET_DISTRIBUTION=ubuntu-bionic
     - TARGET_DISTRIBUTION=debian-stretch
     - TARGET_DISTRIBUTION=debian-buster
     - TARGET_DISTRIBUTION=debian-sid

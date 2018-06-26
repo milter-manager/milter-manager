@@ -30,6 +30,14 @@ services:
       TZ: Asia/Tokyo
     command: tail -f /dev/null
 
+  ubuntu-bionic:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile-ubuntu-bionic
+    environment:
+      TZ: Asia/Tokyo
+    command: tail -f /dev/null
+
   debian-stretch:
     build:
       context: .
