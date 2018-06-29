@@ -206,6 +206,7 @@ apt ディレクトリに移動してからコマンドを実行すると、一�
 make build に PARALLEL=yes を付けるとビルドが並列に走る。
 make build に USE_TMPFS=yes を付けると tmpfs を使用して高速にビルドする。
 PARALLEL=yes と USE_TMPFS=yes を両方付けると tmpfs が足りなくなる可能性がある。
+make build に SKIP_TEST=yes を付けるとBuild-Dependsからcutter関連を削除し、テストを実行しない。
 
 初めて実行するときは、chroot 環境を作るときにロケールなどを聞かれるので
 PARALLEL=yes をつけてはいけない。
