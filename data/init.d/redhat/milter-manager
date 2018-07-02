@@ -117,6 +117,9 @@ case "$1" in
     condrestart)
         [ -f /var/lock/subsys/$prog ] && restart || :
         ;;
+    status)
+        status $prog
+        ;;
     *)
         echo "Usage: $prog {start|stop|reload|restart|condrestart}"
         exit 1
