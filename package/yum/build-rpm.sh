@@ -101,7 +101,7 @@ if test "$USE_EPEL" = "yes"; then
         esac
         if test -n "$epel_url"; then
             run yum update ${yum_options} -y
-            run yum install ${yum_options} -y wget pyliblzma
+            run yum install ${yum_options} -y wget pyliblzma ca-certificates
             run yum ${yum_options} clean packages
             run yum install -y $epel_url
             sed -i'' -e 's/enabled = 1/enabled = 0/g' /etc/yum.repos.d/epel.repo
