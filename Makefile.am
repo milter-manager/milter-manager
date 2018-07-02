@@ -74,7 +74,7 @@ release-osdn: $(PACKAGE)-$(VERSION).tar.gz.asc
 	  --asset-file=$(PACKAGE)-$(VERSION).tar.gz.asc
 
 sign-archive: $(PACKAGE)-$(VERSION).tar.gz
-	gpg2 --local-user $(GPG_UID) --armor --detach-sign $(PACKAGE)-$(VERSION).tar.gz
+	gpg --local-user $(GPG_UID) --armor --detach-sign $(PACKAGE)-$(VERSION).tar.gz
 
 upload-doc:
 	cd html && $(MAKE) $(AM_MAKEFLAGS) upload
