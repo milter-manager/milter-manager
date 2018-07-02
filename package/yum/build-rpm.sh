@@ -103,9 +103,7 @@ if test "$USE_EPEL" = "yes"; then
             run yum update ${yum_options} -y
             run yum install ${yum_options} -y wget pyliblzma
             run yum ${yum_options} clean packages
-            run wget $epel_url
-            run rpm -Uvh $(basename $epel_url)
-            run rm $(basename $epel_url)
+            run yum install -y $epel_url
             sed -i'' -e 's/enabled = 1/enabled = 0/g' /etc/yum.repos.d/epel.repo
         fi
     fi
