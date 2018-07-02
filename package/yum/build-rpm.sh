@@ -120,9 +120,9 @@ fi
 
 case $distribution_version in
     6.*)
-        if ! rpm -q ruby2.2 > /dev/null 2>&1; then
+        if ! rpm -q ruby2.3 > /dev/null 2>&1; then
             yum install -y wget
-            yum install -y $(grep BuildRequires: /tmp/ruby22.spec | cut -d: -f2)
+            yum install -y $(grep BuildRequires: /tmp/ruby23.spec | cut -d: -f2)
             cat <<EOF > $BUILD_RUBY_SCRIPT
 if [ ! -f ~/.rpmmacros ]; then
     cat <<EOM > ~/.rpmmacros
@@ -139,10 +139,10 @@ mkdir -p rpm/SRPMS
 
 case $distribution_version in
   6.*)
-    if ! rpm -q ruby2.2 > /dev/null 2>&1; then
-      wget http://cache.ruby-lang.org/pub/ruby/2.2/ruby-2.2.5.tar.gz -P rpm/SOURCES
-      cp -a /tmp/ruby22.spec rpm/SPECS/ruby22.spec
-      rpmbuild -ba rpm/SPECS/ruby22.spec
+    if ! rpm -q ruby2.3 > /dev/null 2>&1; then
+      wget http://cache.ruby-lang.org/pub/ruby/2.3/ruby-2.3.5.tar.gz -P rpm/SOURCES
+      cp -a /tmp/ruby23.spec rpm/SPECS/ruby23.spec
+      rpmbuild -ba rpm/SPECS/ruby23.spec
     fi
     ;;
 esac
