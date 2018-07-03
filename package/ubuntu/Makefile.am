@@ -1,4 +1,5 @@
 CODE_NAMES = trusty,xenial,zesty,artful,bionic
+DPUT_CONFIGURATION_NAME = milter-manager-ppa
 SOURCE = ../$(PACKAGE)-$(VERSION).tar.gz
 
 all:
@@ -18,6 +19,7 @@ upload: source ensure-launchpad-configuration
 	  --package '$(PACKAGE)' \
 	  --version '$(VERSION)' \
 	  --source-archive '$(SOURCE)' \
+	  --dput-configuration-name '$(DPUT_CONFIGURATION_NAME)' \
 	  --code-names '$(CODE_NAMES)' \
 	  --debian-directory 'debian' \
 	  --pgp-sign-key '$(LAUNCHPAD_UPLOADER_PGP_KEY)'

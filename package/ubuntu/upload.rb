@@ -20,8 +20,10 @@ require "fileutils"
 require "pathname"
 
 class Uploader
+  DEFAULT_DPUT_CONFIGURATION_NAME = "milter-manager-ppa"
+
   def initialize
-    @dput_configuration_name = "milter-manager-ppa"
+    @dput_configuration_name = DEFAULT_DPUT_CONFIGURATION_NAME
   end
 
   def run
@@ -47,10 +49,12 @@ class Uploader
       return if line.chomp == "[#{@dput_configuration_name}]"
     end
 
+    return unless DEFAULT_DPUT_CONFIGURATION_NAME == @dput_configuration_name
+
     dput_cf_path.open("w") do |dput_cf|
       dput_cf.puts(dput_cf_content)
       dput_cf.puts(<<-CONFIGURATION)
-[#{@dput_configuration_name}]
+[#{DEFAULT_DPUT_CONFIGURATION_NAME}]
 fqdn = ppa.launchpad.net
 method = ftp
 incoming = ~milter-manager/ppa/ubuntu/
@@ -74,6 +78,9 @@ allow_unsigned_uploads = 0
     parser.on("--source-archive=ARCHIVE",
               "The source archive") do |source_archive|
       @source_archive = Pathname.new(source_archive).expand_path
+    end
+    parser.on("--dput-configuration-name=NAME", "Name of .dput.conf entry") do |name|
+      @dput_configuration_name = name
     end
     parser.on("--code-names=CODE_NAME1,CODE_NAME2,CODE_NAME3,...", Array,
               "The target code names") do |code_names|
