@@ -28,7 +28,7 @@ update:
 
 upload:
 	for distribution in $(DISTRIBUTIONS); do		\
-	  ./upload-packages.sh $distribution '$(CENTOS_VERSIONS)' $(OSDN_PROJECT_ID) $(VERSION) $(RELEASE); \
+	  ./upload-packages.sh $${distribution} '$(CENTOS_VERSIONS)' $(OSDN_PROJECT_ID) $(VERSION) $(RELEASE); \
 	done
 
 build: build-in-chroot
