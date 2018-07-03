@@ -125,10 +125,6 @@ mkdir -p rpm/SPECS
 mkdir -p rpm/BUILD
 mkdir -p rpm/RPMS
 mkdir -p rpm/SRPMS
-mkdir -p .config
-
-echo "from Config import *" > .config/rpmlint
-echo 'addFilter("E: non-readable /etc/cron.d/milter-manager-log")' >> .config/rpmlint
 
 case $distribution_version in
   6.*)
@@ -162,6 +158,10 @@ mkdir -p rpm/SPECS
 mkdir -p rpm/BUILD
 mkdir -p rpm/RPMS
 mkdir -p rpm/SRPMS
+mkdir -p .config
+
+echo "from Config import *" > .config/rpmlint
+echo 'addFilter("E: non-readable /etc/cron.d/milter-manager-log")' >> .config/rpmlint
 
 if test -f /tmp/${SOURCE_BASE_NAME}-$VERSION-*.src.rpm; then
     if ! rpm -Uvh /tmp/${SOURCE_BASE_NAME}-$VERSION-*.src.rpm; then
