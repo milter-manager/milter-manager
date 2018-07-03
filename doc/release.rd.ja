@@ -51,6 +51,8 @@ NOTE: apt で入れるパッケージと gem で入れるパッケージが被�
   % make check
   % make coverage
 
+--with-launchpad-uploader-pgp-key=KEY には長いキーを指定する。
+
 make check でテストが失敗したり make coverage で極端にカバレッジが低い
 場合は何かがおかしいのでチェックする。
 
