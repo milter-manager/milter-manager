@@ -60,7 +60,7 @@ release-github: $(PACKAGE)-$(VERSION).tar.gz.asc
 	  --tag=$(VERSION) \
 	  --news-file=NEWS \
 	  --asset-file=$(PACKAGE)-$(VERSION).tar.gz \
-	  --asset-file=$(PACKAGE)-$(VERSION).tar.gz.asc
+	  --asset-file=$(PACKAGE)-$(VERSION).tar.gz.asc \
 	  --access-token-file=$(ACCESS_TOKEN_FILE)
 
 release-osdn: $(PACKAGE)-$(VERSION).tar.gz.asc
