@@ -1,4 +1,4 @@
-CODE_NAMES = trusty,xenial,zesty,artful,bionic
+CODE_NAMES = trusty,xenial,artful,bionic
 DPUT_CONFIGURATION_NAME = milter-manager-ppa
 SOURCE = ../$(PACKAGE)-$(VERSION).tar.gz
 
