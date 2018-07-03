@@ -2,7 +2,7 @@ milter-manager (2.1.2-1) unstable; urgency=low
 
   * New upstream release.
 
- -- Kenji Okimoto <okimoto@clear-code.com>  Thu, 09 Nov 2017 00:00:00 +0900
+ -- Kenji Okimoto <okimoto@clear-code.com>  Tue, 03 Jul 2018 00:00:00 +0900
 
 milter-manager (2.1.1-1) unstable; urgency=medium
 
