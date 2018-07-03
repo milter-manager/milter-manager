@@ -90,22 +90,11 @@ fi
 
 if test "$USE_EPEL" = "yes"; then
     if ! rpm -q epel-release > /dev/null 2>&1; then
-        epel_url=
-        case $distribution_version in
-            6.*)
-                epel_url=http://ftp.iij.ad.jp/pub/linux/fedora/epel/6/i386/epel-release-6-8.noarch.rpm
-                ;;
-            7.*)
-                epel_url=http://ftp.iij.ad.jp/pub/linux/fedora/epel/7/x86_64/e/epel-release-7-6.noarch.rpm
-                ;;
-        esac
-        if test -n "$epel_url"; then
-            run yum update ${yum_options} -y
-            run yum install ${yum_options} -y wget pyliblzma ca-certificates
-            run yum ${yum_options} clean packages
-            run yum install -y $epel_url
-            sed -i'' -e 's/enabled = 1/enabled = 0/g' /etc/yum.repos.d/epel.repo
-        fi
+        run yum update ${yum_options} -y
+        run yum install ${yum_options} -y wget pyliblzma ca-certificates
+        run yum ${yum_options} clean packages
+        run yum install -y epel-release
+        sed -i'' -e 's/enabled = 1/enabled = 0/g' /etc/yum.repos.d/epel.repo
     fi
     yum_options="$yum_options --enablerepo=epel"
 fi
