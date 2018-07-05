@@ -570,10 +570,9 @@ upload: docs
 	  $(OSDN_HTDOCS)/reference/
 
 dist-hook-local:
-	mkdir -p $(distdir)/tmpl $(distdir)/xml $(distdir)/html
+	mkdir -p $(distdir)/tmpl $(distdir)/xml
 	-cp tmpl/*.sgml $(distdir)/tmpl
 	-cp xml/*.xml $(distdir)/xml
-	cp html/* $(distdir)/html
 	for catalog in $(CATALOGS); do					\
 	  lang=`echo $$catalog | sed 's/.po$$//'`;			\
 	  mkdir -p $(distdir)/$$lang/html;				\
