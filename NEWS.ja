@@ -2,6 +2,18 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-2-1-3] 2.1.3: 2018-07-05
+
+=== Document
+
+==== Fixes
+
+  * 日本語ドキュメントを復活した [Reported by OBATA Akio][GitHub #136]
+
+=== 感謝
+
+  * おばたさん
+
 == [release-2-1-2] 2.1.2: 2018-07-03
 
 === Package
