@@ -109,6 +109,14 @@ CATALOGS=ja.po
 # include common portion ...
 include $(top_srcdir)/gtk-doc.make
 
+if GTK_DOC_BUILD_HTML
+HTML_BUILD_STAMP += html-ja-build.stamp
+endif
+# TODO Enable build Japanese PDF?
+# if GTK_DOC_BUILD_PDF
+# PDF_BUILD_STAMP += pdf-ja-build.stamp
+# endif
+
 generated_xml_files =				\
 	readme.xml				\
 	readme.xml.ja				\
@@ -227,6 +235,65 @@ RD2REFENTRY_LIB = $(RD2LIB_DIR)/$(RD2REFENTRY_LIB_FILE)
 RD2DOCBOOK = $(RUBY) -Eutf-8:utf-8 -I $(RD2LIB_DIR) $(RD2) -r $(RD2REFENTRY_LIB_FILE) --name=MILTER-MANAGER
 RD2DOCBOOK_JA = $(RD2DOCBOOK) --po=$(srcdir)/ja.po
 SVG2PNG = inkscape --export-dpi=60 --export-background=white --export-png
+
+html-ja-build.stamp: sgml.stamp $(CATALOGS) $(DOC_MAIN_SGML_FILE) $(content_files) $(expand_content_files)
+	for catalog in $(CATALOGS); do				       \
+	  lang=`echo $$catalog | sed 's/.po$$//'`;		       \
+	  echo "$$lang:";					       \
+	  rm -rf $$lang;						\
+	  mkdir -p $$lang/html;					       \
+	  mkdir -p $$lang/xml;					       \
+	  xml2po -k -p $(srcdir)/$$catalog -l $$lang		       \
+	    $(DOC_MAIN_SGML_FILE) > $$lang/$(DOC_MAIN_SGML_FILE);	\
+	  for xml in $(srcdir)/xml/*.xml; do			       \
+	    xml2po -k -p $(srcdir)/$$catalog -l $$lang $$xml >	       \
+	      $$lang/xml/`basename $$xml`;			       \
+	  done;							       \
+	  for file in $(content_files); do			       \
+	    if test -f $$file; then				       \
+	      if test -f $$file.$$lang; then			       \
+	        cp $$file.$$lang $$lang/$$file;			       \
+	      else						       \
+	        cp $$file $$lang;				       \
+	      fi;						       \
+	    else						       \
+	      if test -f $(srcdir)/$$file.$$lang; then		       \
+	        cp $(srcdir)/$$file.$$lang $$lang/$$file;	       \
+	      else						       \
+	        cp $(srcdir)/$$file $$lang;			       \
+	      fi;						       \
+	    fi;							       \
+	  done;							       \
+	  mkhtml_options="";						\
+	  gtkdoc-mkhtml 2>&1 --help | grep  >/dev/null "\-\-verbose";	\
+	  if test "$$?" = "0"; then					\
+	    if test "x$(V)" = "x1"; then				\
+	      mkhtml_options="$$mkhtml_options --verbose";		\
+	    fi;								\
+	  fi;								\
+	  gtkdoc-mkhtml 2>&1 --help | grep  >/dev/null "\-\-path"; 	\
+	  if test "$$?" = "0"; then					\
+	    mkhtml_options="$$mkhtml_options --path=\"$(abs_srcdir)\"";	\
+	  fi;								\
+	  (cd $$lang/html &&						\
+	     gtkdoc-mkhtml $$mkhtml_options $(MKHTML_OPTIONS) 		\
+	     $(DOC_MODULE) ../$(DOC_MAIN_SGML_FILE));			\
+	  echo sed -i'' -e "s,/,/$$lang/,g" $$lang/html/index.sgml;		\
+	  if test "x$(HTML_IMAGES)" != "x"; then			\
+	    for image in $(HTML_IMAGES); do				\
+	      if test -r "$(srcdir)/$$image"; then			\
+	 	cp $(srcdir)/$$image $$lang/html/;			\
+	      else							\
+	 	cp $(builddir)/$$image $$lang/html/;			\
+	      fi							\
+	    done;							\
+	  fi;								\
+	  echo 'gtk-doc: Fixing cross-references';			\
+	  gtkdoc-fixxref --module=$(DOC_MODULE)				\
+	    --module-dir=$$lang/html					\
+	    --html-dir=$(HTML_DIR) $(FIXXREF_OPTIONS);			\
+	  touch html-$$lang-build.stamp;				\
+	done
 
 ### RD -> XML
 readme.xml: $(top_srcdir)/README $(RD2REFENTRY_LIB) readme.xml.ja
@@ -504,4 +571,20 @@ upload: docs
 	  $(OSDN_HTDOCS)/reference/
 
 dist-hook-local:
+	mkdir -p $(distdir)/tmpl $(distdir)/xml $(distdir)/html
+	-cp tmpl/*.sgml $(distdir)/tmpl
+	-cp xml/*.xml $(distdir)/xml
+	cp html/* $(distdir)/html
+	for catalog in $(CATALOGS); do					\
+	  lang=`echo $$catalog | sed 's/.po$$//'`;			\
+	  mkdir -p $(distdir)/$$lang/html;				\
+	  mkdir -p $(distdir)/$$lang/xml;				\
+	  cp $$lang/html/* $(distdir)/$$lang/html;			\
+	  cp $$lang/xml/* $(distdir)/$$lang/html;			\
+	  cp $$lang/$(DOC_MAIN_SGML_FILE) $(distdir)/$$lang/;		\
+	done
+	cp $(DOC_MODULE).types $(distdir)/
+	cp $(DOC_MODULE)-sections.txt $(distdir)/
+	cd $(distdir) && rm -f $(DISTCLEANFILES)
+	-$(GTKDOC_REBASE) --online --relative --html-dir=$(distdir)/html
 	rm -f $(distdir)/version.xml
