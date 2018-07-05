@@ -588,7 +588,7 @@ dist-hook-local:
 	rm -f $(distdir)/version.xml
 
 install-data-hook:
-	for catalog in '' $(CATALOGS); do				\
+	for catalog in $(CATALOGS); do					\
 	  if test x"$$catalog" = "x"; then				\
 	    dir="html";							\
 	    target_dir="";						\
