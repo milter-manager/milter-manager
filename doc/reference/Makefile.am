@@ -586,3 +586,35 @@ dist-hook-local:
 	cd $(distdir) && rm -f $(DISTCLEANFILES)
 	-$(GTKDOC_REBASE) --online --relative --html-dir=$(distdir)/html
 	rm -f $(distdir)/version.xml
+
+install-data-hook:
+	for catalog in '' $(CATALOGS); do				\
+	  if test x"$$catalog" = "x"; then				\
+	    dir="html";							\
+	    target_dir="";						\
+	  else								\
+	    lang=`echo $$catalog | sed 's/.po$$//'`;			\
+	    dir="$$lang/html";						\
+	    target_dir="/$$lang";					\
+	  fi;								\
+	  installfiles=`echo $$dir/*`;					\
+	  if test "$$installfiles" = "$$dir/*"; then			\
+	    echo '-- Nothing to install';				\
+	  else								\
+	    $(mkinstalldirs) $(DESTDIR)$(TARGET_DIR)$$target_dir;	\
+	    for i in $$installfiles; do					\
+	      echo "-- Installing $$i";					\
+	      $(INSTALL_DATA) $$i $(DESTDIR)$(TARGET_DIR)$$target_dir;	\
+	    done;							\
+	    echo "-- Installing $$dir/index.sgml";			\
+	    $(INSTALL_DATA) $$dir/index.sgml				\
+	      $(DESTDIR)$(TARGET_DIR)$$target_dir || :;			\
+	    if test "$(DESTDIR)" = ""; then				\
+	      $(GTKDOC_REBASE) --relative				\
+	 	--html-dir=$(DESTDIR)$(TARGET_DIR)$$target_dir;		\
+	    else							\
+	      $(GTKDOC_REBASE) --relative --dest-dir=$(DESTDIR)		\
+	 	--html-dir=$(DESTDIR)$(TARGET_DIR)$$target_dir;		\
+	    fi;								\
+	  fi;								\
+	done
