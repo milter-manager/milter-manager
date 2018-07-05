@@ -278,7 +278,6 @@ html-ja-build.stamp: sgml.stamp $(CATALOGS) $(DOC_MAIN_SGML_FILE) $(content_file
 	  (cd $$lang/html &&						\
 	     gtkdoc-mkhtml $$mkhtml_options $(MKHTML_OPTIONS) 		\
 	     $(DOC_MODULE) ../$(DOC_MAIN_SGML_FILE));			\
-	  echo sed -i'' -e "s,/,/$$lang/,g" $$lang/html/index.sgml;		\
 	  if test "x$(HTML_IMAGES)" != "x"; then			\
 	    for image in $(HTML_IMAGES); do				\
 	      if test -r "$(srcdir)/$$image"; then			\
