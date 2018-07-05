@@ -523,6 +523,9 @@ fi
 
 
 %changelog
+* Thu Jul 05 2018 Kenji Okimoto <okimoto@clear-code.com> - 2.1.3-1
+- new upstream release.
+
 * Tue Jul 03 2018 Kenji Okimoto <okimoto@clear-code.com> - 2.1.2-1
 - new upstream release.
 
