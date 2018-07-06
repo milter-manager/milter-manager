@@ -26,7 +26,7 @@
         <li id="menu-introduction"><a href="reference/ja/introduction.html">はじめに</a></li>
         <li id="menu-install"><a href="reference/ja/install-to.html">インストール</a></li>
         <li id="menu-document"><a href="reference/ja/">ドキュメント</a></li>
-        <li id="menu-download"><a href="https://osdn.net/dl/milter-manager/milter-manager-2.1.3.tar.gz">ダウンロード</a></li>
+        <li id="menu-download"><a href="https://osdn.net/dl/milter-manager/milter-manager-2.1.4.tar.gz">ダウンロード</a></li>
         <li id="menu-blog"><a href="blog/ja/">ブログ</a></li>
       </ul>
     </div>
@@ -35,11 +35,11 @@
       <div class="main">
         <h2 id="latest">最新リリース</h2>
         <p>
-          2018-07-05にリリースされた2.1.3が最新安定版リリースです。
+          2018-07-06にリリースされた2.1.4が最新安定版リリースです。
         </p>
         <ul>
-          <li><a href="reference/ja/news.html#news.release-2-1-3">変更点</a></li>
-          <li><a href="https://osdn.net/dl/milter-manager/milter-manager-2.1.3.tar.gz">ダウンロード</a></li>
+          <li><a href="reference/ja/news.html#news.release-2-1-4">変更点</a></li>
+          <li><a href="https://osdn.net/dl/milter-manager/milter-manager-2.1.4.tar.gz">ダウンロード</a></li>
         </ul>
 
         <p>環境毎のインストール方法です。</p>
