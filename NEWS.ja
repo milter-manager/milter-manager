@@ -2,6 +2,19 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-2-1-4] 2.1.4: 2018-07-06
+
+=== Document
+
+==== Fixes
+
+  * 日本語ドキュメントを正しくインストールできるようにした
+    [Reported by OBATA Akio][GitHub #136]
+
+=== 感謝
+
+  * おばたさん
+
 == [release-2-1-3] 2.1.3: 2018-07-05
 
 === Document
