@@ -277,9 +277,14 @@ if ! /usr/bin/getent group milter-manager &>/dev/null; then
         %logmsg "Unexpected error adding group \"milter-manager\". Aborting installation."
 fi
 if ! /usr/bin/id milter-manager &>/dev/null; then
-    /usr/sbin/useradd -r -s /sbin/nologin -c 'milter manager' \
-	-d %{_localstatedir}/lib/milter-manager --create-home \
-	-g milter-manager milter-manager || \
+    /usr/sbin/useradd \
+        --system \
+        --shell /sbin/nologin \
+        --comment 'milter manager' \
+        --home-dir %{_localstatedir}/lib/milter-manager \
+        --create-home \
+        --gid milter-manager \
+        milter-manager || \
         %logmsg "Unexpected error adding user \"milter-manager\". Aborting installation."
 fi
 
