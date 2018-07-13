@@ -283,6 +283,7 @@ if ! /usr/bin/id milter-manager &>/dev/null; then
         --comment 'milter manager' \
         --home-dir %{_localstatedir}/lib/milter-manager \
         --create-home \
+        --key UMASK=022 \
         --gid milter-manager \
         milter-manager || \
         %logmsg "Unexpected error adding user \"milter-manager\". Aborting installation."
