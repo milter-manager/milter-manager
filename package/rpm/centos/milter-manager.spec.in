@@ -257,7 +257,7 @@ mkdir -p %{buildroot}%{_localstatedir}/run/milter-manager/
 
 mkdir -p %{buildroot}%{_sysconfdir}/httpd/conf.d/
 cat <<EOC > %{buildroot}%{_sysconfdir}/httpd/conf.d/milter-manager-log.conf
-Alias /milter-manager-log/ /var/lib/milter-manager/public_html/log/
+Alias /milter-manager-log/ %{_localstatedir}/lib/milter-manager/public_html/log/
 EOC
 
 mv %{buildroot}%{_datadir}/milter-manager/munin/ %{buildroot}%{_datadir}/
@@ -265,7 +265,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/munin/plugin-conf.d/
 cat <<EOC > %{buildroot}%{_sysconfdir}/munin/plugin-conf.d/milter-manager
 [milter_manager_*]
   user milter-manager
-  env.logdir /var/lib/milter-manager/public_html/log
+  env.logdir %{_localstatedir}/lib/milter-manager/public_html/log
 EOC
 
 %clean
