@@ -1,9 +1,8 @@
 dist: trusty
 sudo: required
 notifications:
-  email:
-    recipients:
-      - milter-manager@ml.commit-email.info
+  webhooks:
+    - https://webhook.commit-email.info/
 
 services:
   - docker
