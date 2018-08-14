@@ -128,13 +128,11 @@ items.
 Before:
   Example
   #LogFacility LOG_MAIL
-  #AllowSupplementaryGroups yes
   #NotifyClamd /path/to/clamd.conf
 
 After:
   #Example
   LogFacility LOG_MAIL
-  AllowSupplementaryGroups yes
   NotifyClamd /etc/clamd.d/scan.conf
 
 Run freshclam by hand at the first time:

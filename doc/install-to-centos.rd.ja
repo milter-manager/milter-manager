@@ -127,13 +127,11 @@ ClamAVで使用するウィルス定義を自動更新する設定をします�
 変更前:
   Example
   #LogFacility LOG_MAIL
-  #AllowSupplementaryGroups yes
   #NotifyClamd /path/to/clamd.conf
 
 変更後:
   #Example
   LogFacility LOG_MAIL
-  AllowSupplementaryGroups yes
   NotifyClamd /etc/clamd.d/scan.conf
 
 最初は手動でfreshclamを実行します。
