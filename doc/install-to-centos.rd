@@ -27,7 +27,7 @@ Register EPEL like the following:
 
 Now, you install milters:
 
-  % sudo yum install -y spamass-milter-postfix clamav-scanner-systemd clamav-update clamav-milter-systemd milter-greylist
+  % sudo yum install -y spamass-milter-postfix clamav-scanner-systemd clamav-update clamav-milter clamav-milter-systemd milter-greylist
 
 And you install RRDtool for generating graphs:
 
@@ -149,12 +149,12 @@ Edit /etc/clamd.d/scan.conf like the following. It comments out
 Before:
   Example
   #LogFacility LOG_MAIL
-  #LocalSocket /var/run/clamd.scan/clamd.sock
+  #LocalSocket /run/clamd.scan/clamd.sock
 
 After:
   #Example
   LogFacility LOG_MAIL
-  LocalSocket /var/run/clamd.scan/clamd.sock
+  LocalSocket /run/clamd.scan/clamd.sock
 
 Start clamd on startup:
 
@@ -171,17 +171,21 @@ Edit /etc/mail/clamav-milter.conf like the following. It comments out
 
 Before:
   Example
-  #MilterSocket /var/run/clamav-milter/clamav-milter.socket
+  #MilterSocket /run/clamav-milter/clamav-milter.socket
   #MilterSocketMode 660
   #ClamdSocket tcp:scanner.mydomain:7357
   #LogFacility LOG_MAIL
 
 After:
   #Example
-  MilterSocket /var/run/clamav-milter/clamav-milter.socket
+  MilterSocket /run/clamav-milter/clamav-milter.socket
   MilterSocketMode 660
-  ClamdSocket unix:/var/run/clamd.scan/clamd.sock
+  ClamdSocket unix:/run/clamd.scan/clamd.sock
   LogFacility LOG_MAIL
+
+Add "clamilt" user to "clamscan" group to access clamd's socket:
+
+  % sudo usermod -G clamscan -a clamilt
 
 Start clamav-milter on startup:
 
