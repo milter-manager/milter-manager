@@ -1,5 +1,7 @@
-CODE_NAMES = trusty,xenial,artful,bionic
-DPUT_CONFIGURATION_NAME = milter-manager-ppa
+UBUNTU_CODE_NAMES = xenial,bionic,cosmic,disco
+UBUNTU_VERSIONS = 16.04,18.04,18.10,19.04
+PPA = milter-manager-ppa
+PPA_INCOMING = ~milter-manager/ppa/ubuntu/
 SOURCE = ../$(PACKAGE)-$(VERSION).tar.gz
 
 all:
@@ -15,12 +17,14 @@ upload: source ensure-launchpad-configuration
 	cp -a '$(srcdir)/../debian' debian
 	sed -i -e '/cutter/d' debian/control
 	sed -i -e '/TZ=Asia/d' debian/rules
-	./upload.rb \
+	$(GROONGA_SOURCE_PATH)/packages/ubuntu/upload.rb \
+	  --ppa '$(PPA)' \
+	  --ppa-incoming '$(PPA_INCOMING)' \
 	  --package '$(PACKAGE)' \
 	  --version '$(VERSION)' \
 	  --source-archive '$(SOURCE)' \
-	  --dput-configuration-name '$(DPUT_CONFIGURATION_NAME)' \
-	  --code-names '$(CODE_NAMES)' \
+	  --ubuntu-code-names '$(UBUNTU_CODE_NAMES)' \
+	  --ubuntu-versions '$(UBUNTU_VERSIONS)' \
 	  --debian-directory 'debian' \
 	  --pgp-sign-key '$(LAUNCHPAD_UPLOADER_PGP_KEY)'
 
