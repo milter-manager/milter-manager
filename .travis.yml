@@ -1,32 +1,26 @@
-dist: trusty
-sudo: required
 notifications:
   webhooks:
     - https://webhook.commit-email.info/
+
+dist: xenial
+
+addons:
+  apt:
+    packages:
+      - docker-compose
 
 services:
   - docker
 
 env:
-  global:
-    DOCKER_COMPOSE_VERSION: 1.8.1
   matrix:
-    - TARGET_DISTRIBUTION=ubuntu-trusty
     - TARGET_DISTRIBUTION=ubuntu-xenial
-    - TARGET_DISTRIBUTION=ubuntu-zesty
-    - TARGET_DISTRIBUTION=ubuntu-artful
     - TARGET_DISTRIBUTION=ubuntu-bionic
     - TARGET_DISTRIBUTION=debian-stretch
     - TARGET_DISTRIBUTION=debian-buster
     - TARGET_DISTRIBUTION=debian-sid
     - TARGET_DISTRIBUTION=centos6 EXTRA_CONFIGURE_OPTIONS="--with-ruby=/usr/bin/ruby2.3 --with-bundled-ruby-glib2"
     - TARGET_DISTRIBUTION=centos7
-
-before_install:
-  - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m) > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin/
 
 before_script:
   - docker-compose build ${TARGET_DISTRIBUTION}
@@ -41,7 +35,7 @@ script:
   #- docker-compose exec ${TARGET_DISTRIBUTION} env TZ=Asia/Tokyo make check
   - docker-compose exec ${TARGET_DISTRIBUTION} ./binding/ruby/test/run-test.sh
   - docker-compose exec ${TARGET_DISTRIBUTION} ./test/run-test.sh
-  #- docker-compose exec ${TARGET_DISTRIBUTION}./test/tool/run-test.sh
+  #- docker-compose exec ${TARGET_DISTRIBUTION} ./test/tool/run-test.sh
 
 after_success:
   - docker-compose exec ${TARGET_DISTRIBUTION} lcov --compat-libtool --directory . --capture --rc lcov_branch_coverage=1 --output-file coverage.info

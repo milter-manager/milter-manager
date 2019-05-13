@@ -1,31 +1,9 @@
 version: "2"
 services:
-  ubuntu-trusty:
-    build:
-      context: .
-      dockerfile: dockerfiles/Dockerfile-ubuntu-trusty
-    command: tail -f /dev/null
-
   ubuntu-xenial:
     build:
       context: .
       dockerfile: dockerfiles/Dockerfile-ubuntu-xenial
-    environment:
-      TZ: Asia/Tokyo
-    command: tail -f /dev/null
-
-  ubuntu-zesty:
-    build:
-      context: .
-      dockerfile: dockerfiles/Dockerfile-ubuntu-zesty
-    environment:
-      TZ: Asia/Tokyo
-    command: tail -f /dev/null
-
-  ubuntu-artful:
-    build:
-      context: .
-      dockerfile: dockerfiles/Dockerfile-ubuntu-artful
     environment:
       TZ: Asia/Tokyo
     command: tail -f /dev/null
