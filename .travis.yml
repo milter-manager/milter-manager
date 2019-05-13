@@ -19,7 +19,6 @@ env:
     - TARGET_DISTRIBUTION=debian-stretch
     - TARGET_DISTRIBUTION=debian-buster
     - TARGET_DISTRIBUTION=debian-sid
-    - TARGET_DISTRIBUTION=centos6 EXTRA_CONFIGURE_OPTIONS="--with-ruby=/usr/bin/ruby2.3 --with-bundled-ruby-glib2"
     - TARGET_DISTRIBUTION=centos7
 
 before_script:
@@ -32,7 +31,10 @@ before_script:
       ${TARGET_DISTRIBUTION}
       rsyslogd -f /etc/rsyslog.conf
   - docker-compose exec ${TARGET_DISTRIBUTION} ./autogen.sh
-  - docker-compose exec ${TARGET_DISTRIBUTION} ./configure --enable-coverage --with-default-connection-spec="inet:10025@[127.0.0.1]" ${EXTRA_CONFIGURE_OPTIONS}
+  - docker-compose exec ${TARGET_DISTRIBUTION}
+      ./configure
+        --enable-coverage
+        --with-default-connection-spec="inet:10025@[127.0.0.1]"
   - docker-compose exec ${TARGET_DISTRIBUTION} make
 
 script:
