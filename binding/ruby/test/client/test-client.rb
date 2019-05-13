@@ -86,7 +86,7 @@ class TestClient < Test::Unit::TestCase
   def test_listen
     port = 12345
     @client.connection_spec = "inet:#{port}"
-    assert_raise(SystemCallError) do
+    assert_raise_kind_of(SystemCallError) do
       TCPSocket.new("localhost", port)
     end
     @client.listen
