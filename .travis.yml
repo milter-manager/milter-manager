@@ -7,7 +7,7 @@ dist: xenial
 addons:
   apt:
     packages:
-      - docker-compose
+      - python3-pip
 
 services:
   - docker
@@ -23,13 +23,15 @@ env:
     - TARGET_DISTRIBUTION=centos7
 
 before_script:
+  - sudo pip3 install docker-compose
   - docker-compose build ${TARGET_DISTRIBUTION}
   - docker-compose ps
   - docker-compose up -d ${TARGET_DISTRIBUTION}
   - docker-compose exec
       --user root
+      --workdir /
       ${TARGET_DISTRIBUTION}
-      bash -c "cd / && rsyslogd -f /etc/rsyslog.conf"
+      rsyslogd -f /etc/rsyslog.conf
   - docker-compose exec ${TARGET_DISTRIBUTION} ./autogen.sh
   - docker-compose exec ${TARGET_DISTRIBUTION} ./configure --enable-coverage --with-default-connection-spec="inet:10025@[127.0.0.1]" ${EXTRA_CONFIGURE_OPTIONS}
   - docker-compose exec ${TARGET_DISTRIBUTION} make
