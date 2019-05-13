@@ -713,8 +713,7 @@ bind_socket = unix:/run/rmilter/rmilter.sock;
   end
 
   def milter_manager_init_script
-    top = Pathname(File.dirname(__FILE__)) + ".." + ".." + ".." + ".."
-    (top + "data" + "init.d" + "redhat" + "milter-manager").read
+    fixture_path("milter-manager.init").read
   end
 
   def amavisd_init_header
