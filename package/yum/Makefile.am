@@ -1,7 +1,7 @@
 # DISTRIBUTIONS = fedora centos
 DISTRIBUTIONS = centos
-CENTOS_VERSIONS= 6 7
-ARCHITECTURES = i386 x86_64
+CENTOS_VERSIONS= 7
+ARCHITECTURES = x86_64
 CHROOT_BASE = /var/lib/chroot
 BASE_URL_PREFIX = http://downloads.sourceforge.net/project/$(PACKAGE)
 USE_RPMFORGE = no

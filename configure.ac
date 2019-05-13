@@ -283,10 +283,7 @@ AM_CONDITIONAL(DEBIAN_PLATFORM,
                [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "debian"])
 AM_CONDITIONAL(REDHAT_PLATFORM,
                [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat" \
-                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos6" \
                   -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos7"])
-AM_CONDITIONAL(REDHAT_SYSVINIT_PLATFORM,
-               [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos6"])
 AM_CONDITIONAL(REDHAT_SYSTEMD_PLATFORM,
                [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos7"])
 AM_CONDITIONAL(FREEBSD_PLATFORM,
@@ -511,12 +508,7 @@ if test "$ruby_available" = "yes"; then
 
   if test "x$use_bundled_ruby_glib2" != "xno" -a \
           "x$ruby_glib2_available" != "xyes"; then
-    if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = centos6 -o \
-            "$ruby_version" -lt 210; then
-      ac_used_bundled_ruby_glib2_version=2.2.5
-    else
-      ac_used_bundled_ruby_glib2_version=${bundled_latest_ruby_glib2_version}
-    fi
+    ac_used_bundled_ruby_glib2_version=${bundled_latest_ruby_glib2_version}
     if test "x$use_bundled_ruby_glib2" != "xauto" -a \
             "x$use_bundled_ruby_glib2" != "xyes" -a \
             "x$use_bundled_ruby_glib2" != "xno"; then
