@@ -7,8 +7,7 @@ dist: xenial
 addons:
   apt:
     packages:
-      - python3-pip
-      - python3-setuptools
+      - docker-compose
 
 services:
   - docker
@@ -24,7 +23,6 @@ env:
     - TARGET_DISTRIBUTION=centos7
 
 before_script:
-  - sudo pip3 install docker-compose
   - docker-compose build ${TARGET_DISTRIBUTION}
   - docker-compose ps
   - docker-compose up -d ${TARGET_DISTRIBUTION}
