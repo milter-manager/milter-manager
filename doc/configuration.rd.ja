@@ -1453,7 +1453,7 @@ main.cf:
 使用例:
 
   define_milter("milter-bcc") do |milter|
-    milter.add_applicable_condition("Authentication")
+    milter.add_applicable_condition("Authenticated")
   end
 
 === [unauthentication] Unauthentication
@@ -1468,7 +1468,7 @@ SMTP Authで認証されていないSMTPクライアントにのみ子milterを�
 使用例:
 
   define_milter("spamass-milter") do |milter|
-    milter.add_applicable_condition("Unauthentication")
+    milter.add_applicable_condition("Unauthenticated")
   end
 
 === Sendmail Compatible

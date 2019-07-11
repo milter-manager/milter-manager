@@ -1480,7 +1480,7 @@ inner to outer mail, is Bcc-ed to be audited:
 Example:
 
   define_milter("milter-bcc") do |milter|
-    milter.add_applicable_condition("Authentication")
+    milter.add_applicable_condition("Authenticated")
   end
 
 === [unauthentication] Unauthentication
@@ -1496,7 +1496,7 @@ is applied spam-check to avoid false detection.
 Example:
 
   define_milter("spamass-milter") do |milter|
-    milter.add_applicable_condition("Unauthentication")
+    milter.add_applicable_condition("Unauthenticated")
   end
 
 === Sendmail Compatible
