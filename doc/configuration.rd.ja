@@ -2318,6 +2318,7 @@ MySQLの接続情報は以下の通りとします。
 
 /etc/milter-manager/milter-manager.local.conf:
   database.type = "mysql2"
+  database.host = "192.168.0.1"
   database.name = "mail-system"
   database.user = "milter-manager"
   database.password = "secret"
@@ -2348,6 +2349,7 @@ models/user.rbを作成します。
 /etc/milter-manager/milter-manager.local.conf:
   # 接続情報設定
   database.type = "mysql2"
+  database.host = "192.168.0.1"
   database.name = "mail-system"
   database.user = "milter-manager"
   database.password = "secret"

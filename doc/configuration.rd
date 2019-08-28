@@ -2339,6 +2339,7 @@ milter-manager.local.conf is placed at
 /etc/milter-manager/milter-manager.local.conf:
   database.type = "mysql2"
   database.name = "mail-system"
+  database.host = "192.168.0.1"
   database.user = "milter-manager"
   database.password = "secret"
 
@@ -2367,6 +2368,7 @@ Here are completed files:
   # Configure connection information
   database.type = "mysql2"
   database.name = "mail-system"
+  database.host = "192.168.0.1"
   database.user = "milter-manager"
   database.password = "secret"
 
