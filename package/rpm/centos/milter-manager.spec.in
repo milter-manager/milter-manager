@@ -491,6 +491,9 @@ fi
 
 
 %changelog
+* Tue Sep 10 2019 Kentaro Hayashi <hayashi@clear-code.com> - 2.1.5-1
+- new upstream release.
+
 * Fri Jul 06 2018 Kenji Okimoto <okimoto@clear-code.com> - 2.1.4-1
 - new upstream release.
 
