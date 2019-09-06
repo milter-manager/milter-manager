@@ -2,6 +2,37 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-2-1-5] 2.1.5: 2019-09-10
+
+=== Document
+
+==== 改善
+
+  * CentOS 7でのインストールマニュアルを更新しました
+  * ClamAV 0.100.0で非推奨となったAllowSupplementaryGroupsの設定を削除しました
+
+==== 修正
+
+  * 設定のドキュメントの使用例が "Authentication" となっていた誤記を修正しました [SATOH Kiyoshiさんがパッチ提供][GitHub #138]
+  * database.host が設定のドキュメントに抜けているのを修正しました [SATOH Kiyoshiさんが報告]
+
+=== Package
+
+==== 改善
+
+  * CentOS 6のサポートをやめました
+  * メールの本文を置き換えるRubyのmilterスクリプトのサンプルを追加しました
+
+==== 修正
+
+  * パッケージの更新に失敗することがないようにUbuntuのコード名ではなくバージョンをパッケージのバージョンにつけることにしました
+    [西山さんが報告][GitHub #137]
+
+=== 感謝
+
+  * 西山和弘さん
+  * SATOH Kiyoshiさん
+
 == [release-2-1-4] 2.1.4: 2018-07-06
 
 === Document

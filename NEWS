@@ -2,6 +2,39 @@
 
 = NEWS --- The history of milter manager
 
+== [release-2-1-5] 2.1.5: 2019-09-10
+
+=== Document
+
+==== Improvements
+
+  * Updated installation manual for CentOS 7
+  * Removed obsolete AllowSupplementaryGroups option because
+    it was deprecated since ClamAV 0.100.0
+
+==== Fixes
+
+  * Fixed to use [Reported by Kazuhiro NISHIYAMA][GitHub #137]
+  * Fixed "Authentication" typos in configuration document [Patch by SATOH Kiyoshi][GitHub #138]
+  * Fixed missing database.host in configuration document [Reported by SATOH Kiyoshi]
+
+=== Package
+
+==== Improvements
+
+  * Dropped CentOS 6 support
+  * Added a sample Ruby milter script that replaces content
+
+==== Fixes
+
+  * Fixed to use Ubuntu version instead of code name not to fail package upgrade.
+    [Reported by Kazuhiro NISHIYAMA][GitHub #137]
+
+=== Thanks
+
+  * Kazuhiro NISHIYAMA
+  * SATOH Kiyoshi
+
 == [release-2-1-4] 2.1.4: 2018-07-06
 
 === Document
