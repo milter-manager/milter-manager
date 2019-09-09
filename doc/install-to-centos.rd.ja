@@ -5,10 +5,7 @@
 == このドキュメントについて
 
 CentOS 7に特化したmilter managerのインストール方法について説明します。
-CentOS 6に特化したmilter managerのインストール方法は((<CentOS 6へイン
-ストール|install-to-centos6.rd.ja>))を見てください。CentOS 5に特化した
-milter managerのインストール方法は((<CentOS 5へインストール
-|install-to-centos5.rd.ja>))を見てください。CentOSに依存しない一般的な
+CentOSに依存しない一般的な
 インストール情報は((<インストール|install.rd.ja>))を見てください。
 
 CentOSのバージョンは7.2を想定しています。また、root権限での実行はsudo
