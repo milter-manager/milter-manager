@@ -12,20 +12,26 @@ addons:
 services:
   - docker
 
-env:
-  matrix:
+matrix:
+  include:
     - name: Ubuntu 16.04
-      TARGET_DISTRIBUTION: ubuntu-xenial
+      env:
+        TARGET_DISTRIBUTION: ubuntu-xenial
     - name: Ubuntu 18.04
-      TARGET_DISTRIBUTION: ubuntu-bionic
+      env:
+        TARGET_DISTRIBUTION: ubuntu-bionic
     - name: Debian GNU/Linux stretch
-      TARGET_DISTRIBUTION: debian-stretch
+      env:
+        TARGET_DISTRIBUTION: debian-stretch
     - name: Debian GNU/Linux buster
-      TARGET_DISTRIBUTION: debian-buster
+      env:
+        TARGET_DISTRIBUTION: debian-buster
     - name: Debian GNU/Linux sid
-      TARGET_DISTRIBUTION: debian-sid
+      env:
+        TARGET_DISTRIBUTION: debian-sid
     - name: CentOS 7
-      TARGET_DISTRIBUTION: centos7
+      env:
+        TARGET_DISTRIBUTION: centos7
 
 before_script:
   - docker-compose build ${TARGET_DISTRIBUTION}
