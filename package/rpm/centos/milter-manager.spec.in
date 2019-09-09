@@ -1,5 +1,5 @@
-%define ruby_version %(%{ruby_command} -e "print RUBY_VERSION.tr('.', '')")
-%define ruby_libdir %(%{ruby_command} -rrbconfig -e 'print RbConfig::CONFIG["rubylibdir"]')
+%define ruby_version %(ruby -e "print RUBY_VERSION.tr('.', '')")
+%define ruby_libdir %(ruby -rrbconfig -e 'print RbConfig::CONFIG["rubylibdir"]')
 
 Summary: A milter to use milters effectively
 Name: milter-manager
