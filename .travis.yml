@@ -14,12 +14,18 @@ services:
 
 env:
   matrix:
-    - TARGET_DISTRIBUTION=ubuntu-xenial
-    - TARGET_DISTRIBUTION=ubuntu-bionic
-    - TARGET_DISTRIBUTION=debian-stretch
-    - TARGET_DISTRIBUTION=debian-buster
-    - TARGET_DISTRIBUTION=debian-sid
-    - TARGET_DISTRIBUTION=centos7
+    - name: Ubuntu 16.04
+      TARGET_DISTRIBUTION: ubuntu-xenial
+    - name: Ubuntu 18.04
+      TARGET_DISTRIBUTION: ubuntu-bionic
+    - name: Debian GNU/Linux stretch
+      TARGET_DISTRIBUTION: debian-stretch
+    - name: Debian GNU/Linux buster
+      TARGET_DISTRIBUTION: debian-buster
+    - name: Debian GNU/Linux sid
+      TARGET_DISTRIBUTION: debian-sid
+    - name: CentOS 7
+      TARGET_DISTRIBUTION: centos7
 
 before_script:
   - docker-compose build ${TARGET_DISTRIBUTION}
