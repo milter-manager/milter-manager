@@ -26,10 +26,9 @@ install milter manager by APT from the PPA.
 
 Here are supported Ubuntu versions:
 
-  * 14.04 LTS Trusty Tahr
   * 16.04 LTS Xenial Xerus
-  * 17.04 Zesty Zapus
-  * 17.10 Artful Aardvark
+  * 18.04 LTS Bionic Beaver
+  * 19.04 Disco Dingo
 
 Add the (({ppa:milter-manager/ppa})) PPA to your system:
 

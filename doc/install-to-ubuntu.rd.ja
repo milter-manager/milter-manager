@@ -25,10 +25,9 @@ Ubuntu向けのmilter managerのAPTリポジトリは
 
 サポートしているUbuntuのバージョン:
 
-  * 14.04 LTS Trusty Tahr
   * 16.04 LTS Xenial Xerus
-  * 17.04 Zesty Zapus
-  * 17.10 Artful Aardvark
+  * 18.04 LTS Bionic Beaver
+  * 19.04 Disco Dingo
 
 (({ppa:milter-manager/ppa})) PPAを追加します:
 
