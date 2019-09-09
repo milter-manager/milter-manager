@@ -21,6 +21,7 @@ utils_files =					\
 	milter-multi-process-test-utils.rb
 
 fixture_files =					\
+	fixtures/milter-manager.init		\
 	fixtures/raw-shift_jis-subject.eml	\
 	fixtures/shift_jis-8bit.eml
 
