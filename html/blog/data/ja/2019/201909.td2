@@ -1,0 +1,17 @@
+TDIARY2.01.00
+Date: 20190909
+Title: 
+Last-Modified: 1568011944
+Visible: true
+Format: RD
+
+= milter manager 2.1.5
+
+milter manager 2.1.5をリリースしました。
+
+今回のリリースはメンテナンスリリースです。新機能の追加はありません。
+
+* CentOS 6のサポートをやめました
+* Ubuntuのパッケージのバージョンの付け方をアップグレード時に問題にならないようにしました。
+
+.
