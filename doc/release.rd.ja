@@ -142,7 +142,8 @@ OLD_RELEASE_DATE は debian/changelog をチェックすればわかる。
 
 shell.osdn.net へ SSH で接続できればよい。
 
-$ groups
+% ssh shell.osdn.net
+(ユーザー名)@sf-usr-shell:~$ groups
 users milter-manager
 
 のように milter-manager グループに登録されていることを確認する。
