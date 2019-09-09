@@ -182,6 +182,15 @@ milter-manager のリリース用鍵の情報を暗号化しておく。UID の�
   % gpg --keyserver pgp.mit.edu --recv-keys 3F09D1EA68E5F18B4EC8FEEAFF2030C057B9884E
   % gpg --allow-secret-key-import --import secret.txt
 
+=== リリース用gemパッケージのインストール
+
+リリース用パッケージのリポジトリは https://packagecloud.io にて提供するようにしています。
+ローカルでビルドしたdebやrpmパッケージをアップロードするのには package_cloud gemを利用します。
+
+  % gem install package_cloud
+
+パッケージのアップロードには https://packagecloud.io/milter-manager/ のアカウント情報が必要です。
+
 == リリース用パッケージ作成
 
 リリース用パッケージの作成には HDD の空き容量が 20GB 以上必要である。
