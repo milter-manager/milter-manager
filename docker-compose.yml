@@ -16,6 +16,14 @@ services:
       TZ: Asia/Tokyo
     command: tail -f /dev/null
 
+  ubuntu-disco:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile-ubuntu-disco
+    environment:
+      TZ: Asia/Tokyo
+    command: tail -f /dev/null
+
   debian-stretch:
     build:
       context: .
