@@ -34,7 +34,7 @@ matrix:
         TARGET_DISTRIBUTION: debian-sid
     - name: CentOS 7
       env:
-        TARGET_DISTRIBUTION: centos7
+        TARGET_DISTRIBUTION: centos-7
 
 before_script:
   - docker-compose build ${TARGET_DISTRIBUTION}

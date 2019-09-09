@@ -48,10 +48,10 @@ services:
       TZ: Asia/Tokyo
     command: tail -f /dev/null
 
-  centos7:
+  centos-7:
     build:
       context: .
-      dockerfile: dockerfiles/Dockerfile-centos7
+      dockerfile: dockerfiles/Dockerfile-centos-7
     environment:
       TZ: Asia/Tokyo
     command: tail -f /dev/null
