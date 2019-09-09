@@ -20,6 +20,9 @@ matrix:
     - name: Ubuntu 18.04
       env:
         TARGET_DISTRIBUTION: ubuntu-bionic
+    - name: Ubuntu 19.04
+      env:
+        TARGET_DISTRIBUTION: ubuntu-disco
     - name: Debian GNU/Linux stretch
       env:
         TARGET_DISTRIBUTION: debian-stretch
