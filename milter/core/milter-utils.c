@@ -432,6 +432,11 @@ inspect_hash_string_string_element (gpointer _key, gpointer _value,
     g_string_append(inspected, ", ");
 }
 
+static gint compare_hash_key(gconstpointer a, gconstpointer b)
+{
+  return g_strcmp0((gchar*)a, (gchar*)b);
+}
+
 gchar *
 milter_utils_inspect_hash_string_string (GHashTable *hash)
 {
@@ -439,9 +444,14 @@ milter_utils_inspect_hash_string_string (GHashTable *hash)
 
     inspected = g_string_new("{");
     if (g_hash_table_size(hash) > 0) {
-        g_hash_table_foreach(hash,
-                             inspect_hash_string_string_element,
-                             inspected);
+        GList *key_list = g_hash_table_get_keys(hash);
+        key_list = g_list_sort(key_list, compare_hash_key);
+        const GList *node;
+        for (node = key_list; node; node = g_list_next(node)) {
+            gpointer value = g_hash_table_lookup(hash, node->data);
+            inspect_hash_string_string_element(node->data, value, inspected);
+        }
+        g_list_free(key_list);
         g_string_truncate(inspected, inspected->len - strlen(", "));
     }
     g_string_append(inspected, "}");
