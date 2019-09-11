@@ -434,7 +434,7 @@ inspect_hash_string_string_element (gpointer _key, gpointer _value,
 
 static gint compare_hash_key(gconstpointer a, gconstpointer b)
 {
-  return g_strcmp0((gchar*)a, (gchar*)b);
+  return g_strcmp0((gchar *)a, (gchar *)b);
 }
 
 gchar *
