@@ -444,14 +444,14 @@ milter_utils_inspect_hash_string_string (GHashTable *hash)
 
     inspected = g_string_new("{");
     if (g_hash_table_size(hash) > 0) {
-        GList *key_list = g_hash_table_get_keys(hash);
-        key_list = g_list_sort(key_list, compare_hash_key);
+        GList *keys = g_hash_table_get_keys(hash);
+        keys = g_list_sort(keys, compare_hash_key);
         const GList *node;
-        for (node = key_list; node; node = g_list_next(node)) {
+        for (node = keys; node; node = g_list_next(node)) {
             gpointer value = g_hash_table_lookup(hash, node->data);
             inspect_hash_string_string_element(node->data, value, inspected);
         }
-        g_list_free(key_list);
+        g_list_free(keys);
         g_string_truncate(inspected, inspected->len - strlen(", "));
     }
     g_string_append(inspected, "}");
