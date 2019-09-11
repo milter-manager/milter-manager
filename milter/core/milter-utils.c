@@ -443,8 +443,9 @@ milter_utils_inspect_hash_string_string (GHashTable *hash)
         const GList *node;
         keys = g_list_sort(keys, (GCompareFunc)g_strcmp0);
         for (node = keys; node; node = g_list_next(node)) {
-            gpointer value = g_hash_table_lookup(hash, node->data);
-            inspect_hash_string_string_element(node->data, value, inspected);
+            gchar *key = node->data;
+            gpointer value = g_hash_table_lookup(hash, key);
+            inspect_hash_string_string_element(key, value, inspected);
         }
         g_list_free(keys);
         g_string_truncate(inspected, inspected->len - strlen(", "));
