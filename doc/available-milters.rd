@@ -55,6 +55,6 @@ please report it to ((<mailing
 list|URL:http://lists.osdn.me/mailman/listinfo/milter-manager-users-en>)).
 
   * ((<AntiVir MailGate|URL:http://www.avira.com/en/products/avira_antivir_mailgate.html>))
-  * ((<milter-regex|URL:http://www.benzedrine.cx/milter-regex.html>))
+  * ((<milter-regex|URL:http://www.benzedrine.ch/milter-regex.html>))
   * ((<MIMEDefang|URL:http://www.mimedefang.org/>))
   * ...
