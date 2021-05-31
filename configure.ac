@@ -283,7 +283,8 @@ AM_CONDITIONAL(DEBIAN_PLATFORM,
                [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "debian"])
 AM_CONDITIONAL(REDHAT_PLATFORM,
                [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat" \
-                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos7"])
+                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos7" \
+                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos8"])
 AM_CONDITIONAL(REDHAT_SYSTEMD_PLATFORM,
                [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos7" \
                   -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos8"])
