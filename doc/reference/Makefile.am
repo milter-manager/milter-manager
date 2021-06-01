@@ -71,6 +71,7 @@ content_files =					\
 	install-to-ubuntu.xml			\
 	install-to-centos5.xml			\
 	install-to-centos6.xml			\
+	install-to-centos7.xml			\
 	install-to-centos.xml			\
 	install-to-freebsd.xml			\
 	install-to-others.xml			\
@@ -138,6 +139,8 @@ generated_xml_files =				\
 	install-to-centos5.xml.ja		\
 	install-to-centos6.xml			\
 	install-to-centos6.xml.ja		\
+	install-to-centos7.xml			\
+	install-to-centos7.xml.ja		\
 	install-to-centos.xml			\
 	install-to-centos.xml.ja		\
 	install-to-freebsd.xml			\
@@ -354,6 +357,12 @@ install-to-centos6.xml: $(top_srcdir)/doc/install-to-centos6.rd $(RD2REFENTRY_LI
 
 install-to-centos6.xml.ja: $(top_srcdir)/doc/install-to-centos6.rd.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/install-to-centos6.rd.ja > install-to-centos6.xml.ja
+
+install-to-centos7.xml: $(top_srcdir)/doc/install-to-centos7.rd $(RD2REFENTRY_LIB) install-to-centos7.xml.ja
+	$(RD2DOCBOOK) $(top_srcdir)/doc/install-to-centos7.rd > install-to-centos7.xml
+
+install-to-centos7.xml.ja: $(top_srcdir)/doc/install-to-centos7.rd.ja $(RD2REFENTRY_LIB) ja.po
+	$(RD2DOCBOOK_JA) $(top_srcdir)/doc/install-to-centos7.rd.ja > install-to-centos7.xml.ja
 
 install-to-centos.xml: $(top_srcdir)/doc/install-to-centos.rd $(RD2REFENTRY_LIB) install-to-centos.xml.ja
 	$(RD2DOCBOOK) $(top_srcdir)/doc/install-to-centos.rd > install-to-centos.xml
