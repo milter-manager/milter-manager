@@ -1,14 +1,14 @@
 # -*- rd -*-
 
-= Install to CentOS 8 --- How to install milter manager to CentOS 8
+= Install to CentOS 7 --- How to install milter manager to CentOS 7
 
 == About this document
 
-This document describes how to install milter manager to CentOS 8.
+This document describes how to install milter manager to CentOS 7.
 See ((<Install|install.rd>)) for general install
 information.
 
-In this document, CentOS 8.3 is used. Sudo is used to run a command
+In this document, CentOS 7.6 is used. Sudo is used to run a command
 with root privilege. If you don't use sudo, use su instead.
 
 == Install packages
@@ -20,19 +20,19 @@ milters. Milter packages registered in EPEL are used.
 
 Register EPEL like the following:
 
-  % sudo dnf install -y epel-release
+  % sudo yum install -y epel-release
 
 Now, you install milters:
 
-  % sudo dnf install -y spamass-milter-postfix clamav-scanner-systemd clamav-update clamav-milter clamav-milter-systemd milter-greylist
+  % sudo yum install -y spamass-milter-postfix clamav-scanner-systemd clamav-update clamav-milter clamav-milter-systemd milter-greylist
 
 And you install RRDtool for generating graphs:
 
-  % sudo dnf install -y rrdtool
+  % sudo yum install -y rrdtool
 
 == Build and Install
 
-milter manager can be installed by dnf.
+milter manager can be installed by yum.
 
 Register milter manager yum repository like the following:
 
@@ -42,7 +42,7 @@ See also: ((<URL:https://packagecloud.io/milter-manager/repos/install>))
 
 Now, you install milter manager:
 
-  % sudo dnf install -y milter-manager
+  % sudo yum install -y milter-manager
 
 == Configuration
 

@@ -1,14 +1,14 @@
 # -*- rd -*-
 
-= CentOS 8へインストール --- CentOS 8へのmilter managerのインストール方法
+= CentOS 7へインストール --- CentOS 7へのmilter managerのインストール方法
 
 == このドキュメントについて
 
-CentOS 8に特化したmilter managerのインストール方法について説明します。
+CentOS 7に特化したmilter managerのインストール方法について説明します。
 CentOSに依存しない一般的な
 インストール情報は((<インストール|install.rd.ja>))を見てください。
 
-CentOSのバージョンは8.3を想定しています。また、root権限での実行はsudo
+CentOSのバージョンは7.2を想定しています。また、root権限での実行はsudo
 を使用することを想定しています。sudoを利用していない場合はsuなどroot権
 限で実行してください。
 
@@ -20,21 +20,21 @@ milterはspamass-milter、clamav-milter、milter-greylistを使用すること�
 します。各milterはEPELにあるものを利用します。そのため、EPELを有効にし
 ます。
 
-  % sudo dnf install -y epel-release
+  % sudo yum install -y epel-release
 
 EPELを有効にしたらmilterをインストールします。
 
-  % sudo dnf install -y spamass-milter-postfix clamav-scanner-systemd clamav-update clamav-milter clamav-milter-systemd milter-greylist
+  % sudo yum install -y spamass-milter-postfix clamav-scanner-systemd clamav-update clamav-milter clamav-milter-systemd milter-greylist
 
 また、グラフ作成用にRRDtoolもインストールします。
 
-  % sudo dnf install -y rrdtool
+  % sudo yum install -y rrdtool
 
 == milter managerパッケージのインストール
 
-milter managerはdnfでインストールできます。
+milter managerはyumでインストールできます。
 
-まず、dnfリポジトリを登録します。
+まず、yumリポジトリを登録します。
 
   % curl -s https://packagecloud.io/install/repositories/milter-manager/repos/script.rpm.sh | sudo bash
 
@@ -42,7 +42,7 @@ milter managerはdnfでインストールできます。
 
 登録が完了したらmilter managerをインストールできます。
 
-  % sudo dnf install -y milter-manager
+  % sudo yum install -y milter-manager
 
 == 設定
 
