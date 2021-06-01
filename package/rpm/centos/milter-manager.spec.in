@@ -1,6 +1,8 @@
 %define ruby_version %(ruby -e "print RUBY_VERSION.tr('.', '')")
 %define ruby_libdir %(ruby -rrbconfig -e 'print RbConfig::CONFIG["rubylibdir"]')
 
+%undefine _hardened_build
+
 Summary: A milter to use milters effectively
 Name: milter-manager
 Version: @VERSION@
@@ -213,6 +215,14 @@ Documentation for milter manager
 %setup -q
 
 %build
+# Recently, hardened build is enabled by default, but there is a case
+# that it causes error (-Wl,-z,now) for some plugins systems. To fix
+# such a issue, lazy binding (-Wl,-z,lazy) should be enabled
+# explicitly. Enable most of hardening feature except -Wl,-z,now, we
+# need to set flags manually.
+# https://fedoraproject.org/wiki/Changes/Harden_All_Packages#Troubleshooting_steps_for_package_maintainers
+export CFLAGS="$RPM_OPT_FLAGS -fPIC -pie -Wl,-z,relro -Wl,-z,lazy"
+export CXXFLAGS="$RPM_OPT_FLAGS -fPIC -pie -Wl,-z,relro -Wl,-z,lazy"
 %configure								\
     --disable-static							\
     --with-default-effective-user=milter-manager			\
