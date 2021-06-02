@@ -263,8 +263,6 @@ yum ディレクトリに移動してからコマンドを実行すると、一�
   % make build PARALLEL=yes
   % make upload
 
-download を事前に実行しておかないと、アップロード済みの古いパッケージを
-全て削除してしまうので忘れずに実行する。
 make build に PARALLEL=yes を付けるとビルドが並列に走る。
 
 TODO: 確認方法の更新
