@@ -29,7 +29,6 @@ NOTE: apt で入れるパッケージと gem で入れるパッケージが被�
     gtk-doc-tools \
     gnome-doc-utils \
     libglib2.0-dev \
-    ruby-gnome2-dev \
     build-essential \
     rdtool \
     ruby-fast-gettext \
