@@ -191,6 +191,10 @@ milter-manager のリリース用鍵の情報を暗号化しておく。UID の�
 パッケージのアップロードには https://packagecloud.io/milter-manager/ への権限が必要です。
 https://packagecloud.io/milter-manager/repos/edit から Collaborator としてユーザーを追加してもらうようにしてください。
 
+ログインしていない状態で以下のコマンドを実行するとアクセストークンが ~/.packagecloud に保存されます。
+
+  % package_cloud repository list
+
 == リリース用パッケージ作成
 
 リリース用パッケージの作成には HDD の空き容量が 20GB 以上必要である。
