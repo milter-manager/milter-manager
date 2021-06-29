@@ -173,5 +173,5 @@ milter managerにはいくつか便利なツールが付属されていて、bin
     * バグを報告してくれました。
   * 川崎さん
     * FreeBSDでの/etc/rc.conf.local読み込み対応をしてくれました。
-  * ((<packagecloud.io|https://packagecloud.io/>))
+  * ((<packagecloud.io|URL:https://packagecloud.io/>))
     * milter-managerのパッケージを配布するのにpackagecloud.ioを使わせてもらっています。
