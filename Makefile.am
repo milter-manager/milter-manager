@@ -116,7 +116,8 @@ update-latest-release:
 	  package/debian/changelog				\
 	  html/index.html					\
 	  html/index.html.ja					\
-	  html/blog/tdiary.conf					\
+	  html/blog/tdiary.en.conf				\
+	  html/blog/tdiary.ja.conf				\
 	  doc/reference/header.html	\
 	  doc/reference/header-ja.html	\
 	  doc/install-to-centos.rd				\
