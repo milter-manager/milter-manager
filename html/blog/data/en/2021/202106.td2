@@ -10,6 +10,8 @@ Format: RD
 Since Oct, 2016, milter-manager is powered by packagecloud.io.
 They kindly provides us open-source plan since ever!
 
+Here is our use-case which explains in forms of interview.
+
 == What was one quantifiable impact, and one intangible benefit that packagecloud brought?
 
 Every new milter-manager release, we don't need to maintain own APT/YUM repository by ourself anymore.
