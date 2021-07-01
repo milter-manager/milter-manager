@@ -42,6 +42,7 @@ def main
   end
   system("rsync", "-avz", "--delete", tdiary_compiled_dir,
          "#{osdn_user}@#{osdn_host}:#{osdn_htdocs_path}/blog/")
+  system("ssh", "#{osdn_user}@#{osdn_host}", "chgrp", "-R", osdn_project, "#{osdn_htdocs_path}/blog/")
 end
 
 main
