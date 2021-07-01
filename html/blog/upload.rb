@@ -37,6 +37,9 @@ def main
   osdn_project = "milter-manager"
   osdn_host = "shell.osdn.net"
   osdn_htdocs_path = "/home/groups/#{osdn_project[0]}/#{osdn_project[0..1]}/#{osdn_project}/htdocs"
+  Dir.glob("#{tdiary_compiled_dir}/*/*") do |path|
+    File.chmod(0664, path) if File.file?(path)
+  end
   system("rsync", "-avz", "--delete", tdiary_compiled_dir,
          "#{osdn_user}@#{osdn_host}:#{osdn_htdocs_path}/blog/")
 end
