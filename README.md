@@ -168,5 +168,7 @@ The latest source is available from the Git repository:
     * reported bugs.
   * moto kawasaki:
     * added /etc/rc.conf.local loading support on FreeBSD.
-  * [![Private NPM registry and Maven, RPM, DEB, PyPi and RubyGem Repository · packagecloud](https://packagecloud.io/images/packagecloud-badge.png)](https://packagecloud.io/)
-    * milter-manager packages are distributed via packagecloud.io
+
+milter-manager packages are distributed via packagecloud.io
+
+[![Private NPM registry and Maven, RPM, DEB, PyPi and RubyGem Repository · packagecloud](https://packagecloud.io/images/packagecloud-badge.png)](https://packagecloud.io/)
