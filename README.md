@@ -1,6 +1,8 @@
 # milter manager: a milter to use milters effectively.
 
-http://milter-manager.osdn.jp/
+## Site
+
+https://milter-manager.osdn.jp/
 
 [![](https://img.shields.io/badge/deb-packagecloud.io-844fec.svg)](https://6cbde467-a8b8-40b8-bdfd-10f10edab167.pipedrive.email/c/xyol6og7ym/my797q63d4/6pk6g6ex40/0?redirectUrl=http%3A%2F%2Fpackagecloud.io%2F)
 [![](https://img.shields.io/badge/rpm-packagecloud.io-844fec.svg)](https://6cbde467-a8b8-40b8-bdfd-10f10edab167.pipedrive.email/c/xyol6og7ym/my797q63d4/6pk6g6ex40/0?redirectUrl=http%3A%2F%2Fpackagecloud.io%2F)
