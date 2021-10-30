@@ -81,11 +81,11 @@ Init_milter_decoder (void)
                                          "ReplyDecoder", rb_mMilter);
     rb_cMilterCommandDecoder = G_DEF_CLASS(MILTER_TYPE_COMMAND_DECODER,
                                            "CommandDecoder", rb_mMilter);
-    G_DEF_ERROR2(MILTER_TYPE_DECODER_ERROR, "DecoderError",
+    G_DEF_ERROR2(MILTER_DECODER_ERROR, "DecoderError",
                  rb_mMilter, rb_eMilterError);
-    G_DEF_ERROR2(MILTER_TYPE_COMMAND_DECODER_ERROR, "CommandDecoderError",
+    G_DEF_ERROR2(MILTER_COMMAND_DECODER_ERROR, "CommandDecoderError",
                  rb_mMilter, rb_eMilterError);
-    G_DEF_ERROR2(MILTER_TYPE_REPLY_DECODER_ERROR, "ReplyDecoderError",
+    G_DEF_ERROR2(MILTER_REPLY_DECODER_ERROR, "ReplyDecoderError",
                  rb_mMilter, rb_eMilterError);
 
     rb_define_method(rb_cMilterDecoder, "decode", decode, 1);

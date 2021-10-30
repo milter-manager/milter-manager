@@ -74,10 +74,10 @@ Init_milter_manager_control_decoder (void)
         G_DEF_CLASS(MILTER_TYPE_MANAGER_CONTROL_REPLY_DECODER,
                     "ControlReplyDecoder", rb_mMilterManager);
 
-    G_DEF_ERROR2(MILTER_TYPE_MANAGER_CONTROL_COMMAND_DECODER_ERROR,
+    G_DEF_ERROR2(MILTER_MANAGER_CONTROL_COMMAND_DECODER_ERROR,
                  "ControlCommandDecoderError",
                  rb_mMilterManager, rb_eMilterError);
-    G_DEF_ERROR2(MILTER_TYPE_MANAGER_CONTROL_REPLY_DECODER_ERROR,
+    G_DEF_ERROR2(MILTER_MANAGER_CONTROL_REPLY_DECODER_ERROR,
                  "ControlReplyDecoderError",
                  rb_mMilterManager, rb_eMilterError);
 
