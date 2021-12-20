@@ -4,6 +4,7 @@ RUN apt-get update && \
     apt-get install -qq -y \
       curl \
       gtk-doc-tools \
+      intltool \
       libev-dev \
       libglib2.0-dev \
       libtool \
