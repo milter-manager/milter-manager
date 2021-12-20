@@ -523,7 +523,8 @@ if test "$ruby_available" = "yes"; then
         $RUBY ../../../$srcdir/$ac_ruby_glib2_dir/extconf.rb); then
       ruby_glib2_available=yes
       ac_ruby_glib2_source_dir="$ac_ruby_glib2_dir/ext/glib2"
-      RUBY_GLIB2_CFLAGS="-I \$(top_srcdir)/$ac_ruby_glib2_source_dir"
+      RUBY_GLIB2_CFLAGS="-I\$(top_builddir)/$ac_ruby_glib2_source_dir"
+      RUBY_GLIB2_CFLAGS="$RUBY_GLIB2_CFLAGS -I\$(top_srcdir)/$ac_ruby_glib2_source_dir"
       sed -e '/^install-headers:/a\
 xxx	$(MAKEDIRS) $(RUBYARCHDIR)' \
 	  $ac_ruby_glib2_dir/ext/glib2/Makefile | \
