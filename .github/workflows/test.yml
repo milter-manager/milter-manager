@@ -1,0 +1,29 @@
+name: Test
+on:
+  - push
+  - pull_request
+jobs:
+  test:
+    name: Test
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          # - almalinux-8
+          - centos-7
+          - debian-bullseye
+          - ubuntu-bionic
+          - ubuntu-focal
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Docker image
+        run: |
+          docker-compose build ${{ matrix.service }}
+      - name: Generate configure
+        run: |
+          ./autogen.sh
+      - name: Run
+        run: |
+          docker-compose run --rm ${{ matrix.service }}

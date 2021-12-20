@@ -1,57 +1,58 @@
 version: "3.7"
+
 services:
-  ubuntu-xenial:
+  # TODO
+  almalinux-8:
     build:
       context: .
-      dockerfile: dockerfiles/Dockerfile-ubuntu-xenial
+      dockerfile: dockerfiles/almalinux-8.dockerfile
     environment:
       TZ: Asia/Tokyo
-    command: tail -f /dev/null
-
-  ubuntu-bionic:
-    build:
-      context: .
-      dockerfile: dockerfiles/Dockerfile-ubuntu-bionic
-    environment:
-      TZ: Asia/Tokyo
-    command: tail -f /dev/null
-
-  ubuntu-disco:
-    build:
-      context: .
-      dockerfile: dockerfiles/Dockerfile-ubuntu-disco
-    environment:
-      TZ: Asia/Tokyo
-    command: tail -f /dev/null
-
-  debian-stretch:
-    build:
-      context: .
-      dockerfile: dockerfiles/Dockerfile-debian-stretch
-    environment:
-      TZ: Asia/Tokyo
-    command: tail -f /dev/null
-
-  debian-buster:
-    build:
-      context: .
-      dockerfile: dockerfiles/Dockerfile-debian-buster
-    environment:
-      TZ: Asia/Tokyo
-    command: tail -f /dev/null
-
-  debian-sid:
-    build:
-      context: .
-      dockerfile: dockerfiles/Dockerfile-debian-sid
-    environment:
-      TZ: Asia/Tokyo
-    command: tail -f /dev/null
+    volumes:
+      - .:/host:delegated
+    command:
+      /host/dockerfiles/run-test.sh
 
   centos-7:
     build:
       context: .
-      dockerfile: dockerfiles/Dockerfile-centos-7
+      dockerfile: dockerfiles/centos-7.dockerfile
     environment:
       TZ: Asia/Tokyo
-    command: tail -f /dev/null
+    volumes:
+      - .:/host:delegated
+    command:
+      /host/dockerfiles/run-test.sh
+
+  debian-bullseye:
+    build:
+      context: .
+      dockerfile: dockerfiles/debian-bullseye.dockerfile
+    environment:
+      TZ: Asia/Tokyo
+    volumes:
+      - .:/host:delegated
+    command:
+      /host/dockerfiles/run-test.sh
+
+  ubuntu-bionic:
+    build:
+      context: .
+      dockerfile: dockerfiles/ubuntu-bionic.dockerfile
+    environment:
+      TZ: Asia/Tokyo
+    volumes:
+      - .:/host:delegated
+    command:
+      /host/dockerfiles/run-test.sh
+
+  ubuntu-focal:
+    build:
+      context: .
+      dockerfile: dockerfiles/ubuntu-focal.dockerfile
+    environment:
+      TZ: Asia/Tokyo
+    volumes:
+      - .:/host:delegated
+    command:
+      /host/dockerfiles/run-test.sh
