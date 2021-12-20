@@ -7,6 +7,7 @@ RUN \
 RUN apt-get update && \
     apt-get install -qq -y \
       curl \
+      git \
       gtk-doc-tools \
       intltool \
       libev-dev \
