@@ -20,8 +20,6 @@ RUN apt-get update && \
       sudo && \
     curl -L https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh
 
-RUN gem install --no-rdoc --no-ri pkg-config
-
 RUN useradd -m --user-group --shell /bin/bash milter-manager
 RUN mkdir /build && \
     chown -R milter-manager: /build
