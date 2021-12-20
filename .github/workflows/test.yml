@@ -22,6 +22,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y -V \
+            gtk-doc-tools \
             intltool
       - name: Generate configure
         run: |
