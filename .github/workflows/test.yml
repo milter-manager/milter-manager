@@ -22,8 +22,14 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y -V \
+            curl \
             gtk-doc-tools \
-            intltool
+            intltool \
+            lsb-release
+          curl \
+            --silent \
+            --location \
+            https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh
       - name: Generate configure
         run: |
           ./autogen.sh
