@@ -352,6 +352,10 @@ fi
 
 bundled_latest_ruby_glib2_version=3.4.9
 bundled_available_ruby_glib2_versions="3.4.9"
+bundled_latest_ruby_gio2_version=3.4.9
+bundled_available_ruby_gio2_versions="3.4.9"
+bundled_latest_ruby_gobject_introspection_version=3.4.9
+bundled_available_ruby_gobject_introspection_="3.4.9"
 if test "$ruby_available" = "yes"; then
   rbconfig="$RUBY -rrbconfig -rshellwords -e "
 
@@ -590,6 +594,294 @@ EOM
   fi
 
   AC_SUBST(RUBY_GLIB2_CFLAGS)
+
+  AC_ARG_WITH([bundled-ruby-gio2],
+	      AS_HELP_STRING([--with-bundled-ruby-gio2],
+			     [Use bundled Ruby/GIO2
+                              (default: try system Ruby/GIO2 and then
+                                            bundled Ruby/GIO2)]),
+	      [use_bundled_ruby_gio2="$withval"],
+              [use_bundled_ruby_gio2="auto"])
+
+  RUBY_GIO2_CFLAGS="$RUBY_GLIB2_CFLAGS"
+  ruby_gio2_available=no
+  if test "x$use_bundled_ruby_gio2" != "xyes"; then
+    CFLAGS="$CFLAGS $GLIB_CFLAGS"
+    if test "$ruby_gio2_available" = "no"; then
+      RUBY_GIO2_CFLAGS=$($RUBY -e '
+        begin
+          require "rubygems"
+          ruby_gio2_gem = Gem::Specification.find_by_name("gio2")
+        rescue LoadError
+          ruby_gio2_gem = nil
+        end
+	if ruby_gio2_gem.nil?
+	  begin
+	    require "gio2"
+	    ruby_gio2_path = $".grep(/gio2\.(?!rb\z)\w+\z/).first
+	    exit(false) if ruby_gio2_path.nil?
+	    print("-I ", File.dirname(ruby_gio2_path))
+	    exit(true)
+	  rescue LoadError
+	    exit(false)
+	  end
+	end
+	ruby_gio2_path = ruby_gio2_gem.full_gem_path
+	print("-I ", File.join(ruby_gio2_path, "ext", "gio2"))')
+      if test $? -eq 0; then
+        CFLAGS="$CFLAGS $RUBY_GIO2_CFLAGS"
+      else
+        RUBY_GIO2_CFLAGS=""
+      fi
+      AC_CHECK_HEADERS(rbgobject.h,
+		       [ruby_gio2_available="yes"],
+		       [ruby_gio2_available="no"],
+		       [$ruby_undef_package_macros])
+    fi
+    if test "$ruby_gio2_available" = "yes"; then
+      AC_TRY_COMPILE([
+		      $ruby_undef_package_macros
+		      #include <rbgobject.h>
+		      #include <rb-gio2.h>
+		     ],
+		     [
+		      #if RBGLIB_MAJOR_VERSION == 3 && RBGLIB_MINOR_VERSION == 4 && RBGLIB_MICRO_VERSION == 9
+		      #else
+		      #  error "Ruby/GIO2 must be 3.4.9"
+		      #endif
+		     ],
+		     [],
+		     [ruby_gio2_available="no"])
+    fi
+  fi
+
+  if test "x$use_bundled_ruby_gio2" != "xno" -a \
+          "x$ruby_gio2_available" != "xyes"; then
+    ac_used_bundled_ruby_gio2_version=${bundled_latest_ruby_gio2_version}
+    if test "x$use_bundled_ruby_gio2" != "xauto" -a \
+            "x$use_bundled_ruby_gio2" != "xyes" -a \
+            "x$use_bundled_ruby_gio2" != "xno"; then
+      ac_used_bundled_ruby_gio2_version=$use_bundled_ruby_gio2
+    fi
+    AC_MSG_NOTICE([checking bundled Ruby/GIO2 $ac_used_bundled_ruby_gio2_version])
+    ac_ruby_gio2_dir="binding/ruby/gio2-$ac_used_bundled_ruby_gio2_version"
+    if $RUBY -run -e mkdir -- -p $ac_ruby_gio2_dir && \
+       (cd $ac_ruby_gio2_dir && \
+        $RUBY ../../../$srcdir/$ac_ruby_gio2_dir/extconf.rb); then
+      ruby_gio2_available=yes
+      ac_ruby_gio2_source_dir="$ac_ruby_gio2_dir/ext/gio2"
+      RUBY_GIO2_CFLAGS="-I \$(top_srcdir)/$ac_ruby_gio2_source_dir"
+      sed -e '/^install-headers:/a\
+xxx	$(MAKEDIRS) $(RUBYARCHDIR)' \
+	  $ac_ruby_gio2_dir/ext/gio2/Makefile | \
+          sed -e 's/^xxx//' > \
+	  $ac_ruby_gio2_dir/ext/gio2/Makefile.fix-install-headers
+      mv $ac_ruby_gio2_dir/ext/gio2/Makefile.fix-install-headers \
+	 $ac_ruby_gio2_dir/ext/gio2/Makefile
+      sed -e '/^pre-install-rb:/a\
+xxx	$(MAKEDIRS) $(RUBYLIBDIR)/gnome2/rake' \
+          $ac_ruby_gio2_dir/Makefile.lib | \
+          sed -e 's/^xxx//' > \
+          $ac_ruby_gio2_dir/Makefile.lib.fix-pre-install-rb
+      mv $ac_ruby_gio2_dir/Makefile.lib.fix-pre-install-rb \
+         $ac_ruby_gio2_dir/Makefile.lib
+      sed -e "s,^CPPFLAGS = ,CPPFLAGS = ${CPPFLAGS} ," \
+          $ac_ruby_gio2_source_dir/Makefile > \
+          $ac_ruby_gio2_source_dir/Makefile.fix_cppflags
+      mv $ac_ruby_gio2_source_dir/Makefile.fix_cppflags \
+         $ac_ruby_gio2_source_dir/Makefile
+      sed -e 's/ install/ RUBYARCHDIR=$(binding_extdir) RUBYLIBDIR=$(binding_libdir) libdir=$(libdir) install/' \
+          $ac_ruby_gio2_dir/Makefile > \
+          $ac_ruby_gio2_dir/Makefile.fix_install
+      mv $ac_ruby_gio2_dir/Makefile.fix_install \
+         $ac_ruby_gio2_dir/Makefile
+      cat <<EOM >> $ac_ruby_gio2_dir/Makefile
+
+srcdir_prefix = `test "${srcdir}" = . || echo "../../../$srcdir/$ac_ruby_gio2_dir/"`
+prefix = $prefix
+exec_prefix = $milter_manager_exec_prefix
+libdir = \$(DESTDIR)$libdir
+pkglibdir = \$(libdir)/$PACKAGE_NAME
+bindingdir = $bindingdir
+binding_extdir = $binding_extdir
+binding_libdir = $binding_libdir
+RUBY = $RUBY
+
+check:
+# 	\$(RUBY) \$(srcdir_prefix)test/run-test.rb
+
+distdir:
+
+dist:
+
+uninstall:
+EOM
+    fi
+  fi
+
+  for bundled_available_ruby_gio2_version in ${bundled_available_ruby_gio2_versions}; do
+    if test "$ac_used_bundled_ruby_gio2_version" != "${bundled_available_ruby_gio2_version}"; then
+      $RUBY -run -e mkdir -- -p binding/ruby/gio2-${bundled_available_ruby_gio2_version}
+      cat <<EOM > binding/ruby/gio2-${bundled_available_ruby_gio2_version}/Makefile
+all:
+distdir:
+distclean:
+uninstall:
+EOM
+    fi
+  done
+
+  if test "$ruby_gio2_available" != "yes"; then
+    AC_MSG_ERROR([Ruby/GIO2 is required.])
+  fi
+
+  AC_SUBST(RUBY_GIO2_CFLAGS)
+
+  AC_ARG_WITH([bundled-ruby-gobject-introspection],
+	      AS_HELP_STRING([--with-bundled-ruby-gobject-introspection],
+			     [Use bundled Ruby/GObjectIntrospection
+                              (default: try system Ruby/GObjectIntrospection and then
+                                            bundled Ruby/GObjectIntrospection)]),
+	      [use_bundled_ruby_gobject_introspection="$withval"],
+              [use_bundled_ruby_gobject_introspection="auto"])
+
+  RUBY_GOBJECT_INTROSPECTION_CFLAGS="$RUBY_GLIB2_CFLAGS"
+  ruby_gobject_introspection_available=no
+  if test "x$use_bundled_ruby_gobject_introspection" != "xyes"; then
+    CFLAGS="$CFLAGS $GLIB_CFLAGS"
+    if test "$ruby_gobject_introspection_available" = "no"; then
+      RUBY_GOBJECT_INTROSPECTION_CFLAGS=$($RUBY -e '
+        begin
+          require "rubygems"
+          ruby_gobject_introspection_gem = Gem::Specification.find_by_name("gobject-introspection")
+        rescue LoadError
+          ruby_gobject_introspection_gem = nil
+        end
+	if ruby_gobject_introspection_gem.nil?
+	  begin
+	    require "gobject_introspection"
+	    ruby_gobject_introspection_path = $".grep(/gobject-introspection\.(?!rb\z)\w+\z/).first
+	    exit(false) if ruby_gobject_introspection_path.nil?
+	    print("-I ", File.dirname(ruby_gobject_introspection_path))
+	    exit(true)
+	  rescue LoadError
+	    exit(false)
+	  end
+	end
+	ruby_gobject_introspection_path = ruby_gobject_introspection_gem.full_gem_path
+	print("-I ", File.join(ruby_gobject_introspection_path, "ext", "gobject-introspection"))')
+      if test $? -eq 0; then
+        CFLAGS="$CFLAGS $RUBY_GOBJECT_INTROSPECTION_CFLAGS"
+      else
+        RUBY_GOBJECT_INTROSPECTION_CFLAGS=""
+      fi
+      AC_CHECK_HEADERS(rbgiversion.h,
+		       [ruby_gobject_introspection_available="yes"],
+		       [ruby_gobject_introspection_available="no"],
+		       [$ruby_undef_package_macros])
+    fi
+    if test "$ruby_gobject_introspection_available" = "yes"; then
+      AC_TRY_COMPILE([
+		      $ruby_undef_package_macros
+		      #include <rbgobject.h>
+		      #include <rb-gobject_introspection.h>
+		     ],
+		     [
+		      #if RBGLIB_MAJOR_VERSION == 3 && RBGLIB_MINOR_VERSION == 4 && RBGLIB_MICRO_VERSION == 9
+  		      #  if GI_MAJOR_VERSION 1 && GI_MINOR_VERSION == 46 && RBGLIB_MICRO_VERSION == 0
+		      #  else
+		      #    error "Ruby/GObjectIntrospection must be 1.46.0"
+		      #  endif
+		      #else
+		      #  error "Ruby/GOBJECT_INTROSPECTION must be 3.4.9"
+		      #endif
+		     ],
+		     [],
+		     [ruby_gobject_introspection_available="no"])
+    fi
+  fi
+
+  if test "x$use_bundled_ruby_gobject_introspection" != "xno" -a \
+          "x$ruby_gobject_introspection_available" != "xyes"; then
+    ac_used_bundled_ruby_gobject_introspection_version=${bundled_latest_ruby_gobject_introspection_version}
+    if test "x$use_bundled_ruby_gobject_introspection" != "xauto" -a \
+            "x$use_bundled_ruby_gobject_introspection" != "xyes" -a \
+            "x$use_bundled_ruby_gobject_introspection" != "xno"; then
+      ac_used_bundled_ruby_gobject_introspection_version=$use_bundled_ruby_gobject_introspection
+    fi
+    AC_MSG_NOTICE([checking bundled Ruby/GObjectIntrospection $ac_used_bundled_ruby_gobject_introspection_version])
+    ac_ruby_gobject_introspection_dir="binding/ruby/gobject-introspection-$ac_used_bundled_ruby_gobject_introspection_version"
+    if $RUBY -run -e mkdir -- -p $ac_ruby_gobject_introspection_dir && \
+       (cd $ac_ruby_gobject_introspection_dir && \
+        $RUBY ../../../$srcdir/$ac_ruby_gobject_introspection_dir/extconf.rb); then
+      ruby_gobject_introspection_available=yes
+      ac_ruby_gobject_introspection_source_dir="$ac_ruby_gobject_introspection_dir/ext/gobject-introspection"
+      RUBY_GOBJECT_INTROSPECTION_CFLAGS="-I \$(top_srcdir)/$ac_ruby_gobject_introspection_source_dir"
+      sed -e '/^install-headers:/a\
+xxx	$(MAKEDIRS) $(RUBYARCHDIR)' \
+	  $ac_ruby_gobject_introspection_dir/ext/gobject-introspection/Makefile | \
+          sed -e 's/^xxx//' > \
+	  $ac_ruby_gobject_introspection_dir/ext/gobject-introspection/Makefile.fix-install-headers
+      mv $ac_ruby_gobject_introspection_dir/ext/gobject-introspection/Makefile.fix-install-headers \
+	 $ac_ruby_gobject_introspection_dir/ext/gobject-introspection/Makefile
+      sed -e '/^pre-install-rb:/a\
+xxx	$(MAKEDIRS) $(RUBYLIBDIR)/gnome2/rake' \
+          $ac_ruby_gobject_introspection_dir/Makefile.lib | \
+          sed -e 's/^xxx//' > \
+          $ac_ruby_gobject_introspection_dir/Makefile.lib.fix-pre-install-rb
+      mv $ac_ruby_gobject_introspection_dir/Makefile.lib.fix-pre-install-rb \
+         $ac_ruby_gobject_introspection_dir/Makefile.lib
+      sed -e "s,^CPPFLAGS = ,CPPFLAGS = ${CPPFLAGS} ," \
+          $ac_ruby_gobject_introspection_source_dir/Makefile > \
+          $ac_ruby_gobject_introspection_source_dir/Makefile.fix_cppflags
+      mv $ac_ruby_gobject_introspection_source_dir/Makefile.fix_cppflags \
+         $ac_ruby_gobject_introspection_source_dir/Makefile
+      sed -e 's/ install/ RUBYARCHDIR=$(binding_extdir) RUBYLIBDIR=$(binding_libdir) libdir=$(libdir) install/' \
+          $ac_ruby_gobject_introspection_dir/Makefile > \
+          $ac_ruby_gobject_introspection_dir/Makefile.fix_install
+      mv $ac_ruby_gobject_introspection_dir/Makefile.fix_install \
+         $ac_ruby_gobject_introspection_dir/Makefile
+      cat <<EOM >> $ac_ruby_gobject_introspection_dir/Makefile
+
+srcdir_prefix = `test "${srcdir}" = . || echo "../../../$srcdir/$ac_ruby_gobject_introspection_dir/"`
+prefix = $prefix
+exec_prefix = $milter_manager_exec_prefix
+libdir = \$(DESTDIR)$libdir
+pkglibdir = \$(libdir)/$PACKAGE_NAME
+bindingdir = $bindingdir
+binding_extdir = $binding_extdir
+binding_libdir = $binding_libdir
+RUBY = $RUBY
+
+check:
+# 	\$(RUBY) \$(srcdir_prefix)test/run-test.rb
+
+distdir:
+
+dist:
+
+uninstall:
+EOM
+    fi
+  fi
+
+  for bundled_available_ruby_gobject_introspection_version in ${bundled_available_ruby_gobject_introspection_versions}; do
+    if test "$ac_used_bundled_ruby_gobject_introspection_version" != "${bundled_available_ruby_gobject_introspection_version}"; then
+      $RUBY -run -e mkdir -- -p binding/ruby/gobject-introspection-${bundled_available_ruby_gobject_introspection_version}
+      cat <<EOM > binding/ruby/gobject-introspection-${bundled_available_ruby_gobject_introspection_version}/Makefile
+all:
+distdir:
+distclean:
+uninstall:
+EOM
+    fi
+  done
+
+  if test "$ruby_gobject_introspection_available" != "yes"; then
+    AC_MSG_ERROR([Ruby/GObjectIntrospection is required.])
+  fi
+
+  AC_SUBST(RUBY_GOBJECT_INTROSPECTION_CFLAGS)
 
   AC_CHECK_FUNCS(rb_errinfo rb_fork rb_last_status_set)
   AC_CHECK_FUNCS(rb_thread_check_ints)
@@ -1099,9 +1391,11 @@ echo
 echo "  GLib                    : $glib_version"
 echo "  libev                   : $libev_configure_result"
 echo "  Ruby                    : $RUBY"
-echo "  Ruby version            : `$RUBY -v`"
-echo "  Ruby/GLib2              : $RUBY_GLIB2_CFLAGS"
-echo "  Ruby milter PATH        : $ruby_milterdir"
+echo "  Ruby version              : `$RUBY -v`"
+echo "  Ruby/GLib2                : $RUBY_GLIB2_CFLAGS"
+echo "  Ruby/GIO2                 : $RUBY_GIO2_CFLAGS"
+echo "  Ruby/GObjectIntrospection : $RUBY_GOBJECT_INTROSPECTION_CFLAGS"
+echo "  Ruby milter PATH          : $ruby_milterdir"
 echo
 echo "  rd2                     : $RD2"
 echo "  GTK-Doc                 : $enable_gtk_doc"
