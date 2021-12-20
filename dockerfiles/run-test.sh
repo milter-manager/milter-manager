@@ -17,7 +17,6 @@
 
 set -eux
 
-mkdir -p /build
 cd /build
 /host/configure \
   --with-default-connection-spec="inet:10025@[127.0.0.1]"

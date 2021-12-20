@@ -2,12 +2,27 @@ FROM centos:7
 
 RUN yum update -q -y && \
     yum install -q -y \
-      libtool intltool gettext gcc make glib2-devel git tar rpm-build gtk-doc \
-      ruby ruby-devel rubygems rrdtool sudo git epel-release && \
-    yum install -q -y  http://sourceforge.net/projects/cutter/files/centos/cutter-release-1.3.0-1.noarch.rpm && \
-    yum makecache && \
-    yum install -q -y cutter && \
-    gem install --no-rdoc --no-ri pkg-config test-unit-rr && \
-    useradd -m --user-group --shell /bin/bash milter-manager
+      http://sourceforge.net/projects/cutter/files/centos/cutter-release-1.3.0-1.noarch.rpm && \
+    yum install -q -y \
+      cutter \
+      gcc \
+      gettext \
+      git \
+      glib2-devel \
+      gtk-doc \
+      intltool \
+      libtool \
+      make \
+      rpm-build \
+      rrdtool \
+      ruby \
+      ruby-devel \
+      rubygems \
+      sudo \
+      tar
+
+RUN useradd -m --user-group --shell /bin/bash milter-manager
+RUN mkdir /build && \
+    chown -R milter-manager: /build
 
 USER milter-manager
