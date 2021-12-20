@@ -2,6 +2,7 @@ FROM debian:bullseye
 
 RUN apt-get update && \
     apt-get install -qq -y \
+      curl \
       libev-dev \
       libglib2.0-dev \
       libtool \
