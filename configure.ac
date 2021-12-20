@@ -350,8 +350,8 @@ else
                 [AC_MSG_WARN([$RUBY is not found. Disable milter manager.])])
 fi
 
-bundled_latest_ruby_glib2_version=3.1.1
-bundled_available_ruby_glib2_versions="3.1.1 2.2.5"
+bundled_latest_ruby_glib2_version=3.4.9
+bundled_available_ruby_glib2_versions="3.4.9 2.2.5"
 if test "$ruby_available" = "yes"; then
   rbconfig="$RUBY -rrbconfig -rshellwords -e "
 
@@ -517,7 +517,7 @@ if test "$ruby_available" = "yes"; then
       ac_used_bundled_ruby_glib2_version=$use_bundled_ruby_glib2
     fi
     AC_MSG_NOTICE([checking bundled Ruby/GLib2 $ac_used_bundled_ruby_glib2_version])
-    ac_ruby_glib2_dir="binding/ruby/glib-$ac_used_bundled_ruby_glib2_version"
+    ac_ruby_glib2_dir="binding/ruby/glib2-$ac_used_bundled_ruby_glib2_version"
     if $RUBY -run -e mkdir -- -p $ac_ruby_glib2_dir && \
        (cd $ac_ruby_glib2_dir && \
         $RUBY ../../../$srcdir/$ac_ruby_glib2_dir/extconf.rb); then
@@ -575,8 +575,8 @@ EOM
 
   for bundled_available_ruby_glib2_version in ${bundled_available_ruby_glib2_versions}; do
     if test "$ac_used_bundled_ruby_glib2_version" != "${bundled_available_ruby_glib2_version}"; then
-      $RUBY -run -e mkdir -- -p binding/ruby/glib-${bundled_available_ruby_glib2_version}
-      cat <<EOM > binding/ruby/glib-${bundled_available_ruby_glib2_version}/Makefile
+      $RUBY -run -e mkdir -- -p binding/ruby/glib2-${bundled_available_ruby_glib2_version}
+      cat <<EOM > binding/ruby/glib2-${bundled_available_ruby_glib2_version}/Makefile
 all:
 distdir:
 distclean:
