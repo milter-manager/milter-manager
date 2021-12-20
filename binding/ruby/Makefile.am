@@ -2,6 +2,8 @@ SUBDIRS =
 
 if WITH_BUNDLED_RUBY_GLIB2_LATEST
 SUBDIRS += glib2-3.4.9
+SUBDIRS += gio2-3.4.9
+SUBDIRS += gobject-introspection-3.4.9
 endif
 
 if WITH_BUNDLED_RUBY_GLIB2_2_2_5
@@ -15,14 +17,18 @@ SUBDIRS +=					\
 	test					\
 	sample
 
-EXTRA_DIST =					\
-	$(test_unit_files)			\
-	$(ruby_glib2_latest_files)		\
-	$(ruby_glib2_2_2_5_files)
+EXTRA_DIST =						\
+	$(test_unit_files)				\
+	$(ruby_gio2_latest_files)			\
+	$(ruby_glib2_2_2_5_files)			\
+	$(ruby_glib2_latest_files)			\
+	$(ruby_gobject_introspection_latest_files)
 
 DISTCLEANFILES =				\
 	glib-2.2.5/Makefile			\
-	glib2-3.4.9/Makefile
+	glib2-3.4.9/Makefile			\
+	gio2-3.4.9/Makefile			\
+	gobject-introspection/Makefile
 
 echo-abs-top-builddir:
 	@echo $(abs_top_builddir)
@@ -438,3 +444,178 @@ ruby_glib2_latest_files =						\
 	glib2-3.4.9/test/test-version.rb				\
 	glib2-3.4.9/test/test-win32.rb					\
 	glib2-3.4.9/version.rb
+
+# % find gio2-3.4.9 -type f | sort
+# Use region and C-c C-\ for adding backslashes to the above list.
+ruby_gio2_latest_files =								\
+	gio2-3.4.9/COPYING.LIB								\
+	gio2-3.4.9/README.md								\
+	gio2-3.4.9/Rakefile								\
+	gio2-3.4.9/ext/gio2/depend							\
+	gio2-3.4.9/ext/gio2/extconf.rb							\
+	gio2-3.4.9/ext/gio2/rb-gio2-application.c					\
+	gio2-3.4.9/ext/gio2/rb-gio2-pollable-source.c					\
+	gio2-3.4.9/ext/gio2/rb-gio2.c							\
+	gio2-3.4.9/ext/gio2/rb-gio2.h							\
+	gio2-3.4.9/extconf.rb								\
+	gio2-3.4.9/gio2.gemspec								\
+	gio2-3.4.9/lib/gio2.rb								\
+	gio2-3.4.9/lib/gio2/action-map.rb						\
+	gio2-3.4.9/lib/gio2/action.rb							\
+	gio2-3.4.9/lib/gio2/application-command-line.rb					\
+	gio2-3.4.9/lib/gio2/content-type.rb						\
+	gio2-3.4.9/lib/gio2/deprecated.rb						\
+	gio2-3.4.9/lib/gio2/file.rb							\
+	gio2-3.4.9/lib/gio2/icon.rb							\
+	gio2-3.4.9/lib/gio2/inet-address.rb						\
+	gio2-3.4.9/lib/gio2/input-stream.rb						\
+	gio2-3.4.9/lib/gio2/loader.rb							\
+	gio2-3.4.9/lib/gio2/menu-item.rb						\
+	gio2-3.4.9/lib/gio2/pollable-input-stream.rb					\
+	gio2-3.4.9/lib/gio2/pollable-output-stream.rb					\
+	gio2-3.4.9/lib/gio2/resources.rb						\
+	gio2-3.4.9/lib/gio2/settings-schema-source.rb					\
+	gio2-3.4.9/lib/gio2/settings.rb							\
+	gio2-3.4.9/lib/gio2/simple-action.rb						\
+	gio2-3.4.9/test/fixture/Rakefile						\
+	gio2-3.4.9/test/fixture/content-type/x-content/unix-software/autorun.sh		\
+	gio2-3.4.9/test/fixture/resource/Rakefile					\
+	gio2-3.4.9/test/fixture/resource/logo.png					\
+	gio2-3.4.9/test/fixture/resource/ruby-gio2.gresource.xml			\
+	gio2-3.4.9/test/fixture/schema/default/jp.ruby-gnome2.test.settings.gschema.xml	\
+	gio2-3.4.9/test/fixture/schema/source/jp.ruby-gnome2.test.source.gschema.xml	\
+	gio2-3.4.9/test/gio2-test-utils.rb						\
+	gio2-3.4.9/test/gio2-test-utils/fixture.rb					\
+	gio2-3.4.9/test/gio2-test-utils/omissions.rb					\
+	gio2-3.4.9/test/gio2-test-utils/socket-client.rb				\
+	gio2-3.4.9/test/run-test.rb							\
+	gio2-3.4.9/test/test-action-map.rb						\
+	gio2-3.4.9/test/test-application-command-line.rb				\
+	gio2-3.4.9/test/test-buffered-input-stream.rb					\
+	gio2-3.4.9/test/test-charset-converter.rb					\
+	gio2-3.4.9/test/test-content-type.rb						\
+	gio2-3.4.9/test/test-data-input-stream.rb					\
+	gio2-3.4.9/test/test-dbus.rb							\
+	gio2-3.4.9/test/test-file-enumerator.rb						\
+	gio2-3.4.9/test/test-file-monitor.rb						\
+	gio2-3.4.9/test/test-file.rb							\
+	gio2-3.4.9/test/test-icon.rb							\
+	gio2-3.4.9/test/test-inet-address.rb						\
+	gio2-3.4.9/test/test-input-stream.rb						\
+	gio2-3.4.9/test/test-memory-input-stream.rb					\
+	gio2-3.4.9/test/test-memory-output-stream.rb					\
+	gio2-3.4.9/test/test-menu-item.rb						\
+	gio2-3.4.9/test/test-mount.rb							\
+	gio2-3.4.9/test/test-output-stream.rb						\
+	gio2-3.4.9/test/test-pollable-input-stream.rb					\
+	gio2-3.4.9/test/test-pollable-output-stream.rb					\
+	gio2-3.4.9/test/test-resources.rb						\
+	gio2-3.4.9/test/test-settings-schema-source.rb					\
+	gio2-3.4.9/test/test-settings.rb						\
+	gio2-3.4.9/test/test-simple-action.rb						\
+	gio2-3.4.9/test/test-version.rb
+
+# % find gobject-introspection-3.4.9 -type f | sort
+# Use region and C-c C-\ for adding backslashes to the above list.
+ruby_gobject_introspection_latest_files =								\
+	gobject-introspection-3.4.9/COPYING.LIB								\
+	gobject-introspection-3.4.9/README.md								\
+	gobject-introspection-3.4.9/Rakefile								\
+	gobject-introspection-3.4.9/ext/gobject-introspection/depend					\
+	gobject-introspection-3.4.9/ext/gobject-introspection/extconf.rb				\
+	gobject-introspection-3.4.9/ext/gobject-introspection/gobject-introspection-enum-types.c	\
+	gobject-introspection-3.4.9/ext/gobject-introspection/gobject-introspection-enum-types.h	\
+	gobject-introspection-3.4.9/ext/gobject-introspection/gobject_introspection.def			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-arg-info.c				\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-argument.c				\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-arguments-in.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-arguments-out.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-arguments.c				\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-array-type.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-base-info.c				\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-boxed-info.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-callable-info.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-callback-info.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-callback.c				\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-constant-info.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-constructor-info.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-conversions.h			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-direction.c				\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-enum-info.c				\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-field-info.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-flags-info.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-function-info.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-interface-info.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-loader.c				\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-method-info.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-object-info.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-private-arg-info.h			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-private-arguments-in.h		\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-private-arguments-out.h		\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-private-arguments.h			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-private-array-type.h		\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-private-callback.h			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-private-direction.h			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-private-transfer.h			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-private.h				\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-property-info.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-registered-type-info.c		\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-repository.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-signal-info.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-struct-info.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-transfer.c				\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-type-info.c				\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-type-tag.c				\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-types.h				\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-union-info.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-unresolved-info.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-value-info.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-vfunc-info.c			\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gobject-introspection.c		\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gobject-introspection.h		\
+	gobject-introspection-3.4.9/ext/gobject-introspection/rbgiversion.h				\
+	gobject-introspection-3.4.9/extconf.rb								\
+	gobject-introspection-3.4.9/gobject-introspection.gemspec					\
+	gobject-introspection-3.4.9/lib/gi.rb								\
+	gobject-introspection-3.4.9/lib/gobject-introspection.rb					\
+	gobject-introspection-3.4.9/lib/gobject-introspection/arg-info.rb				\
+	gobject-introspection-3.4.9/lib/gobject-introspection/boxed-info.rb				\
+	gobject-introspection-3.4.9/lib/gobject-introspection/callable-info.rb				\
+	gobject-introspection-3.4.9/lib/gobject-introspection/collection-reader.rb			\
+	gobject-introspection-3.4.9/lib/gobject-introspection/function-info.rb				\
+	gobject-introspection-3.4.9/lib/gobject-introspection/interface-info.rb				\
+	gobject-introspection-3.4.9/lib/gobject-introspection/loader.rb					\
+	gobject-introspection-3.4.9/lib/gobject-introspection/object-info.rb				\
+	gobject-introspection-3.4.9/lib/gobject-introspection/registered-type-info.rb			\
+	gobject-introspection-3.4.9/lib/gobject-introspection/repository.rb				\
+	gobject-introspection-3.4.9/lib/gobject-introspection/struct-info.rb				\
+	gobject-introspection-3.4.9/lib/gobject-introspection/type-info.rb				\
+	gobject-introspection-3.4.9/lib/gobject-introspection/type-tag.rb				\
+	gobject-introspection-3.4.9/lib/gobject-introspection/union-info.rb				\
+	gobject-introspection-3.4.9/lib/gobject-introspection/version.rb				\
+	gobject-introspection-3.4.9/test/gobject-introspection-test-utils.rb				\
+	gobject-introspection-3.4.9/test/run-test.rb							\
+	gobject-introspection-3.4.9/test/test-arg-info.rb						\
+	gobject-introspection-3.4.9/test/test-base-info.rb						\
+	gobject-introspection-3.4.9/test/test-boxed-info.rb						\
+	gobject-introspection-3.4.9/test/test-callable-info.rb						\
+	gobject-introspection-3.4.9/test/test-callback-info.rb						\
+	gobject-introspection-3.4.9/test/test-constant-info.rb						\
+	gobject-introspection-3.4.9/test/test-enum-info.rb						\
+	gobject-introspection-3.4.9/test/test-field-type.rb						\
+	gobject-introspection-3.4.9/test/test-flags-info.rb						\
+	gobject-introspection-3.4.9/test/test-function-info.rb						\
+	gobject-introspection-3.4.9/test/test-interface-info.rb						\
+	gobject-introspection-3.4.9/test/test-loader.rb							\
+	gobject-introspection-3.4.9/test/test-object-info.rb						\
+	gobject-introspection-3.4.9/test/test-property-info.rb						\
+	gobject-introspection-3.4.9/test/test-registered-type-info.rb					\
+	gobject-introspection-3.4.9/test/test-repository.rb						\
+	gobject-introspection-3.4.9/test/test-signal-info.rb						\
+	gobject-introspection-3.4.9/test/test-struct-info.rb						\
+	gobject-introspection-3.4.9/test/test-type-info.rb						\
+	gobject-introspection-3.4.9/test/test-type-tag.rb						\
+	gobject-introspection-3.4.9/test/test-union-info.rb						\
+	gobject-introspection-3.4.9/test/test-value-info.rb						\
+	gobject-introspection-3.4.9/test/test-version.rb						\
+	gobject-introspection-3.4.9/test/test-vfunc-info.rb
