@@ -2,11 +2,6 @@ FROM ubuntu:focal
 
 RUN apt-get update && \
     apt-get install -qq -y \
-      autotools-dev \
-      debhelper \
-      dh-systemd \
-      gtk-doc-tools \
-      intltool \
       libev-dev \
       libglib2.0-dev \
       libtool \
