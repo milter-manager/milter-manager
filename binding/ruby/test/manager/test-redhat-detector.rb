@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-#
-# Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2021  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -21,7 +19,7 @@ class TestRedHatDetector < Test::Unit::TestCase
   def setup
     @configuration = Milter::Manager::Configuration.new
     @loader = Milter::Manager::ConfigurationLoader.new(@configuration)
-    @tmp_dir = Pathname(File.dirname(__FILE__)) + ".." + "tmp"
+    @tmp_dir = Pathname(Dir.mktmpdir)
     @init_base_dir = @tmp_dir
     @init_d = @init_base_dir + "init.d"
     @sysconfig_dir = @tmp_dir + "sysconfig"

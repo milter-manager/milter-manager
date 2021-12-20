@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2017  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2021  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -19,7 +19,7 @@ class TestFreeBSDRCDetector < Test::Unit::TestCase
   def setup
     @configuration = Milter::Manager::Configuration.new
     @loader = Milter::Manager::ConfigurationLoader.new(@configuration)
-    @tmp_dir = Pathname(File.dirname(__FILE__)) + ".." + "tmp"
+    @tmp_dir = Pathname(Dir.mktmpdir)
     @rc_d = @tmp_dir + "rc.d"
     @rc_conf = @tmp_dir + "rc.conf"
     @rc_conf_local = @tmp_dir + "rc.conf.local"
