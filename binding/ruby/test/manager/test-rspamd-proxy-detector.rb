@@ -8,12 +8,12 @@ class TestRspamdProxyDetector < Test::Unit::TestCase
 #!/bin/sh
 
 echo '{'
-echo '  "worker": {'
+echo '  "worker": ['
 echo '    "rspamd_proxy": {'
 echo '      "bind_socket": "#{bind_socket}",'
 echo '      "milter": true'
 echo '    }'
-echo '  }'
+echo '  ]'
 echo '}'
     SHELL
     rspamadm.close
