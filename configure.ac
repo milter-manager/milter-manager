@@ -351,7 +351,7 @@ else
 fi
 
 bundled_latest_ruby_glib2_version=3.4.9
-bundled_available_ruby_glib2_versions="3.4.9 2.2.5"
+bundled_available_ruby_glib2_versions="3.4.9"
 if test "$ruby_available" = "yes"; then
   rbconfig="$RUBY -rrbconfig -rshellwords -e "
 
