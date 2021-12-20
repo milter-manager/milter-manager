@@ -17,7 +17,6 @@ RUN apt-get update && \
       ruby \
       ruby-dev \
       ruby-gnome2-dev \
-      ruby-test-unit-rr \
       sudo && \
     curl -L https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh
 

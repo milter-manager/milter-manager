@@ -21,8 +21,6 @@ RUN yum update -q -y && \
       sudo \
       tar
 
-RUN gem install test-unit-rr
-
 RUN useradd -m --user-group --shell /bin/bash milter-manager
 RUN mkdir /build && \
     chown -R milter-manager: /build
