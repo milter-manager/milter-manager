@@ -447,7 +447,6 @@ ruby_gobject_introspection_latest_files =								\
 	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gi-vfunc-info.c			\
 	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gobject-introspection.c		\
 	gobject-introspection-3.4.9/ext/gobject-introspection/rb-gobject-introspection.h		\
-	gobject-introspection-3.4.9/ext/gobject-introspection/rbgiversion.h				\
 	gobject-introspection-3.4.9/extconf.rb								\
 	gobject-introspection-3.4.9/gobject-introspection.gemspec					\
 	gobject-introspection-3.4.9/lib/gi.rb								\
