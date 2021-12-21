@@ -448,6 +448,8 @@ if test "$ruby_available" = "yes"; then
     AC_MSG_ERROR([Ruby is required.])
   fi
 
+  ac_abs_ruby_srcdir="$ac_abs_top_srcdir/binding/ruby"
+
   AC_ARG_WITH([bundled-ruby-glib2],
 	      AS_HELP_STRING([--with-bundled-ruby-glib2],
 			     [Use bundled Ruby/GLib2
@@ -524,8 +526,8 @@ if test "$ruby_available" = "yes"; then
     ac_ruby_glib2_dir="binding/ruby/glib2-$ac_used_bundled_ruby_glib2_version"
     if $RUBY -run -e mkdir -- -p $ac_ruby_glib2_dir && \
        (cd $ac_ruby_glib2_dir && \
-        RUBYLIB=../../../$srcdir/pkg-config/lib:../../../$srcdir/native-package-installer/lib \
-        $RUBY ../../../$srcdir/$ac_ruby_glib2_dir/extconf.rb ); then
+        RUBYLIB=$ac_abs_ruby_srcdir/pkg-config/lib:$ac_abs_ruby_srcdir/native-package-installer/lib \
+          $RUBY ../../../$srcdir/$ac_ruby_glib2_dir/extconf.rb ); then
       ruby_glib2_available=yes
       ac_ruby_glib2_source_dir="$ac_ruby_glib2_dir/ext/glib2"
       RUBY_GLIB2_CFLAGS="-I\$(top_builddir)/$ac_ruby_glib2_source_dir"
@@ -668,8 +670,8 @@ EOM
     ac_ruby_gio2_dir="binding/ruby/gio2-$ac_used_bundled_ruby_gio2_version"
     if $RUBY -run -e mkdir -- -p $ac_ruby_gio2_dir && \
        (cd $ac_ruby_gio2_dir && \
-        RUBYLIB=../../../$srcdir/pkg-config/lib:../../../$srcdir/native-package-installer/lib \
-        $RUBY ../../../$srcdir/$ac_ruby_gio2_dir/extconf.rb); then
+        RUBYLIB=$ac_abs_ruby_srcdir/pkg-config/lib:$ac_abs_ruby_srcdir/native-package-installer/lib \
+          $RUBY ../../../$srcdir/$ac_ruby_gio2_dir/extconf.rb); then
       ruby_gio2_available=yes
       ac_ruby_gio2_source_dir="$ac_ruby_gio2_dir/ext/gio2"
       RUBY_GIO2_CFLAGS="-I \$(top_srcdir)/$ac_ruby_gio2_source_dir"
@@ -815,8 +817,8 @@ EOM
     ac_ruby_gobject_introspection_dir="binding/ruby/gobject-introspection-$ac_used_bundled_ruby_gobject_introspection_version"
     if $RUBY -run -e mkdir -- -p $ac_ruby_gobject_introspection_dir && \
        (cd $ac_ruby_gobject_introspection_dir && \
-        RUBYLIB=../../../$srcdir/pkg-config/lib:../../../$srcdir/native-package-installer/lib \
-        $RUBY ../../../$srcdir/$ac_ruby_gobject_introspection_dir/extconf.rb); then
+        RUBYLIB=$ac_abs_ruby_srcdir/pkg-config/lib:$ac_abs_ruby_srcdir/native-package-installer/lib \
+          $RUBY ../../../$srcdir/$ac_ruby_gobject_introspection_dir/extconf.rb); then
       ruby_gobject_introspection_available=yes
       ac_ruby_gobject_introspection_source_dir="$ac_ruby_gobject_introspection_dir/ext/gobject-introspection"
       RUBY_GOBJECT_INTROSPECTION_CFLAGS="-I \$(top_srcdir)/$ac_ruby_gobject_introspection_source_dir"
