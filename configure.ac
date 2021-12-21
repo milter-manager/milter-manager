@@ -524,7 +524,9 @@ if test "$ruby_available" = "yes"; then
     ac_ruby_glib2_dir="binding/ruby/glib2-$ac_used_bundled_ruby_glib2_version"
     if $RUBY -run -e mkdir -- -p $ac_ruby_glib2_dir && \
        (cd $ac_ruby_glib2_dir && \
-        $RUBY ../../../$srcdir/$ac_ruby_glib2_dir/extconf.rb); then
+        $RUBY ../../../$srcdir/$ac_ruby_glib2_dir/extconf.rb \
+	-I../../../$srcdir/binding/ruby/pkg-config/lib \
+	-I../../../$srcdir/binding/ruby/native-package-installer/lib); then
       ruby_glib2_available=yes
       ac_ruby_glib2_source_dir="$ac_ruby_glib2_dir/ext/glib2"
       RUBY_GLIB2_CFLAGS="-I\$(top_builddir)/$ac_ruby_glib2_source_dir"
