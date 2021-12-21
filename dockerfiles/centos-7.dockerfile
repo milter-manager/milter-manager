@@ -9,6 +9,7 @@ RUN yum update -q -y && \
       gettext \
       git \
       glib2-devel \
+      gobject-introspection-devel \
       gtk-doc \
       intltool \
       libtool \

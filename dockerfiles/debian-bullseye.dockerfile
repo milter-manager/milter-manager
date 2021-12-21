@@ -11,6 +11,7 @@ RUN apt-get update && \
       gtk-doc-tools \
       intltool \
       libev-dev \
+      libgirepository1.0-dev \
       libglib2.0-dev \
       libtool \
       lsb-release \
