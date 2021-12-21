@@ -14,10 +14,12 @@ SUBDIRS +=					\
 	sample
 
 EXTRA_DIST =						\
-	$(test_unit_files)				\
+	$(native_package_installerpkg_files)		\
+	$(pkg_config_files)				\
 	$(ruby_gio2_latest_files)			\
 	$(ruby_glib2_latest_files)			\
-	$(ruby_gobject_introspection_latest_files)
+	$(ruby_gobject_introspection_latest_files)	\
+	$(test_unit_files)
 
 DISTCLEANFILES =				\
 	glib2-3.4.9/Makefile			\
@@ -491,3 +493,59 @@ ruby_gobject_introspection_latest_files =								\
 	gobject-introspection-3.4.9/test/test-value-info.rb						\
 	gobject-introspection-3.4.9/test/test-version.rb						\
 	gobject-introspection-3.4.9/test/test-vfunc-info.rb
+
+# % find pkg-config -not -path '*.git*' -type f | sort | sed -e 's,^,\t,g'
+# Use region and C-c C-\ for adding backslashes to the above list.
+pkg_config_files = 				\
+	pkg-config/Brewfile			\
+	pkg-config/Gemfile			\
+	pkg-config/LGPL-2.1			\
+	pkg-config/NEWS				\
+	pkg-config/README.rdoc			\
+	pkg-config/Rakefile			\
+	pkg-config/lib/pkg-config.rb		\
+	pkg-config/lib/pkg-config/version.rb	\
+	pkg-config/pkg-config.gemspec		\
+	pkg-config/test/run-test.rb		\
+	pkg-config/test/test-pkg-config.rb
+
+# % find native-package-installer -not -path '*.git*' -type f | sort | sed -e 's,^,\t,g'
+# Use region and C-c C-\ for adding backslashes to the above list.
+native_package_installerpkg_files =							\
+	native-package-installer/Gemfile						\
+	native-package-installer/README.md						\
+	native-package-installer/Rakefile						\
+	native-package-installer/doc/text/gpl-3.txt					\
+	native-package-installer/doc/text/lgpl-3.txt					\
+	native-package-installer/doc/text/news.md					\
+	native-package-installer/docker-compose.yml					\
+	native-package-installer/dockerfiles/almalinux.dockerfile			\
+	native-package-installer/dockerfiles/alt-linux.dockerfile			\
+	native-package-installer/dockerfiles/arch-linux.dockerfile			\
+	native-package-installer/dockerfiles/debian.dockerfile				\
+	native-package-installer/dockerfiles/fedora.dockerfile				\
+	native-package-installer/dockerfiles/opensuse.dockerfile			\
+	native-package-installer/dockerfiles/pld-linux.dockerfile			\
+	native-package-installer/dockerfiles/run-test.sh				\
+	native-package-installer/dockerfiles/ubuntu.dockerfile				\
+	native-package-installer/lib/native-package-installer.rb			\
+	native-package-installer/lib/native-package-installer/executable-finder.rb	\
+	native-package-installer/lib/native-package-installer/os-release.rb		\
+	native-package-installer/lib/native-package-installer/platform.rb		\
+	native-package-installer/lib/native-package-installer/platform/alt-linux.rb	\
+	native-package-installer/lib/native-package-installer/platform/arch-linux.rb	\
+	native-package-installer/lib/native-package-installer/platform/debian.rb	\
+	native-package-installer/lib/native-package-installer/platform/fedora.rb	\
+	native-package-installer/lib/native-package-installer/platform/freebsd.rb	\
+	native-package-installer/lib/native-package-installer/platform/homebrew.rb	\
+	native-package-installer/lib/native-package-installer/platform/macports.rb	\
+	native-package-installer/lib/native-package-installer/platform/msys2.rb		\
+	native-package-installer/lib/native-package-installer/platform/pld-linux.rb	\
+	native-package-installer/lib/native-package-installer/platform/redhat.rb	\
+	native-package-installer/lib/native-package-installer/platform/suse.rb		\
+	native-package-installer/lib/native-package-installer/platform/ubuntu.rb	\
+	native-package-installer/lib/native-package-installer/platform/unknown.rb	\
+	native-package-installer/lib/native-package-installer/version.rb		\
+	native-package-installer/native-package-installer.gemspec			\
+	native-package-installer/test/run-test.rb					\
+	native-package-installer/test/test-executable-finder.rb

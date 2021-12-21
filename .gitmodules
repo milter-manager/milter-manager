@@ -7,3 +7,9 @@
 [submodule "vendor/cutter-source"]
 	path = vendor/cutter-source
 	url = https://github.com/clear-code/cutter.git
+[submodule "binding/ruby/pkg-config"]
+	path = binding/ruby/pkg-config
+	url = https://github.com/ruby-gnome/pkg-config
+[submodule "binding/ruby/native-package-installer"]
+	path = binding/ruby/native-package-installer
+	url = https://github.com/ruby-gnome/native-package-installer
