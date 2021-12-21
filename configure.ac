@@ -448,7 +448,14 @@ if test "$ruby_available" = "yes"; then
     AC_MSG_ERROR([Ruby is required.])
   fi
 
-  ac_abs_ruby_srcdir="$ac_abs_top_srcdir/binding/ruby"
+  case $srcdir in
+    /*) # Absolute path
+     ac_abs_ruby_srcdir="$srcdir/binding/ruby"
+     ;;
+    *)
+     ac_abs_ruby_srcdir="$ac_pwd/$srcdir/binding/ruby"
+     ;;
+  esac
 
   AC_ARG_WITH([bundled-ruby-glib2],
 	      AS_HELP_STRING([--with-bundled-ruby-glib2],
