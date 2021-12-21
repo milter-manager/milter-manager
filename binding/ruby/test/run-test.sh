@@ -70,7 +70,7 @@ MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_build_dir/ext/server/.libs
 MILTER_MANAGER_RUBYLIB=$MILTER_MANAGER_RUBYLIB:$ruby_build_dir/ext/manager/.libs
 ruby_glib2_lib_dir=
 ruby_glib2_ext_dir=
-for dir in $(for dir in $ruby_build_dir/glib-*; do echo $dir; done | sort -r); do
+for dir in $(for dir in $ruby_build_dir/glib2-*; do echo $dir; done | sort -r); do
     if [ -f $dir/ext/glib2/glib2.so ]; then
 	ruby_glib2_lib_dir=$ruby_source_dir/$(basename $dir)/lib
 	ruby_glib2_ext_dir=$dir/ext/glib2
