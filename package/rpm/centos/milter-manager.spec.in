@@ -501,6 +501,9 @@ fi
 
 
 %changelog
+* Wed Dec 22 2021 Kentaro Hayashi <hayashi@clear-code.com> - 2.1.6-1
+- new upstream release.
+
 * Tue Sep 10 2019 Kentaro Hayashi <hayashi@clear-code.com> - 2.1.5-1
 - new upstream release.
 
