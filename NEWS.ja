@@ -2,6 +2,42 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-2-1-6] 2.1.6: 2021-12-22
+
+=== Document
+
+==== 改善
+
+  * packagecloud.ioからの支援を受けているのでブログ記事を公開しました
+
+==== 修正
+
+  * milter-regexのWebサイトのURLを修正しました [OBATA Akioさんが報告][GitHub #140]
+
+=== Package
+
+==== Improvements
+
+  * CentOS 8のサポートをやめました
+  * 最新のgio2, gobject-introspection, pkg-config, native-package-installerをバンドルするようにしました
+
+=== milter manager
+
+==== 改善
+
+  * 同梱したgio2, gobject-introspectionを使えるようにしました
+    有効にするには--with-bundled-ruby-gio2 と --with-bundled-ruby-gobject-introspection を指定します
+
+==== 修正
+
+  * milter-managerがクラッシュする不具合を修正しました [BugbearRさんが報告][GitHub #146]
+    この不具合は型定義の誤りにより意図せず発生していました。
+
+=== Thanks
+
+  * OBATA Akioさん
+  * BugbearRさん
+
 == [release-2-1-5] 2.1.5: 2019-09-10
 
 === Document

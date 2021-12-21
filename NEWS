@@ -2,6 +2,44 @@
 
 = NEWS --- The history of milter manager
 
+== [release-2-1-6] 2.1.6: 2021-12-22
+
+=== Document
+
+==== Improvements
+
+  * Added blog entry about sponsorship from packageloud.io.
+
+==== Fixes
+
+  * Fixed available milter-regex website URL. [Reported by OBATA Akio][GitHub #140]
+
+=== Package
+
+==== Improvements
+
+  * Dropped CentOS 8 support
+  * Bundled latest gio2, gobject-introspection, pkg-config, native-package-installer.
+
+==== Fixes
+
+=== milter manager
+
+==== Improvements
+
+  * Supported to use bundled gio2, gobject-introspection.
+    Use --with-bundled-ruby-gio2 and --with-bundled-ruby-gobject-introspection to enable them.
+
+==== Fixes
+
+  * Fix a bug that milter-manager causes a SEGV. [Reported by BugbearR][GitHub #146]
+    This bug is caused by mismatched type definition unexpectedly.
+
+=== Thanks
+
+  * OBATA Akio
+  * BugbearR
+
 == [release-2-1-5] 2.1.5: 2019-09-10
 
 === Document
