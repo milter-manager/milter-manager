@@ -184,6 +184,7 @@ fi
 
 chmod o+rx . rpm rpm/RPMS rpm/SRPMS
 
+source /opt/rh/rh-ruby30/enable
 rpmbuild -ba rpm/SPECS/${PACKAGE}.spec ${BUILD_OPTIONS}
 find rpm/RPMS -name \*${VERSION}\*.rpm | xargs rpmlint
 :
