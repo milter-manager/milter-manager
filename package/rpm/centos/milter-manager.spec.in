@@ -230,7 +230,7 @@ export CXXFLAGS="$RPM_OPT_FLAGS -fPIC -pie -Wl,-z,relro -Wl,-z,lazy"
     --with-default-socket-group=milter-manager				\
     --with-default-pid-file=/var/run/milter-manager/milter-manager.pid	\
     --with-default-connection-spec=unix:/var/run/milter-manager/milter-manager.sock \
-    --with-ruby=/usr/bin/ruby						\
+    --with-ruby=$(command -v ruby)					\
     --with-bundled-ruby-glib2						\
     --with-bundled-ruby-gio2						\
     --with-bundled-ruby-gobject-introspection				\
