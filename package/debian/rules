@@ -19,13 +19,17 @@ export DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 	dh $@ --with=systemd
 
 override_dh_auto_configure:
-	dh_auto_configure --													\
+	dh_auto_configure --										\
 		--with-default-effective-user=milter-manager						\
-		--with-default-effective-group=mail								\
-		--with-default-socket-group=mail									\
-		--with-default-pid-file=/run/milter-manager/milter-manager.pid	\
-		--with-default-connection-spec=unix:/run/milter-manager/milter-manager.sock \
-		--enable-ruby-milter=$$(ruby -rrbconfig -e 'print RbConfig::CONFIG["vendordir"]')
+		--with-default-effective-group=mail							\
+		--with-default-socket-group=mail							\
+		--with-default-pid-file=/run/milter-manager/milter-manager.pid				\
+		--with-default-connection-spec=unix:/run/milter-manager/milter-manager.sock 		\
+		--with-default-connection-spec=unix:/run/milter-manager/milter-manager.sock		\
+		--enable-ruby-milter=$$(ruby -rrbconfig -e 'print RbConfig::CONFIG["vendordir"]')	\
+		--with-bundled-ruby-glib2 \
+		--with-bundled-ruby-gio2 \
+		--with-bundled-ruby-gobject-introspection
 
 override_dh_auto_test:
 	TZ=Asia/Tokyo dh_auto_test
