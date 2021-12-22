@@ -8,3 +8,8 @@ ruby
 ruby-devel
 rpmlint
 pkgconfig(gobject-introspection-1.0)
+centos-release-scl
+scl-utils
+rh-ruby30
+rh-ruby30-ruby-devel
+
