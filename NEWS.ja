@@ -19,6 +19,12 @@
 ==== Improvements
 
   * CentOS 8のサポートをやめました
+  * Debian stretchのサポートをやめました
+  * Debian bullseyeのサポートを追加しました
+  * Ubuntu 16.04 (xenial) のサポートをやめました
+  * Ubuntu 19.04 (disco) のサポートをやめました
+  * Ubuntu 20.04 (focal) のサポートを追加しました
+  * Ubuntu 21.10 (impish) のサポートを追加しました
   * 最新のgio2, gobject-introspection, pkg-config, native-package-installerをバンドルするようにしました
 
 === milter manager
