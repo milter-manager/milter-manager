@@ -232,6 +232,8 @@ export CXXFLAGS="$RPM_OPT_FLAGS -fPIC -pie -Wl,-z,relro -Wl,-z,lazy"
     --with-default-connection-spec=unix:/var/run/milter-manager/milter-manager.sock \
     --with-ruby=/usr/bin/ruby						\
     --with-bundled-ruby-glib2						\
+    --with-bundled-ruby-gio2						\
+    --with-bundled-ruby-gobject-introspection				\
     --enable-ruby-milter=%{ruby_libdir}
 
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
