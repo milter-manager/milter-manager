@@ -1,5 +1,5 @@
-UBUNTU_CODE_NAMES = xenial,bionic,disco
-UBUNTU_VERSIONS = 16.04,18.04,19.04
+UBUNTU_CODE_NAMES = bionic,focal,impish
+UBUNTU_VERSIONS = 18.04,20.04,21.10
 PPA = milter-manager-ppa
 PPA_INCOMING = ~milter-manager/ppa/ubuntu/
 SOURCE = ../$(PACKAGE)-$(VERSION).tar.gz
