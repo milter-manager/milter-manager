@@ -1,6 +1,6 @@
 DISTRIBUTIONS = debian
 ARCHITECTURES = i386 amd64
-CODE_NAMES = stretch buster unstable
+CODE_NAMES = buster bullseye unstable
 CLEAN_ROOM_BASE = /var/cache/pbuilder
 RELEASE = 1
 
