@@ -7,3 +7,4 @@ glib2-devel
 ruby
 ruby-devel
 rpmlint
+pkgconfig(gobject-introspection-1.0)
