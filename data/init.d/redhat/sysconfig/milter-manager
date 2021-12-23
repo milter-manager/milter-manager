@@ -18,3 +18,6 @@ CONNECTION_SPEC=unix:/var/run/milter-manager/milter-manager.sock
 
 # PID file:
 # PIDFILE=/var/run/milter-manager/milter-manager.pid
+
+# Additional path to find libruby.so
+LD_LIBRARY_PATH=/opt/rh/rh-ruby30/root/usr/local/lib64:/opt/rh/rh-ruby30/root/usr/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
