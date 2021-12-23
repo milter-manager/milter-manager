@@ -41,6 +41,7 @@ administration cost and combine milters flexibly.
 Summary: Runtime libraries for milter manager
 Group: System Environment/Libraries
 License: LGPLv3+
+Requires: rh-ruby30-rubygem-rexml
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 
