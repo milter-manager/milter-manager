@@ -1,4 +1,4 @@
-# Copyright (C) 2010-2013  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2010-2021  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -16,7 +16,6 @@
 require "optparse"
 require "ostruct"
 require "syslog"
-require "webrick/server"
 
 module Milter
   class Client
