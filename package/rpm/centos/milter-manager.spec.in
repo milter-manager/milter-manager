@@ -1,6 +1,8 @@
 %define ruby_version %(ruby -e "print RUBY_VERSION.tr('.', '')")
 %define ruby_libdir %(ruby -rrbconfig -e 'print RbConfig::CONFIG["rubylibdir"]')
 
+%define required_ruby_package rh-ruby30-ruby
+
 %undefine _hardened_build
 
 Summary: A milter to use milters effectively
@@ -18,7 +20,7 @@ BuildRequires: gettext
 BuildRequires: gcc
 BuildRequires: make
 BuildRequires: glib2-devel
-BuildRequires: ruby ruby-devel
+BuildRequires: %{required_ruby_package} %{required_ruby_package}-devel
 BuildRequires: systemd-units
 BuildRequires: systemd
 %{systemd_requires}
@@ -129,7 +131,7 @@ Summary: Ruby bindings for libmilter-core
 Group: Development/Libraries
 License: LGPLv3+
 Obsoletes: ruby-milter-toolkit < 1.6.6-0
-Requires: ruby
+Requires: %{required_ruby_package}
 Requires: libmilter-core = %{version}-%{release}
 
 %description -n ruby-milter-core
@@ -140,7 +142,7 @@ Summary: Ruby bindings for libmilter-client
 Group: Development/Libraries
 License: LGPLv3+
 Obsoletes: ruby-milter-toolkit < 1.6.6-0
-Requires: ruby
+Requires: %{required_ruby_package}
 Requires: libmilter-client = %{version}-%{release}
 Requires: ruby-milter-core = %{version}-%{release}
 
@@ -152,7 +154,7 @@ Summary: Ruby bindings for libmilter-server
 Group: Development/Libraries
 License: LGPLv3+
 Obsoletes: ruby-milter-toolkit < 1.6.6-0
-Requires: ruby
+Requires: %{required_ruby_package}
 Requires: libmilter-server = %{version}-%{release}
 
 %description -n ruby-milter-server
@@ -196,7 +198,7 @@ Summary: Analyze milter-manager's log
 Group: Applications/System
 License: GPLv3+
 Requires: milter-manager = %{version}-%{release}
-Requires: ruby
+Requires: %{required_ruby_package}
 Requires: rrdtool
 
 %description log-analyzer
