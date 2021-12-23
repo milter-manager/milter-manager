@@ -20,11 +20,8 @@
 
   * Dropped CentOS 8 support
   * Dropped Debian stretch support
-  * Added Debian bullseye support
   * Dropped Ubuntu 16.04 support
   * Dropped Ubuntu 19.04 support
-  * Added Ubuntu 20.04 support
-  * Added Ubuntu 21.10 support
   * Bundled latest gio2, gobject-introspection, pkg-config, native-package-installer.
 
 ==== Fixes
