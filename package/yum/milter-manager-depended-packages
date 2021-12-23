@@ -4,8 +4,6 @@ gtk-doc
 gcc
 make
 glib2-devel
-ruby
-ruby-devel
 rpmlint
 pkgconfig(gobject-introspection-1.0)
 centos-release-scl
