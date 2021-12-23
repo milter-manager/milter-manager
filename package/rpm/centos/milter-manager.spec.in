@@ -441,6 +441,13 @@ fi
 %endif
 %{_libdir}/milter-manager/binding/lib/*gnome2*.rb
 %{_libdir}/pkgconfig/ruby-milter-core.pc
+%{_libdir}/milter-manager/binding/ext/*.so
+%{_libdir}/milter-manager/binding/ext/*.h
+%{_libdir}/milter-manager/binding/lib/gi*.rb
+%{_libdir}/milter-manager/binding/lib/gio2/*.rb
+%{_libdir}/milter-manager/binding/lib/gobject-introspection.rb
+%{_libdir}/milter-manager/binding/lib/gobject-introspection/*.rb
+%{_libdir}/milter-manager/binding/lib/mkmf-gnome.rb
 
 %files -n ruby-milter-client
 %defattr(-,root,root)
