@@ -163,6 +163,10 @@ milter_manager_ruby_configuration_register_type (GTypeModule *type_module)
                                     (GTypeFlags) 0);
 }
 
+#ifndef RETSIGTYPE
+#  define RETSIGTYPE void
+#endif
+
 static void
 ruby_init_without_signal_change (void)
 {
