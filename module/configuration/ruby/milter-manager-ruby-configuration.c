@@ -163,25 +163,21 @@ milter_manager_ruby_configuration_register_type (GTypeModule *type_module)
                                     (GTypeFlags) 0);
 }
 
-#ifndef RETSIGTYPE
-#  define RETSIGTYPE void
-#endif
-
 static void
 ruby_init_without_signal_change (void)
 {
-    RETSIGTYPE (*sigint_handler)_((int));
+    void (*sigint_handler)_((int));
 #ifdef SIGHUP
-    RETSIGTYPE (*sighup_handler)_((int));
+    void (*sighup_handler)_((int));
 #endif
 #ifdef SIGQUIT
-    RETSIGTYPE (*sigquit_handler)_((int));
+    void (*sigquit_handler)_((int));
 #endif
 #ifdef SIGTERM
-    RETSIGTYPE (*sigterm_handler)_((int));
+    void (*sigterm_handler)_((int));
 #endif
 #ifdef SIGSEGV
-    RETSIGTYPE (*sigsegv_handler)_((int));
+    void (*sigsegv_handler)_((int));
 #endif
 
     sigint_handler = signal(SIGINT, SIG_DFL);
@@ -390,7 +386,7 @@ MILTER_MANAGER_MODULE_IMPL_INIT (GTypeModule *type_module)
 static void
 ruby_cleanup_without_signal_change (int exit_code)
 {
-    RETSIGTYPE (*sigint_handler)_((int));
+    void (*sigint_handler)_((int));
 #ifdef HAVE_RB_THREAD_RESET_TIMER_THREAD
     const gchar *milter_manager_ruby_reset_timer_thread_before_cleanup = NULL;
 #endif
