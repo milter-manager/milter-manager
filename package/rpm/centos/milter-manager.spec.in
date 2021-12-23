@@ -440,7 +440,6 @@ fi
 %{_libdir}/milter-manager/binding/lib/gnome2/rake/*.rb
 %endif
 %{_libdir}/milter-manager/binding/lib/*gnome2*.rb
-%{_libdir}/milter-manager/binding/lib/pkg-config.rb
 %{_libdir}/pkgconfig/ruby-milter-core.pc
 
 %files -n ruby-milter-client
