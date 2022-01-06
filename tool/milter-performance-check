@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2021  Sutou Kouhei <kou@clear-code.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -318,7 +318,10 @@ class MilterPerformanceChecker
     @auth_password = nil
     @auth_mechanism = "auth"
     @auth_map = {}
-    @from = "from@example.com"
+    @default_from = "from@example.com"
+    @froms = []
+    @current_from_index = 0
+    @froms_mutex = Mutex.new
     @recipients = []
     @force_from = nil
     @force_recipients = nil
@@ -475,8 +478,10 @@ class MilterPerformanceChecker
     parser.on("--from=FROM",
               "Use FROM as envelope from address",
               "on SMTP MAIL command as default value.",
-              "(#{@from})") do |from|
-      @from = from
+              "You can specify this option to use multiple FROMs.",
+              "All specified FROMs are used in order.",
+              "(#{@default_from})") do |from|
+      @froms << from
     end
 
     parser.on("--recipient=RECIPIENT",
@@ -825,6 +830,18 @@ class MilterPerformanceChecker
     threads
   end
 
+  def next_from
+    if @froms.empty?
+      @default_from
+    else
+      @froms_mutex.synchronize do
+        from = @froms[@current_from_index]
+        @current_from_index = (@current_from_index + 1) % @froms.size
+        from
+      end
+    end
+  end
+
   def prepare_send_mail(mail_source_file)
     if mail_source_file
       if stdin_file?(mail_source_file)
@@ -837,7 +854,7 @@ class MilterPerformanceChecker
     end
     helo_fqdn, from, recipients = parse_mail_source(mail_source)
     helo_fqdn ||= @helo_fqdn
-    from ||= @from
+    from ||= next_from
     recipients ||= @recipients
 
     from = @force_from || from
@@ -1040,8 +1057,9 @@ class MilterPerformanceChecker
 
   def generate_mail_source
     now = Time.now.rfc2822
+    from = next_from
     mail = <<-EOM
-Return-Path: <#{@from}>
+Return-Path: <#{from}>
 Received: from #{@helo_fqdn} (#{@helo_fqdn} [192.168.1.1])
 	by mail.example.com with ESMTP id #{generate_id};
 	#{now}
@@ -1051,7 +1069,7 @@ Content-Type: text/plain; charset=US-ASCII
 X-Mailer: milter-performance-check
 Message-Id: <#{random_tag}@mail.example.com>
 Subject: test mail
-From: #{@from}
+From: #{from}
 To: #{@recipients.join(', ')}
 Date: #{now}
 
