@@ -350,12 +350,12 @@ else
                 [AC_MSG_WARN([$RUBY is not found. Disable milter manager.])])
 fi
 
-bundled_latest_ruby_glib2_version=3.4.9
-bundled_available_ruby_glib2_versions="3.4.9"
-bundled_latest_ruby_gobject_introspection_version=3.4.9
-bundled_available_ruby_gobject_introspection_="3.4.9"
-bundled_latest_ruby_gio2_version=3.4.9
-bundled_available_ruby_gio2_versions="3.4.9"
+bundled_latest_ruby_glib2_version=3.5.0
+bundled_available_ruby_glib2_versions="3.5.0"
+bundled_latest_ruby_gobject_introspection_version=3.5.0
+bundled_available_ruby_gobject_introspection_="3.5.0"
+bundled_latest_ruby_gio2_version=3.5.0
+bundled_available_ruby_gio2_versions="3.5.0"
 if test "$ruby_available" = "yes"; then
   rbconfig="$RUBY -rrbconfig -rshellwords -e "
 
