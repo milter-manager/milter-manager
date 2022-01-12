@@ -114,12 +114,16 @@ EOC
   end
 
   def test_invalid_address_ipv4
+    begin
+      IPAddr.new("192.168.1")
+    rescue ArgumentError => error
+      detail = error.message
+    end
     error = invalid_value_error("192.168.1",
-                                "invalid address: 192.168.1",
+                                detail,
                                 "192.168.1 OK",
                                 nil,
                                 1)
-    pp error
     assert_raise(error) do
       @table.parse(create_input(<<-EOC))
 192.168.1 OK
@@ -129,8 +133,13 @@ EOC
   end
 
   def test_invalid_address_ipv6
+    begin
+      IPAddr.new("f")
+    rescue ArgumentError => error
+      detail = error.message
+    end
     error = invalid_value_error("f:",
-                                "invalid address: f:",
+                                detail,
                                 "f: OK",
                                 nil,
                                 1)
