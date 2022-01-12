@@ -23,7 +23,8 @@ RUN yum update -q -y && \
       rpm-build \
       rrdtool \
       sudo \
-      tar
+      tar \
+      tzdata
 
 RUN useradd -m --user-group --shell /bin/bash milter-manager
 RUN mkdir /build && \

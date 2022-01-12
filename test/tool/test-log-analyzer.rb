@@ -181,8 +181,19 @@ EOH
   def fetch(path, start_time, end_time)
     start_time = rrdtool_time_format(start_time)
     end_time = rrdtool_time_format(end_time)
-    result = `rrdtool fetch '#{path}' MAX -s '#{start_time}' -e '#{end_time}'`
-    parse_fetched_data(result)
+    output = Tempfile.new("rrdtool-fetch")
+    output.close
+    pid = spawn({"TZ" => "Asia/Tokyo"},
+                "rrdtool",
+                "fetch",
+                path,
+                "MAX",
+                "-s", start_time,
+                "-e", end_time,
+                out: output.path)
+    Process.waitpid(pid)
+    output.open
+    parse_fetched_data(output.read)
   end
 
   def parse_fetched_data(raw_data)
