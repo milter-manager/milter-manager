@@ -65,7 +65,7 @@ teardown (void)
 #define ADD_DATUM(label, argument, error, path, parameters)     \
     gcut_add_datum(label,                                       \
                    "argument", G_TYPE_STRING, argument,         \
-                   "error", GCUT_TYPE_ERROR, error,             \
+                   "error", G_TYPE_ERROR, error,                \
                    "path", G_TYPE_STRING, path,                 \
                    "parameters", G_TYPE_HASH_TABLE, parameters, \
                    NULL)
