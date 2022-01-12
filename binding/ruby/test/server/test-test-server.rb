@@ -87,13 +87,10 @@ class TestTestServer < Test::Unit::TestCase
   end
 
   def invoke_milter_test_client
-    @pid = fork do
-      exec(milter_test_client,
-           "--connection-spec", @connection_spec,
-           "--no-report-request",
-           "--quiet")
-      exit!(false)
-    end
+    @pid = spawn(milter_test_client,
+                 "--connection-spec", @connection_spec,
+                 "--no-report-request",
+                 "--quiet")
     10.times do
       begin
         TCPSocket.new(@host, @port)
