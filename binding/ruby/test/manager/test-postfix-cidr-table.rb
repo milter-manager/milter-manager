@@ -134,7 +134,7 @@ EOC
 
   def test_invalid_address_ipv6
     begin
-      IPAddr.new("f")
+      IPAddr.new("f:")
     rescue ArgumentError => error
       detail = error.message
     end
