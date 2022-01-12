@@ -1,7 +1,10 @@
 FROM centos:7
 
+ENV SCL=rh-ruby30
+
 RUN yum update -q -y && \
     yum install -q -y \
+      centos-release-scl-rh \
       http://sourceforge.net/projects/cutter/files/centos/cutter-release-1.3.0-1.noarch.rpm && \
     yum install -q -y \
       cutter \
@@ -14,11 +17,11 @@ RUN yum update -q -y && \
       intltool \
       libtool \
       make \
+      ${SCL}-ruby \
+      ${SCL}-ruby-devel \
+      ${SCL}-rubygem-rexml \
       rpm-build \
       rrdtool \
-      ruby \
-      ruby-devel \
-      rubygems \
       sudo \
       tar
 

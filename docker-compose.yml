@@ -22,7 +22,7 @@ services:
     volumes:
       - .:/host:delegated
     command:
-      /host/dockerfiles/run-test.sh
+      /host/dockerfiles/run-test-scl.sh
 
   debian-bullseye:
     build:
