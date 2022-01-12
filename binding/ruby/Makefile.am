@@ -159,8 +159,6 @@ ruby_glib2_latest_files =						\
 	glib2-3.5.0/Rakefile						\
 	glib2-3.5.0/ext/glib2/depend					\
 	glib2-3.5.0/ext/glib2/extconf.rb				\
-	glib2-3.5.0/ext/glib2/glib-enum-types.c				\
-	glib2-3.5.0/ext/glib2/glib-enum-types.h				\
 	glib2-3.5.0/ext/glib2/glib2.def					\
 	glib2-3.5.0/ext/glib2/rbgcompat.h				\
 	glib2-3.5.0/ext/glib2/rbglib-bytes.c				\
