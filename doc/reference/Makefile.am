@@ -11,10 +11,10 @@ SCAN_OPTIONS =							\
 	--deprecated-guards="MILTER_DISABLE_DEPRECATED"		\
 	--rebuild-sections
 
-# The directory containing the source code. Relative to $(srcdir)
-DOC_SOURCE_DIR =	\
-	../../milter	\
-	../../libmilter
+# The directory containing the source code.
+DOC_SOURCE_DIR =				\
+	$(top_srcdir)/milter			\
+	$(top_srcdir)/libmilter
 
 # Used for dependencies
 HFILE_GLOB =					\
@@ -240,33 +240,33 @@ RD2DOCBOOK_JA = $(RD2DOCBOOK) --po=$(srcdir)/ja.po
 SVG2PNG = inkscape --export-dpi=60 --export-background=white --export-png
 
 html-ja-build.stamp: sgml.stamp $(CATALOGS) $(DOC_MAIN_SGML_FILE) $(content_files) $(expand_content_files)
-	for catalog in $(CATALOGS); do				       \
-	  lang=`echo $$catalog | sed 's/.po$$//'`;		       \
-	  echo "$$lang:";					       \
+	for catalog in $(CATALOGS); do					\
+	  lang=`echo $$catalog | sed 's/.po$$//'`;			\
+	  echo "$$lang:";						\
 	  rm -rf $$lang;						\
-	  mkdir -p $$lang/html;					       \
-	  mkdir -p $$lang/xml;					       \
-	  xml2po -k -p $(srcdir)/$$catalog -l $$lang		       \
+	  mkdir -p $$lang/html;						\
+	  mkdir -p $$lang/xml;						\
+	  po2xml $(DOC_MAIN_SGML_FILE) $(srcdir)/$$catalog		\
 	    $(DOC_MAIN_SGML_FILE) > $$lang/$(DOC_MAIN_SGML_FILE);	\
-	  for xml in $(srcdir)/xml/*.xml; do			       \
-	    xml2po -k -p $(srcdir)/$$catalog -l $$lang $$xml >	       \
-	      $$lang/xml/`basename $$xml`;			       \
-	  done;							       \
-	  for file in $(content_files); do			       \
-	    if test -f $$file; then				       \
-	      if test -f $$file.$$lang; then			       \
-	        cp $$file.$$lang $$lang/$$file;			       \
-	      else						       \
-	        cp $$file $$lang;				       \
-	      fi;						       \
-	    else						       \
-	      if test -f $(srcdir)/$$file.$$lang; then		       \
-	        cp $(srcdir)/$$file.$$lang $$lang/$$file;	       \
-	      else						       \
-	        cp $(srcdir)/$$file $$lang;			       \
-	      fi;						       \
-	    fi;							       \
-	  done;							       \
+	  for xml in $(builddir)/xml/*.xml; do				\
+	    po2xml $$xml $(srcdir)/$$catalog >				\
+	      $$lang/xml/`basename $$xml`;				\
+	  done;								\
+	  for file in $(content_files); do				\
+	    if test -f $$file; then					\
+	      if test -f $$file.$$lang; then				\
+	        cp $$file.$$lang $$lang/$$file;				\
+	      else							\
+	        cp $$file $$lang;					\
+	      fi;							\
+	    else							\
+	      if test -f $(srcdir)/$$file.$$lang; then			\
+	        cp $(srcdir)/$$file.$$lang $$lang/$$file;		\
+	      else							\
+	        cp $(srcdir)/$$file $$lang;				\
+	      fi;							\
+	    fi;								\
+	  done;								\
 	  mkhtml_options="";						\
 	  gtkdoc-mkhtml 2>&1 --help | grep  >/dev/null "\-\-verbose";	\
 	  if test "$$?" = "0"; then					\
@@ -274,19 +274,19 @@ html-ja-build.stamp: sgml.stamp $(CATALOGS) $(DOC_MAIN_SGML_FILE) $(content_file
 	      mkhtml_options="$$mkhtml_options --verbose";		\
 	    fi;								\
 	  fi;								\
-	  gtkdoc-mkhtml 2>&1 --help | grep  >/dev/null "\-\-path"; 	\
+	  gtkdoc-mkhtml 2>&1 --help | grep  >/dev/null "\-\-path";	\
 	  if test "$$?" = "0"; then					\
 	    mkhtml_options="$$mkhtml_options --path=\"$(abs_srcdir)\"";	\
 	  fi;								\
 	  (cd $$lang/html &&						\
-	     gtkdoc-mkhtml $$mkhtml_options $(MKHTML_OPTIONS) 		\
+	     gtkdoc-mkhtml $$mkhtml_options $(MKHTML_OPTIONS)		\
 	     $(DOC_MODULE) ../$(DOC_MAIN_SGML_FILE));			\
 	  if test "x$(HTML_IMAGES)" != "x"; then			\
 	    for image in $(HTML_IMAGES); do				\
 	      if test -r "$(srcdir)/$$image"; then			\
-	 	cp $(srcdir)/$$image $$lang/html/;			\
+		cp $(srcdir)/$$image $$lang/html/;			\
 	      else							\
-	 	cp $(builddir)/$$image $$lang/html/;			\
+		cp $(builddir)/$$image $$lang/html/;			\
 	      fi							\
 	    done;							\
 	  fi;								\
