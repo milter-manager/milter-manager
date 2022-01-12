@@ -27,4 +27,4 @@ make -j$(nproc)
 
 ../host/binding/ruby/test/run-test.sh
 ../host/test/run-test.sh
-# ../host/test/tool/run-test.sh
+../host/test/tool/run-test.sh

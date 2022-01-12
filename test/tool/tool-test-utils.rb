@@ -1,4 +1,4 @@
-# Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2022  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -13,10 +13,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'pathname'
-require 'tempfile'
 require 'fileutils'
+require 'pathname'
 require 'stringio'
+require 'tempfile'
+require 'tmpdir'
 
 load 'milter-manager-log-analyzer'
 

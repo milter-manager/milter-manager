@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2022  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -23,7 +23,6 @@ test_unit_dir = top + "binding" + "ruby" + "test-unit" + "lib"
 
 $LOAD_PATH.unshift(test_unit_dir.to_s)
 require 'test/unit'
-require 'test/unit/rr'
 
 $LOAD_PATH.unshift((top + "tool").to_s)
 

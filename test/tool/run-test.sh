@@ -19,4 +19,4 @@ if test -z "$RUBY"; then
     RUBY="$(${MAKE} -s echo-ruby)"
 fi
 
-${RUBY} ${BASE_DIR}/run-test.rb
+${RUBY} ${BASE_DIR}/run-test.rb "$@"
