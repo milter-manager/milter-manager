@@ -25,6 +25,6 @@ cd /build
   --with-default-connection-spec="inet:10025@[127.0.0.1]"
 make -j$(nproc)
 
-../host/binding/ruby/test/run-test.sh
+../host/binding/ruby/test/run-test.sh -vv
 ../host/test/run-test.sh
 ../host/test/tool/run-test.sh
