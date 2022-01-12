@@ -114,6 +114,7 @@ class TestLogAnalyzer < Test::Unit::TestCase
 
   def test_update_with_distance
     FileUtils.cp(Dir.glob((@data_dir + "*.rrd").to_s), @tmp_dir)
+    FileUtils.chmod("u+w", Dir.glob((@tmp_dir + "*.rrd").to_s))
 
     @analyzer.output_directory = @tmp_dir.to_s
     @analyzer.prepare
