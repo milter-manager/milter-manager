@@ -32,44 +32,17 @@ echo-abs-top-builddir:
 # % find test-unit -not -path '*/.git/*' -type f | sort | sed -e 's,^,\t,g'
 # Use region and C-c C-\ for adding backslashes to the above list.
 test_unit_files =						\
+	test-unit/.github/dependabot.yml			\
+	test-unit/.github/workflows/test.yml			\
 	test-unit/.gitignore					\
 	test-unit/.travis.yml					\
 	test-unit/.yardopts					\
+	test-unit/BSDL						\
 	test-unit/COPYING					\
-	test-unit/GPL						\
 	test-unit/Gemfile					\
-	test-unit/LGPL						\
 	test-unit/PSFL						\
 	test-unit/README.md					\
 	test-unit/Rakefile					\
-	test-unit/appveyor.yml					\
-	test-unit/doc/html/bar.png				\
-	test-unit/doc/html/bar.svg				\
-	test-unit/doc/html/color-diff.png			\
-	test-unit/doc/html/developer.png			\
-	test-unit/doc/html/developer.svg			\
-	test-unit/doc/html/famfamfam-logo.png			\
-	test-unit/doc/html/favicon.ico				\
-	test-unit/doc/html/favicon.png				\
-	test-unit/doc/html/favicon.svg				\
-	test-unit/doc/html/github-logo.png			\
-	test-unit/doc/html/heading-mark.png			\
-	test-unit/doc/html/heading-mark.svg			\
-	test-unit/doc/html/index.html				\
-	test-unit/doc/html/install.png				\
-	test-unit/doc/html/install.svg				\
-	test-unit/doc/html/ja/index.html			\
-	test-unit/doc/html/jp.png				\
-	test-unit/doc/html/kinotan-failure.png			\
-	test-unit/doc/html/kinotan-pass.png			\
-	test-unit/doc/html/logo.png				\
-	test-unit/doc/html/logo.svg				\
-	test-unit/doc/html/reference.png			\
-	test-unit/doc/html/tango-logo.png			\
-	test-unit/doc/html/test-unit.css			\
-	test-unit/doc/html/tutorial.png				\
-	test-unit/doc/html/tutorial.svg				\
-	test-unit/doc/html/us.png				\
 	test-unit/doc/po/ja.po					\
 	test-unit/doc/templates/footer.en.html.erb		\
 	test-unit/doc/templates/footer.ja.html.erb		\
@@ -77,6 +50,7 @@ test_unit_files =						\
 	test-unit/doc/templates/head.ja.html.erb		\
 	test-unit/doc/templates/header.en.html.erb		\
 	test-unit/doc/templates/header.ja.html.erb		\
+	test-unit/doc/text/getting-started.md			\
 	test-unit/doc/text/how-to.md				\
 	test-unit/doc/text/news.md				\
 	test-unit/lib/test-unit.rb				\
@@ -85,6 +59,7 @@ test_unit_files =						\
 	test-unit/lib/test/unit/assertions.rb			\
 	test-unit/lib/test/unit/attribute-matcher.rb		\
 	test-unit/lib/test/unit/attribute.rb			\
+	test-unit/lib/test/unit/auto-runner-loader.rb		\
 	test-unit/lib/test/unit/autorunner.rb			\
 	test-unit/lib/test/unit/code-snippet-fetcher.rb		\
 	test-unit/lib/test/unit/collector.rb			\
@@ -95,6 +70,7 @@ test_unit_files =						\
 	test-unit/lib/test/unit/collector/xml.rb		\
 	test-unit/lib/test/unit/color-scheme.rb			\
 	test-unit/lib/test/unit/color.rb			\
+	test-unit/lib/test/unit/data-sets.rb			\
 	test-unit/lib/test/unit/data.rb				\
 	test-unit/lib/test/unit/diff.rb				\
 	test-unit/lib/test/unit/error.rb			\
@@ -121,11 +97,13 @@ test_unit_files =						\
 	test-unit/lib/test/unit/ui/testrunnerutilities.rb	\
 	test-unit/lib/test/unit/ui/xml/testrunner.rb		\
 	test-unit/lib/test/unit/util/backtracefilter.rb		\
+	test-unit/lib/test/unit/util/memory-usage.rb		\
 	test-unit/lib/test/unit/util/method-owner-finder.rb	\
 	test-unit/lib/test/unit/util/observable.rb		\
 	test-unit/lib/test/unit/util/output.rb			\
 	test-unit/lib/test/unit/util/procwrapper.rb		\
 	test-unit/lib/test/unit/version.rb			\
+	test-unit/lib/test/unit/warning.rb			\
 	test-unit/sample/adder.rb				\
 	test-unit/sample/subtracter.rb				\
 	test-unit/sample/test_adder.rb				\
