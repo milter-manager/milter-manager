@@ -1,4 +1,4 @@
-# Copyright (C) 2011-2013  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2011-2022  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -632,7 +632,8 @@ module Milter
           @configuration.max_pending_finished_sessions = n_sessions
         end
 
-        def maintained(hook=Proc.new)
+        def maintained(hook=nil, &block)
+          hook ||= Proc.new(&block)
           guarded_hook = Proc.new do |configuration|
             Milter::Callback.guard do
               hook.call
@@ -641,7 +642,8 @@ module Milter
           @configuration.maintained_hooks << guarded_hook
         end
 
-        def event_loop_created(hook=Proc.new)
+        def event_loop_created(hook=nil, &block)
+          hook ||= Proc.new(&block)
           guarded_hook = Proc.new do |configuration, loop|
             Milter::Callback.guard do
               hook.call(loop)
