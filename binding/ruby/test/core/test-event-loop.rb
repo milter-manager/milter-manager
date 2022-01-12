@@ -147,7 +147,7 @@ class TestEventLoop < Test::Unit::TestCase
   end
 
   def test_watch_child_without_block
-    omit("This may be blocked with Ruby 2.7") if RUBY_VERSION < "3.0.0"
+    omit("This may be blocked")
     pid = fork do
       exit!(true)
     end
