@@ -147,14 +147,17 @@ class TestEventLoop < Test::Unit::TestCase
   end
 
   def test_watch_child_without_block
+    omit("This may be blocked with Ruby 2.7") if RUBY_VERSION < "3.0.0"
     pid = fork do
       exit!(true)
     end
-    assert_raise(ArgumentError.new("watch child block is missing")) do
-      @tags << @loop.watch_child(pid)
+    begin
+      assert_raise(ArgumentError.new("watch child block is missing")) do
+        @tags << @loop.watch_child(pid)
+      end
+    ensure
+      Process.wait(pid)
     end
-  ensure
-    Process.wait(pid)
   end
 
   def test_watch_child_exception
