@@ -48,6 +48,9 @@ EXTRA_DIST =					\
 	NEWS					\
 	NEWS.ja
 
+AM_DISTCHECK_CONFIGURE_FLAGS =			\
+	--enable-gtk-doc
+
 OSDN_CREDENTIAL_FILE = $(HOME)/.config/osdn/credential.yml
 
 upload: upload-doc upload-coverage
