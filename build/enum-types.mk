@@ -6,10 +6,6 @@ BUILT_SOURCES +=				\
 	stamp-$(enum_source_prefix)-c		\
 	stamp-$(enum_source_prefix)-h
 
-EXTRA_DIST +=					\
-	stamp-$(enum_source_prefix)-c		\
-	stamp-$(enum_source_prefix)-h
-
 MAINTAINERCLEANFILES +=				\
 	$(enum_source_prefix).c			\
 	$(enum_source_prefix).h			\
