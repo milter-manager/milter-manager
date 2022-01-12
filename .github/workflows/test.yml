@@ -54,7 +54,7 @@ jobs:
       - run: mkdir -p ../milter-manager.build
       - name: Configure
         run: |
-          ../configure \
+          ../milter-manager/configure \
             --enable-gtk-doc \
             --with-bundled-ruby-glib2 \
             --with-bundled-ruby-gobject-introspection \
@@ -64,3 +64,11 @@ jobs:
         working-directory: ../milter-manager.build
       - run: make distcheck
         working-directory: ../milter-manager.build
+      - name: Show test/tool/ log
+        if: failure()
+        run: |
+          cat ../milter-manager.build/milter-manager-*/_build/sub/test/tool/test-suite.log
+      - name: Show test/ log
+        if: failure()
+        run: |
+          cat ../milter-manager.build/milter-manager-*/_build/sub/test/test-suite.log
