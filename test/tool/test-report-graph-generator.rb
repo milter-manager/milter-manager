@@ -1,4 +1,4 @@
-# Copyright (C) 2009  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2022  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -17,16 +17,14 @@ class TestReportGraphGenerator < Test::Unit::TestCase
   def setup
     base = Pathname(__FILE__).dirname
     @data_dir = base + "fixtures"
-    @tmp_dir = base + "tmp"
-    FileUtils.rm_rf(@tmp_dir.to_s)
-    FileUtils.mkdir_p(@tmp_dir.to_s)
 
-    generator_class = MilterManagerLogAnalyzer::MilterManagerReportGraphGenerator
-    @generator = generator_class.new(@tmp_dir, nil)
-  end
+    Dir.mktmpdir do |tmp_dir|
+      @tmp_dir = Pathname(tmp_dir)
 
-  def teardown
-    FileUtils.rm_rf(@tmp_dir.to_s)
+      generator_class = MilterManagerLogAnalyzer::MilterManagerReportGraphGenerator
+      @generator = generator_class.new(@tmp_dir, nil)
+      yield
+    end
   end
 
   priority :must
