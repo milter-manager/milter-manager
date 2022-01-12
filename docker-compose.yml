@@ -8,6 +8,10 @@ services:
       dockerfile: dockerfiles/almalinux-8.dockerfile
     environment:
       TZ: Asia/Tokyo
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - "seccomp=unconfined"
     volumes:
       - .:/host:delegated
     command:
@@ -19,6 +23,10 @@ services:
       dockerfile: dockerfiles/centos-7.dockerfile
     environment:
       TZ: Asia/Tokyo
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - "seccomp=unconfined"
     volumes:
       - .:/host:delegated
     command:
@@ -30,6 +38,10 @@ services:
       dockerfile: dockerfiles/debian-bullseye.dockerfile
     environment:
       TZ: Asia/Tokyo
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - "seccomp=unconfined"
     volumes:
       - .:/host:delegated
     command:
@@ -41,6 +53,10 @@ services:
       dockerfile: dockerfiles/ubuntu-bionic.dockerfile
     environment:
       TZ: Asia/Tokyo
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - "seccomp=unconfined"
     volumes:
       - .:/host:delegated
     command:
@@ -52,6 +68,10 @@ services:
       dockerfile: dockerfiles/ubuntu-focal.dockerfile
     environment:
       TZ: Asia/Tokyo
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - "seccomp=unconfined"
     volumes:
       - .:/host:delegated
     command:
