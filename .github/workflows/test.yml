@@ -31,8 +31,8 @@ jobs:
             --location \
             https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh
       - run: ./autogen.sh
-      - name: docker-compose build ${{ matrix.service }}
-      - name: docker-compose run --rm ${{ matrix.service }}
+      - run: docker-compose build ${{ matrix.service }}
+      - run: docker-compose run --rm ${{ matrix.service }}
 
   distribution:
     name: Distribution
