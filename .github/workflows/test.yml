@@ -3,8 +3,8 @@ on:
   - push
   - pull_request
 jobs:
-  test:
-    name: Test
+  feature:
+    name: Feature
     strategy:
       fail-fast: false
       matrix:
@@ -30,12 +30,37 @@ jobs:
             --silent \
             --location \
             https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh
-      - name: Generate configure
+      - run: ./autogen.sh
+      - name: docker-compose build ${{ matrix.service }}
+      - name: docker-compose run --rm ${{ matrix.service }}
+
+  distribution:
+    name: Distribution
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
         run: |
-          ./autogen.sh
-      - name: Build Docker image
+          sudo apt update
+          sudo apt install -y -V \
+            curl \
+            gtk-doc-tools \
+            intltool \
+            lsb-release
+          sudo gem install \
+            fast_gettext
+      - run: ./autogen.sh
+      - run: mkdir -p ../milter-manager.build
+      - name: Configure
         run: |
-          docker-compose build ${{ matrix.service }}
-      - name: Run
-        run: |
-          docker-compose run --rm ${{ matrix.service }}
+          ../configure \
+            --enable-gtk-doc \
+            --with-bundled-ruby-glib2 \
+            --with-bundled-ruby-gobject-introspection \
+            --with-bundled-ruby-gio2
+        working-directory: ../milter-manager.build
+      - run: make -j$(nproc)
+        working-directory: ../milter-manager.build
+      - run: make distcheck
+        working-directory: ../milter-manager.build
