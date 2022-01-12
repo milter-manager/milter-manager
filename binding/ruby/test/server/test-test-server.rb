@@ -77,7 +77,13 @@ class TestTestServer < Test::Unit::TestCase
       break if (Time.now.to_i - waiting_time.to_i) >= 1
     end
     Process.kill(:KILL, pid)
-    Process.waitpid(pid)
+    if RUBY_VERSION < "3.0.0"
+      # I don't know why but Process.waitpid may be blocked for dead
+      # process with Ruby 2.7...
+      Process.waitpid(pid, Process::WNOHANG)
+    else
+      Process.waitpid(pid)
+    end
   end
 
   def invoke_milter_test_client
