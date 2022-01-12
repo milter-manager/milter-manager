@@ -50,7 +50,7 @@ jobs:
             lsb-release
           sudo gem install \
             fast_gettext \
-            rd2
+            rdtool
       - run: ./autogen.sh
       - run: mkdir -p ../milter-manager.build
       - name: Configure
