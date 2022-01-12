@@ -49,7 +49,8 @@ jobs:
             intltool \
             lsb-release
           sudo gem install \
-            fast_gettext
+            fast_gettext \
+            rd2
       - run: ./autogen.sh
       - run: mkdir -p ../milter-manager.build
       - name: Configure
