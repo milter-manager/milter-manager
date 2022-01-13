@@ -8,7 +8,7 @@ dist_noinst_SCRIPTS =		\
 	milter-test-server.rb	\
 	milter-test-client.rb
 
-MAINTAINERCLEANFILES =
+CLEANFILES =
 BUILT_SOURCES =
 EXTRA_DIST =
 

@@ -9,7 +9,7 @@ AM_CFLAGS =					\
 	$(COVERAGE_CFLAGS)
 
 EXTRA_DIST =
-MAINTAINERCLEANFILES =
+CLEANFILES =
 BUILT_SOURCES =
 
 milter_client_public_headers =			\

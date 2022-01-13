@@ -6,7 +6,7 @@ BUILT_SOURCES +=				\
 	stamp-$(enum_source_prefix)-c		\
 	stamp-$(enum_source_prefix)-h
 
-MAINTAINERCLEANFILES +=				\
+CLEANFILES +=					\
 	$(enum_source_prefix).c			\
 	$(enum_source_prefix).h			\
 	stamp-$(enum_source_prefix)-c		\
