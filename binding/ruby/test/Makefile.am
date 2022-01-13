@@ -4,9 +4,6 @@ SUBDIRS =	\
 	server	\
 	manager
 
-CLEANFILES =					\
-	.test-result
-
 TESTS = run-test.sh
 TESTS_ENVIRONMENT =				\
 	NO_MAKE=yes				\
@@ -36,3 +33,6 @@ EXTRA_DIST =					\
 
 echo-abs-top-builddir:
 	@echo $(abs_top_builddir)
+
+clean-local:
+	rm -rf .test-result
