@@ -3,6 +3,8 @@ FROM ${FROM}
 
 ARG DEBUG
 
+ENV SCL=rh-ruby30
+
 RUN \
   quiet=$([ "${DEBUG}" = "yes" ] || echo "--quiet") && \
   yum update -y ${quiet} && \
@@ -16,8 +18,10 @@ RUN \
     intltool \
     make \
     pkgconfig\(gobject-introspection-1.0\) \
-    rh-ruby30 \
-    rh-ruby30-ruby-devel \
+    ${SCL}-ruby \
+    ${SCL}-ruby-devel \
+    ${SCL}-rubygem-rexml \
     rpmdevtools \
-    scl-utils && \
+    scl-utils \
+    tzdata && \
   yum clean ${quiet} all
