@@ -2,7 +2,7 @@
 
 = NEWS --- The history of milter manager
 
-== [release-2-1-6] 2.1.6: 2021-12-22
+== [release-2-1-6] 2.1.6: 2022-01-13
 
 === Document
 
@@ -18,11 +18,12 @@
 
 ==== Improvements
 
-  * Dropped CentOS 8 support
-  * Dropped Debian stretch support
-  * Dropped Ubuntu 16.04 support
-  * Dropped Ubuntu 19.04 support
-  * Bundled latest gio2, gobject-introspection, pkg-config, native-package-installer.
+  * Dropped CentOS 8 support.
+  * Dropped Debian stretch support.
+  * Dropped Ubuntu 16.04 support.
+  * Dropped Ubuntu 19.04 support.
+  * Bundled glib2 3.5.0 gem, gobject-introspection 3.5.0 gem, gio2
+    3.5.0 gem, pkg-config gem and native-package-installer gem.
 
 ==== Fixes
 
@@ -30,8 +31,13 @@
 
 ==== Improvements
 
-  * Supported to use bundled gio2, gobject-introspection.
-    Use --with-bundled-ruby-gio2 and --with-bundled-ruby-gobject-introspection to enable them.
+  * (({--with-bundled-ruby-gio2})): Added support for using bundled
+    gio2 gem.
+
+  * (({--with-bundled-ruby-gobject-introspection})): Added support for
+    using bundled gobject-introspection gem.
+
+  * (({milter-performance-check})): Add support for multiple (({--from})).
 
 ==== Fixes
 

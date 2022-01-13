@@ -2,7 +2,7 @@
 
 = お知らせ --- milter managerの歴史
 
-== [release-2-1-6] 2.1.6: 2021-12-22
+== [release-2-1-6] 2.1.6: 2022-01-13
 
 === Document
 
@@ -22,21 +22,27 @@
   * Debian stretchのサポートをやめました
   * Ubuntu 16.04 (xenial) のサポートをやめました
   * Ubuntu 19.04 (disco) のサポートをやめました
-  * 最新のgio2, gobject-introspection, pkg-config, native-package-installerをバンドルするようにしました
+  * glib2 3.5.0 gem、gobject-introspection 3.5.0 gem、gio 3.5.0 gem、
+    pkg-config gem、native-package-installer gemをバンドルしました
 
 === milter manager
 
 ==== 改善
 
-  * 同梱したgio2, gobject-introspectionを使えるようにしました
-    有効にするには--with-bundled-ruby-gio2 と --with-bundled-ruby-gobject-introspection を指定します
+  * (({--with-bundled-ruby-gobject-introspection})): バンドルした
+    gobject-introspection gemを使えるようにしました
+
+  * (({--with-bundled-ruby-gio2})): バンドルした
+    gio2 gemを使えるようにしました
+
+  * (({milter-performance-check})): 複数回(({--from}))を指定できるようにしました
 
 ==== 修正
 
   * milter-managerがクラッシュする不具合を修正しました [BugbearRさんが報告][GitHub #146]
     この不具合は型定義の誤りにより意図せず発生していました。
 
-=== Thanks
+=== 感謝
 
   * OBATA Akioさん
   * BugbearRさん
