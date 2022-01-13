@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -610,6 +610,11 @@ test_remove_manager_unix_socket_on_close (void)
 
     cut_trace(wait_for_manager_ready(spec));
     cut_assert_true(g_file_test(path, G_FILE_TEST_EXISTS));
+
+    /* TODO: Remove this after we implement signal handling that can
+     * work when SIGINT is received between milter_client_listen() and
+     * milter_event_loop_run() inside milter_client_run(). */
+    g_usleep(G_USEC_PER_SEC(1));
 
     gcut_process_kill(manager_process, SIGINT, &error);
     gcut_assert_error(error);
