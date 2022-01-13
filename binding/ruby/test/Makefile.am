@@ -4,6 +4,9 @@ SUBDIRS =	\
 	server	\
 	manager
 
+CLEANFILES =					\
+	.test-result
+
 TESTS = run-test.sh
 TESTS_ENVIRONMENT =				\
 	NO_MAKE=yes				\

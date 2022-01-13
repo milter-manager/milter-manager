@@ -2,6 +2,9 @@ SUBDIRS = fixtures
 
 TESTS = run-test.sh
 
+CLEANFILES =					\
+	.test-result
+
 EXTRA_DIST =					\
 	run-test.rb				\
 	run-test.sh				\
