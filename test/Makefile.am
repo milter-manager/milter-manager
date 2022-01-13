@@ -26,7 +26,7 @@ AM_CPPFLAGS =		\
 	-I$(srcdir)	\
 	-I$(top_srcdir)
 
-AM_CFLAGS = 				\
+AM_CFLAGS =				\
 	$(MILTER_MANAGER_CFLAGS)
 
 AM_LDFLAGS =			\

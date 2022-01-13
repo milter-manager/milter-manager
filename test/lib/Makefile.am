@@ -19,7 +19,7 @@ enum_sources_h =			\
 AM_CPPFLAGS =			\
 	-I$(top_srcdir)
 
-AM_CFLAGS = 				\
+AM_CFLAGS =				\
 	-DCUT_RELATIVE_PATH="\"lib\""	\
 	$(GCUTTER_CFLAGS)
 
