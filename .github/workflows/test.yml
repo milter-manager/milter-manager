@@ -54,30 +54,30 @@ jobs:
             rdtool \
             rttool
       - run: ./autogen.sh
-      - run: mkdir -p ../milter-manager.build
+      - run: mkdir -p .build
       - name: Configure
         run: |
-          ../milter-manager/configure \
+          ../configure \
             --enable-gtk-doc \
             --with-bundled-ruby-glib2 \
             --with-bundled-ruby-gobject-introspection \
             --with-bundled-ruby-gio2
-        working-directory: ../milter-manager.build
+        working-directory: .build
       - run: make -j$(nproc)
-        working-directory: ../milter-manager.build
+        working-directory: .build
       - run: make dist
-        working-directory: ../milter-manager.build
+        working-directory: .build
       - uses: actions/upload-artifact@v2
         with:
           name: source
-          path: ../milter-manager.build/milter-manager-*.tar.gz
+          path: .build/milter-manager-*.tar.gz
       - run: make distcheck
-        working-directory: ../milter-manager.build
+        working-directory: .build
       - name: Show test/tool/ log
         if: failure()
         run: |
-          cat ../milter-manager.build/milter-manager-*/_build/sub/test/tool/test-suite.log
+          cat .build/milter-manager-*/_build/sub/test/tool/test-suite.log
       - name: Show test/ log
         if: failure()
         run: |
-          cat ../milter-manager.build/milter-manager-*/_build/sub/test/test-suite.log
+          cat .build/milter-manager-*/_build/sub/test/test-suite.log
