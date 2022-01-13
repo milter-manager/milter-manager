@@ -614,7 +614,7 @@ test_remove_manager_unix_socket_on_close (void)
     /* TODO: Remove this after we implement signal handling that can
      * work when SIGINT is received between milter_client_listen() and
      * milter_event_loop_run() inside milter_client_run(). */
-    g_usleep(G_USEC_PER_SEC(1));
+    g_usleep(1 * G_USEC_PER_SEC);
 
     gcut_process_kill(manager_process, SIGINT, &error);
     gcut_assert_error(error);
