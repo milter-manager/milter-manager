@@ -585,6 +585,8 @@ dist:
 
 dvi:
 
+installcheck:
+
 uninstall:
 EOM
     fi
@@ -598,6 +600,7 @@ all:
 distdir:
 distclean:
 dvi:
+installcheck:
 uninstall:
 EOM
     fi
@@ -735,6 +738,8 @@ dist:
 
 dvi:
 
+installcheck:
+
 uninstall:
 EOM
     fi
@@ -748,6 +753,7 @@ all:
 distdir:
 distclean:
 dvi:
+installcheck:
 uninstall:
 EOM
     fi
@@ -881,6 +887,8 @@ dist:
 
 dvi:
 
+installcheck:
+
 uninstall:
 EOM
     fi
@@ -894,6 +902,7 @@ all:
 distdir:
 distclean:
 dvi:
+installcheck:
 uninstall:
 EOM
     fi
