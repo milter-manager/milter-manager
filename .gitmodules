@@ -13,3 +13,6 @@
 [submodule "binding/ruby/native-package-installer"]
 	path = binding/ruby/native-package-installer
 	url = https://github.com/ruby-gnome/native-package-installer
+[submodule "vendor/groonga-source"]
+	path = vendor/groonga-source
+	url = https://github.com/groonga/groonga.git

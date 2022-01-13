@@ -1,0 +1,143 @@
+name: Package
+on:
+  - push
+  - pull_request
+jobs:
+  source:
+    name: Source
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y -V \
+            curl \
+            gtk-doc-tools \
+            inkscape \
+            intltool \
+            poxml
+          sudo gem install \
+            fast_gettext \
+            rdtool \
+            rttool
+      - run: ./autogen.sh
+      - run: mkdir -p .build
+      - name: Configure
+        run: |
+          ../configure \
+            --enable-gtk-doc \
+            --with-bundled-ruby-glib2 \
+            --with-bundled-ruby-gobject-introspection \
+            --with-bundled-ruby-gio2
+        working-directory: .build
+      - run: make -j$(nproc)
+        working-directory: .build
+      - run: make dist
+        working-directory: .build
+      - run: mv .build/milter-manager-*.tar.gz ./
+
+      # Artifact
+      - uses: actions/upload-artifact@v2
+        with:
+          name: source
+          path: milter-manager-*.tar.gz
+
+      # Release
+      - name: Upload to release
+        uses: softprops/action-gh-release@v1
+        if: |
+          startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            milter-manager-*.tar.gz
+
+      # Test
+      # - run: make distcheck
+      #   working-directory: .build
+      # - name: Show test/tool/ log
+      #   if: failure()
+      #   run: |
+      #     cat .build/milter-manager-*/_build/sub/test/tool/test-suite.log
+      # - name: Show test/ log
+      #   if: failure()
+      #   run: |
+      #     cat .build/milter-manager-*/_build/sub/test/test-suite.log
+
+  build:
+    name: Build
+    needs: source
+    strategy:
+      fail-fast: false
+      matrix:
+        label:
+          - CentOS 7
+        include:
+          - label: CentOS 7
+            id: centos-7
+            task-namespace: yum
+            target: centos-7
+            test-docker-image: centos:7
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt -V install \
+            devscripts \
+            qemu-user-static \
+            ruby
+      - uses: actions/download-artifact@v2
+        with:
+          name: source
+      - name: Update version
+        if: |
+          !startsWith(github.ref, 'refs/tags/') &&
+          !startsWith(github.ref, 'refs/heads/maintenance/')
+        run: |
+          cd package
+          rake version:update RELEASE_DATE=$(date +%Y-%m-%d)
+      - name: Cache ccache
+        uses: actions/cache@v2
+        with:
+          path: package/${{ matrix.task-namespace }}/build/${{ matrix.target }}/ccache
+          key: package-${{ matrix.id }}-ccache-${{ hashFiles('lib/**/*.c', 'lib/**/*.cpp', 'lib/**/*.h') }}
+          restore-keys: package-${{ matrix.id }}-ccache-
+      - name: Build with docker
+        run: |
+          cd package
+          rake ${{ matrix.task-namespace }}:build BUILD_DIR=build
+        env:
+          APT_TARGETS: ${{ matrix.target }}
+          YUM_TARGETS: ${{ matrix.target }}
+
+      # Artifact
+      - uses: actions/upload-artifact@v2
+        with:
+          name: package-${{ matrix.id }}
+          path: package/${{ matrix.task-namespace }}/repositories/
+
+      # Release
+      - name: Create assets
+        if: |
+          startsWith(github.ref, 'refs/tags/')
+        run: |
+          tar czf ${{ matrix.id }}.tar.gz package/${{ matrix.task-namespace }}/repositories/
+      - name: Upload to release
+        uses: softprops/action-gh-release@v1
+        if: |
+          startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            ${{ matrix.id }}.tar.gz
+
+      # Test
+      # - name: Test
+      #   run: |
+      #     docker run \
+      #       --rm \
+      #       --volume ${PWD}:/host:ro \
+      #       ${{ matrix.test-docker-image }} \
+      #       /host/package/${{ matrix.task-namespace }}/test.sh

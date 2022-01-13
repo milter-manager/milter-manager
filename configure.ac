@@ -1277,7 +1277,6 @@ AC_CONFIG_FILES([Makefile
 		 ruby-milter-core.pc
 		 ruby-milter-client.pc
 		 ruby-milter-server.pc
-		 package/rpm/centos/milter-manager.spec
 		 libev-]BUNDLED_LIBEV_VERSION[/Makefile
 		 milter/Makefile
 		 milter/core/Makefile

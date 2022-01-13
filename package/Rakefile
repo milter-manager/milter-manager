@@ -1,0 +1,69 @@
+# Copyright(C) 2022  Sutou Kouhei <kou@clear-code.com>
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+require_relative "../vendor/groonga-source/packages/packages-groonga-org-package-task"
+
+class MilterManagerTask < PackagesGroongaOrgPackageTask
+  def initialize
+    super("milter-manager", detect_version, detect_release_time)
+  end
+
+  private
+  def detect_version
+    version_env = ENV["VERSION"]
+    return version_env if version_env
+
+    major = nil
+    minor = nil
+    micro = nil
+    configure_ac_path = File.join(__dir__, "..", "configure.ac")
+    File.open(configure_ac_path) do |configure_ac|
+      configure_ac.each_line do |line|
+        case line
+        when /\Am4_define\(\[milter_manager_version_major\], \[(\d+)\]\)/
+          major = $1
+        when /\Am4_define\(\[milter_manager_version_minor\], \[(\d+)\]\)/
+          minor = $1
+        when /\Am4_define\(\[milter_manager_version_micro\], \[(\d+)\]\)/
+          micro = $1
+        end
+      end
+    end
+    "#{major}.#{minor}.#{micro}"
+  end
+
+  def define_archive_task
+    file @archive_name do
+      File.symlink("../#{@archive_name}",
+                   @archive_name)
+    end
+  end
+
+  def enable_windows?
+    false
+  end
+
+  def dput_configuration_name
+    ENV["DPUT_CONFIGURATION_NAME"] || "milter-manager-ppa"
+  end
+
+  def dput_incoming
+    ENV["DPUT_INCOMING"] || "~milter-manager/ppa/ubuntu/"
+  end
+end
+
+task = MilterManagerTask.new
+task.define
