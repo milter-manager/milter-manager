@@ -55,7 +55,7 @@ upload: $(web_contents)
 SUFFIXES = .svg .png
 
 .svg.png:
-	inkscape --export-filename=$@ $<
+	inkscape --export-filename=$@ $< || inkscape --export-png=$@ $<
 
 mini-install.png: install.png
 	convert install.png -resize 12x12 mini-install.png

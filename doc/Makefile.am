@@ -159,4 +159,4 @@ SUFFIXES = .rd .man .rd .jman .svg .png
 	$(RUBY) -I $(CUTTER_SOURCE_PATH)/misc $(RD2) -r rd2man-lib $<.ja > $@
 
 .svg.png:
-	inkscape --export-png $@ $<
+	inkscape --export-filename=$@ $< || inkscape --export-png=$@ $<
