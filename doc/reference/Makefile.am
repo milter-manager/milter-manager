@@ -600,6 +600,11 @@ dist-hook-local:
 	rm -f $(distdir)/version.xml
 
 distclean-local:
+	rm -rf xml html $(REPORT_FILES) $(DOC_MODULE).pdf \
+	    $(DOC_MODULE)-decl-list.txt $(DOC_MODULE)-decl.txt
+	if test "$(abs_srcdir)" != "$(abs_builddir)" ; then \
+	    rm -f $(SETUP_FILES) $(DOC_MODULE).types; \
+	fi
 	for catalog in $(CATALOGS); do					\
 	  lang=`echo $$catalog | sed 's/.po$$//'`;			\
 	  rm -rf $$lang html-$$lang-build.stamp;			\
