@@ -16,17 +16,17 @@ remove-existing-packages:
 	done
 
 update:
-	./update-repository.sh \
+	$(srcdir)/update-repository.sh \
 	  '$(OSDN_PROJECT_NAME)' '$(PACKAGE_TITLE)' '$(CODE_NAMES)'
 
 sign:
-	./sign-repository.sh $(GPG_UID) '$(CODE_NAMES)'
+	$(srcdir)/sign-repository.sh $(GPG_UID) '$(CODE_NAMES)'
 
 upload:
-	./upload-packages.sh 					\
+	$(srcdir)/upload-packages.sh					\
 	  $(OSDN_PROJECT_ID) $(VERSION) $(RELEASE) '$(ARCHITECTURES)' '$(CODE_NAMES)'
 
 build:
-	./build-in-clean-room.sh \
+	$(srcdir)/build-in-clean-room.sh \
 	  $(VERSION) $(CLEAN_ROOM_BASE) \
 	  '$(ARCHITECTURES)' '$(CODE_NAMES)'

@@ -20,20 +20,20 @@ remove-existing-packages:
 	done
 
 sign:
-	./sign-rpm.sh $(GPG_UID) '$(DISTRIBUTIONS)'
+	$(srcdir)/sign-rpm.sh $(GPG_UID) '$(DISTRIBUTIONS)'
 
 update:
-	./update-repository.sh $(PACKAGE) '$(DISTRIBUTIONS)'
+	$(srcdir)/update-repository.sh $(PACKAGE) '$(DISTRIBUTIONS)'
 
 upload:
 	for distribution in $(DISTRIBUTIONS); do		\
-	  ./upload-packages.sh $${distribution} '$(CENTOS_VERSIONS)' $(OSDN_PROJECT_ID) $(VERSION) $(RELEASE); \
+	  $(srcdir)/upload-packages.sh $${distribution} '$(CENTOS_VERSIONS)' $(OSDN_PROJECT_ID) $(VERSION) $(RELEASE); \
 	done
 
 build: build-in-chroot
 
 build-in-chroot:
-	./build-in-chroot.sh			\
+	$(srcdir)/build-in-chroot.sh			\
 	  $(PACKAGE)				\
 	  $(VERSION)				\
 	  $(top_builddir)/$(PACKAGE)		\
