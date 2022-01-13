@@ -3,8 +3,8 @@ on:
   - push
   - pull_request
 jobs:
-  feature:
-    name: Feature
+  test:
+    name: Test
     strategy:
       fail-fast: false
       matrix:
@@ -33,51 +33,3 @@ jobs:
       - run: ./autogen.sh
       - run: docker-compose build ${{ matrix.service }}
       - run: docker-compose run --rm ${{ matrix.service }}
-
-  distribution:
-    name: Distribution
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y -V \
-            curl \
-            gtk-doc-tools \
-            inkscape \
-            intltool \
-            poxml
-          sudo gem install \
-            fast_gettext \
-            rdtool \
-            rttool
-      - run: ./autogen.sh
-      - run: mkdir -p .build
-      - name: Configure
-        run: |
-          ../configure \
-            --enable-gtk-doc \
-            --with-bundled-ruby-glib2 \
-            --with-bundled-ruby-gobject-introspection \
-            --with-bundled-ruby-gio2
-        working-directory: .build
-      - run: make -j$(nproc)
-        working-directory: .build
-      - run: make dist
-        working-directory: .build
-      - uses: actions/upload-artifact@v2
-        with:
-          name: source
-          path: .build/milter-manager-*.tar.gz
-      - run: make distcheck
-        working-directory: .build
-      - name: Show test/tool/ log
-        if: failure()
-        run: |
-          cat .build/milter-manager-*/_build/sub/test/tool/test-suite.log
-      - name: Show test/ log
-        if: failure()
-        run: |
-          cat .build/milter-manager-*/_build/sub/test/test-suite.log
