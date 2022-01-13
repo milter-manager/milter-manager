@@ -48,7 +48,7 @@ jobs:
             gtk-doc-tools \
             inkscape \
             intltool \
-            lsb-release
+            poxml
           sudo gem install \
             fast_gettext \
             rdtool \
