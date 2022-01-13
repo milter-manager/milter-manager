@@ -133,7 +133,7 @@ update-latest-release:
 	  doc/upgrade-on-freebsd.rd.ja
 
 tag:
-	git tag -a "$(VERSION)" -m "released $(VERSION)!!!"
+	cd $(srcdir) && git tag -a "$(VERSION)" -m "released $(VERSION)!!!"
 
 echo-abs-top-srcdir:
 	@echo $(abs_top_srcdir)
