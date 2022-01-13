@@ -22,6 +22,7 @@ svg_images =					\
 
 images =					\
 	famfamfam-logo.png			\
+	favicon.ico				\
 	tango-logo.png				\
 	github-logo.png				\
 	packagecloud-logo.png			\
@@ -43,8 +44,7 @@ generated_images =				\
 	introduction.png			\
 	logo.png				\
 	what-is-milter-manager.png		\
-	favicon.png				\
-	favicon.ico
+	favicon.png
 
 MAINTAINER_CLEANFILES = $(generated_images)
 
