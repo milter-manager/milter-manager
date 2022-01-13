@@ -246,8 +246,8 @@ html-ja-build.stamp: sgml.stamp $(CATALOGS) $(DOC_MAIN_SGML_FILE) $(content_file
 	  rm -rf $$lang;						\
 	  mkdir -p $$lang/html;						\
 	  mkdir -p $$lang/xml;						\
-	  po2xml $(DOC_MAIN_SGML_FILE) $(srcdir)/$$catalog		\
-	    $(DOC_MAIN_SGML_FILE) > $$lang/$(DOC_MAIN_SGML_FILE);	\
+	  po2xml $(DOC_MAIN_SGML_FILE) $(srcdir)/$$catalog >		\
+	    $$lang/$(DOC_MAIN_SGML_FILE);				\
 	  for xml in $(builddir)/xml/*.xml; do				\
 	    po2xml $$xml $(srcdir)/$$catalog >				\
 	      $$lang/xml/`basename $$xml`;				\
