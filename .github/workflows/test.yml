@@ -46,6 +46,7 @@ jobs:
           sudo apt install -y -V \
             curl \
             gtk-doc-tools \
+            inkscape \
             intltool \
             lsb-release
           sudo gem install \
