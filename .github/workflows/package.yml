@@ -107,7 +107,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: package/${{ matrix.task-namespace }}/build/${{ matrix.target }}/ccache
-          key: package-${{ matrix.id }}-ccache-${{ hashFiles('lib/**/*.c', 'lib/**/*.cpp', 'lib/**/*.h') }}
+          key: package-${{ matrix.id }}-ccache-${{ hashFiles('src/**/*.c', 'milter/**/*.c', 'milter/**/*.h', 'libmilter/**/*.c', 'libmilter/**/*.h') }}
           restore-keys: package-${{ matrix.id }}-ccache-
       - name: Build with docker
         run: |
