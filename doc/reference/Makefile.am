@@ -587,14 +587,23 @@ dist-hook-local:
 	  mkdir -p $(distdir)/$$lang/html;				\
 	  mkdir -p $(distdir)/$$lang/xml;				\
 	  cp $$lang/html/* $(distdir)/$$lang/html;			\
-	  cp $$lang/xml/* $(distdir)/$$lang/html;			\
+	  cp $$lang/xml/* $(distdir)/$$lang/xml;			\
 	  cp $$lang/$(DOC_MAIN_SGML_FILE) $(distdir)/$$lang/;		\
+	  cp $$lang/*.xml $(distdir)/$$lang/;				\
+	  cp $$lang/html.stamp $(distdir)/$$lang/;			\
+	  cp html-$$lang-build.stamp $(distdir)/;			\
 	done
 	cp $(DOC_MODULE).types $(distdir)/
 	cp $(DOC_MODULE)-sections.txt $(distdir)/
 	cd $(distdir) && rm -f $(DISTCLEANFILES)
 	-$(GTKDOC_REBASE) --online --relative --html-dir=$(distdir)/html
 	rm -f $(distdir)/version.xml
+
+distclean-local:
+	for catalog in $(CATALOGS); do					\
+	  lang=`echo $$catalog | sed 's/.po$$//'`;			\
+	  rm -rf $$lang html-$$lang-build.stamp;			\
+	done
 
 install-data-hook:
 	for catalog in $(CATALOGS); do					\
