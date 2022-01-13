@@ -56,16 +56,16 @@ jobs:
             milter-manager-*.tar.gz
 
       # Test
-      # - run: make distcheck
-      #   working-directory: .build
-      # - name: Show test/tool/ log
-      #   if: failure()
-      #   run: |
-      #     cat .build/milter-manager-*/_build/sub/test/tool/test-suite.log
-      # - name: Show test/ log
-      #   if: failure()
-      #   run: |
-      #     cat .build/milter-manager-*/_build/sub/test/test-suite.log
+      - run: make distcheck
+        working-directory: .build
+      - name: Show test/tool/ log
+        if: failure()
+        run: |
+          cat .build/milter-manager-*/_build/sub/test/tool/test-suite.log || :
+      - name: Show test/ log
+        if: failure()
+        run: |
+          cat .build/milter-manager-*/_build/sub/test/test-suite.log || :
 
   build:
     name: Build

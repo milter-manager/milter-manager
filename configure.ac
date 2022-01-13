@@ -457,6 +457,7 @@ if test "$ruby_available" = "yes"; then
      ;;
   esac
 
+  # TODO: Remove duplication for bundled-ruby-*.
   AC_ARG_WITH([bundled-ruby-glib2],
 	      AS_HELP_STRING([--with-bundled-ruby-glib2],
 			     [Use bundled Ruby/GLib2
@@ -582,6 +583,8 @@ distdir:
 
 dist:
 
+dvi:
+
 uninstall:
 EOM
     fi
@@ -594,6 +597,7 @@ EOM
 all:
 distdir:
 distclean:
+dvi:
 uninstall:
 EOM
     fi
@@ -729,6 +733,8 @@ distdir:
 
 dist:
 
+dvi:
+
 uninstall:
 EOM
     fi
@@ -741,6 +747,7 @@ EOM
 all:
 distdir:
 distclean:
+dvi:
 uninstall:
 EOM
     fi
@@ -872,6 +879,8 @@ distdir:
 
 dist:
 
+dvi:
+
 uninstall:
 EOM
     fi
@@ -884,6 +893,7 @@ EOM
 all:
 distdir:
 distclean:
+dvi:
 uninstall:
 EOM
     fi
