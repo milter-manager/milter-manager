@@ -138,10 +138,10 @@ jobs:
             ${{ matrix.id }}.tar.gz
 
       # Test
-      # - name: Test
-      #   run: |
-      #     docker run \
-      #       --rm \
-      #       --volume ${PWD}:/host:ro \
-      #       ${{ matrix.test-docker-image }} \
-      #       /host/package/${{ matrix.task-namespace }}/test.sh
+      - name: Test
+        run: |
+          docker run \
+            --rm \
+            --volume ${PWD}:/host:ro \
+            ${{ matrix.test-docker-image }} \
+            /host/package/${{ matrix.task-namespace }}/test.sh
