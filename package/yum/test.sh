@@ -40,7 +40,9 @@ esac
 # curl -s https://packagecloud.io/install/repositories/milter-manager/repos/script.rpm.sh | \
 #   sudo bash
 
-${DNF} install -y epel-release
+${DNF} install -y \
+  centos-release-scl-rh \
+  epel-release
 
 repositories_dir=/host/package/yum/repositories
 ${DNF} install -y \
