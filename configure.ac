@@ -598,6 +598,7 @@ uninstall:
 	-rm -f \$(pkglibdir)/binding/lib/mkmf-gnome2.rb
 	-rm -f \$(pkglibdir)/binding/lib/glib2/*.rb
 	-rm -f \$(pkglibdir)/binding/lib/gnome2/*.rb
+	-rm -f \$(pkglibdir)/binding/lib/gnome2/*/*.rb
 EOM
     fi
   fi
