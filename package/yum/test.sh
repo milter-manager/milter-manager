@@ -48,7 +48,7 @@ repositories_dir=/host/package/yum/repositories
 ${DNF} install -y \
   ${repositories_dir}/${os}/${version}/x86_64/Packages/*.rpm
 
-milter-manager --version
+systemctl status milter-manager
 
 # TODO: Run tests or something
 
