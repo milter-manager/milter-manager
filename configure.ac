@@ -549,6 +549,8 @@ xxx	$(MAKEDIRS) $(RUBYARCHDIR)' \
 	 $ac_ruby_glib2_dir/ext/glib2/Makefile
       sed -e '/^pre-install-rb:/a\
 xxx	$(MAKEDIRS) $(RUBYLIBDIR)/gnome2/rake' \
+          -e '/^pre-install-rb:/a\
+xxx	$(MAKEDIRS) $(RUBYLIBDIR)/glib2' \
           $ac_ruby_glib2_dir/Makefile.lib | \
           sed -e 's/^xxx//' > \
           $ac_ruby_glib2_dir/Makefile.lib.fix-pre-install-rb
@@ -712,7 +714,7 @@ xxx	$(MAKEDIRS) $(RUBYARCHDIR)' \
       mv $ac_ruby_gobject_introspection_dir/ext/gobject-introspection/Makefile.fix-install-headers \
 	 $ac_ruby_gobject_introspection_dir/ext/gobject-introspection/Makefile
       sed -e '/^pre-install-rb:/a\
-xxx	$(MAKEDIRS) $(RUBYLIBDIR)/gnome2/rake' \
+xxx	$(MAKEDIRS) $(RUBYLIBDIR)/gobject-introspection' \
           $ac_ruby_gobject_introspection_dir/Makefile.lib | \
           sed -e 's/^xxx//' > \
           $ac_ruby_gobject_introspection_dir/Makefile.lib.fix-pre-install-rb
@@ -866,7 +868,7 @@ xxx	$(MAKEDIRS) $(RUBYARCHDIR)' \
       mv $ac_ruby_gio2_dir/ext/gio2/Makefile.fix-install-headers \
 	 $ac_ruby_gio2_dir/ext/gio2/Makefile
       sed -e '/^pre-install-rb:/a\
-xxx	$(MAKEDIRS) $(RUBYLIBDIR)/gnome2/rake' \
+xxx	$(MAKEDIRS) $(RUBYLIBDIR)/gio2' \
           $ac_ruby_gio2_dir/Makefile.lib | \
           sed -e 's/^xxx//' > \
           $ac_ruby_gio2_dir/Makefile.lib.fix-pre-install-rb
