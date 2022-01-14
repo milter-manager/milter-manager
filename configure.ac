@@ -596,8 +596,8 @@ uninstall:
 	-rm -f \$(pkglibdir)/binding/lib/gnome2-raketask.rb
 	-rm -f \$(pkglibdir)/binding/lib/mkmf-gnome.rb
 	-rm -f \$(pkglibdir)/binding/lib/mkmf-gnome2.rb
-	-rm -rf \$(pkglibdir)/binding/lib/glib2/
-	-rm -rf \$(pkglibdir)/binding/lib/gnome2/
+	-rm -f \$(pkglibdir)/binding/lib/glib2/*.rb
+	-rm -f \$(pkglibdir)/binding/lib/gnome2/*.rb
 EOM
     fi
   fi
@@ -755,7 +755,7 @@ uninstall:
 	-rm -f \$(pkglibdir)/binding/ext/rb-gobject-introspection.h
 	-rm -f \$(pkglibdir)/binding/lib/gi.rb
 	-rm -f \$(pkglibdir)/binding/lib/gobject-introspection.rb
-	-rm -rf \$(pkglibdir)/binding/lib/gobject-introspection/
+	-rm -f \$(pkglibdir)/binding/lib/gobject-introspection/*.rb
 EOM
     fi
   fi
@@ -907,7 +907,7 @@ installcheck:
 uninstall:
 	-rm -f \$(pkglibdir)/binding/ext/gio2.so
 	-rm -f \$(pkglibdir)/binding/lib/gio2.rb
-	-rm -rf \$(pkglibdir)/binding/lib/gio2/
+	-rm -f \$(pkglibdir)/binding/lib/gio2/*.rb
 EOM
     fi
   fi
