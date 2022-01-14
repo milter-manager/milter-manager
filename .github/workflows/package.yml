@@ -55,7 +55,39 @@ jobs:
           files: |
             milter-manager-*.tar.gz
 
-      # Test
+  distcheck:
+    name: distcheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y -V \
+            curl \
+            gtk-doc-tools \
+            inkscape \
+            intltool \
+            poxml
+          sudo gem install \
+            fast_gettext \
+            rdtool \
+            rttool
+      - run: ./autogen.sh
+      - run: mkdir -p .build
+      - name: Configure
+        run: |
+          ../configure \
+            --enable-gtk-doc \
+            --with-bundled-ruby-glib2 \
+            --with-bundled-ruby-gobject-introspection \
+            --with-bundled-ruby-gio2
+        working-directory: .build
+      - run: make -j$(nproc)
+        working-directory: .build
       - run: make distcheck
         working-directory: .build
       - name: Show test/tool/ log
