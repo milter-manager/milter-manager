@@ -8,8 +8,9 @@ Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/milter-manager.git
 Build-Depends:
 	debhelper (>= 9),
 	autotools-dev,
-	libglib2.0-dev,
 	libev-dev,
+	libgirepository1.0-dev,
+	libglib2.0-dev,
 	ruby (>= 1:1.9.3), ruby-dev (>= 1:1.9.3),
 	ruby-gnome2-dev,
 	intltool,
