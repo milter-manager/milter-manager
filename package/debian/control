@@ -12,7 +12,7 @@ Build-Depends:
 	libgirepository1.0-dev,
 	libglib2.0-dev,
 	ruby (>= 1:1.9.3), ruby-dev (>= 1:1.9.3),
-	ruby-gnome2-dev,
+	ruby-gnome-dev,
 	intltool,
 	rrdtool
 Standards-Version: 4.0.0
