@@ -7,15 +7,10 @@ Vcs-Git: https://anonscm.debian.org/git/collab-maint/milter-manager.git
 Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/milter-manager.git
 Build-Depends:
 	debhelper (>= 9),
-	dh-systemd,
 	autotools-dev,
 	libglib2.0-dev,
 	libev-dev,
-	libcutter-dev,
-	cutter-testing-framework-bin,
-	cutter-glib-support,
 	ruby (>= 1:1.9.3), ruby-dev (>= 1:1.9.3),
-	ruby-test-unit-rr,
 	ruby-gnome2-dev,
 	intltool,
 	rrdtool
