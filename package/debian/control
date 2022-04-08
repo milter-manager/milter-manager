@@ -112,7 +112,6 @@ Depends:
 	${misc:Depends},
 	milter-manager (= ${binary:Version}),
 	rrdtool,
-	librrd-ruby1.9.1,
 	ruby (>= 1:1.9.3)
 Description: Analyze milter-manager's log
  milter manager administrates milters instead of MTA to reduce milter
@@ -128,8 +127,7 @@ Replaces: libmilter-toolkit (<< 1.6.6-1)
 Breaks: libmilter-toolkit (<< 1.6.6-1)
 Depends:
 	${shlibs:Depends},
-	${misc:Depends},
-	libglib2.0-0
+	${misc:Depends}
 Description: Common library for implementing milter protocol
  milter "core" library is a common library for mitler "client" and
  milter "server" libraries.
@@ -241,7 +239,9 @@ Depends:
 	${shlibs:Depends},
 	${misc:Depends},
 	libmilter-core0 (= ${binary:Version}),
+	ruby-gio2,
 	ruby-glib2,
+	ruby-gobject-introspection,
 	ruby (>= 1:1.9.3)
 Description: Ruby bindings for milter core library (Ruby interface)
  milter "core" library is a common library for mitler "client" and
