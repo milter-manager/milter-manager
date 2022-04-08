@@ -68,12 +68,18 @@ jobs:
       matrix:
         label:
           - CentOS 7
+          - Debian GNU/Linux bullseye
         include:
           - label: CentOS 7
             id: centos-7
             task-namespace: yum
             target: centos-7
             test-docker-image: centos:7
+          - label: Debian GNU/Linux bullseye
+            id: debian-bullseye
+            task-namespace: apt
+            target: debian-bullseye
+            test-docker-image: debian:bullseye
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
