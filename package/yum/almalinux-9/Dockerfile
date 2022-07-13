@@ -9,7 +9,7 @@ RUN \
   quiet=$([ "${DEBUG}" = "yes" ] || echo "--quiet") && \
   dnf update -y ${quiet} && \
   dnf install -y ${quiet} epel-release && \
-  dnf install　--enablerepo=crb -y ${quiet} \
+  dnf install --enablerepo=crb -y ${quiet} \
     ccache \
     gcc \
     gettext \
