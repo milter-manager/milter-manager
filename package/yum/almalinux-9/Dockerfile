@@ -9,7 +9,10 @@ RUN \
   quiet=$([ "${DEBUG}" = "yes" ] || echo "--quiet") && \
   dnf update -y ${quiet} && \
   dnf install -y ${quiet} \
-    epel-release && \
+    epel-release \
+    'dnf-command(config-manager)' && \
+  dnf config-manager --enable epel
+  dnf config-manager --set-enabled powertools && \
   dnf groupinstall --enablerepo=powertools -y ${quiet} "Development Tools" && \
   dnf install -y ${quiet} \
     ccache \
