@@ -3,8 +3,6 @@ FROM ${FROM}
 
 ARG DEBUG
 
-ENV SCL=rh-ruby30
-
 RUN \
   quiet=$([ "${DEBUG}" = "yes" ] || echo "--quiet") && \
   dnf update -y ${quiet} && \
@@ -22,6 +20,5 @@ RUN \
     ruby-devel \
     rubygem-rexml \
     rpmdevtools \
-    scl-utils \
     tzdata && \
   dnf clean ${quiet} all
