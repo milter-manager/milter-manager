@@ -8,13 +8,8 @@ ENV SCL=rh-ruby30
 RUN \
   quiet=$([ "${DEBUG}" = "yes" ] || echo "--quiet") && \
   dnf update -y ${quiet} && \
-  dnf install -y ${quiet} \
-    epel-release \
-    'dnf-command(config-manager)' && \
-  dnf config-manager --enable epel && \
-  dnf config-manager --set-enabled powertools && \
-  dnf groupinstall --enablerepo=powertools -y ${quiet} "Development Tools" && \
-  dnf install -y ${quiet} \
+  dnf install -y ${quiet} epel-release && \
+  dnf install　--enablerepo=crb -y ${quiet} \
     ccache \
     gcc \
     gettext \
@@ -23,9 +18,9 @@ RUN \
     intltool \
     make \
     pkgconfig\(gobject-introspection-1.0\) \
-    ${SCL}-ruby \
-    ${SCL}-ruby-devel \
-    ${SCL}-rubygem-rexml \
+    ruby \
+    ruby-devel \
+    rubygem-rexml \
     rpmdevtools \
     scl-utils \
     tzdata && \
