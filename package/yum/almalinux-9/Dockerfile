@@ -22,5 +22,6 @@ RUN \
     ruby-devel \
     rubygem-rexml \
     rpmdevtools \
+    scl-utils \
     tzdata && \
   dnf clean ${quiet} all
