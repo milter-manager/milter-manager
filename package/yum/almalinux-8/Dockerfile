@@ -7,6 +7,7 @@ RUN \
   quiet=$([ "${DEBUG}" = "yes" ] || echo "--quiet") && \
   dnf update -y ${quiet} && \
   dnf install -y ${quiet} epel-release && \
+  dnf module -y enable ruby:3.0 && \
   dnf install --enablerepo=powertools -y ${quiet} \
     ccache \
     gcc \
@@ -20,6 +21,5 @@ RUN \
     ruby-devel \
     rubygem-rexml \
     rpmdevtools \
-    scl-utils \
     tzdata && \
   dnf clean ${quiet} all
