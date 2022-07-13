@@ -8,6 +8,7 @@ ENV SCL=rh-ruby30
 RUN \
   quiet=$([ "${DEBUG}" = "yes" ] || echo "--quiet") && \
   dnf update -y ${quiet} && \
+  dnf install -y ${quiet} epel-release && \
   dnf install --enablerepo=powertools -y ${quiet} \
     ccache \
     gcc \
