@@ -257,7 +257,7 @@ if test -z "$MILTER_MANAGER_PACKAGE_PLATFORM"; then
 fi
 
 if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat"; then
-  distribution_version=$(. /etc/os-release && echo $VERSION_ID | grep -oE '^[0-9]+')
+  distribution_version=$(. /etc/os-release && echo $VERSION_ID | grep -oE '^[[0-9]]+')
   MILTER_MANAGER_PACKAGE_PLATFORM="${MILTER_MANAGER_PACKAGE_PLATFORM}${distribution_version}"
 fi
 
