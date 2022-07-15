@@ -257,21 +257,8 @@ if test -z "$MILTER_MANAGER_PACKAGE_PLATFORM"; then
 fi
 
 if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat"; then
-  distribution=$(cut -d " " -f 1 /etc/redhat-release | tr "A-Z" "a-z")
-  case "$distribution" in
-    centos)
-      if grep -q Linux /etc/redhat-release; then
-        distribution_version=$(cut -d " " -f 4 /etc/redhat-release)
-      else
-        distribution_version=$(cut -d " " -f 3 /etc/redhat-release)
-      fi
-    ;;
-    *)
-      : # do nothing
-    ;;
-  esac
-  distribution_version=$(echo "$distribution_version" | cut -d "." -f 1)
-  MILTER_MANAGER_PACKAGE_PLATFORM="${distribution}${distribution_version}"
+  distribution_version=$(. /etc/os-release && echo $VERSION_ID | grep -oE '^[[0-9]]+')
+  MILTER_MANAGER_PACKAGE_PLATFORM="${MILTER_MANAGER_PACKAGE_PLATFORM}${distribution_version}"
 fi
 
 if test "$MILTER_MANAGER_PACKAGE_PLATFORM" = ""; then
@@ -283,11 +270,12 @@ AM_CONDITIONAL(DEBIAN_PLATFORM,
                [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "debian"])
 AM_CONDITIONAL(REDHAT_PLATFORM,
                [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat" \
-                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos7" \
-                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos8"])
+                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat7" \
+                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat8"])
 AM_CONDITIONAL(REDHAT_SYSTEMD_PLATFORM,
-               [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos7" \
-                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "centos8"])
+               [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat7" \
+                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat8" \
+                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat9"])
 AM_CONDITIONAL(FREEBSD_PLATFORM,
                [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "freebsd"])
 AM_CONDITIONAL(SOLARIS_PLATFORM,
