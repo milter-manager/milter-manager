@@ -1,7 +1,11 @@
 %define ruby_version %(ruby -e "print RUBY_VERSION.tr('.', '')")
 %define ruby_libdir %(ruby -rrbconfig -e 'print RbConfig::CONFIG["rubylibdir"]')
 
+%if %{rhel} >= 8
+%define required_ruby_package ruby
+%else
 %define required_ruby_package rh-ruby30-ruby
+%endif
 
 %undefine _hardened_build
 
@@ -41,7 +45,11 @@ administration cost and combine milters flexibly.
 Summary: Runtime libraries for milter manager
 Group: System Environment/Libraries
 License: LGPLv3+
+%if %{rhel} >= 8
+Requires: rubygem-rexml
+%else
 Requires: rh-ruby30-rubygem-rexml
+%endif
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 

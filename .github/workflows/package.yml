@@ -69,6 +69,7 @@ jobs:
         label:
           - CentOS 7
           - Debian GNU/Linux bullseye
+          - AlmaLinux 8
         include:
           - label: CentOS 7
             id: centos-7
@@ -80,6 +81,11 @@ jobs:
             task-namespace: apt
             target: debian-bullseye
             test-docker-image: debian:bullseye
+          - label: AlmaLinux 8
+            id: almalinux-8
+            task-namespace: yum
+            target: almalinux-8
+            test-docker-image: almalinux:8
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
