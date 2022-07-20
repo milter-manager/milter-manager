@@ -271,7 +271,9 @@ AM_CONDITIONAL(DEBIAN_PLATFORM,
 AM_CONDITIONAL(REDHAT_PLATFORM,
                [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat" \
                   -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat7" \
-                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat8"])
+                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat8" \
+                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat9"])
+                  
 AM_CONDITIONAL(REDHAT_SYSTEMD_PLATFORM,
                [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat7" \
                   -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat8" \
