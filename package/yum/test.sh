@@ -21,7 +21,7 @@ os=$(. /etc/os-release && echo $ID)
 version=$(. /etc/os-release && echo $VERSION_ID | grep -oE '^[0-9]+')
 
 case ${version} in
-  8)
+  7)
     DNF=yum
     sudo ${DNF} install -y \
          centos-release-scl-rh \
