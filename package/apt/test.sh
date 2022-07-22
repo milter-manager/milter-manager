@@ -27,7 +27,7 @@ architecture=$(dpkg --print-architecture)
 # curl -s https://packagecloud.io/install/repositories/milter-manager/repos/script.deb.sh | \
 #   sudo bash
 
-repositories_dir=/host/package/apt/repositories
+repositories_dir=/vagrant/package/apt/repositories
 sudo apt install -V -y \
   ${repositories_dir}/debian/pool/${code_name}/*/*/*/*_{${architecture},all}.deb
 
