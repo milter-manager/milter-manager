@@ -58,8 +58,6 @@ delegate_glib_log_handlers (void)
 void
 milter_init (void)
 {
-    const gchar *memory_profile_env;
-
     if (initialized) {
         remove_glib_log_handlers();
         delegate_glib_log_handlers();
@@ -67,13 +65,6 @@ milter_init (void)
     }
 
     initialized = TRUE;
-
-    milter_memory_profile_init();
-
-    memory_profile_env = g_getenv("MILTER_MEMORY_PROFILE");
-    if (memory_profile_env && g_str_equal(memory_profile_env, "yes")) {
-        milter_memory_profile_enable();
-    }
 
 #if !GLIB_CHECK_VERSION(2, 32, 0)
     if (!g_thread_supported())
@@ -104,8 +95,6 @@ milter_quit (void)
     g_log_remove_handler("milter-core", milter_core_log_handler_id);
 
     milter_logger_internal_quit();
-
-    milter_memory_profile_quit();
 
     initialized = FALSE;
 }

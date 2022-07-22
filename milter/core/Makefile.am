@@ -39,7 +39,6 @@ milter_core_public_headers =		\
 	milter-esmtp.h			\
 	milter-message-result.h		\
 	milter-session-result.h		\
-	milter-memory-profile.h		\
 	milter-event-loop.h		\
 	milter-libev-event-loop.h	\
 	milter-glib-event-loop.h
@@ -90,7 +89,6 @@ libmilter_core_la_SOURCES =		\
 	milter-esmtp.c			\
 	milter-message-result.c		\
 	milter-session-result.c		\
-	milter-memory-profile.c		\
 	milter-event-loop.c		\
 	milter-libev-event-loop.c	\
 	milter-glib-event-loop.c	\

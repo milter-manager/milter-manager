@@ -45,7 +45,6 @@
 #include <milter/core/milter-finished-emittable.h>
 #include <milter/core/milter-reply-signals.h>
 #include <milter/core/milter-message-result.h>
-#include <milter/core/milter-memory-profile.h>
 #include <milter/core/milter-event-loop.h>
 #include <milter/core/milter-glib-event-loop.h>
 #include <milter/core/milter-libev-event-loop.h>
