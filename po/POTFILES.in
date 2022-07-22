@@ -16,7 +16,6 @@ milter/core/milter-error-emittable.c
 milter/core/milter-esmtp.c
 milter/core/milter-event-loop.c
 milter/core/milter-finished-emittable.c
-milter/core/milter-glib-compatible.c
 milter/core/milter-glib-event-loop.c
 milter/core/milter-headers.c
 milter/core/milter-libev-event-loop.c
