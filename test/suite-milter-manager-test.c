@@ -17,6 +17,10 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
 #include <milter/manager.h>
 
 void milter_manager_test_warmup (void);

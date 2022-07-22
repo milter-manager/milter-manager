@@ -17,6 +17,10 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
 #include <milter/manager/milter-manager-configuration.h>
 #include <milter/manager/milter-manager-children.h>
 

@@ -20,6 +20,10 @@
 #ifndef __RB_MILTER_MANAGER_PRIVATE_H__
 #define __RB_MILTER_MANAGER_PRIVATE_H__
 
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
 #include "rb-milter-manager.h"
 
 extern void Init_milter_manager (void);

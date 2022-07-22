@@ -17,6 +17,10 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
 #include <string.h>
 
 #include <sys/socket.h>
@@ -140,8 +144,8 @@ static gboolean default_handler_disconnected;
 void
 cut_startup (void)
 {
-    MILTER_TYPE_MANAGER_CHILD_ERROR;
-    MILTER_TYPE_SERVER_CONTEXT_ERROR;
+    (void)MILTER_TYPE_MANAGER_CHILD_ERROR;
+    (void)MILTER_TYPE_SERVER_CONTEXT_ERROR;
 }
 
 static void

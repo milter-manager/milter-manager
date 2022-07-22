@@ -17,6 +17,10 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
 #include <milter/core/milter-logger.h>
 #include <milter/core/milter-utils.h>
 #include <milter/core/milter-enum-types.h>

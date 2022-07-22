@@ -17,6 +17,10 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
 #include <gcutter.h>
 
 #include <milter/core/milter-finished-emittable.h>

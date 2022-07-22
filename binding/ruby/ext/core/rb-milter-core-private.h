@@ -20,6 +20,10 @@
 #ifndef __RB_MILTER_CORE_PRIVATE_H__
 #define __RB_MILTER_CORE_PRIVATE_H__
 
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
 #include "rb-milter-core.h"
 
 void Init_milter_core (void);

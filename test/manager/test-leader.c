@@ -17,6 +17,10 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
 #include <string.h>
 
 #include <milter/manager/milter-manager-leader.h>
@@ -71,8 +75,8 @@ static MilterStatus response_status;
 void
 cut_startup (void)
 {
-    MILTER_TYPE_CLIENT_CONTEXT_ERROR;
-    MILTER_TYPE_MANAGER_CHILDREN_ERROR;
+    (void)MILTER_TYPE_CLIENT_CONTEXT_ERROR;
+    (void)MILTER_TYPE_MANAGER_CHILDREN_ERROR;
 }
 
 static void

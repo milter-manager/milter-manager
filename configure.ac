@@ -141,7 +141,16 @@ fi
 dnl **************************************************************
 dnl Check for GLib.
 dnl **************************************************************
-GLIB_REQUIRED=2.24.0
+dnl CentOS 7: GLib 2.50
+dnl AlmaLinux 8: GLib 2.56
+dnl AlmaLinux 9: GLib 2.68
+dnl Ubuntu 18.04: GLib 2.56
+dnl Ubuntu 20.04: GLib 2.64
+dnl Ubuntu 22.04: GLib 2.72
+GLIB_REQUIRED=2.50.0
+AC_DEFINE(GLIB_VERSION_MIN_REQUIRED,
+	  GLIB_VERSION_2_50,
+          [Minimum required GLib version])
 AC_SUBST(GLIB_REQUIRED)
 AM_PATH_GLIB_2_0($GLIB_REQUIRED,
                  [],
