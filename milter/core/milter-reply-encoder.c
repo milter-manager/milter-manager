@@ -349,7 +349,7 @@ milter_reply_encoder_encode_change_from (MilterReplyEncoder *encoder,
     g_string_append_c(buffer, MILTER_REPLY_CHANGE_FROM);
     g_string_append(buffer, from);
     g_string_append_c(buffer, '\0');
-    if (parameters && parameters != '\0') {
+    if (parameters && parameters[0] != '\0') {
         g_string_append(buffer, parameters);
         g_string_append_c(buffer, '\0');
     }
