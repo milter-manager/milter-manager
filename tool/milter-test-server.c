@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "../config.h"
-#endif /* HAVE_CONFIG_H */
+#  include <config.h>
+#endif
 
 #include <stdlib.h>
 #include <string.h>
@@ -40,7 +40,6 @@
 
 #include <milter/server.h>
 #include <milter/core.h>
-#include <milter/core/milter-glib-compatible.h>
 
 #define DEFAULT_NEGOTIATE_VERSION 6
 #define MILTER_TEST_SERVER_ALL_TIMEOUTS_UNSPECIFIED -1.0
