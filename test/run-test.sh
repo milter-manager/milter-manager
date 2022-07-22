@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -44,15 +44,15 @@ if test -z "$CUTTER"; then
     CUTTER="$(${MAKE} -s -C "$abs_top_builddir" echo-cutter)"
 fi
 
-CUTTER_ARGS=
+CUTTER_ARGS="--notify=no"
 CUTTER_WRAPPER=
 if test x"$CUTTER_DEBUG" = x"yes"; then
     CUTTER_WRAPPER="$abs_top_builddir/libtool --mode=execute gdb --args"
-    CUTTER_ARGS="--keep-opening-modules"
+    CUTTER_ARGS="${CUTTER_ARGS} --keep-opening-modules"
 elif test x"$CUTTER_CHECK_LEAK" = x"yes"; then
     CUTTER_WRAPPER="$abs_top_builddir/libtool --mode=execute valgrind "
     CUTTER_WRAPPER="$CUTTER_WRAPPER --leak-check=full --show-reachable=yes -v"
-    CUTTER_ARGS="--keep-opening-modules"
+    CUTTER_ARGS="${CUTTER_ARGS} --keep-opening-modules"
 fi
 
 export CUTTER
