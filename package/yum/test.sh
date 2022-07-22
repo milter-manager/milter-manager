@@ -47,7 +47,7 @@ repositories_dir=/vagrant/package/yum/repositories
 sudo ${DNF} install -y \
   ${repositories_dir}/${os}/${version}/x86_64/Packages/*.rpm
 
-[ ! sudo systemctl status milter-manager ]
+! sudo systemctl status milter-manager
 sudo systemctl enable --now milter-manager
 sudo systemctl status milter-manager
 
