@@ -20,25 +20,22 @@ set -exu
 os=$(. /etc/os-release && echo $ID)
 version=$(. /etc/os-release && echo $VERSION_ID | grep -oE '^[0-9]+')
 
-case ${os} in
-  centos)
+case ${version} in
+  8)
     DNF=yum
-    sudo yum install -y \
-      centos-release-scl-rh \
-      epel-release
+    sudo ${DNF} install -y \
+         centos-release-scl-rh \
+         epel-release
     ;;
-  almalinux)
-    case ${version} in
-      8)
-        DNF="dnf --enablerepo=powertools"
-        sudo dnf --enablerepo=powertools install -y epel-release
-        sudo dnf module -y enable ruby:3.0
-        ;;
-      9)
-        DNF="dnf --enablerepo=crb"
-        sudo dnf --enablerepo=crb install -y epel-release
-        ;;
-    esac
+  8)
+    DNF="dnf --enablerepo=powertools"
+    sudo ${DNF} install -y epel-release
+    sudo ${DNF} module -y enable ruby:3.0
+    ;;
+  9)
+    DNF="dnf --enablerepo=crb"
+    sudo ${DNF} install -y epel-release
+    DNF="${DNF} --enablerepo=epel-testing"
     ;;
 esac
 
@@ -50,8 +47,9 @@ repositories_dir=/vagrant/package/yum/repositories
 sudo ${DNF} install -y \
   ${repositories_dir}/${os}/${version}/x86_64/Packages/*.rpm
 
+[ ! sudo systemctl status milter-manager ]
 sudo systemctl enable --now milter-manager
-systemctl status milter-manager
+sudo systemctl status milter-manager
 
 # TODO: Run tests or something
 
