@@ -75,8 +75,9 @@ static MilterStatus response_status;
 void
 cut_startup (void)
 {
-    (void)MILTER_TYPE_CLIENT_CONTEXT_ERROR;
-    (void)MILTER_TYPE_MANAGER_CHILDREN_ERROR;
+    /* Ensure defining types */
+    g_type_name(MILTER_TYPE_CLIENT_CONTEXT_ERROR);
+    g_type_name(MILTER_TYPE_MANAGER_CHILDREN_ERROR);
 }
 
 static void

@@ -144,8 +144,9 @@ static gboolean default_handler_disconnected;
 void
 cut_startup (void)
 {
-    (void)MILTER_TYPE_MANAGER_CHILD_ERROR;
-    (void)MILTER_TYPE_SERVER_CONTEXT_ERROR;
+    /* Ensure defining types */
+    g_type_name(MILTER_TYPE_MANAGER_CHILD_ERROR);
+    g_type_name(MILTER_TYPE_SERVER_CONTEXT_ERROR);
 }
 
 static void
