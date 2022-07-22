@@ -53,7 +53,6 @@ Init_milter_core (void)
     milter_init();
 
     Init_milter_logger();
-    Init_milter_memory_profile();
     Init_milter_socket_address();
     Init_milter_utils();
     Init_milter_connection();
