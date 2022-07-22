@@ -34,7 +34,6 @@
 #include <milter/client.h>
 
 static gboolean report_request = TRUE;
-static gboolean report_memory_profile = FALSE;
 static MilterClient *client = NULL;
 
 static gboolean
@@ -53,9 +52,6 @@ static const GOptionEntry option_entries[] =
     {"no-report-request", 0, G_OPTION_FLAG_REVERSE,
      G_OPTION_ARG_NONE, &report_request,
      N_("Don't report request values"), NULL},
-    {"report-memory-profile", 0, 0, G_OPTION_ARG_NONE, &report_memory_profile,
-     N_("Report memory profile. "
-        "Need to set MILTER_MEMORY_PROFILE=yes environment variable."), NULL},
     {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, print_version,
      N_("Show version"), NULL},
     {NULL}
@@ -311,66 +307,6 @@ cb_error (MilterErrorEmittable *emittable, GError *error,
     g_print("ERROR: %s", error->message);
 }
 
-static guint64
-process_memory_usage_in_kb (void)
-{
-    guint64 usage = 0;
-    gchar *command_line, *result;
-
-    command_line = g_strdup_printf("ps -o rss= -p %u", getpid());
-    if (g_spawn_command_line_sync(command_line, &result, NULL, NULL, NULL)) {
-        usage = g_ascii_strtoull(result, NULL, 10);
-        g_free(result);
-    }
-    g_free(command_line);
-
-    return usage;
-}
-
-static void
-cb_maintain (MilterClient *client, gpointer user_data)
-{
-    gboolean success;
-    guint64 memory_usage_in_kb;
-    gsize n_allocates, n_zero_initializes, n_frees;
-    GString *report;
-
-    report = g_string_new("[maintain][memory] ");
-    memory_usage_in_kb = process_memory_usage_in_kb();
-    g_string_append_printf(report,
-                           "process: (%" G_GUINT64_FORMAT "KB) ",
-                           memory_usage_in_kb);
-
-    success = milter_memory_profile_get_data(&n_allocates,
-                                             &n_zero_initializes,
-                                             &n_frees);
-    if (success) {
-        guint64 n_used_in_kb;
-
-        n_used_in_kb = (n_allocates - n_frees) / 1024;
-        g_string_append_printf(report,
-                               "GLib: (%" G_GUINT64_FORMAT "KB)",
-                               n_used_in_kb);
-        if (memory_usage_in_kb == 0) {
-            g_string_append(report, "(NaN) ");
-        } else {
-            g_string_append_printf(report,
-                                   "(%.2f%%) ",
-                                   (double)n_used_in_kb / memory_usage_in_kb);
-        }
-        g_string_append_printf(report,
-                               "allocated:%" G_GSIZE_FORMAT " ",
-                               n_allocates);
-        g_string_append_printf(report,
-                               "freed:%" G_GSIZE_FORMAT "(%.2f%%)",
-                               n_frees,
-                               (double)n_frees / n_allocates * 100);
-    }
-
-    milter_statistics("%s", report->str);
-    g_string_free(report, TRUE);
-}
-
 static void
 setup_client_signals (MilterClient *client)
 {
@@ -379,9 +315,6 @@ setup_client_signals (MilterClient *client)
 
     CONNECT(connection_established);
     CONNECT(error);
-
-    if (report_memory_profile)
-        CONNECT(maintain);
 
 #undef CONNECT
 }
