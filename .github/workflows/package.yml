@@ -149,11 +149,51 @@ jobs:
           files: |
             ${{ matrix.id }}.tar.gz
 
-      # Test
-      - name: Test
+  test:
+    name: Test
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        label:
+          - CentOS 7
+          - Debian GNU/Linux bullseye
+          - AlmaLinux 8
+          - AlmaLinux 9
+        include:
+          - label: CentOS 7
+            id: centos-7
+            task-namespace: yum
+            target: centos-7
+            test-docker-image: centos:7
+          - label: Debian GNU/Linux bullseye
+            id: debian-bullseye
+            task-namespace: apt
+            target: debian-bullseye
+            test-docker-image: debian:bullseye
+          - label: AlmaLinux 8
+            id: almalinux-8
+            task-namespace: yum
+            target: almalinux-8
+            test-docker-image: almalinux:8
+          - label: AlmaLinux 9
+            id: almalinux-9
+            task-namespace: yum
+            target: almalinux-9
+            test-docker-image: almalinux:9
+    runs-on: macos-12
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: package-${{ matrix.id }}
+          path: package/${{ matrix.task-namespace }}/repositories
+      - name: Run VM
         run: |
-          docker run \
-            --rm \
-            --volume ${PWD}:/host:ro \
-            ${{ matrix.test-docker-image }} \
-            /host/package/${{ matrix.task-namespace }}/test.sh
+          vagrant up ${{ matrix.id }}
+      - name: Run test
+        run: |
+          vagrant \
+            ssh ${{ matrix.id }} \
+            -- \
+            /vagrant/package/${{ matrix.task-namespace }}/test.sh

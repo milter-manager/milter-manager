@@ -17,22 +17,25 @@
 
 set -exu
 
-os=$(cut -d: -f4 /etc/system-release-cpe)
-case ${os} in
-  centos)
-    version=$(cut -d: -f5 /etc/system-release-cpe)
-    ;;
-  *) # For AlmaLinux
-    version=$(cut -d: -f5 /etc/system-release-cpe | sed -e 's/\.[0-9]$//')
-    ;;
-esac
+os=$(. /etc/os-release && echo $ID)
+version=$(. /etc/os-release && echo $VERSION_ID | grep -oE '^[0-9]+')
 
 case ${version} in
   7)
     DNF=yum
+    sudo ${DNF} install -y \
+         centos-release-scl-rh \
+         epel-release
     ;;
-  *)
+  8)
     DNF="dnf --enablerepo=powertools"
+    sudo ${DNF} install -y epel-release
+    sudo ${DNF} module -y enable ruby:3.0
+    ;;
+  9)
+    DNF="dnf --enablerepo=crb"
+    sudo ${DNF} install -y epel-release
+    DNF="${DNF} --enablerepo=epel-testing"
     ;;
 esac
 
@@ -40,15 +43,13 @@ esac
 # curl -s https://packagecloud.io/install/repositories/milter-manager/repos/script.rpm.sh | \
 #   sudo bash
 
-${DNF} install -y \
-  centos-release-scl-rh \
-  epel-release
-
-repositories_dir=/host/package/yum/repositories
-${DNF} install -y \
+repositories_dir=/vagrant/package/yum/repositories
+sudo ${DNF} install -y \
   ${repositories_dir}/${os}/${version}/x86_64/Packages/*.rpm
 
-systemctl status milter-manager
+! sudo systemctl status milter-manager
+sudo systemctl enable --now milter-manager
+sudo systemctl status milter-manager
 
 # TODO: Run tests or something
 
