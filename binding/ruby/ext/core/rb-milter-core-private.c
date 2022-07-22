@@ -27,7 +27,11 @@
 #include "rb-milter-core-private.h"
 
 static VALUE
-rval2macro (VALUE rb_data, VALUE user_data)
+rval2macro (VALUE rb_data,
+            VALUE user_data,
+            int argc,
+            const VALUE *argv,
+            VALUE block)
 {
     VALUE rb_key, rb_value;
     gchar *key, *value;
@@ -47,10 +51,10 @@ rval2macro (VALUE rb_data, VALUE user_data)
 GHashTable *
 rb_milter__rval2macros (VALUE rb_macros)
 {
-    GHashTable *macros;
-
-    macros = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
-    rb_iterate(rb_each, rb_macros, rval2macro, (VALUE)macros);
+    GHashTable *macros = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
+    ID id_each;
+    CONST_ID(id_each, "each");
+    rb_block_call(rb_macros, id_each, 0, NULL, rval2macro, (VALUE)macros);
     return macros;
 }
 
