@@ -31,12 +31,12 @@ case ${os} in
     case ${version} in
       8)
         DNF="dnf --enablerepo=powertools"
-        dnf --enablerepo=powertools -y epel-release
+        dnf --enablerepo=powertools install -y epel-release
         dnf module -y enable ruby:3.0
         ;;
       9)
         DNF="dnf --enablerepo=crb"
-        dnf --enablerepo=crb -y epel-release
+        dnf --enablerepo=crb install -y epel-release
         ;;
     esac
     ;;
