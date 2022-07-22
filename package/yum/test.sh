@@ -23,7 +23,7 @@ version=$(. /etc/os-release && echo $VERSION_ID | grep -oE '^[0-9]+')
 case ${os} in
   centos)
     DNF=yum
-    yum install -y \
+    sudo yum install -y \
       centos-release-scl-rh \
       epel-release
     ;;
@@ -31,12 +31,12 @@ case ${os} in
     case ${version} in
       8)
         DNF="dnf --enablerepo=powertools"
-        dnf --enablerepo=powertools install -y epel-release
-        dnf module -y enable ruby:3.0
+        sudo dnf --enablerepo=powertools install -y epel-release
+        sudo dnf module -y enable ruby:3.0
         ;;
       9)
         DNF="dnf --enablerepo=crb"
-        dnf --enablerepo=crb install -y epel-release
+        sudo dnf --enablerepo=crb install -y epel-release
         ;;
     esac
     ;;
@@ -47,7 +47,7 @@ esac
 #   sudo bash
 
 repositories_dir=/vagrant/package/yum/repositories
-${DNF} install -y \
+sudo ${DNF} install -y \
   ${repositories_dir}/${os}/${version}/x86_64/Packages/*.rpm
 
 systemctl status milter-manager
