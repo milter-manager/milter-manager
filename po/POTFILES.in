@@ -22,7 +22,6 @@ milter/core/milter-libev-event-loop.c
 milter/core/milter-logger.c
 milter/core/milter-macros-requests.c
 milter/core/milter-marshalers.c
-milter/core/milter-memory-profile.c
 milter/core/milter-message-result.c
 milter/core/milter-option.c
 milter/core/milter-protocol-agent.c
