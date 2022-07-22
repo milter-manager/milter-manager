@@ -33,7 +33,7 @@ jobs:
         working-directory: .build
       - run: make -j$(nproc)
         working-directory: .build
-      - run: make distcheck
+      - run: make dist
         working-directory: .build
       - run: mv .build/milter-manager-*.tar.gz ./
       - name: Show test/tool/ log
