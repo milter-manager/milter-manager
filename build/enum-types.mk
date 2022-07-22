@@ -29,6 +29,7 @@ stamp-$(enum_source_prefix)-c: $(enum_sources_h) $(enum_types_mk) $(enum_types_t
 	  $(GLIB_MKENUMS) \
 	    --template $${abs_build_enum_types_template_c} \
 	    $(enum_sources_h)) > tmp-$(enum_source_prefix).c && \
+	rm -f enum-types-template.c && \
 	(cmp -s tmp-$(enum_source_prefix).c $(enum_source_prefix).c || \
 	  cp tmp-$(enum_source_prefix).c $(enum_source_prefix).c ) && \
 	rm -f tmp-$(enum_source_prefix).c && \
