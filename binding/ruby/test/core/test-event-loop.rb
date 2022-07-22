@@ -1,4 +1,4 @@
-# Copyright (C) 2011-2013  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2011-2022  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -116,28 +116,29 @@ class TestEventLoop < Test::Unit::TestCase
   end
 
   def test_watch_child
+    omit("watch_child() from Ruby isn't stable...")
     callback_arguments = nil
-    pid = fork do
-      exit!(true)
+    IO.pipe do |parent_read, child_write|
+      pid = spawn(RbConfig.ruby, "-e", "puts('write')", out: child_write)
+      @tags << @loop.watch_child(pid) do |*args|
+        callback_arguments = args
+        false
+      end
+      child_write.close
+      parent_read.gets
+      sleep(0.1)
+      assert_true(@loop.iterate(:may_block => false))
+      assert_equal(1, callback_arguments.size)
+      status = callback_arguments[0]
+      assert_equal([pid, true, true],
+                   [status.pid, status.exited?, status.success?])
     end
-    @tags << @loop.watch_child(pid) do |*args|
-      callback_arguments = args
-      false
-    end
-    sleep(0.01)
-    assert_true(@loop.iterate(:may_block => false))
-    assert_equal(1, callback_arguments.size)
-    status = callback_arguments[0]
-    assert_equal([pid, true, true],
-                 [status.pid, status.exited?, status.success?])
   end
 
   def test_watch_child_not_reaped
+    omit("watch_child() from Ruby isn't stable...")
     callback_arguments = nil
-    pid = fork do
-      sleep(0.1)
-      exit!(true)
-    end
+    pid = spawn(RbConfig.ruby, "-e", "sleep(0.1)")
     @tags << @loop.watch_child(pid) do |*args|
       callback_arguments = args
       false
@@ -147,10 +148,8 @@ class TestEventLoop < Test::Unit::TestCase
   end
 
   def test_watch_child_without_block
-    omit("This may be blocked")
-    pid = fork do
-      exit!(true)
-    end
+    omit("watch_child() from Ruby isn't stable...")
+    pid = spawn(RbConfig.ruby, "-e", "nil")
     begin
       assert_raise(ArgumentError.new("watch child block is missing")) do
         @tags << @loop.watch_child(pid)
@@ -161,78 +160,108 @@ class TestEventLoop < Test::Unit::TestCase
   end
 
   def test_watch_child_exception
-    n_called_before = n_called_after = 0
-    pid = fork do
-      exit!(true)
+    omit("watch_child() from Ruby isn't stable...")
+    IO.pipe do |parent_read, child_write|
+      n_called_before = n_called_after = 0
+      pid = spawn(RbConfig.ruby, "-e", "puts('write')", out: child_write)
+      @tags << @loop.watch_child(pid) do |*args|
+        n_called_before += 1
+        raise "should be rescued"
+        n_called_after += 1
+      end
+      child_write.close
+      parent_read.gets
+      sleep(0.1)
+      assert_nothing_raised {@loop.iterate(:may_block => false)}
+      assert_equal([1, 0], [n_called_before, n_called_after])
     end
-    @tags << @loop.watch_child(pid) do |*args|
-      n_called_before += 1
-      raise "should be rescued"
-      n_called_after += 1
-    end
-    sleep(0.01)
-    assert_nothing_raised {@loop.iterate(:may_block => false)}
-    assert_equal([1, 0], [n_called_before, n_called_after])
   end
 
   def test_watch_io
     callback_arguments = nil
     read_data = nil
-    parent_read, child_write = IO.pipe
-    flush_notify_read, flush_notify_write = IO.pipe
-    pid = fork do
-      child_write.puts("child")
-      child_write.flush
-      flush_notify_write.puts("flushed")
-      flush_notify_write.flush
-      sleep(0.1)
-      exit!(true)
+    IO.pipe do |parent_read, child_write|
+      IO.pipe do |flush_notify_read, flush_notify_write|
+        pid = spawn(RbConfig.ruby,
+                    "-e",
+                    "$stdout.puts('child'); " +
+                    "$stdout.flush; " +
+                    "$stderr.puts('flushed'); " +
+                    "$stderr.flush; " +
+                    "sleep(0.1)",
+                    out: child_write,
+                    err: flush_notify_write)
+        begin
+          child_write.close
+          flush_notify_write.close
+          input = GLib::IOChannel.new(parent_read)
+          @tags << @loop.watch_io(input,
+                                  GLib::IOChannel::IN) do |channel, condition|
+            callback_arguments = [channel.class, condition]
+            read_data = channel.readline
+            false
+          end
+          flush_notify_read.gets
+          assert_true(@loop.iterate(:may_block => false))
+          assert_equal([[input.class, GLib::IOChannel::IN], "child\n"],
+                       [callback_arguments, read_data])
+        ensure
+          Process.waitpid(pid)
+        end
+      end
     end
-    input = GLib::IOChannel.new(parent_read)
-    @tags << @loop.watch_io(input, GLib::IOChannel::IN) do |channel, condition|
-      callback_arguments = [channel.class, condition]
-      read_data = channel.readline
-      false
-    end
-    flush_notify_read.gets
-    assert_true(@loop.iterate(:may_block => false))
-    assert_equal([[input.class, GLib::IOChannel::IN], "child\n"],
-                 [callback_arguments, read_data])
   end
 
   def test_watch_io_without_block
-    parent_read, child_write = IO.pipe
-    pid = fork do
-      child_write.puts("child")
-      exit!(true)
-    end
-    input = GLib::IOChannel.new(parent_read)
-    assert_raise(ArgumentError.new("watch IO block is missing")) do
-      @tags << @loop.watch_io(input, GLib::IOChannel::IN)
+    IO.pipe do |parent_read, child_write|
+      pid = spawn(RbConfig.ruby, "-e", "puts('child')", out: child_write)
+      begin
+        child_write.close
+        input = GLib::IOChannel.new(parent_read)
+        assert_raise(ArgumentError.new("watch IO block is missing")) do
+          @tags << @loop.watch_io(input, GLib::IOChannel::IN)
+        end
+      ensure
+        Process.waitpid(pid)
+      end
     end
   end
 
   def test_watch_io_exception
     n_called_before = n_called_after = 0
     sleep_time = 0.01
-    parent_read, child_write = IO.pipe
-    pid = fork do
-      child_write.puts("child")
-      sleep(sleep_time)
-      child_write.puts("child")
-      exit!(true)
+    IO.pipe do |parent_read, child_write|
+      IO.pipe do |notify_read, notify_write|
+        pid = spawn(RbConfig.ruby,
+                    "-e",
+                    "$stdout.puts('child'); " +
+                    "$stdout.flush; " +
+                    "$stderr.puts('notify'); " +
+                    "sleep(#{sleep_time}); " +
+                    "$stdout.puts('child')",
+                    out: child_write,
+                    err: notify_write)
+        begin
+          child_write.close
+          notify_write.close
+          input = GLib::IOChannel.new(parent_read)
+          @tags << @loop.watch_io(input,
+                                  GLib::IOChannel::IN) do |channel, condition|
+            n_called_before += 1
+            raise "should be rescued"
+            n_called_after += 1
+          end
+          notify_read.gets
+          sleep(sleep_time * 2)
+          assert_nothing_raised {@loop.iterate(:may_block => false)}
+          assert_equal([1, 0], [n_called_before, n_called_after])
+          assert_nothing_raised {@loop.iterate(:may_block => false)}
+          assert_equal([1, 0], [n_called_before, n_called_after])
+        ensure
+          Process.waitpid(pid)
+        end
+      end
     end
-    input = GLib::IOChannel.new(parent_read)
-    @tags << @loop.watch_io(input, GLib::IOChannel::IN) do |channel, condition|
-      n_called_before += 1
-      raise "should be rescued"
-      n_called_after += 1
-    end
-    sleep(sleep_time)
-    assert_nothing_raised {@loop.iterate(:may_block => false)}
-    assert_equal([1, 0], [n_called_before, n_called_after])
-    assert_nothing_raised {@loop.iterate(:may_block => false)}
-    assert_equal([1, 0], [n_called_before, n_called_after])
   end
 
   def test_run

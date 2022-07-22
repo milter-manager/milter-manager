@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2021  Sutou Kouhei <kou@clear-code.com>
+# Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -13,11 +13,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'fileutils'
-require 'pathname'
-require 'socket'
-require 'tempfile'
-require 'tmpdir'
+require "fileutils"
+require "pathname"
+require "rbconfig"
+require "socket"
+require "tempfile"
+require "tmpdir"
 
 module MilterTestUtils
   def fixture_path(*paths)
@@ -27,9 +28,9 @@ end
 
 Milter::Logger.default.target_level = Milter::LOG_LEVEL_NONE
 
-require 'milter-encoder-test-utils'
-require 'milter-manager-encoder-test-utils'
-require 'milter-detector-test-utils'
-require 'milter-parse-test-utils'
-require 'milter-event-loop-test-utils'
-require 'milter-multi-process-test-utils'
+require "milter-encoder-test-utils"
+require "milter-manager-encoder-test-utils"
+require "milter-detector-test-utils"
+require "milter-parse-test-utils"
+require "milter-event-loop-test-utils"
+require "milter-multi-process-test-utils"
