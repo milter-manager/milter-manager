@@ -27,7 +27,6 @@
 /binding/ruby/ruby-milter/milter/client.rb
 /binding/ruby/ruby-milter/milter/core.rb
 /binding/ruby/ruby-milter/milter/server.rb
-/build
 /config
 /config.h
 /config.h.in
