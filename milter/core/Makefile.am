@@ -92,8 +92,6 @@ libmilter_core_la_SOURCES =		\
 	milter-event-loop.c		\
 	milter-libev-event-loop.c	\
 	milter-glib-event-loop.c	\
-	milter-glib-compatible.c	\
-	milter-glib-compatible.h	\
 	milter-core-internal.h
 
 libmilter_core_la_LIBADD =		\

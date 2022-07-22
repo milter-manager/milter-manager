@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -18,8 +18,8 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#  include "../../config.h"
-#endif /* HAVE_CONFIG_H */
+#  include <config.h>
+#endif
 
 #include <string.h>
 #include <stdlib.h>
@@ -35,7 +35,6 @@
 #include <milter/core/milter-marshalers.h>
 #include "../client.h"
 #include "milter-client-private.h"
-#include "../core/milter-glib-compatible.h"
 
 enum
 {
@@ -92,7 +91,7 @@ struct _MilterClientPrivate
     guint timeout;
     GIOChannel *listen_channel;
     gint listen_backlog;
-    GMutex *quit_mutex;
+    GMutex quit_mutex;
     gboolean quitting;
     guint unix_socket_mode;
     guint default_unix_socket_mode;
@@ -149,6 +148,7 @@ typedef gboolean (*AcceptConnectionFunction) (MilterClient *client, gint fd);
 MILTER_DEFINE_ERROR_EMITTABLE_TYPE(MilterClient, _milter_client, G_TYPE_OBJECT)
 #undef _milter_client_get_type
 
+static void finalize       (GObject         *object);
 static void dispose        (GObject         *object);
 static void set_property   (GObject         *object,
                             guint            prop_id,
@@ -235,6 +235,7 @@ _milter_client_class_init (MilterClientClass *klass)
     gobject_class = G_OBJECT_CLASS(klass);
     client_class = MILTER_CLIENT_CLASS(klass);
 
+    gobject_class->finalize     = finalize;
     gobject_class->dispose      = dispose;
     gobject_class->set_property = set_property;
     gobject_class->get_property = get_property;
@@ -499,7 +500,7 @@ _milter_client_init (MilterClient *client)
     priv->timeout = 7210;
     priv->listen_channel = NULL;
     priv->listen_backlog = -1;
-    priv->quit_mutex = g_mutex_new();
+    g_mutex_init(&(priv->quit_mutex));
     priv->quitting = FALSE;
     priv->unix_socket_mode = 0;
     priv->default_unix_socket_mode = 0660;
@@ -597,12 +598,12 @@ finish_processing (MilterClientProcessData *data)
 
     if (data->priv->quitting && data->priv->event_loop) {
         n_processing_sessions = data->priv->n_processing_sessions;
-        g_mutex_lock(data->priv->quit_mutex);
+        g_mutex_lock(&(data->priv->quit_mutex));
         if (data->priv->quitting && n_processing_sessions == 0) {
             milter_debug("[%u] [client][loop][quit]", tag);
             milter_event_loop_quit(data->priv->event_loop);
         }
-        g_mutex_unlock(data->priv->quit_mutex);
+        g_mutex_unlock(&(data->priv->quit_mutex));
     }
 
     if (milter_need_debug_log()) {
@@ -736,6 +737,18 @@ dispose_syslog_logger (MilterClientPrivate *priv)
 }
 
 static void
+finalize (GObject *object)
+{
+    MilterClientPrivate *priv;
+
+    priv = MILTER_CLIENT_GET_PRIVATE(object);
+
+    g_mutex_clear(&(priv->quit_mutex));
+
+    G_OBJECT_CLASS(_milter_client_parent_class)->finalize(object);
+}
+
+static void
 dispose (GObject *object)
 {
     MilterClientPrivate *priv;
@@ -783,11 +796,6 @@ dispose (GObject *object)
     if (priv->listen_channel) {
         g_io_channel_unref(priv->listen_channel);
         priv->listen_channel = NULL;
-    }
-
-    if (priv->quit_mutex) {
-        g_mutex_free(priv->quit_mutex);
-        priv->quit_mutex = NULL;
     }
 
     if (priv->unix_socket_group) {
@@ -1473,7 +1481,7 @@ single_thread_cb_idle_unlock_quit_mutex (gpointer data)
 
     priv = MILTER_CLIENT_GET_PRIVATE(data);
 
-    g_mutex_unlock(priv->quit_mutex);
+    g_mutex_unlock(&(priv->quit_mutex));
 
     return FALSE;
 }
@@ -1490,9 +1498,9 @@ single_thread_accept_loop_run (MilterClient *client,
                                     single_thread_cb_idle_unlock_quit_mutex,
                                     client, NULL);
 
-    g_mutex_lock(priv->quit_mutex);
+    g_mutex_lock(&(priv->quit_mutex));
     if (priv->quitting) {
-        g_mutex_unlock(priv->quit_mutex);
+        g_mutex_unlock(&(priv->quit_mutex));
     } else {
         milter_event_loop_run(accept_loop);
     }
@@ -1528,9 +1536,9 @@ single_thread_start_accept (MilterClient *client, GError **error)
         return FALSE;
     }
 
-    g_mutex_lock(priv->quit_mutex);
+    g_mutex_lock(&(priv->quit_mutex));
     if (priv->quitting) {
-        g_mutex_unlock(priv->quit_mutex);
+        g_mutex_unlock(&(priv->quit_mutex));
     } else {
         MilterEventLoop *loop;
         loop = milter_client_get_event_loop(client);
@@ -2515,7 +2523,7 @@ milter_client_shutdown (MilterClient *client)
 
     priv = MILTER_CLIENT_GET_PRIVATE(client);
 
-    g_mutex_lock(priv->quit_mutex);
+    g_mutex_lock(&(priv->quit_mutex));
     if (!priv->quitting) {
         priv->quitting = TRUE;
 
@@ -2534,7 +2542,7 @@ milter_client_shutdown (MilterClient *client)
         if (priv->n_processing_sessions == 0)
             milter_event_loop_quit(priv->event_loop);
     }
-    g_mutex_unlock(priv->quit_mutex);
+    g_mutex_unlock(&(priv->quit_mutex));
 }
 
 void
