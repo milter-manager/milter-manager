@@ -17,8 +17,8 @@
 
 set -exu
 
-apt update
-apt install -V -y curl lsb-release
+sudo apt update
+sudo apt install -V -y curl lsb-release
 
 code_name=$(lsb_release --codename --short)
 architecture=$(dpkg --print-architecture)
@@ -28,7 +28,7 @@ architecture=$(dpkg --print-architecture)
 #   sudo bash
 
 repositories_dir=/host/package/apt/repositories
-apt install -V -y \
+sudo apt install -V -y \
   ${repositories_dir}/debian/pool/${code_name}/*/*/*/*_{${architecture},all}.deb
 
 systemctl status milter-manager
