@@ -1039,12 +1039,6 @@ module Milter
           end
         end
 
-        def report_memory_profile
-          maintained do
-            MemoryProfile.report
-          end
-        end
-
         private
         def update_location(key, reset, deep_level=2)
           super(key, reset, deep_level + 2)
@@ -1061,16 +1055,6 @@ module Milter
             message << "total:#{n_objects[:total]} "
             message << "Proc:#{n_objects[:proc]} "
             message << "GLib::Object:#{n_objects[:glib_object]}"
-            data = MemoryProfile.data
-            if data
-              n_allocates, n_zero_initializes, n_frees = data
-              n_used_in_kb = (n_allocates - n_frees) / 1024.0
-              used_percent = n_used_in_kb / memory_usage_in_kb * 100
-              message << ("  (%dKB)(%.2f%%)" % [n_used_in_kb.to_i, used_percent])
-              message << " allocated:#{n_allocates}"
-              free_percent = n_frees.to_f / n_allocates * 100
-              message << (" freed:%d(%.2f%%)" % [n_frees, free_percent])
-            end
             Logger.statistics(message)
           end
 
