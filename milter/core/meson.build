@@ -107,6 +107,7 @@ dependencies = [
   gthread,
 ]
 milter_core = library('milter-core',
+                      c_args: '-DMILTER_LOG_DOMAIN="milter-core"',
                       sources: sources + headers + enums + marshalers,
                       install: true,
                       dependencies: dependencies,
