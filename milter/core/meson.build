@@ -103,6 +103,7 @@ marshalers = gnome.genmarshal('milter-marshalers',
 gobject = dependency('gobject-2.0')
 gthread = dependency('gthread-2.0')
 dependencies = [
+  config,
   gobject,
   gthread,
 ]
@@ -111,7 +112,6 @@ milter_core = library('milter-core',
                       sources: sources + headers + enums + marshalers,
                       install: true,
                       dependencies: dependencies,
-                      include_directories: base_include_directories,
                       soversion: so_version,
                       version: library_version)
 

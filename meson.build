@@ -32,9 +32,20 @@ gnome = import('gnome')
 pkgconfig = import('pkgconfig')
 pkgconfig_variables = ['girdir=@0@'.format(gir_dir)]
 
-base_include_directories = [
-  include_directories('.')
-]
+config_h_conf = configuration_data()
+# CentOS 7: GLib 2.50
+# AlmaLinux 8: GLib 2.56
+# AlmaLinux 9: GLib 2.68
+# Ubuntu 18.04: GLib 2.56
+# Ubuntu 20.04: GLib 2.64
+# Ubuntu 22.04: GLib 2.72
+config_h_conf.set('GLIB_VERSION_MIN_REQUIRED', 'GLIB_VERSION_2_50')
+config_h = configure_file(input: 'meson-config.h.in',
+                          output: 'config.h',
+                          configuration: config_h_conf)
+config = declare_dependency(compile_args: '-DHAVE_CONFIG_H',
+                            include_directories: include_directories('.'),
+                            sources: config_h)
 
 gi = dependency('gobject-introspection-1.0')
 
