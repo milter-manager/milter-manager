@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -30,14 +30,6 @@
 #include <milter/core/milter-finished-emittable.h>
 
 G_BEGIN_DECLS
-
-#ifndef G_SOURCE_REMOVE
-#  define G_SOURCE_REMOVE   FALSE
-#endif
-
-#ifndef G_SOURCE_CONTINUE
-#  define G_SOURCE_CONTINUE TRUE
-#endif
 
 #define MILTER_IMPLEMENT_ERROR_EMITTABLE(init)                          \
 static MilterErrorEmittableClass *error_emittable_parent;               \
