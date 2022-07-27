@@ -477,6 +477,15 @@ milter_utils_merge_hash_string_string (GHashTable *dest, GHashTable *src)
                          dest);
 }
 
+
+/**
+ * milter_utils_inspect_list_pointer: (skip)
+ * @list: (element-type void*): A #GList to be inspected.
+ *
+ * Returns: The string that inspects the give list.
+ *
+ *   It should be freed with g_free() when no longer needed.
+ */
 gchar *
 milter_utils_inspect_list_pointer (const GList *list)
 {
