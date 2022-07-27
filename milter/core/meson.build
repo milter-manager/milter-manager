@@ -96,6 +96,9 @@ enums = gnome.mkenums_simple('milter-enum-types',
                              install_header: true,
                              sources: headers,
                              symbol_prefix: 'milter')
+marshalers = gnome.genmarshal('milter-marshalers',
+                              prefix: '_milter_marshal',
+                              sources: files('milter-marshalers.list'))
 
 gobject = dependency('gobject-2.0')
 gthread = dependency('gthread-2.0')
@@ -104,7 +107,7 @@ dependencies = [
   gthread,
 ]
 milter_core = library('milter-core',
-                      sources: sources + enums,
+                      sources: sources + headers + enums + marshalers,
                       install: true,
                       dependencies: dependencies,
                       include_directories: base_include_directories,
