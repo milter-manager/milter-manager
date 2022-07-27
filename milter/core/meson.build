@@ -87,19 +87,15 @@ version_h = configure_file(input: 'milter-version.h.in',
                            configuration: version_h_conf)
 headers += version_h
 
-# enums = gnome.mkenums('milter-enum-types',
-#                       sources: headers,
-#                       identifier_prefix: 'Milter',
-#                       symbol_prefix: 'milter',
-#                       c_template: 'enums.c.template',
-#                       h_template: 'enums.h.template',
-#                       install_dir: join_paths(include_dir, 'milter', 'core'),
-#                       install_header: true)
-enums = gnome.mkenums_simple('milter-enum-types', sources: headers)
-enums_source = enums[0]
-enums_header = enums[1]
-
 install_headers(headers, subdir: join_paths('milter', 'core'))
+
+enums = gnome.mkenums_simple('milter-enum-types',
+                             body_prefix: '#include <config.h>',
+                             identifier_prefix: 'Milter',
+                             install_dir: join_paths('milter', 'core'),
+                             install_header: true,
+                             sources: headers,
+                             symbol_prefix: 'milter')
 
 gobject = dependency('gobject-2.0')
 gthread = dependency('gthread-2.0')
