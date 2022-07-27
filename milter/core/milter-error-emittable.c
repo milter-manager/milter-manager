@@ -41,6 +41,7 @@ base_init (gpointer g_class)
     /**
      * MilterErrorEmittable::error:
      * @emittable: the object that received the signal.
+     * @error: the raised error.
      *
      * This signal is emitted on error.
      */
