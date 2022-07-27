@@ -65,6 +65,7 @@
     }                                                   \
 } while (0)
 
+G_DEFINE_QUARK(milter-logger-error-quark, milter_logger_error)
 
 typedef struct _MilterLoggerPrivate	MilterLoggerPrivate;
 struct _MilterLoggerPrivate
