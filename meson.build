@@ -27,7 +27,6 @@ prefix = get_option('prefix')
 include_dir = join_paths(prefix, get_option('includedir'))
 data_dir = join_paths(prefix, get_option('datadir'))
 gir_dir = join_paths(data_dir, 'gir-1.0')
-vapi_dir = join_paths(data_dir, 'vala', 'vapi')
 
 gnome = import('gnome')
 pkgconfig = import('pkgconfig')
