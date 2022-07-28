@@ -610,7 +610,7 @@ milter_agent_get_encoder (MilterAgent *agent)
 
 /**
  * milter_agent_get_decoder:
- * @agent: A agent from which to get the decoder.
+ * @agent: A #GMilterAgent.
  *
  * Returns: (transfer none): The decoder of the agent.
  */
