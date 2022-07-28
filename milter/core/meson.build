@@ -101,14 +101,12 @@ marshalers = gnome.genmarshal('milter-marshalers',
                               sources: files('milter-marshalers.list'))
 
 gobject = dependency('gobject-2.0')
-gthread = dependency('gthread-2.0')
 c_compiler = meson.get_compiler('c')
 ev = declare_dependency(compile_args: '-DEV_COMPAT3=0',
                         dependencies: c_compiler.find_library('ev'))
 dependencies = [
   config,
   gobject,
-  gthread,
   ev,
 ]
 milter_core = library('milter-core',
@@ -123,7 +121,7 @@ pkgconfig.generate(milter_core,
                    description: 'common milter features',
                    filebase: 'milter-core',
                    name: 'milter core library',
-                   requires: ['gobject-2.0', 'gthread-2.0'],
+                   requires: ['gobject-2.0'],
                    variables: pkgconfig_variables,
                    version: meson.version())
 
