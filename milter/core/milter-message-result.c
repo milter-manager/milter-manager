@@ -667,6 +667,12 @@ milter_message_result_set_added_headers (MilterMessageResult *result,
         g_object_ref(priv->added_headers);
 }
 
+/**
+ * milter_message_result_get_removed_headers:
+ * @result: A #GMilterMessageResult.
+ *
+ * Returns: (transfer none): The removed headers of the result.
+ */
 MilterHeaders *
 milter_message_result_get_removed_headers (MilterMessageResult *result)
 {
