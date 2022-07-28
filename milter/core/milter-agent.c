@@ -697,6 +697,12 @@ milter_agent_set_tag (MilterAgent *agent, guint tag)
     apply_tag(priv);
 }
 
+/**
+ * milter_agent_get_event_loop:
+ * @agent: A #GMilterAgent.
+ *
+ * Returns: (transfer none): The event_loop of the agent.
+ */
 MilterEventLoop *
 milter_agent_get_event_loop (MilterAgent *agent)
 {
