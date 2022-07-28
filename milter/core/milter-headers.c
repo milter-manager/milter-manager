@@ -211,6 +211,12 @@ milter_headers_new (void)
     return g_object_new(MILTER_TYPE_HEADERS, NULL);
 }
 
+/**
+ * milter_headers_copy:
+ * @headers: A headers to be copied.
+ *
+ * Returns: (transfer full): The copied headers.
+ */
 MilterHeaders *
 milter_headers_copy (MilterHeaders *headers)
 {
