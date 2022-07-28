@@ -45,8 +45,8 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y -V \
-            gobject-introspection \
             libev-dev \
+            libgirepository1.0-dev \
             meson
       - name: Setup
         run: |
