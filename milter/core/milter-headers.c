@@ -236,6 +236,12 @@ milter_headers_copy (MilterHeaders *headers)
     return copied_headers;
 }
 
+/**
+ * milter_headers_get_list:
+ * @headers: A #MilterHeaders.
+ *
+ * Returns: (transfer none) (element-type MilterHeader): The list of #MilterHeader.
+ */
 const GList *
 milter_headers_get_list (MilterHeaders *headers)
 {
