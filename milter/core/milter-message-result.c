@@ -551,6 +551,13 @@ milter_message_result_add_temporary_failed_recipient (MilterMessageResult *resul
         g_list_append(priv->temporary_failed_recipients, g_strdup(recipient));
 }
 
+/**
+ * milter_message_result_get_rejected_recipients:
+ * @result: A #MilterMessageResult.
+ *
+ * Returns: (transfer none) (element-type utf8):
+ *   Rejected recipients of the result.
+ */
 GList *
 milter_message_result_get_rejected_recipients (MilterMessageResult *result)
 {
