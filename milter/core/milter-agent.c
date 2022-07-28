@@ -608,6 +608,12 @@ milter_agent_get_encoder (MilterAgent *agent)
     return MILTER_AGENT_GET_PRIVATE(agent)->encoder;
 }
 
+/**
+ * milter_agent_get_decoder:
+ * @agent: A agent from which to get the decoder.
+ *
+ * Returns: (transfer none): The decoder of the agent.
+ */
 MilterDecoder *
 milter_agent_get_decoder (MilterAgent *agent)
 {
