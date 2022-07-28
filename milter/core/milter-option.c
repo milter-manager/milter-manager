@@ -183,6 +183,12 @@ milter_option_new_empty (void)
     return g_object_new(MILTER_TYPE_OPTION, NULL);
 }
 
+/**
+ * milter_option_copy:
+ * @option: A option to be copied.
+ *
+ * Returns: (transfer full): The copied option.
+ */
 MilterOption *
 milter_option_copy (MilterOption *option)
 {
