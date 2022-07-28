@@ -561,7 +561,7 @@ milter_message_result_add_rejected_recipient (MilterMessageResult *result,
 
 /**
  * milter_message_result_get_headers:
- * @result: A #GMilterMessageResult.
+ * @result: A #MilterMessageResult.
  *
  * Returns: (transfer none): The headers of the result.
  */
@@ -644,7 +644,7 @@ milter_message_result_set_status (MilterMessageResult *result,
 
 /**
  * milter_message_result_get_added_headers:
- * @result: A #GMilterMessageResult.
+ * @result: A #MilterMessageResult.
  *
  * Returns: (transfer none): The added headers of the result.
  */
@@ -669,7 +669,7 @@ milter_message_result_set_added_headers (MilterMessageResult *result,
 
 /**
  * milter_message_result_get_removed_headers:
- * @result: A #GMilterMessageResult.
+ * @result: A #MilterMessageResult.
  *
  * Returns: (transfer none): The removed headers of the result.
  */

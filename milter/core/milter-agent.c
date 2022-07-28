@@ -598,7 +598,7 @@ milter_agent_set_writer (MilterAgent *agent, MilterWriter *writer)
 
 /**
  * milter_agent_get_encoder:
- * @agent: A #GMilterAgent.
+ * @agent: A #MilterAgent.
  *
  * Returns: (transfer none): The encoder of the agent.
  */
@@ -610,7 +610,7 @@ milter_agent_get_encoder (MilterAgent *agent)
 
 /**
  * milter_agent_get_decoder:
- * @agent: A #GMilterAgent.
+ * @agent: A #MilterAgent.
  *
  * Returns: (transfer none): The decoder of the agent.
  */
@@ -699,7 +699,7 @@ milter_agent_set_tag (MilterAgent *agent, guint tag)
 
 /**
  * milter_agent_get_event_loop:
- * @agent: A #GMilterAgent.
+ * @agent: A #MilterAgent.
  *
  * Returns: (transfer none): The event loop of the agent.
  */

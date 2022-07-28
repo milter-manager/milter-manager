@@ -207,7 +207,7 @@ milter_protocol_agent_get_macro (MilterProtocolAgent *agent, const gchar *name)
 
 /**
  * milter_protocol_agent_get_available_macros:
- * @agent: A #GMilterProtocolAgent.
+ * @agent: A #MilterProtocolAgent.
  *
  * Returns: (transfer none): The available macros of the agent.
  */
@@ -243,7 +243,7 @@ milter_protocol_agent_get_available_macros (MilterProtocolAgent *agent)
 
 /**
  * milter_protocol_agent_get_macros:
- * @agent: A #GMilterProtocolAgent.
+ * @agent: A #MilterProtocolAgent.
  *
  * Returns: (transfer none): The macros of the agent.
  */
@@ -427,7 +427,7 @@ milter_protocol_agent_set_macros_requests (MilterProtocolAgent *agent,
 
 /**
  * milter_protocol_agent_get_macros_requests:
- * @agent: A #GMilterProtocolAgent.
+ * @agent: A #MilterProtocolAgent.
  *
  * Returns: (transfer none): The requested macros of the agent.
  */
