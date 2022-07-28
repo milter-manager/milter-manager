@@ -251,6 +251,12 @@ milter_session_result_stop (MilterSessionResult *result)
     }
 }
 
+/**
+ * milter_session_result_get_message_results:
+ * @result: A #MilterSessionResult.
+ *
+ * Returns: (transfer none) (element-type MilterMessageResult): Message results.
+ */
 GList *
 milter_session_result_get_message_results (MilterSessionResult *result)
 {
