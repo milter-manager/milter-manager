@@ -205,6 +205,12 @@ milter_protocol_agent_get_macro (MilterProtocolAgent *agent, const gchar *name)
     return value;
 }
 
+/**
+ * milter_protocol_agent_get_available_macros:
+ * @agent: A #GMilterProtocolAgent.
+ *
+ * Returns: (transfer none): The available macros of the agent.
+ */
 GHashTable *
 milter_protocol_agent_get_available_macros (MilterProtocolAgent *agent)
 {
