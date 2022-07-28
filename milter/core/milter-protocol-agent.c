@@ -425,6 +425,12 @@ milter_protocol_agent_set_macros_requests (MilterProtocolAgent *agent,
         g_object_ref(priv->macros_requests);
 }
 
+/**
+ * milter_protocol_agent_get_macros_requests:
+ * @agent: A #GMilterProtocolAgent.
+ *
+ * Returns: (transfer none): The macros requests of the agent.
+ */
 MilterMacrosRequests *
 milter_protocol_agent_get_macros_requests(MilterProtocolAgent *agent)
 {
