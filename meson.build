@@ -26,10 +26,11 @@ library_version = '@0@.0.1'.format(so_version)
 prefix = get_option('prefix')
 include_dir = join_paths(prefix, get_option('includedir'))
 data_dir = join_paths(prefix, get_option('datadir'))
+gir_dir = join_paths(data_dir, 'gir-1.0')
 
 gnome = import('gnome')
 pkgconfig = import('pkgconfig')
-pkgconfig_variables = ['girdir=${datadir}/gir-1.0']
+pkgconfig_variables = ['girdir=@0@'.format(gir_dir)]
 
 config_h_conf = configuration_data()
 # CentOS 7: GLib 2.50
