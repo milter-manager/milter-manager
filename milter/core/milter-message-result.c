@@ -564,6 +564,13 @@ milter_message_result_get_rejected_recipients (MilterMessageResult *result)
     return MILTER_MESSAGE_RESULT_GET_PRIVATE(result)->rejected_recipients;
 }
 
+/**
+ * milter_message_result_set_rejected_recipients:
+ * @result: A #MilterMessageResult.
+ * @recipients: (element-type utf8): Recipient names.
+ *
+ * Set rejected recipients to the result.
+ */
 void
 milter_message_result_set_rejected_recipients (MilterMessageResult *result,
                                                const GList *recipients)
