@@ -554,6 +554,11 @@ milter_logger_default_log_handler (MilterLogger *logger, const gchar *domain,
     g_string_free(log, TRUE);
 }
 
+/**
+ * milter_logger:
+ *
+ * Returns: (transfer none): The singleton logger in this process.
+ */
 MilterLogger *
 milter_logger (void)
 {
