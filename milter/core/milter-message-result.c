@@ -642,6 +642,12 @@ milter_message_result_set_status (MilterMessageResult *result,
     priv->status = status;
 }
 
+/**
+ * milter_message_result_get_added_headers:
+ * @result: A #GMilterMessageResult.
+ *
+ * Returns: (transfer none): The added headers of the result.
+ */
 MilterHeaders *
 milter_message_result_get_added_headers (MilterMessageResult *result)
 {
