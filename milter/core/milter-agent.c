@@ -598,7 +598,7 @@ milter_agent_set_writer (MilterAgent *agent, MilterWriter *writer)
 
 /**
  * milter_agent_get_encoder:
- * @agent: A agent from which to get the encoder.
+ * @agent: A #GMilterAgent.
  *
  * Returns: (transfer none): The encoder of the agent.
  */
