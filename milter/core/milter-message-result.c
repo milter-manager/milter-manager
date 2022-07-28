@@ -559,6 +559,12 @@ milter_message_result_add_rejected_recipient (MilterMessageResult *result,
         g_list_append(priv->rejected_recipients, g_strdup(recipient));
 }
 
+/**
+ * milter_message_result_get_headers:
+ * @result: A #GMilterMessageResult.
+ *
+ * Returns: (transfer none): The headers of the result.
+ */
 MilterHeaders *
 milter_message_result_get_headers (MilterMessageResult *result)
 {
