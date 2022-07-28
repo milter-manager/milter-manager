@@ -501,6 +501,13 @@ milter_message_result_remove_recipient (MilterMessageResult *result,
     }
 }
 
+/**
+ * milter_message_result_get_temporary_failed_recipients:
+ * @result: A #MilterMessageResult.
+ *
+ * Returns: (transfer none) (element-type utf8):
+ *   Temporary failed recipients of the result.
+ */
 GList *
 milter_message_result_get_temporary_failed_recipients (MilterMessageResult *result)
 {
