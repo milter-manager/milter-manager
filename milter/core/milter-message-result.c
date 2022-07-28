@@ -452,7 +452,7 @@ milter_message_result_get_recipients (MilterMessageResult *result)
 /**
  * milter_message_result_set_recipients:
  * @result: A #MilterMessageResult.
- * @recipients: (element-type utf8): recipient names.
+ * @recipients: (element-type utf8): Recipient names.
  * 
  * Set the recipients to the result.
  */
