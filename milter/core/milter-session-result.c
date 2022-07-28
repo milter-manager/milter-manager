@@ -263,6 +263,14 @@ milter_session_result_get_message_results (MilterSessionResult *result)
     return MILTER_SESSION_RESULT_GET_PRIVATE(result)->message_results;
 }
 
+/**
+ * milter_session_result_set_message_results:
+ * @result: A #MilterSessionResult.
+ * @message_results: (element-type MilterMessageResult):
+ *   A list of #MilterMessageResult.
+ *
+ * Set message results.
+ */
 void
 milter_session_result_set_message_results (MilterSessionResult *result,
                                            const GList *message_results)
