@@ -211,6 +211,13 @@ milter_macros_requests_set_symbols_string_array (MilterMacrosRequests *requests,
     g_hash_table_insert(priv->symbols_table, GINT_TO_POINTER(command), symbols);
 }
 
+/**
+ * milter_macros_requests_get_symbols:
+ * @requests: A #MilterMacrosRequests.
+ * @command: A #MilterCommand.
+ *
+ * Returns: (transfer none) (element-type utf8): The symbols of the requests.
+ */
 GList *
 milter_macros_requests_get_symbols (MilterMacrosRequests *requests,
                                     MilterCommand command)
