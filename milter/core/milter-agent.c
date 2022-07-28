@@ -701,7 +701,7 @@ milter_agent_set_tag (MilterAgent *agent, guint tag)
  * milter_agent_get_event_loop:
  * @agent: A #GMilterAgent.
  *
- * Returns: (transfer none): The event_loop of the agent.
+ * Returns: (transfer none): The event loop of the agent.
  */
 MilterEventLoop *
 milter_agent_get_event_loop (MilterAgent *agent)
