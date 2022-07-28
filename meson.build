@@ -47,6 +47,4 @@ config = declare_dependency(compile_args: '-DHAVE_CONFIG_H',
                             include_directories: include_directories('.'),
                             sources: config_h)
 
-gi = dependency('gobject-introspection-1.0')
-
 subdir('milter/core')
