@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -23,6 +23,89 @@
 
 #include "milter-headers.h"
 #include "milter-utils.h"
+
+static gboolean
+string_equal (const gchar *string1, const gchar *string2)
+{
+    if (string1 == string2)
+        return TRUE;
+
+    if (string1 == NULL || string2 == NULL)
+        return FALSE;
+
+    return milter_utils_strcmp0(string1, string2) == 0;
+}
+
+G_DEFINE_BOXED_TYPE(MilterHeader,
+                    milter_header,
+                    milter_header_copy,
+                    milter_header_free)
+
+MilterHeader *
+milter_header_new (const gchar *name, const gchar *value)
+{
+    MilterHeader *header;
+
+    header = g_new0(MilterHeader, 1);
+    header->name = g_strdup(name);
+    header->value = g_strdup(value);
+
+    return header;
+}
+
+MilterHeader *
+milter_header_copy (MilterHeader *header)
+{
+    return milter_header_new(header->name, header->value);
+}
+
+void
+milter_header_free (MilterHeader *header)
+{
+    g_free(header->name);
+    g_free(header->value);
+
+    g_free(header);
+}
+
+void
+milter_header_inspect (GString *string,
+                       gconstpointer data,
+                       gpointer user_data)
+{
+    const MilterHeader *header = data;
+
+    g_string_append_printf(string, "<<%s>=<%s>>", header->name, header->value);
+}
+
+gint
+milter_header_compare (MilterHeader *header_a,
+                       MilterHeader *header_b)
+{
+    if (milter_utils_strcmp0(header_a->name, header_b->name))
+        return milter_utils_strcmp0(header_a->name, header_b->name);
+
+    return milter_utils_strcmp0(header_a->value, header_b->value);
+}
+
+gboolean
+milter_header_equal (gconstpointer data1, gconstpointer data2)
+{
+    const MilterHeader *header1 = data1;
+    const MilterHeader *header2 = data2;
+
+    return string_equal(header1->name, header2->name) &&
+        string_equal(header1->value, header2->value);
+}
+
+static void
+milter_header_change_value (MilterHeader *header,
+                            const gchar *new_value)
+{
+    if (header->value)
+        g_free(header->value);
+    header->value = g_strdup(new_value);
+}
 
 #define MILTER_HEADERS_GET_PRIVATE(obj)                   \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                   \
@@ -151,18 +234,6 @@ const GList *
 milter_headers_get_list (MilterHeaders *headers)
 {
     return MILTER_HEADERS_GET_PRIVATE(headers)->header_list;
-}
-
-static gboolean
-string_equal (const gchar *string1, const gchar *string2)
-{
-    if (string1 == string2)
-        return TRUE;
-
-    if (string1 == NULL || string2 == NULL)
-        return FALSE;
-
-    return milter_utils_strcmp0(string1, string2) == 0;
 }
 
 MilterHeader *
@@ -399,66 +470,6 @@ milter_headers_length (MilterHeaders *headers)
 
     priv = MILTER_HEADERS_GET_PRIVATE(headers);
     return g_list_length(priv->header_list);
-}
-
-MilterHeader *
-milter_header_new (const gchar *name, const gchar *value)
-{
-    MilterHeader *header;
-
-    header = g_new0(MilterHeader, 1);
-    header->name = g_strdup(name);
-    header->value = g_strdup(value);
-
-    return header;
-}
-
-void
-milter_header_free (MilterHeader *header)
-{
-    g_free(header->name);
-    g_free(header->value);
-
-    g_free(header);
-}
-
-void
-milter_header_inspect (GString *string,
-                       gconstpointer data,
-                       gpointer user_data)
-{
-    const MilterHeader *header = data;
-
-    g_string_append_printf(string, "<<%s>=<%s>>", header->name, header->value);
-}
-
-gint
-milter_header_compare (MilterHeader *header_a,
-                       MilterHeader *header_b)
-{
-    if (milter_utils_strcmp0(header_a->name, header_b->name))
-        return milter_utils_strcmp0(header_a->name, header_b->name);
-
-    return milter_utils_strcmp0(header_a->value, header_b->value);
-}
-
-gboolean
-milter_header_equal (gconstpointer data1, gconstpointer data2)
-{
-    const MilterHeader *header1 = data1;
-    const MilterHeader *header2 = data2;
-
-    return string_equal(header1->name, header2->name) &&
-        string_equal(header1->value, header2->value);
-}
-
-static void
-milter_header_change_value (MilterHeader *header,
-                            const gchar *new_value)
-{
-    if (header->value)
-        g_free(header->value);
-    header->value = g_strdup(new_value);
 }
 
 /*

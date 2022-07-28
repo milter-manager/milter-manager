@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -37,8 +37,13 @@ typedef struct _MilterHeader
     gchar *value;
 } MilterHeader;
 
+#define MITLER_TYPE_HEADER (milter_header_get_type ())
+
+GType milter_header_get_type(void) G_GNUC_CONST;
+
 MilterHeader *milter_header_new   (const gchar *name,
                                    const gchar *value);
+MilterHeader *milter_header_copy  (MilterHeader *header);
 void          milter_header_free  (MilterHeader *header);
 gboolean      milter_header_equal (gconstpointer header1,
                                    gconstpointer header2);
