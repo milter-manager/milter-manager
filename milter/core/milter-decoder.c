@@ -487,6 +487,16 @@ milter_decoder_get_command_length (MilterDecoder *decoder)
     return MILTER_DECODER_GET_PRIVATE(decoder)->command_length;
 }
 
+/**
+ * milter_decoder_decode_negotiate:
+ * @buffer: A buffer that has the target data.
+ * @length: The number of bytes of @buffer.
+ * @processed_length: (out): The number of bytes that are processed.
+ * @error: (nullable): Return location for a #GError or %NULL.
+ *
+ * Returns: (transfer full) (nullable): The decoded #MilterOption on success,
+ *   %NULL on error.
+ */
 MilterOption *
 milter_decoder_decode_negotiate (const gchar *buffer,
                                  gint length,
