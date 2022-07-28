@@ -437,6 +437,12 @@ milter_message_result_set_from (MilterMessageResult *result,
     priv->from = g_strdup(from);
 }
 
+/**
+ * milter_message_result_get_recipients:
+ * @result: A #MilterMessageResult.
+ *
+ * Returns: (transfer none) (element-type utf8): The recipients of the results.
+ */
 GList *
 milter_message_result_get_recipients (MilterMessageResult *result)
 {
