@@ -261,6 +261,11 @@ get_property (GObject    *object,
     }
 }
 
+/**
+ * milter_libev_event_loop_default:
+ *
+ * Returns: (transfer full): The default event loop.
+ */
 MilterEventLoop *
 milter_libev_event_loop_default (void)
 {
