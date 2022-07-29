@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -25,6 +25,17 @@
 
 #include "milter-macros-requests.h"
 #include "milter-enum-types.h"
+
+/**
+ * MilterMacrosRequestFunc:
+ * @command: A target command.
+ * @symbols: (element-type utf8): A requested symbols for @command.
+ * @user_data: User data passed to milter_macros_requests_foreach().
+ *
+ * It is called with each requested macro command and its symbols
+ * pair, together with the @user_data parameter which is passed to
+ * milter_macros_requests_foreach() and so on.
+ */
 
 #define MILTER_MACROS_REQUESTS_GET_PRIVATE(obj)                  \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                 \
@@ -229,8 +240,9 @@ milter_macros_requests_get_symbols (MilterMacrosRequests *requests,
 }
 
 static void
-merge_requests (gpointer key, gpointer value, gpointer user_data)
+merge_requests (MilterCommand command, GList *symbols, gpointer user_data)
 {
+    gpointer key = GINT_TO_POINTER(command);
     GHashTable *dest = user_data;
     GList *dest_symbols, *copied_symbols, *node;
 
@@ -240,7 +252,7 @@ merge_requests (gpointer key, gpointer value, gpointer user_data)
         gchar *symbol = node->data;
         copied_symbols = g_list_append(copied_symbols, g_strdup(symbol));
     }
-    for (node = value; node; node = g_list_next(node)) {
+    for (node = symbols; node; node = g_list_next(node)) {
         gchar *symbol = node->data;
         if (!g_list_find_custom(copied_symbols, symbol,
                                 (GCompareFunc)g_utf8_collate))
@@ -259,14 +271,46 @@ milter_macros_requests_merge (MilterMacrosRequests *dest,
     milter_macros_requests_foreach(src, merge_requests, dest_symbols_table);
 }
 
+typedef struct {
+    MilterMacrosRequestFunc func;
+    gpointer user_data;
+} MilterMacrosRequestsForeachData;
+
+static void
+milter_macros_requests_foreach_body (gpointer key,
+                                     gpointer value,
+                                     gpointer user_data)
+{
+    MilterCommand command = GPOINTER_TO_INT(key);
+    GList *symbols = value;
+    MilterMacrosRequestsForeachData *data = user_data;
+
+    data->func(command, symbols, data->user_data);
+}
+
+/**
+ * milter_macros_requests_foreach:
+ * @requests: A #MilterMacrosRequests.
+ * @func: (scope call): The function to call for each requested macro
+ *   name/value pair.
+ * @user_data: User data to pass to the function.
+ *
+ * Calls the given function fore each of the requested macro
+ * name/value pairs in the @requests.
+ */
 void
 milter_macros_requests_foreach (MilterMacrosRequests *requests,
-                                GHFunc func, gpointer user_data)
+                                MilterMacrosRequestFunc func,
+                                gpointer user_data)
 {
-    GHashTable *symbols_table;
-
-    symbols_table = MILTER_MACROS_REQUESTS_GET_PRIVATE(requests)->symbols_table;
-    g_hash_table_foreach(symbols_table, func, user_data);
+    GHashTable *symbols_table =
+        MILTER_MACROS_REQUESTS_GET_PRIVATE(requests)->symbols_table;
+    MilterMacrosRequestsForeachData data;
+    data.func = func;
+    data.user_data = user_data;
+    g_hash_table_foreach(symbols_table,
+                         milter_macros_requests_foreach_body,
+                         &data);
 }
 
 /*

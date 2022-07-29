@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -24,6 +24,11 @@
 #include <milter/core/milter-protocol.h>
 
 G_BEGIN_DECLS
+
+typedef void(*MilterMacrosRequestFunc)(MilterCommand command,
+                                       GList *symbols,
+                                       gpointer  user_data);
+
 
 #define MILTER_TYPE_MACROS_REQUESTS            (milter_macros_requests_get_type())
 #define MILTER_MACROS_REQUESTS(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_MACROS_REQUESTS, MilterMacrosRequests))
@@ -69,7 +74,7 @@ GList                *milter_macros_requests_get_symbols
 void                  milter_macros_requests_merge    (MilterMacrosRequests *dest,
                                                        MilterMacrosRequests *src);
 void                  milter_macros_requests_foreach  (MilterMacrosRequests *requests,
-                                                       GHFunc                func,
+                                                       MilterMacrosRequestFunc func,
                                                        gpointer              user_data);
 
 G_END_DECLS
