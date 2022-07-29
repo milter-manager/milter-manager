@@ -1,0 +1,83 @@
+# Copyright (C) 2022  Daijiro Fukuda <fukuda@clear-code.com>
+# Copyright (C) 2022  Sutou Kouhei <kou@clear-code.com>
+#
+# This library is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this library.  If not, see <http://www.gnu.org/licenses/>.
+
+sources = files(
+  'milter-client-context.c',
+  'milter-client-main.c',
+  'milter-client-runner.c',
+  'milter-client-single-thread-runner.c',
+  'milter-client.c',
+)
+
+headers = files(
+  'milter-client-context.h',
+  'milter-client-objects.h',
+  'milter-client-runner.h',
+  'milter-client-single-thread-runner.h',
+  'milter-client.h',
+)
+
+install_headers(headers, subdir: join_paths('milter', 'client'))
+
+enums = gnome.mkenums_simple('milter-client-enum-types',
+                             body_prefix: '#include <config.h>',
+                             identifier_prefix: 'Milter',
+                             install_dir: join_paths('milter', 'client'),
+                             install_header: true,
+                             sources: headers,
+                             symbol_prefix: 'milter')
+
+gobject = dependency('gobject-2.0')
+c_compiler = meson.get_compiler('c')
+ev = declare_dependency(compile_args: '-DEV_COMPAT3=0',
+                        dependencies: c_compiler.find_library('ev'))
+dependencies = [
+  config,
+  gobject,
+  ev,
+]
+milter_client = library('milter-client',
+                        c_args: '-DMILTER_LOG_DOMAIN="milter-client"',
+                        sources: sources + headers + enums,
+                        install: true,
+                        dependencies: dependencies,
+                        soversion: so_version,
+                        version: library_version)
+
+pkgconfig.generate(milter_client,
+                   description: 'milter API',
+                   filebase: 'milter-client',
+                   name: 'milter client library',
+                   requires: ['gobject-2.0'],
+                   variables: pkgconfig_variables,
+                   version: meson.version())
+
+milter_client_gir = gnome.generate_gir(milter_client,
+                                       export_packages: 'milter-client',
+                                       extra_args: [
+                                         '--warn-all',
+                                       ],
+                                       fatal_warnings: true,
+                                       header: 'milter/client.h',
+                                       identifier_prefix: 'Milter',
+                                       includes: [
+                                         'GObject-2.0',
+                                       ],
+                                       install: true,
+                                       namespace: 'MilterClient',
+                                       nsversion: api_version,
+                                       sources: sources + headers + enums,
+                                       symbol_prefix: 'milter')
