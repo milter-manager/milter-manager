@@ -937,9 +937,8 @@ void                 milter_client_set_custom_fork_func (MilterClient *client,
                                                          MilterClientCustomForkFunc custom_fork);
 
 /**
- * milter_client_set_custom_fork_func:
+ * milter_client_get_custom_fork_func:
  * @client: a %MilterClient.
- * @custom_fork: a %MilterClientCustomForkFunc.
  *
  * Gets the custom fork function for the client.
  *
