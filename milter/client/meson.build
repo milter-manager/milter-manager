@@ -60,7 +60,11 @@ pkgconfig.generate(libmilter_client,
                    variables: pkgconfig_variables,
                    version: meson.version())
 
+dependencies = [
+  declare_dependency(sources: milter_core_gir),
+]
 milter_client_gir = gnome.generate_gir(libmilter_client,
+                                       dependencies: dependencies,
                                        export_packages: 'milter-client',
                                        extra_args: [
                                          '--warn-all',
@@ -69,6 +73,7 @@ milter_client_gir = gnome.generate_gir(libmilter_client,
                                        header: 'milter/client.h',
                                        identifier_prefix: 'Milter',
                                        includes: [
+                                         'MilterCore-' + api_version,
                                          'GObject-2.0',
                                        ],
                                        install: true,
