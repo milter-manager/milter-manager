@@ -80,4 +80,4 @@ milter_client_gir = gnome.generate_gir(libmilter_client,
                                        namespace: 'MilterClient',
                                        nsversion: api_version,
                                        sources: sources + headers + enums,
-                                       symbol_prefix: 'milter')
+                                       symbol_prefix: 'milter_client')
