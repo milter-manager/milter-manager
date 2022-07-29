@@ -963,7 +963,7 @@ void                 milter_client_context_set_socket_address(MilterClientContex
                                                               MilterGenericSocketAddress *address);
 
 /**
- * milter_client_context_get_option:
+ * milter_client_context_get_socket_address:
  * @context: a %MilterClientContext.
  *
  * Gets the socket address of connected server for the context.
