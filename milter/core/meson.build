@@ -137,7 +137,7 @@ milter_core_gir = gnome.generate_gir(milter_core,
                                        'GObject-2.0',
                                      ],
                                      install: true,
-                                     namespace: 'Milter',
+                                     namespace: 'MilterCore',
                                      nsversion: api_version,
                                      sources: sources + headers + enums,
                                      symbol_prefix: 'milter')
