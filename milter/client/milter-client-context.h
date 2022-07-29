@@ -289,12 +289,7 @@ G_BEGIN_DECLS
  */
 #define MILTER_CLIENT_CONTEXT_ERROR           (milter_client_context_error_quark())
 
-#define MILTER_TYPE_CLIENT_CONTEXT            (milter_client_context_get_type())
-#define MILTER_CLIENT_CONTEXT(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_CLIENT_CONTEXT, MilterClientContext))
-#define MILTER_CLIENT_CONTEXT_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_TYPE_CLIENT_CONTEXT, MilterClientContextClass))
-#define MILTER_IS_CLIENT_CONTEXT(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_TYPE_CLIENT_CONTEXT))
-#define MILTER_IS_CLIENT_CONTEXT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_CLIENT_CONTEXT))
-#define MILTER_CLIENT_CONTEXT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_CLIENT_CONTEXT, MilterClientContextClass))
+GQuark               milter_client_context_error_quark       (void);
 
 /**
  * MilterClientContextError:
@@ -417,13 +412,12 @@ typedef enum
     (MILTER_CLIENT_CONTEXT_STATE_ENVELOPE_FROM <= (state) &&            \
      (state) < MILTER_CLIENT_CONTEXT_STATE_END_OF_MESSAGE)
 
-typedef struct _MilterClientContextClass    MilterClientContextClass;
-
-struct _MilterClientContext
-{
-    MilterProtocolAgent object;
-};
-
+#define MILTER_TYPE_CLIENT_CONTEXT            (milter_client_context_get_type())
+G_DECLARE_DERIVABLE_TYPE(MilterClientContext,
+                         milter_client_context,
+                         MILTER,
+                         CLIENT_CONTEXT,
+                         GObject)
 struct _MilterClientContextClass
 {
     MilterProtocolAgentClass parent_class;
@@ -494,10 +488,6 @@ struct _MilterClientContextClass
     void         (*message_processed)  (MilterClientContext *context,
                                         MilterMessageResult *result);
 };
-
-GQuark               milter_client_context_error_quark       (void);
-
-GType                milter_client_context_get_type          (void) G_GNUC_CONST;
 
 /**
  * milter_client_context_new:
