@@ -33,6 +33,7 @@ pkgconfig = import('pkgconfig')
 pkgconfig_variables = ['girdir=@0@'.format(gir_dir)]
 
 config_h_conf = configuration_data()
+config_h_conf.set('GETTEXT_PACKAGE', 'milter-manager')
 # CentOS 7: GLib 2.50
 # AlmaLinux 8: GLib 2.56
 # AlmaLinux 9: GLib 2.68
