@@ -56,7 +56,7 @@ pkgconfig.generate(libmilter_client,
                    description: 'milter API',
                    filebase: 'milter-client',
                    name: 'milter client library',
-                   requires: ['gobject-2.0'],
+                   requires: ['milter-core = ' + meson.version()],
                    variables: pkgconfig_variables,
                    version: meson.version())
 
