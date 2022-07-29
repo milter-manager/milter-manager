@@ -109,15 +109,17 @@ dependencies = [
   gobject,
   ev,
 ]
-milter_core = library('milter-core',
-                      c_args: '-DMILTER_LOG_DOMAIN="milter-core"',
-                      sources: sources + headers + enums + marshalers,
-                      install: true,
-                      dependencies: dependencies,
-                      soversion: so_version,
-                      version: library_version)
+libmilter_core = library('milter-core',
+                         c_args: '-DMILTER_LOG_DOMAIN="milter-core"',
+                         sources: sources + headers + enums + marshalers,
+                         install: true,
+                         dependencies: dependencies,
+                         soversion: so_version,
+                         version: library_version)
+milter_core = declare_dependency(link_with: libmilter_core,
+                                 dependencies: dependencies)
 
-pkgconfig.generate(milter_core,
+pkgconfig.generate(libmilter_core,
                    description: 'common milter features',
                    filebase: 'milter-core',
                    name: 'milter core library',
@@ -125,7 +127,7 @@ pkgconfig.generate(milter_core,
                    variables: pkgconfig_variables,
                    version: meson.version())
 
-milter_core_gir = gnome.generate_gir(milter_core,
+milter_core_gir = gnome.generate_gir(libmilter_core,
                                      export_packages: 'milter-core',
                                      extra_args: [
                                        '--warn-all',

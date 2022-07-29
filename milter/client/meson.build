@@ -40,24 +40,19 @@ enums = gnome.mkenums_simple('milter-client-enum-types',
                              sources: headers,
                              symbol_prefix: 'milter')
 
-gobject = dependency('gobject-2.0')
-c_compiler = meson.get_compiler('c')
-ev = declare_dependency(compile_args: '-DEV_COMPAT3=0',
-                        dependencies: c_compiler.find_library('ev'))
 dependencies = [
   config,
-  gobject,
-  ev,
+  milter_core,
 ]
-milter_client = library('milter-client',
-                        c_args: '-DMILTER_LOG_DOMAIN="milter-client"',
-                        sources: sources + headers + enums,
-                        install: true,
-                        dependencies: dependencies,
-                        soversion: so_version,
-                        version: library_version)
+libmilter_client = library('milter-client',
+                           c_args: '-DMILTER_LOG_DOMAIN="milter-client"',
+                           sources: sources + headers + enums,
+                           install: true,
+                           dependencies: dependencies,
+                           soversion: so_version,
+                           version: library_version)
 
-pkgconfig.generate(milter_client,
+pkgconfig.generate(libmilter_client,
                    description: 'milter API',
                    filebase: 'milter-client',
                    name: 'milter client library',
@@ -65,7 +60,7 @@ pkgconfig.generate(milter_client,
                    variables: pkgconfig_variables,
                    version: meson.version())
 
-milter_client_gir = gnome.generate_gir(milter_client,
+milter_client_gir = gnome.generate_gir(libmilter_client,
                                        export_packages: 'milter-client',
                                        extra_args: [
                                          '--warn-all',
