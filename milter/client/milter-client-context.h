@@ -311,7 +311,7 @@ G_BEGIN_DECLS
  * @MILTER_CLIENT_CONTEXT_ERROR_INVALID_ACTION: Indicates
  * unexpected operation is requested on the context's
  * %MilterActionFlags.
- * @MILTER_CLIENT_CONTEXT_ERROR_NULL: Indicates unexpected
+ * @MILTER_CLIENT_CONTEXT_ERROR_EMPTY: Indicates unexpected
  * empty value is passed.
  *
  * These identify the variable errors that can occur while
