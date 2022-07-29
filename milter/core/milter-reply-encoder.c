@@ -69,10 +69,8 @@ milter_reply_encoder_new (void)
 }
 
 static void
-encode_macros_request (gpointer key, gpointer value, gpointer user_data)
+encode_macros_request (MilterCommand command, GList *symbols, gpointer user_data)
 {
-    MilterCommand command = GPOINTER_TO_INT(key);
-    GList *symbols = value;
     GString *buffer = user_data;
     MilterMacroStage stage, normalized_stage;
     gchar encoded_stage[sizeof(guint32)];
