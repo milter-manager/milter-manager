@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2011-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -22,6 +22,9 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "milter-client-single-thread-runner.h"
+
+G_DEFINE_QUARK(milter-client-single-thread-runner-error-quark,
+               milter_client_single_thread_runner_error)
 
 #define MILTER_CLIENT_SINGLE_THREAD_RUNNER_GET_PRIVATE(obj)             \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                                 \
