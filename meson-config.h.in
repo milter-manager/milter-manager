@@ -16,4 +16,5 @@
  *  along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define GETTEXT_PACKAGE "@GETTEXT_PACKAGE@"
 #define GLIB_VERSION_MIN_REQUIRED @GLIB_VERSION_MIN_REQUIRED@
