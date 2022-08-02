@@ -216,6 +216,13 @@ milter_event_loop_run_without_custom (MilterEventLoop *loop)
     }
 }
 
+/**
+ * milter_event_loop_set_custom_run_func: (skip)
+ * @loop: A #MilterEventLoop.
+ * @custom_run: A #MilterEventLoopCustomRunFunc.
+ *
+ * Set the custom function to the event loop.
+ */
 void
 milter_event_loop_set_custom_run_func (MilterEventLoop             *loop,
                                        MilterEventLoopCustomRunFunc custom_run)
