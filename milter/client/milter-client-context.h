@@ -969,7 +969,7 @@ MilterGenericSocketAddress *milter_client_context_get_socket_address
  *
  * Gets the message result of @context.
  *
- * Returns: the message result of @context.
+ * Returns: (transfer none): the message result of @context.
  */
 MilterMessageResult *milter_client_context_get_message_result
                                                        (MilterClientContext *context);
