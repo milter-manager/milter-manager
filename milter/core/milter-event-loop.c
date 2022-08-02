@@ -299,6 +299,12 @@ milter_event_loop_set_custom_iterate_func (MilterEventLoop             *loop,
     priv->custom_iterate_destroy   = destroy;
 }
 
+/**
+ * milter_event_loop_get_custom_iterate_func: (skip)
+ * @loop: A #MilterEventLoop.
+ *
+ * Returns: (nullable): The current custom iterate function of this event loop.
+ */
 MilterEventLoopCustomIterateFunc
 milter_event_loop_get_custom_iterate_func (MilterEventLoop *loop)
 {
