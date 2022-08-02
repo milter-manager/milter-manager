@@ -540,7 +540,7 @@ const gchar         *milter_client_get_effective_user(MilterClient  *client);
  * Sets the effective user of this process.
  */
 void                 milter_client_set_effective_user(MilterClient  *client,
-                                                      const gchar   *effective_group);
+                                                      const gchar   *effective_user);
 
 /**
  * milter_client_get_effective_group:
