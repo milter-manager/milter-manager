@@ -1039,7 +1039,7 @@ void                 milter_client_set_max_pending_finished_sessions
 
 /**
  * milter_client_get_worker_pids:
- * @client: a %MilterClient.
+ * @client: a #MilterClient.
  *
  * Gets the pids for each worker of @client.
  *
