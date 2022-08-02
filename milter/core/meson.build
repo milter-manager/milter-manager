@@ -77,8 +77,8 @@ headers = files(
 )
 
 version_h_conf = configuration_data()
-version_components = meson.version().split('.')
-version_h_conf.set('MILTER_MANAGER_VERSION', meson.version())
+version_components = meson.project_version().split('.')
+version_h_conf.set('MILTER_MANAGER_VERSION', meson.project_version())
 version_h_conf.set('MILTER_MANAGER_VERSION_MAJOR', version_components[0])
 version_h_conf.set('MILTER_MANAGER_VERSION_MINOR', version_components[1])
 version_h_conf.set('MILTER_MANAGER_VERSION_MICRO', version_components[2])
