@@ -838,7 +838,8 @@ gboolean             milter_client_get_syslog_enabled(MilterClient  *client);
  *
  * Gets the %MilterEventLoop for processing requests.
  *
- * Returns: the %MilterEventLoop for processing requests.
+ * Returns: (transfer none) (nullable):
+ *   the %MilterEventLoop for processing requests.
  */
 MilterEventLoop     *milter_client_get_event_loop   (MilterClient  *client);
 
