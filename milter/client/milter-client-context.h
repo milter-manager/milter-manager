@@ -938,7 +938,7 @@ void                 milter_client_context_set_option        (MilterClientContex
  *
  * Gets the option for the context.
  *
- * Returns: the option for the context.
+ * Returns: (transfer none): the option for the context.
  */
 MilterOption        *milter_client_context_get_option        (MilterClientContext *context);
 
