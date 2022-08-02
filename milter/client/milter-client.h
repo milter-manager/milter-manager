@@ -642,7 +642,7 @@ MilterClientContext *milter_client_create_context      (MilterClient *client);
  * Creates a new %MilterEventLoop that is initialized with
  * the @client configuration.
  *
- * Returns: a newly allocated %MilterEventLoop. It
+ * Returns: (transfer full): a newly allocated %MilterEventLoop. It
  * should be unref-ed when no longer needed.
  */
 MilterEventLoop     *milter_client_create_event_loop   (MilterClient *client,
