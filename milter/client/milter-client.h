@@ -1037,6 +1037,15 @@ void                 milter_client_set_max_pending_finished_sessions
                                                      (MilterClient  *client,
                                                       guint          n_sessions);
 
+/**
+ * milter_client_get_worker_pids:
+ * @client: a %MilterClient.
+ *
+ * Gets the pids for each worker of @client.
+ *
+ * Returns: (transfer none) (element-type GPid):
+ *   the pids for each worker of @client.
+ */
 GArray              *milter_client_get_worker_pids   (MilterClient  *client);
 
 G_END_DECLS
