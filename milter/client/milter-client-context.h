@@ -1068,7 +1068,8 @@ const gchar         *milter_client_context_get_mail_transaction_shelf_value
  * Gets the mail_transaction_shelf.
  * This is a mail-transaction scope storage.
  *
- * Returns: the GHashTable for the context.
+ * Returns: (transfer none) (element-type utf8 utf8):
+ *   the GHashTable for the context.
  */
 GHashTable          *milter_client_context_get_mail_transaction_shelf
                                                        (MilterClientContext *context);
