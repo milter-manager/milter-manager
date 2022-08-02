@@ -24,16 +24,16 @@
 
 G_BEGIN_DECLS
 
-#define MILTER_CLIENT_RUNNER_ERROR           (milter_client_runner_error_quark())
+#define MILTER_CLIENT_RUNNER_ERROR (milter_client_runner_error_quark())
 
-GQuark               milter_client_runner_error_quark       (void);
+GQuark milter_client_runner_error_quark (void);
 
 typedef enum
 {
     MILTER_CLIENT_RUNNER_ERROR_RUNNING
 } MilterClientRunnerError;
 
-#define MILTER_TYPE_CLIENT_RUNNER            (milter_client_runner_get_type())
+#define MILTER_TYPE_CLIENT_RUNNER (milter_client_runner_get_type())
 G_DECLARE_DERIVABLE_TYPE(MilterClientRunner,
                          milter_client_runner,
                          MILTER,
