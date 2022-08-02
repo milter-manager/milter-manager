@@ -69,14 +69,9 @@ G_BEGIN_DECLS
  *
  * Used to get the #GError quark for #MilterClient errors.
  */
-#define MILTER_CLIENT_ERROR           (milter_client_error_quark())
+#define MILTER_CLIENT_ERROR (milter_client_error_quark())
 
-#define MILTER_TYPE_CLIENT            (milter_client_get_type())
-#define MILTER_CLIENT(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_CLIENT, MilterClient))
-#define MILTER_CLIENT_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_TYPE_CLIENT, MilterClientClass))
-#define MILTER_IS_CLIENT(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_TYPE_CLIENT))
-#define MILTER_IS_CLIENT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_CLIENT))
-#define MILTER_CLIENT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_CLIENT, MilterClientClass))
+GQuark milter_client_error_quark (void);
 
 /**
  * MilterClientEventLoopBackend:
@@ -118,8 +113,6 @@ typedef enum
     MILTER_CLIENT_ERROR_PID_FILE
 } MilterClientError;
 
-typedef struct _MilterClientClass    MilterClientClass;
-
 typedef GPid (*MilterClientCustomForkFunc) (MilterClient *client);
 
 /**
@@ -128,11 +121,12 @@ typedef GPid (*MilterClientCustomForkFunc) (MilterClient *client);
  * %MilterClient is a front object. It accepts connections
  * from MTA and dispatches it.
  **/
-struct _MilterClient
-{
-    GObject object;
-};
-
+#define MILTER_TYPE_CLIENT (milter_client_get_type())
+G_DECLARE_DERIVABLE_TYPE(MilterClient,
+                         milter_client,
+                         MILTER,
+                         CLIENT,
+                         GObject)
 struct _MilterClientClass
 {
     GObjectClass parent_class;
@@ -208,10 +202,6 @@ struct _MilterClientClass
     void   (*worker_created)              (MilterClient *client);
     GArray *(*get_worker_pids)            (MilterClient *client);
 };
-
-GQuark               milter_client_error_quark       (void);
-
-GType                milter_client_get_type          (void) G_GNUC_CONST;
 
 
 /**
