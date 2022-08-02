@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -36,13 +36,6 @@ G_BEGIN_DECLS
 
 #define MILTER_AGENT_ERROR           (milter_agent_error_quark())
 
-#define MILTER_TYPE_AGENT            (milter_agent_get_type())
-#define MILTER_AGENT(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_AGENT, MilterAgent))
-#define MILTER_AGENT_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_TYPE_AGENT, MilterAgentClass))
-#define MILTER_IS_AGENT(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_TYPE_AGENT))
-#define MILTER_IS_AGENT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_AGENT))
-#define MILTER_AGENT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_AGENT, MilterAgentClass))
-
 typedef enum
 {
     MILTER_AGENT_ERROR_IO_ERROR,
@@ -50,14 +43,12 @@ typedef enum
     MILTER_AGENT_ERROR_NO_EVENT_LOOP_ERROR
 } MilterAgentError;
 
-typedef struct _MilterAgent         MilterAgent;
-typedef struct _MilterAgentClass    MilterAgentClass;
-
-struct _MilterAgent
-{
-    GObject object;
-};
-
+#define MILTER_TYPE_AGENT            (milter_agent_get_type())
+G_DECLARE_DERIVABLE_TYPE(MilterAgent,
+                         milter_agent,
+                         MILTER,
+                         AGENT,
+                         GObject)
 struct _MilterAgentClass
 {
     GObjectClass parent_class;
@@ -71,8 +62,6 @@ struct _MilterAgentClass
 };
 
 GQuark               milter_agent_error_quark       (void);
-
-GType                milter_agent_get_type          (void) G_GNUC_CONST;
 
 MilterEncoder       *milter_agent_get_encoder       (MilterAgent *agent);
 MilterDecoder       *milter_agent_get_decoder       (MilterAgent *agent);
