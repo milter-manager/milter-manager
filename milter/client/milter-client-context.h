@@ -417,7 +417,7 @@ G_DECLARE_DERIVABLE_TYPE(MilterClientContext,
                          milter_client_context,
                          MILTER,
                          CLIENT_CONTEXT,
-                         GObject)
+                         MilterProtocolAgent)
 struct _MilterClientContextClass
 {
     MilterProtocolAgentClass parent_class;
