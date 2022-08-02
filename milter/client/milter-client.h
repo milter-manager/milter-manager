@@ -629,7 +629,7 @@ guint                milter_client_get_default_packet_buffer_size
  * Creates a new %MilterClientContext that is initialized with
  * the @client configuration.
  *
- * Returns: a newly allocated %MilterClientContext. It
+ * Returns: (transfer full): a newly allocated %MilterClientContext. It
  * should be unref-ed when no longer needed.
  */
 MilterClientContext *milter_client_create_context      (MilterClient *client);
