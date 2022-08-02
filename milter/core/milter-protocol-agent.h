@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -28,26 +28,15 @@
 G_BEGIN_DECLS
 
 #define MILTER_TYPE_PROTOCOL_AGENT            (milter_protocol_agent_get_type())
-#define MILTER_PROTOCOL_AGENT(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_PROTOCOL_AGENT, MilterProtocolAgent))
-#define MILTER_PROTOCOL_AGENT_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_TYPE_PROTOCOL_AGENT, MilterProtocolAgentClass))
-#define MILTER_IS_PROTOCOL_AGENT(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_TYPE_PROTOCOL_AGENT))
-#define MILTER_IS_PROTOCOL_AGENT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_PROTOCOL_AGENT))
-#define MILTER_PROTOCOL_AGENT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_PROTOCOL_AGENT, MilterProtocolAgentClass))
-
-typedef struct _MilterProtocolAgent         MilterProtocolAgent;
-typedef struct _MilterProtocolAgentClass    MilterProtocolAgentClass;
-
-struct _MilterProtocolAgent
-{
-    MilterAgent object;
-};
-
+G_DECLARE_DERIVABLE_TYPE(MilterProtocolAgent,
+                         milter_protocol_agent,
+                         MILTER,
+                         PROTOCOL_AGENT,
+                         MilterAgent)
 struct _MilterProtocolAgentClass
 {
     MilterAgentClass parent_class;
 };
-
-GType                milter_protocol_agent_get_type (void) G_GNUC_CONST;
 
 void                 milter_protocol_agent_set_macro_context
                                                     (MilterProtocolAgent *agent,
