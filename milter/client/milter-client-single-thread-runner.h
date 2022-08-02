@@ -24,36 +24,25 @@
 
 G_BEGIN_DECLS
 
-#define MILTER_CLIENT_SINGLE_THREAD_RUNNER_ERROR           (milter_client_single_thread_runner_error_quark())
+#define MILTER_CLIENT_SINGLE_THREAD_RUNNER_ERROR (milter_client_single_thread_runner_error_quark())
 
-#define MILTER_TYPE_CLIENT_SINGLE_THREAD_RUNNER            (milter_client_single_thread_runner_get_type())
-#define MILTER_CLIENT_SINGLE_THREAD_RUNNER(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_CLIENT_SINGLE_THREAD_RUNNER, MilterClientSingleThreadRunner))
-#define MILTER_CLIENT_SINGLE_THREAD_RUNNER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_TYPE_CLIENT_SINGLE_THREAD_RUNNER, MilterClientSingleThreadRunnerClass))
-#define MILTER_IS_CLIENT_SINGLE_THREAD_RUNNER(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_TYPE_CLIENT_SINGLE_THREAD_RUNNER))
-#define MILTER_IS_CLIENT_SINGLE_THREAD_RUNNER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_CLIENT_SINGLE_THREAD_RUNNER))
-#define MILTER_CLIENT_SINGLE_THREAD_RUNNER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_CLIENT_SINGLE_THREAD_RUNNER, MilterClientSingleThreadRunnerClass))
+GQuark milter_client_single_thread_runner_error_quark (void);
 
 typedef enum
 {
     MILTER_CLIENT_SINGLE_THREAD_RUNNER_ERROR_TODO
 } MilterClientSingleThreadRunnerError;
 
-typedef struct _MilterClientSingleThreadRunner         MilterClientSingleThreadRunner;
-typedef struct _MilterClientSingleThreadRunnerClass    MilterClientSingleThreadRunnerClass;
-
-struct _MilterClientSingleThreadRunner
-{
-    MilterClientRunner object;
-};
-
+#define MILTER_TYPE_CLIENT_SINGLE_THREAD_RUNNER (milter_client_single_thread_runner_get_type())
+G_DECLARE_DERIVABLE_TYPE(MilterClientSingleThreadRunner,
+                         milter_client_single_thread_runner,
+                         MILTER,
+                         CLIENT_SINGLE_THREAD_RUNNER,
+                         MilterClientRunner)
 struct _MilterClientSingleThreadRunnerClass
 {
     MilterClientRunnerClass parent_class;
 };
-
-GQuark               milter_client_single_thread_runner_error_quark       (void);
-
-GType                milter_client_single_thread_runner_get_type          (void) G_GNUC_CONST;
 
 MilterClientRunner  *milter_client_single_thread_runner_new               (MilterClient *client);
 
