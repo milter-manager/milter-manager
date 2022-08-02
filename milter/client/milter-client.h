@@ -591,7 +591,7 @@ guint                milter_client_get_maintenance_interval
  */
 void                 milter_client_set_maintenance_interval
                                                      (MilterClient  *client,
-                                                      guint          n_sessions);
+                                                      guint          maintenance_interval);
 
 
 /**

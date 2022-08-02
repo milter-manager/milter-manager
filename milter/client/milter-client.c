@@ -2840,15 +2840,15 @@ milter_client_get_maintenance_interval (MilterClient *client)
 }
 
 void
-milter_client_set_maintenance_interval (MilterClient *client, guint n_sessions)
+milter_client_set_maintenance_interval (MilterClient *client, guint maintenance_interval)
 {
     MilterClientClass *klass;
 
     klass = MILTER_CLIENT_GET_CLASS(client);
     if (klass->set_maintenance_interval)
-        klass->set_maintenance_interval(client, n_sessions);
+        klass->set_maintenance_interval(client, maintenance_interval);
     else
-        MILTER_CLIENT_GET_PRIVATE(client)->maintenance_interval = n_sessions;
+        MILTER_CLIENT_GET_PRIVATE(client)->maintenance_interval = maintenance_interval;
 }
 
 void
