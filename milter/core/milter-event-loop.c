@@ -1,7 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
- *  Copyright (C) 2011-2013  Kouhei Sutou <nakada@clear-code.com>
+ *  Copyright (C) 2011-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -235,6 +235,12 @@ milter_event_loop_set_custom_run_func (MilterEventLoop             *loop,
     priv->custom_run = custom_run;
 }
 
+/**
+ * milter_event_loop_get_custom_run_func: (skip)
+ * @loop: A #MilterEventLoop.
+ *
+ * Returns: (nullable): The current custom runner function of this event loop.
+ */
 MilterEventLoopCustomRunFunc
 milter_event_loop_get_custom_run_func (MilterEventLoop *loop)
 {
