@@ -606,7 +606,7 @@ void                 milter_client_set_maintenance_interval
  * packet buffer size information.
  */
 void                 milter_client_set_default_packet_buffer_size
-                                                       (MilterClient *context,
+                                                       (MilterClient *client,
                                                         guint         size);
 
 /**
