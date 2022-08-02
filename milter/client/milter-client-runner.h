@@ -26,26 +26,19 @@ G_BEGIN_DECLS
 
 #define MILTER_CLIENT_RUNNER_ERROR           (milter_client_runner_error_quark())
 
-#define MILTER_TYPE_CLIENT_RUNNER            (milter_client_runner_get_type())
-#define MILTER_CLIENT_RUNNER(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_CLIENT_RUNNER, MilterClientRunner))
-#define MILTER_CLIENT_RUNNER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_TYPE_CLIENT_RUNNER, MilterClientRunnerClass))
-#define MILTER_IS_CLIENT_RUNNER(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_TYPE_CLIENT_RUNNER))
-#define MILTER_IS_CLIENT_RUNNER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_CLIENT_RUNNER))
-#define MILTER_CLIENT_RUNNER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_CLIENT_RUNNER, MilterClientRunnerClass))
+GQuark               milter_client_runner_error_quark       (void);
 
 typedef enum
 {
     MILTER_CLIENT_RUNNER_ERROR_RUNNING
 } MilterClientRunnerError;
 
-typedef struct _MilterClientRunner         MilterClientRunner;
-typedef struct _MilterClientRunnerClass    MilterClientRunnerClass;
-
-struct _MilterClientRunner
-{
-    GObject object;
-};
-
+#define MILTER_TYPE_CLIENT_RUNNER            (milter_client_runner_get_type())
+G_DECLARE_DERIVABLE_TYPE(MilterClientRunner,
+                         milter_client_runner,
+                         MILTER,
+                         CLIENT_RUNNER,
+                         GObject)
 struct _MilterClientRunnerClass
 {
     GObjectClass parent_class;
@@ -54,10 +47,6 @@ struct _MilterClientRunnerClass
                                         GError            **error);
     void         (*quit)               (MilterClientRunner *runner);
 };
-
-GQuark               milter_client_runner_error_quark       (void);
-
-GType                milter_client_runner_get_type          (void) G_GNUC_CONST;
 
 gboolean             milter_client_runner_run               (MilterClientRunner *runner,
                                                              GError            **error);
