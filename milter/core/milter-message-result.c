@@ -773,6 +773,12 @@ milter_message_result_set_start_time (MilterMessageResult *result,
     }
 }
 
+/**
+ * milter_message_result_get_end_time: (skip)
+ * @result: A #MilterMessageResult.
+ *
+ * Returns: The end time of the result.
+ */
 GTimeVal *
 milter_message_result_get_end_time (MilterMessageResult *result)
 {
