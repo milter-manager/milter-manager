@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Kouhei Sutou <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -686,19 +686,23 @@ gboolean             milter_client_main              (MilterClient  *client);
  */
 void                 milter_client_shutdown          (MilterClient  *client);
 
+
 /**
- * milter_client_processing_context_foreach:
- * @client: a %MilterClient.
- * @func: the function to call with each processing %MilterClientContext.
- * @user_data: user data to pass to the function.
+ * MilterClientContextFunc:
+ * @context: A #MilterClientContext.
+ * @user_data: User data passed to milter_client_processing_context_foreach().
  *
- * Calls a function for each processing
- * %MilterClientContext.
+ * It is called with each processing #MilterClientContext, together
+ * with the @user_data parameter which is passed to
+ * milter_client_processing_context_foreach().
  */
-void                 milter_client_processing_context_foreach
-                                                     (MilterClient  *client,
-                                                      GFunc          func,
-                                                      gpointer       user_data);
+typedef void(*MilterClientContextFunc)(MilterClientContext *context,
+                                       gpointer  user_data);
+
+void
+milter_client_processing_context_foreach(MilterClient *client,
+                                         MilterClientContextFunc func,
+                                         gpointer user_data);
 
 
 /**

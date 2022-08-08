@@ -2851,9 +2851,20 @@ milter_client_set_maintenance_interval (MilterClient *client, guint maintenance_
         MILTER_CLIENT_GET_PRIVATE(client)->maintenance_interval = maintenance_interval;
 }
 
+/**
+ * milter_client_processing_context_foreach:
+ * @client: A #MilterClient.
+ * @func: (scope call): The function to call with each processing
+ *   #MilterClientContext.
+ * @user_data: User data to pass to the function.
+ *
+ * Calls a function for each processing
+ * #MilterClientContext.
+ */
 void
 milter_client_processing_context_foreach (MilterClient *client,
-                                          GFunc func, gpointer user_data)
+                                          MilterClientContextFunc func,
+                                          gpointer user_data)
 {
     MilterClientPrivate *priv;
     GList *node;
