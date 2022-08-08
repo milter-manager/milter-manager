@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -119,7 +119,7 @@ milter_writer_class_init (MilterWriterClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterWriterClass, flushed),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     g_type_class_add_private(gobject_class, sizeof(MilterWriterPrivate));

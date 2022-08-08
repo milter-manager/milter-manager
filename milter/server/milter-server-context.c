@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -32,7 +32,6 @@
 #include <errno.h>
 
 #include <milter/core.h>
-#include "milter/core/milter-marshalers.h"
 #include "milter-server-context.h"
 
 #define NULL_SAFE_NAME(name) ((name) ? (name) : "(unknown)")
@@ -209,7 +208,7 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                      G_STRUCT_OFFSET(MilterServerContextClass,
                                      ready),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[STOPPED] =
@@ -218,7 +217,7 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterServerContextClass, stopped),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[STOP_ON_CONNECT] =
@@ -227,7 +226,7 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterServerContextClass, stop_on_connect),
                      stop_on_accumulator, NULL,
-                     _milter_marshal_BOOLEAN__STRING_POINTER_UINT,
+                     NULL,
                      G_TYPE_BOOLEAN, 3,
                      G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_UINT);
 
@@ -237,7 +236,7 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterServerContextClass, stop_on_helo),
                      stop_on_accumulator, NULL,
-                     _milter_marshal_BOOLEAN__STRING,
+                     NULL,
                      G_TYPE_BOOLEAN, 1, G_TYPE_STRING);
 
     signals[STOP_ON_ENVELOPE_FROM] =
@@ -247,7 +246,7 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                      G_STRUCT_OFFSET(MilterServerContextClass,
                                      stop_on_envelope_from),
                      stop_on_accumulator, NULL,
-                     _milter_marshal_BOOLEAN__STRING,
+                     NULL,
                      G_TYPE_BOOLEAN, 1, G_TYPE_STRING);
 
     signals[STOP_ON_ENVELOPE_RECIPIENT] =
@@ -257,7 +256,7 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                      G_STRUCT_OFFSET(MilterServerContextClass,
                                      stop_on_envelope_recipient),
                      stop_on_accumulator, NULL,
-                     _milter_marshal_BOOLEAN__STRING,
+                     NULL,
                      G_TYPE_BOOLEAN, 1, G_TYPE_STRING);
 
     signals[STOP_ON_DATA] =
@@ -266,7 +265,7 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterServerContextClass, stop_on_data),
                      stop_on_accumulator, NULL,
-                     _milter_marshal_BOOLEAN__VOID,
+                     NULL,
                      G_TYPE_BOOLEAN, 0);
 
     signals[STOP_ON_HEADER] =
@@ -275,7 +274,7 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterServerContextClass, stop_on_header),
                      stop_on_accumulator, NULL,
-                     _milter_marshal_BOOLEAN__STRING_STRING,
+                     NULL,
                      G_TYPE_BOOLEAN, 2, G_TYPE_STRING, G_TYPE_STRING);
 
     signals[STOP_ON_END_OF_HEADER] =
@@ -285,7 +284,7 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                      G_STRUCT_OFFSET(MilterServerContextClass,
                                      stop_on_end_of_header),
                      stop_on_accumulator, NULL,
-                     _milter_marshal_BOOLEAN__VOID,
+                     NULL,
                      G_TYPE_BOOLEAN, 0);
 
     signals[STOP_ON_BODY] =
@@ -295,10 +294,10 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                      G_STRUCT_OFFSET(MilterServerContextClass, stop_on_body),
                      stop_on_accumulator, NULL,
 #if GLIB_SIZEOF_SIZE_T == 8
-                     _milter_marshal_BOOLEAN__STRING_UINT64,
+                     NULL,
                      G_TYPE_BOOLEAN, 2, G_TYPE_STRING, G_TYPE_UINT64
 #else
-                     _milter_marshal_BOOLEAN__STRING_UINT,
+                     NULL,
                      G_TYPE_BOOLEAN, 2, G_TYPE_STRING, G_TYPE_UINT
 #endif
             );
@@ -311,10 +310,10 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                                      stop_on_end_of_message),
                      stop_on_accumulator, NULL,
 #if GLIB_SIZEOF_SIZE_T == 8
-                     _milter_marshal_BOOLEAN__STRING_UINT64,
+                     NULL,
                      G_TYPE_BOOLEAN, 2, G_TYPE_STRING, G_TYPE_UINT64
 #else
-                     _milter_marshal_BOOLEAN__STRING_UINT,
+                     NULL,
                      G_TYPE_BOOLEAN, 2, G_TYPE_STRING, G_TYPE_UINT
 #endif
             );
@@ -393,7 +392,7 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                      G_STRUCT_OFFSET(MilterServerContextClass,
                                      connection_timeout),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[WRITING_TIMEOUT] =
@@ -403,7 +402,7 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                      G_STRUCT_OFFSET(MilterServerContextClass,
                                      writing_timeout),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[READING_TIMEOUT] =
@@ -413,7 +412,7 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                      G_STRUCT_OFFSET(MilterServerContextClass,
                                      reading_timeout),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[END_OF_MESSAGE_TIMEOUT] =
@@ -423,7 +422,7 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                      G_STRUCT_OFFSET(MilterServerContextClass,
                                      end_of_message_timeout),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[MESSAGE_PROCESSED] =
@@ -433,7 +432,7 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                      G_STRUCT_OFFSET(MilterServerContextClass,
                                      message_processed),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__OBJECT,
+                     NULL,
                      G_TYPE_NONE, 1, MILTER_TYPE_MESSAGE_RESULT);
 
     signals[STATE_TRANSITED] =
@@ -442,7 +441,7 @@ milter_server_context_class_init (MilterServerContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterServerContextClass, state_transited),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__ENUM,
+                     NULL,
                      G_TYPE_NONE, 1, MILTER_TYPE_SERVER_CONTEXT_STATE);
 
     g_type_class_add_private(gobject_class, sizeof(MilterServerContextPrivate));

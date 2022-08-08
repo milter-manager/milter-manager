@@ -34,7 +34,6 @@
 #include "milter-command-decoder.h"
 #include "milter-logger.h"
 #include "milter-enum-types.h"
-#include "milter-marshalers.h"
 
 enum
 {
@@ -93,7 +92,7 @@ milter_command_decoder_class_init (MilterCommandDecoderClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterCommandDecoderClass, negotiate),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__OBJECT,
+                     NULL,
                      G_TYPE_NONE, 1, MILTER_TYPE_OPTION);
 
     signals[DEFINE_MACRO] =
@@ -102,7 +101,7 @@ milter_command_decoder_class_init (MilterCommandDecoderClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterCommandDecoderClass, define_macro),
                      NULL, NULL,
-                     _milter_marshal_VOID__ENUM_POINTER,
+                     NULL,
                      G_TYPE_NONE, 2, MILTER_TYPE_COMMAND, G_TYPE_POINTER);
 
     signals[CONNECT] =
@@ -111,7 +110,7 @@ milter_command_decoder_class_init (MilterCommandDecoderClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterCommandDecoderClass, connect),
                      NULL, NULL,
-                     _milter_marshal_VOID__STRING_POINTER_UINT,
+                     NULL,
                      G_TYPE_NONE, 3, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_UINT);
 
     signals[HELO] =
@@ -120,7 +119,7 @@ milter_command_decoder_class_init (MilterCommandDecoderClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterCommandDecoderClass, helo),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__STRING,
+                     NULL,
                      G_TYPE_NONE, 1, G_TYPE_STRING);
 
     signals[ENVELOPE_FROM] =
@@ -129,7 +128,7 @@ milter_command_decoder_class_init (MilterCommandDecoderClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterCommandDecoderClass, envelope_from),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__STRING,
+                     NULL,
                      G_TYPE_NONE, 1, G_TYPE_STRING);
 
     signals[ENVELOPE_RECIPIENT] =
@@ -139,7 +138,7 @@ milter_command_decoder_class_init (MilterCommandDecoderClass *klass)
                      G_STRUCT_OFFSET(MilterCommandDecoderClass,
                                      envelope_recipient),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__STRING,
+                     NULL,
                      G_TYPE_NONE, 1, G_TYPE_STRING);
 
     signals[DATA] =
@@ -148,7 +147,7 @@ milter_command_decoder_class_init (MilterCommandDecoderClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterCommandDecoderClass, data),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[HEADER] =
@@ -157,7 +156,7 @@ milter_command_decoder_class_init (MilterCommandDecoderClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterCommandDecoderClass, header),
                      NULL, NULL,
-                     _milter_marshal_VOID__STRING_STRING,
+                     NULL,
                      G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_STRING);
 
     signals[END_OF_HEADER] =
@@ -166,7 +165,7 @@ milter_command_decoder_class_init (MilterCommandDecoderClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterCommandDecoderClass, end_of_header),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[BODY] =
@@ -175,12 +174,14 @@ milter_command_decoder_class_init (MilterCommandDecoderClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterCommandDecoderClass, body),
                      NULL, NULL,
+                     NULL,
+                     G_TYPE_NONE,
+                     2,
+                     G_TYPE_STRING,
 #if GLIB_SIZEOF_SIZE_T == 8
-                     _milter_marshal_VOID__STRING_UINT64,
-                     G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_UINT64
+                      G_TYPE_UINT64
 #else
-                     _milter_marshal_VOID__STRING_UINT,
-                     G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_UINT
+                     G_TYPE_UINT
 #endif
             );
 
@@ -190,12 +191,14 @@ milter_command_decoder_class_init (MilterCommandDecoderClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterCommandDecoderClass, end_of_message),
                      NULL, NULL,
+                     NULL,
+                     G_TYPE_NONE,
+                     2,
+                     G_TYPE_STRING,
 #if GLIB_SIZEOF_SIZE_T == 8
-                     _milter_marshal_VOID__STRING_UINT64,
-                     G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_UINT64
+                     G_TYPE_UINT64
 #else
-                     _milter_marshal_VOID__STRING_UINT,
-                     G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_UINT
+                     G_TYPE_UINT
 #endif
                      );
 
@@ -205,7 +208,7 @@ milter_command_decoder_class_init (MilterCommandDecoderClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterCommandDecoderClass, abort),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[QUIT] =
@@ -214,7 +217,7 @@ milter_command_decoder_class_init (MilterCommandDecoderClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterCommandDecoderClass, quit),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[UNKNOWN] =
@@ -223,7 +226,7 @@ milter_command_decoder_class_init (MilterCommandDecoderClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterCommandDecoderClass, unknown),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__STRING,
+                     NULL,
                      G_TYPE_NONE, 1, G_TYPE_STRING);
 }
 

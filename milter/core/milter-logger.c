@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -32,7 +32,6 @@
 #include "milter-logger.h"
 #include "milter-core-internal.h"
 #include "milter-utils.h"
-#include "milter-marshalers.h"
 #include "milter-enum-types.h"
 
 #define DEFAULT_KEY "default"
@@ -198,7 +197,7 @@ milter_logger_class_init (MilterLoggerClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterLoggerClass, log),
                      NULL, NULL,
-                     _milter_marshal_VOID__STRING_FLAGS_STRING_UINT_STRING_POINTER_STRING,
+                     NULL,
                      G_TYPE_NONE, 7,
                      G_TYPE_STRING, MILTER_TYPE_LOG_LEVEL_FLAGS, G_TYPE_STRING,
                      G_TYPE_UINT, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_STRING);

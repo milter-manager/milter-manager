@@ -47,9 +47,6 @@ enum_source_prefix = milter-enum-types
 enum_sources_h =			\
 	$(milter_core_public_headers)
 
-marshal_source_prefix = milter-marshalers
-marshal_prefix = _milter_marshal
-
 milter_core_includedir=$(pkgincludedir)/milter/core
 milter_core_include_HEADERS =		\
 	milter-enum-types.h		\
@@ -62,8 +59,6 @@ lib_LTLIBRARIES =		\
 
 libmilter_core_la_SOURCES =		\
 	milter-enum-types.c		\
-	milter-marshalers.c		\
-	milter-marshalers.h		\
 	milter-core.c			\
 	milter-protocol.c		\
 	milter-decoder.c		\
@@ -101,4 +96,3 @@ libmilter_core_la_DEPENDENCIES =	\
 	$(LIBEV_LA)
 
 include $(top_srcdir)/build/enum-types.mk
-include $(top_srcdir)/build/marshal.mk

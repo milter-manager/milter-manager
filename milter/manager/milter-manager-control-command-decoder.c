@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -20,8 +20,6 @@
 #ifdef HAVE_CONFIG_H
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
-
-#include <milter/core/milter-marshalers.h>
 
 #include "milter-manager-control-command-decoder.h"
 #include "milter-manager-enum-types.h"
@@ -68,10 +66,10 @@ milter_manager_control_command_decoder_class_init (MilterManagerControlCommandDe
                                      set_configuration),
                      NULL, NULL,
 #if GLIB_SIZEOF_SIZE_T == 8
-                     _milter_marshal_VOID__STRING_UINT64,
+                     NULL,
                      G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_UINT64
 #else
-                     _milter_marshal_VOID__STRING_UINT,
+                     NULL,
                      G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_UINT
 #endif
             );
@@ -83,7 +81,7 @@ milter_manager_control_command_decoder_class_init (MilterManagerControlCommandDe
                      G_STRUCT_OFFSET(MilterManagerControlCommandDecoderClass,
                                      get_configuration),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[RELOAD] =
@@ -93,7 +91,7 @@ milter_manager_control_command_decoder_class_init (MilterManagerControlCommandDe
                      G_STRUCT_OFFSET(MilterManagerControlCommandDecoderClass,
                                      reload),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[STOP_CHILD] =
@@ -103,7 +101,7 @@ milter_manager_control_command_decoder_class_init (MilterManagerControlCommandDe
                      G_STRUCT_OFFSET(MilterManagerControlCommandDecoderClass,
                                      stop_child),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__STRING,
+                     NULL,
                      G_TYPE_NONE, 1, G_TYPE_STRING);
 
     signals[GET_STATUS] =
@@ -113,7 +111,7 @@ milter_manager_control_command_decoder_class_init (MilterManagerControlCommandDe
                      G_STRUCT_OFFSET(MilterManagerControlCommandDecoderClass,
                                      get_status),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
 }

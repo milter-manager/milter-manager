@@ -51,7 +51,7 @@ base_init (gpointer g_class)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterErrorEmittableClass, error),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__POINTER,
+                     NULL,
                      G_TYPE_NONE, 1, G_TYPE_POINTER);
 
     initialized = TRUE;

@@ -25,7 +25,6 @@
 #include <stdlib.h>
 
 #include <milter/core.h>
-#include <milter/core/milter-marshalers.h>
 #include "../client.h"
 #include "milter-client-context.h"
 #include "milter-client-enum-types.h"
@@ -381,7 +380,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, negotiate),
                      status_accumulator, NULL,
-                     _milter_marshal_ENUM__OBJECT_OBJECT,
+                     NULL,
                      MILTER_TYPE_STATUS, 2,
                      MILTER_TYPE_OPTION, MILTER_TYPE_MACROS_REQUESTS);
 
@@ -409,7 +408,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_STRUCT_OFFSET(MilterClientContextClass,
                                      negotiate_response),
                      NULL, NULL,
-                     _milter_marshal_VOID__OBJECT_OBJECT_ENUM,
+                     NULL,
                      G_TYPE_NONE, 3,
                      MILTER_TYPE_OPTION, MILTER_TYPE_MACROS_REQUESTS,
                      MILTER_TYPE_STATUS);
@@ -430,7 +429,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, define_macro),
                      NULL, NULL,
-                     _milter_marshal_VOID__ENUM_POINTER,
+                     NULL,
                      G_TYPE_NONE, 2, MILTER_TYPE_COMMAND, G_TYPE_POINTER);
 
     /**
@@ -546,7 +545,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, connect),
                      status_accumulator, NULL,
-                     _milter_marshal_ENUM__STRING_POINTER_UINT,
+                     NULL,
                      MILTER_TYPE_STATUS, 3,
                      G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_UINT);
 
@@ -572,7 +571,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_STRUCT_OFFSET(MilterClientContextClass,
                                      connect_response),
                      NULL, NULL,
-                     _milter_marshal_VOID__ENUM,
+                     NULL,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
     /**
@@ -685,7 +684,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, helo),
                      status_accumulator, NULL,
-                     _milter_marshal_ENUM__STRING,
+                     NULL,
                      MILTER_TYPE_STATUS, 1, G_TYPE_STRING);
 
     /**
@@ -709,7 +708,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, helo_response),
                      NULL, NULL,
-                     _milter_marshal_VOID__ENUM,
+                     NULL,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
     /**
@@ -838,7 +837,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, envelope_from),
                      status_accumulator, NULL,
-                     _milter_marshal_ENUM__STRING,
+                     NULL,
                      MILTER_TYPE_STATUS, 1, G_TYPE_STRING);
 
     /**
@@ -863,7 +862,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_STRUCT_OFFSET(MilterClientContextClass,
                                      envelope_from_response),
                      NULL, NULL,
-                     _milter_marshal_VOID__ENUM,
+                     NULL,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
     /**
@@ -992,7 +991,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_STRUCT_OFFSET(MilterClientContextClass,
                                      envelope_recipient),
                      status_accumulator, NULL,
-                     _milter_marshal_ENUM__STRING,
+                     NULL,
                      MILTER_TYPE_STATUS, 1, G_TYPE_STRING);
 
     /**
@@ -1017,7 +1016,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_STRUCT_OFFSET(MilterClientContextClass,
                                      envelope_recipient_response),
                      NULL, NULL,
-                     _milter_marshal_VOID__ENUM,
+                     NULL,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
     /**
@@ -1126,7 +1125,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, data),
                      status_accumulator, NULL,
-                     _milter_marshal_ENUM__VOID,
+                     NULL,
                      MILTER_TYPE_STATUS, 0);
 
     /**
@@ -1150,7 +1149,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, data_response),
                      NULL, NULL,
-                     _milter_marshal_VOID__ENUM,
+                     NULL,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
     /**
@@ -1242,7 +1241,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, unknown),
                      status_accumulator, NULL,
-                     _milter_marshal_ENUM__STRING,
+                     NULL,
                      MILTER_TYPE_STATUS, 1, G_TYPE_STRING);
 
     /**
@@ -1266,7 +1265,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, unknown_response),
                      NULL, NULL,
-                     _milter_marshal_VOID__ENUM,
+                     NULL,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
     /**
@@ -1418,7 +1417,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, header),
                      status_accumulator, NULL,
-                     _milter_marshal_ENUM__STRING_STRING,
+                     NULL,
                      MILTER_TYPE_STATUS, 2, G_TYPE_STRING, G_TYPE_STRING);
 
     /**
@@ -1442,7 +1441,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, header_response),
                      NULL, NULL,
-                     _milter_marshal_VOID__ENUM,
+                     NULL,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
     /**
@@ -1565,7 +1564,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, end_of_header),
                      status_accumulator, NULL,
-                     _milter_marshal_ENUM__VOID,
+                     NULL,
                      MILTER_TYPE_STATUS, 0);
 
     /**
@@ -1590,7 +1589,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_STRUCT_OFFSET(MilterClientContextClass,
                                      end_of_header_response),
                      NULL, NULL,
-                     _milter_marshal_VOID__ENUM,
+                     NULL,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
     /**
@@ -1730,10 +1729,10 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_STRUCT_OFFSET(MilterClientContextClass, body),
                      status_accumulator, NULL,
 #if GLIB_SIZEOF_SIZE_T == 8
-                     _milter_marshal_ENUM__STRING_UINT64,
+                     NULL,
                      MILTER_TYPE_STATUS, 2, G_TYPE_STRING, G_TYPE_UINT64
 #else
-                     _milter_marshal_ENUM__STRING_UINT,
+                     NULL,
                      MILTER_TYPE_STATUS, 2, G_TYPE_STRING, G_TYPE_UINT
 #endif
                      );
@@ -1759,7 +1758,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, body_response),
                      NULL, NULL,
-                     _milter_marshal_VOID__ENUM,
+                     NULL,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
     /**
@@ -1865,10 +1864,10 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_STRUCT_OFFSET(MilterClientContextClass, end_of_message),
                      status_accumulator, NULL,
 #if GLIB_SIZEOF_SIZE_T == 8
-                     _milter_marshal_ENUM__STRING_UINT64,
+                     NULL,
                      MILTER_TYPE_STATUS, 2, G_TYPE_STRING, G_TYPE_UINT64
 #else
-                     _milter_marshal_ENUM__STRING_UINT,
+                     NULL,
                      MILTER_TYPE_STATUS, 2, G_TYPE_STRING, G_TYPE_UINT
 #endif
                      );
@@ -1895,7 +1894,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_STRUCT_OFFSET(MilterClientContextClass,
                                      end_of_message_response),
                      NULL, NULL,
-                     _milter_marshal_VOID__ENUM,
+                     NULL,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
     /**
@@ -2009,7 +2008,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, abort),
                      status_accumulator, NULL,
-                     _milter_marshal_ENUM__ENUM,
+                     NULL,
                      MILTER_TYPE_STATUS, 1, MILTER_TYPE_CLIENT_CONTEXT_STATE);
 
     /**
@@ -2033,7 +2032,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, abort_response),
                      NULL, NULL,
-                     _milter_marshal_VOID__ENUM,
+                     NULL,
                      G_TYPE_NONE, 1, MILTER_TYPE_STATUS);
 
     /**
@@ -2055,7 +2054,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, timeout),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[MESSAGE_PROCESSED] =
@@ -2065,7 +2064,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_STRUCT_OFFSET(MilterClientContextClass,
                                      message_processed),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__OBJECT,
+                     NULL,
                      G_TYPE_NONE, 1, MILTER_TYPE_MESSAGE_RESULT);
 
     g_type_class_add_private(gobject_class, sizeof(MilterClientContextPrivate));

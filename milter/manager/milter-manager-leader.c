@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -21,7 +21,6 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include <milter/core/milter-marshalers.h>
 #include "milter-manager-leader.h"
 #include "milter-manager-enum-types.h"
 #include "milter-manager-children.h"
@@ -133,7 +132,7 @@ milter_manager_leader_class_init (MilterManagerLeaderClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterManagerLeaderClass, connection_check),
                      boolean_handled_accumulator, NULL,
-                     _milter_marshal_BOOLEAN__VOID,
+                     NULL,
                      G_TYPE_BOOLEAN, 0, G_TYPE_NONE);
 
     g_type_class_add_private(gobject_class,

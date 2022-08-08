@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -30,7 +30,6 @@
 #include "milter-protocol.h"
 #include "milter-reply-decoder.h"
 #include "milter-enum-types.h"
-#include "milter-marshalers.h"
 #include "milter-macros-requests.h"
 #include "milter-utils.h"
 #include "milter-logger.h"

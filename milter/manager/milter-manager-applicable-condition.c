@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -23,7 +23,6 @@
 
 #include "milter-manager-applicable-condition.h"
 #include "milter-manager-enum-types.h"
-#include <milter/core/milter-marshalers.h>
 
 #define MILTER_MANAGER_APPLICABLE_CONDITION_GET_PRIVATE(obj)            \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                                 \
@@ -108,7 +107,7 @@ milter_manager_applicable_condition_class_init (MilterManagerApplicableCondition
                      G_STRUCT_OFFSET(MilterManagerApplicableConditionClass,
                                      attach_to),
                      NULL, NULL,
-                     _milter_marshal_VOID__OBJECT_OBJECT_OBJECT,
+                     NULL,
                      G_TYPE_NONE, 3,
                      MILTER_TYPE_MANAGER_CHILD,
                      MILTER_TYPE_MANAGER_CHILDREN,

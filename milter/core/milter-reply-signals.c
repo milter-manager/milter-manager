@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -22,7 +22,6 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "milter-reply-signals.h"
-#include "milter-marshalers.h"
 
 enum
 {
@@ -67,7 +66,7 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, negotiate_reply),
                      NULL, NULL,
-                     _milter_marshal_VOID__OBJECT_OBJECT,
+                     NULL,
                      G_TYPE_NONE, 2, MILTER_TYPE_OPTION, MILTER_TYPE_MACROS_REQUESTS);
 
     signals[CONTINUE] =
@@ -76,7 +75,7 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, _continue),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[REPLY_CODE] =
@@ -85,7 +84,7 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, reply_code),
                      NULL, NULL,
-                     _milter_marshal_VOID__UINT_STRING_STRING,
+                     NULL,
                      G_TYPE_NONE, 3, G_TYPE_UINT, G_TYPE_STRING, G_TYPE_STRING);
 
     signals[TEMPORARY_FAILURE] =
@@ -94,7 +93,7 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, temporary_failure),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[REJECT] =
@@ -103,7 +102,7 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, reject),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[ACCEPT] =
@@ -112,7 +111,7 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, accept),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[DISCARD] =
@@ -121,7 +120,7 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, discard),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[ADD_HEADER] =
@@ -130,7 +129,7 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, add_header),
                      NULL, NULL,
-                     _milter_marshal_VOID__STRING_STRING,
+                     NULL,
                      G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_STRING);
 
     signals[INSERT_HEADER] =
@@ -139,7 +138,7 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, insert_header),
                      NULL, NULL,
-                     _milter_marshal_VOID__UINT_STRING_STRING,
+                     NULL,
                      G_TYPE_NONE, 3, G_TYPE_UINT, G_TYPE_STRING, G_TYPE_STRING);
 
     signals[CHANGE_HEADER] =
@@ -148,7 +147,7 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, change_header),
                      NULL, NULL,
-                     _milter_marshal_VOID__STRING_UINT_STRING,
+                     NULL,
                      G_TYPE_NONE, 3, G_TYPE_STRING, G_TYPE_UINT, G_TYPE_STRING);
 
     signals[DELETE_HEADER] =
@@ -157,7 +156,7 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, delete_header),
                      NULL, NULL,
-                     _milter_marshal_VOID__STRING_UINT,
+                     NULL,
                      G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_UINT);
 
     signals[CHANGE_FROM] =
@@ -166,7 +165,7 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, change_from),
                      NULL, NULL,
-                     _milter_marshal_VOID__STRING_STRING,
+                     NULL,
                      G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_STRING);
 
     signals[ADD_RECIPIENT] =
@@ -175,7 +174,7 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, add_recipient),
                      NULL, NULL,
-                     _milter_marshal_VOID__STRING_STRING,
+                     NULL,
                      G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_STRING);
 
     signals[DELETE_RECIPIENT] =
@@ -184,7 +183,7 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, delete_recipient),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__STRING,
+                     NULL,
                      G_TYPE_NONE, 1, G_TYPE_STRING);
 
     signals[REPLACE_BODY] =
@@ -193,12 +192,14 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, replace_body),
                      NULL, NULL,
+                     NULL,
+                     G_TYPE_NONE,
+                     2,
+                     G_TYPE_STRING,
 #if GLIB_SIZEOF_SIZE_T == 8
-                     _milter_marshal_VOID__STRING_UINT64,
-                     G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_UINT64
+                     G_TYPE_UINT64
 #else
-                     _milter_marshal_VOID__STRING_UINT,
-                     G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_UINT
+                     G_TYPE_UINT
 #endif
                     );
 
@@ -208,7 +209,7 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, progress),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[QUARANTINE] =
@@ -217,7 +218,7 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, quarantine),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__STRING,
+                     NULL,
                      G_TYPE_NONE, 1, G_TYPE_STRING);
 
     signals[CONNECTION_FAILURE] =
@@ -226,7 +227,7 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, connection_failure),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[SHUTDOWN] =
@@ -235,7 +236,7 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, shutdown),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[SKIP] =
@@ -244,7 +245,7 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, skip),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
 
@@ -254,7 +255,7 @@ base_init (gpointer klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReplySignalsClass, abort),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
 

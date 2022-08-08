@@ -32,7 +32,6 @@
 
 #include <glib/gstdio.h>
 
-#include <milter/core/milter-marshalers.h>
 #include "../client.h"
 #include "milter-client-private.h"
 
@@ -387,7 +386,7 @@ _milter_client_class_init (MilterClientClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientClass, connection_established),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__OBJECT,
+                     NULL,
                      G_TYPE_NONE, 1, MILTER_TYPE_CLIENT_CONTEXT);
 
     signals[LISTEN_STARTED] =
@@ -396,7 +395,7 @@ _milter_client_class_init (MilterClientClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientClass, listen_started),
                      NULL, NULL,
-                     _milter_marshal_VOID__POINTER_UINT,
+                     NULL,
                      G_TYPE_NONE, 2, G_TYPE_POINTER, G_TYPE_UINT);
 
     signals[MAINTAIN] =
@@ -405,7 +404,7 @@ _milter_client_class_init (MilterClientClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientClass, maintain),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[SESSIONS_FINISHED] =
@@ -414,7 +413,7 @@ _milter_client_class_init (MilterClientClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientClass, sessions_finished),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__UINT,
+                     NULL,
                      G_TYPE_NONE, 1, G_TYPE_UINT);
 
     signals[EVENT_LOOP_CREATED] =
@@ -423,7 +422,7 @@ _milter_client_class_init (MilterClientClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientClass, event_loop_created),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__OBJECT,
+                     NULL,
                      G_TYPE_NONE, 1, MILTER_TYPE_EVENT_LOOP);
 
     signals[WORKERS_CREATED] =
@@ -432,7 +431,7 @@ _milter_client_class_init (MilterClientClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientClass, workers_created),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__UINT,
+                     NULL,
                      G_TYPE_NONE, 1, G_TYPE_UINT);
 
     signals[WORKER_CREATED] =
@@ -441,7 +440,7 @@ _milter_client_class_init (MilterClientClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientClass, worker_created),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     g_type_class_add_private(gobject_class, sizeof(MilterClientPrivate));

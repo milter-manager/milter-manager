@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -29,7 +29,6 @@
 #include "milter-reader.h"
 #include "milter-logger.h"
 #include "milter-utils.h"
-#include "milter-marshalers.h"
 
 #define MILTER_READER_GET_PRIVATE(obj)                  \
     (G_TYPE_INSTANCE_GET_PRIVATE((obj),                 \
@@ -110,7 +109,7 @@ milter_reader_class_init (MilterReaderClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterReaderClass, flow),
                      NULL, NULL,
-                     _milter_marshal_VOID__POINTER_UINT,
+                     NULL,
                      G_TYPE_NONE, 2, G_TYPE_POINTER, G_TYPE_UINT);
 
     g_type_class_add_private(gobject_class, sizeof(MilterReaderPrivate));

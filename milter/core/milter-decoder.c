@@ -33,7 +33,6 @@
 #include "milter-logger.h"
 #include "milter-decoder.h"
 #include "milter-enum-types.h"
-#include "milter-marshalers.h"
 
 #define COMMAND_LENGTH_BYTES (sizeof(guint32))
 
@@ -109,7 +108,7 @@ milter_decoder_class_init (MilterDecoderClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterDecoderClass, decode),
                      NULL, NULL,
-                     _milter_marshal_BOOLEAN__POINTER,
+                     NULL,
                      G_TYPE_BOOLEAN, 1, G_TYPE_POINTER);
 
     g_type_class_add_private(gobject_class, sizeof(MilterDecoderPrivate));

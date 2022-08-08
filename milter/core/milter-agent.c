@@ -25,7 +25,6 @@
 #include <stdlib.h>
 
 #include "milter-agent.h"
-#include "milter-marshalers.h"
 #include "milter-enum-types.h"
 #include "milter-utils.h"
 #include "milter-logger.h"
@@ -176,7 +175,7 @@ milter_agent_class_init (MilterAgentClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterAgentClass, flushed),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     g_type_class_add_private(gobject_class, sizeof(MilterAgentPrivate));

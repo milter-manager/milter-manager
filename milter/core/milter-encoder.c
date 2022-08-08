@@ -33,7 +33,6 @@
 #include "milter-encoder.h"
 #include "milter-logger.h"
 #include "milter-enum-types.h"
-#include "milter-marshalers.h"
 #include "milter-macros-requests.h"
 #include "milter-utils.h"
 

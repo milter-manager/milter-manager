@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -31,7 +31,6 @@
 #include "milter-manager-configuration.h"
 #include "milter-manager-leader.h"
 #include "milter-manager-children.h"
-#include <milter/core/milter-marshalers.h>
 
 #define DEFAULT_FALLBACK_STATUS MILTER_STATUS_ACCEPT
 #define DEFAULT_FALLBACK_STATUS_AT_DISCONNECT MILTER_STATUS_TEMPORARY_FAILURE
@@ -472,7 +471,7 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterManagerConfigurationClass, connected),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__OBJECT,
+                     NULL,
                      G_TYPE_NONE, 1, MILTER_TYPE_MANAGER_LEADER);
 
     signals[TO_XML] =
@@ -481,7 +480,7 @@ milter_manager_configuration_class_init (MilterManagerConfigurationClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterManagerConfigurationClass, to_xml),
                      NULL, NULL,
-                     _milter_marshal_VOID__POINTER_UINT,
+                     NULL,
                      G_TYPE_NONE, 2, G_TYPE_POINTER, G_TYPE_UINT);
 
     g_type_class_add_private(gobject_class,

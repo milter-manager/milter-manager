@@ -94,9 +94,6 @@ enums = gnome.mkenums_simple('milter-enum-types',
                              install_header: true,
                              sources: headers,
                              symbol_prefix: 'milter')
-marshalers = gnome.genmarshal('milter-marshalers',
-                              prefix: '_milter_marshal',
-                              sources: files('milter-marshalers.list'))
 
 install_headers(headers, subdir: join_paths('milter', 'core'))
 install_headers(['../core.h'], subdir: join_paths('milter'))
@@ -113,7 +110,7 @@ dependencies = [
 ]
 libmilter_core = library('milter-core',
                          c_args: '-DMILTER_LOG_DOMAIN="milter-core"',
-                         sources: sources + headers + enums + marshalers,
+                         sources: sources + headers + enums,
                          install: true,
                          dependencies: dependencies,
                          soversion: so_version,

@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -20,8 +20,6 @@
 #ifdef HAVE_CONFIG_H
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
-
-#include <milter/core/milter-marshalers.h>
 
 #include "milter-manager-launch-command-decoder.h"
 #include "milter-manager-enum-types.h"
@@ -63,7 +61,7 @@ milter_manager_launch_command_decoder_class_init (MilterManagerLaunchCommandDeco
                      G_STRUCT_OFFSET(MilterManagerLaunchCommandDecoderClass,
                                      launch),
                      NULL, NULL,
-                     _milter_marshal_VOID__STRING_STRING,
+                     NULL,
                      G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_STRING);
 }
 

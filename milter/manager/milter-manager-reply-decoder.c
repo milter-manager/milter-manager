@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -20,8 +20,6 @@
 #ifdef HAVE_CONFIG_H
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
-
-#include <milter/core/milter-marshalers.h>
 
 #include "milter-manager-reply-decoder.h"
 #include "milter-manager-enum-types.h"
@@ -65,7 +63,7 @@ milter_manager_reply_decoder_class_init (MilterManagerReplyDecoderClass *klass)
                      G_STRUCT_OFFSET(MilterManagerReplyDecoderClass,
                                      success),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__VOID,
+                     NULL,
                      G_TYPE_NONE, 0);
 
     signals[FAILURE] =
@@ -75,7 +73,7 @@ milter_manager_reply_decoder_class_init (MilterManagerReplyDecoderClass *klass)
                      G_STRUCT_OFFSET(MilterManagerReplyDecoderClass,
                                      failure),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__STRING,
+                     NULL,
                      G_TYPE_NONE, 1, G_TYPE_STRING);
 
     signals[ERROR] =
@@ -85,7 +83,7 @@ milter_manager_reply_decoder_class_init (MilterManagerReplyDecoderClass *klass)
                      G_STRUCT_OFFSET(MilterManagerReplyDecoderClass,
                                      error),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__STRING,
+                     NULL,
                      G_TYPE_NONE, 1, G_TYPE_STRING);
 }
 

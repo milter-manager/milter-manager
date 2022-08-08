@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2010  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -21,7 +21,6 @@
 #  include "../../config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include <milter/core/milter-marshalers.h>
 #include "milter-manager-egg.h"
 #include "milter-manager-enum-types.h"
 
@@ -222,7 +221,7 @@ milter_manager_egg_class_init (MilterManagerEggClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterManagerEggClass, hatched),
                      NULL, NULL,
-                     g_cclosure_marshal_VOID__OBJECT,
+                     NULL,
                      G_TYPE_NONE, 1, MILTER_TYPE_MANAGER_CHILD);
 
     signals[TO_XML] =
@@ -231,7 +230,7 @@ milter_manager_egg_class_init (MilterManagerEggClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterManagerEggClass, to_xml),
                      NULL, NULL,
-                     _milter_marshal_VOID__POINTER_UINT,
+                     NULL,
                      G_TYPE_NONE, 2, G_TYPE_POINTER, G_TYPE_UINT);
 
 
