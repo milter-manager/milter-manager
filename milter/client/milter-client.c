@@ -3142,6 +3142,15 @@ milter_client_fork_without_custom (MilterClient *client)
     return client_class->fork(client);
 }
 
+/**
+ * milter_client_set_custom_fork_func: (skip)
+ * @client: a #MilterClient.
+ * @custom_fork: a %MilterClientCustomForkFunc.
+ *
+ * Sets custom fork function for the client. It will be
+ * called in milter_client_fork(). If @custom_fork is %NULL,
+ * the system fork(2) will be called.
+ */
 void
 milter_client_set_custom_fork_func (MilterClient              *client,
                                     MilterClientCustomForkFunc custom_fork)
@@ -3154,6 +3163,14 @@ milter_client_set_custom_fork_func (MilterClient              *client,
     priv->custom_fork = custom_fork;
 }
 
+/**
+ * milter_client_get_custom_fork_func: (skip)
+ * @client: a #MilterClient.
+ *
+ * Gets the custom fork function for the client.
+ *
+ * Returns: the custom fork function for the client.
+ */
 MilterClientCustomForkFunc
 milter_client_get_custom_fork_func (MilterClient *client)
 {
