@@ -1596,7 +1596,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     /**
      * MilterClientContext::body:
      * @context: the context that received the signal.
-     * @chunk: the body chunk.
+     * @chunk (array length=size): the body chunk.
      * @size: the size of @chunk.
      *
      * This signal is emitted on body data is received. This
