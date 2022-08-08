@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -87,13 +87,6 @@ G_BEGIN_DECLS
 #define milter_need_profile_log() \
     (milter_need_log(MILTER_LOG_LEVEL_PROFILE))
 
-#define MILTER_TYPE_LOGGER            (milter_logger_get_type())
-#define MILTER_LOGGER(obj)            (G_TYPE_CHECK_INSTANCE_CAST((obj), MILTER_TYPE_LOGGER, MilterLogger))
-#define MILTER_LOGGER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST((klass), MILTER_TYPE_LOGGER, MilterLoggerClass))
-#define MILTER_IS_LOGGER(obj)         (G_TYPE_CHECK_INSTANCE_TYPE((obj), MILTER_TYPE_LOGGER))
-#define MILTER_IS_LOGGER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), MILTER_TYPE_LOGGER))
-#define MILTER_LOGGER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), MILTER_TYPE_LOGGER, MilterLoggerClass))
-
 typedef enum
 {
     MILTER_LOG_LEVEL_DEFAULT    = 0,
@@ -147,14 +140,12 @@ typedef enum
     MILTER_LOG_COLORIZE_CONSOLE
 } MilterLogColorize;
 
-typedef struct _MilterLogger         MilterLogger;
-typedef struct _MilterLoggerClass    MilterLoggerClass;
-
-struct _MilterLogger
-{
-    GObject object;
-};
-
+#define MILTER_TYPE_LOGGER            (milter_logger_get_type())
+G_DECLARE_DERIVABLE_TYPE(MilterLogger,
+                         milter_logger,
+                         MILTER,
+                         LOGGER,
+                         GObject)
 struct _MilterLoggerClass
 {
     GObjectClass parent_class;
@@ -170,8 +161,6 @@ struct _MilterLoggerClass
 };
 
 GQuark           milter_logger_error_quark    (void);
-
-GType            milter_logger_get_type       (void) G_GNUC_CONST;
 
 MilterLogLevelFlags milter_log_level_flags_from_string (const gchar *level_name,
                                                         MilterLogLevelFlags base_flags,
