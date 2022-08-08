@@ -448,7 +448,7 @@ milter_event_loop_watch_child_full (MilterEventLoop *loop,
  * @function: The function to call when the interval is passed.
  * @user_data: User data to pass to @function.
  *
- * This equals to `milter_event_loop_add_timeout(loop,
+ * This equals to `milter_event_loop_add_timeout_full(loop,
  * G_PRIORITY_DEFAULT, interval_in_seconds, function, user_data,
  * NULL)`.
  *
@@ -495,20 +495,41 @@ milter_event_loop_add_timeout_full (MilterEventLoop *loop,
                                         function, user_data, notify);
 }
 
+/**
+ * milter_event_loop_add_idle: (skip)
+ * @loop: A #MilterEventLoop.
+ * @function: The function to call when no source is dispatched.
+ * @user_data: User data to pass to @function.
+ *
+ * This equals to `milter_event_loop_add_idle_full(loop,
+ * G_PRIORITY_DEFAULT_IDLE, function, user_data, NULL)`.
+ *
+ * Returns: The event source ID.
+ */
 guint
 milter_event_loop_add_idle (MilterEventLoop *loop,
                             GSourceFunc      function,
-                            gpointer         data)
+                            gpointer         user_data)
 {
     return milter_event_loop_add_idle_full(loop, G_PRIORITY_DEFAULT_IDLE,
-                                           function, data, NULL);
+                                           function, user_data, NULL);
 }
 
+/**
+ * milter_event_loop_add_idle_full: (rename-to milter_event_loop_add_idle)
+ * @loop: A #MilterEventLoop.
+ * @priority: The priority of the idle source.
+ * @function: The function to call when no source is dispatched.
+ * @user_data: User data to pass to @function.
+ * @notify: (nullable): The function to call when the source is removed.
+ *
+ * Returns: The event source ID.
+ */
 guint
 milter_event_loop_add_idle_full (MilterEventLoop *loop,
                                  gint             priority,
                                  GSourceFunc      function,
-                                 gpointer         data,
+                                 gpointer         user_data,
                                  GDestroyNotify   notify)
 {
     MilterEventLoopClass *loop_class;
@@ -516,7 +537,7 @@ milter_event_loop_add_idle_full (MilterEventLoop *loop,
     g_return_val_if_fail(loop != NULL, 0);
 
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
-    return loop_class->add_idle_full(loop, priority, function, data, notify);
+    return loop_class->add_idle_full(loop, priority, function, user_data, notify);
 }
 
 gboolean
