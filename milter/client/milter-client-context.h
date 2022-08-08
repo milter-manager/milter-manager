@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -1084,17 +1084,26 @@ void                 milter_client_context_clear_mail_transaction_shelf
                                                        (MilterClientContext *context);
 
 /**
- * milter_client_context_mail_transaction_shelf_foreach:
- * @context: a %MilterClientContext.
- * @func: the function to call for each key/value pair
- * @user_data: user data to pass to the function
+ * MilterClientMailTransactionShelfFunc:
+ * @key: A key.
+ * @value: A value.
+ * @user_data: User data passed to
+ *   milter_client_context_mail_transaction_shelf_foreach().
  *
- * A wrapper for g_hash_table_foreach().
+ * It is called with each metadata associated with a mail transaction,
+ * together with the @user_data parameter which is passed to
+ * milter_client_context_mail_transaction_shelf_foreach().
  */
-void                 milter_client_context_mail_transaction_shelf_foreach
-                                                       (MilterClientContext *context,
-                                                        GHFunc func,
-                                                        gpointer user_data);
+typedef void(*MilterClientMailTransactionShelfFunc)(const gchar *key,
+                                                    const gchar *value,
+                                                    gpointer  user_data);
+
+
+void
+milter_client_context_mail_transaction_shelf_foreach(
+    MilterClientContext *context,
+    MilterClientMailTransactionShelfFunc func,
+    gpointer user_data);
 
 G_END_DECLS
 
