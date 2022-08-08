@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2009-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2009-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -746,6 +746,12 @@ milter_message_result_set_quarantine (MilterMessageResult *result,
     MILTER_MESSAGE_RESULT_GET_PRIVATE(result)->quarantine = quarantine;
 }
 
+/**
+ * milter_message_result_get_start_time: (skip)
+ * @result: A #MilterMessageResult.
+ *
+ * Returns: The start time of the result.
+ */
 GTimeVal *
 milter_message_result_get_start_time (MilterMessageResult *result)
 {
