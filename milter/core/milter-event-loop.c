@@ -416,7 +416,7 @@ milter_event_loop_watch_child (MilterEventLoop *loop,
 /**
  * milter_event_loop_watch_child_full: (rename-to milter_event_loop_watch_child)
  * @loop: A #MilterEventLoop.
- * @priority: The priority of the #GIOChannel source.
+ * @priority: The priority of the child source.
  * @pid: An ID of the process to watch.
  * @function: The function to call when the child is finished.
  * @user_data: User data to pass to @function.
@@ -441,24 +441,48 @@ milter_event_loop_watch_child_full (MilterEventLoop *loop,
                                         function, user_data, notify);
 }
 
+/**
+ * milter_event_loop_add_timeout: (skip)
+ * @loop: A #MilterEventLoop.
+ * @interval_in_seconds: The time between calls to the @function, in seconds.
+ * @function: The function to call when the interval is passed.
+ * @user_data: User data to pass to @function.
+ *
+ * This equals to `milter_event_loop_add_timeout(loop,
+ * G_PRIORITY_DEFAULT, interval_in_seconds, function, user_data,
+ * NULL)`.
+ *
+ * Returns: The event source ID.
+ */
 guint
 milter_event_loop_add_timeout (MilterEventLoop *loop,
                                gdouble          interval_in_seconds,
                                GSourceFunc      function,
-                               gpointer         data)
+                               gpointer         user_data)
 {
     return milter_event_loop_add_timeout_full(loop, G_PRIORITY_DEFAULT,
                                               interval_in_seconds,
-                                              function, data,
+                                              function, user_data,
                                               NULL);
 }
 
+/**
+ * milter_event_loop_add_timeout_full: (rename-to milter_event_loop_add_timeout)
+ * @loop: A #MilterEventLoop.
+ * @priority: The priority of the timeout source.
+ * @interval_in_seconds: The time between calls to the @function, in seconds.
+ * @function: The function to call when the interval is passed.
+ * @user_data: User data to pass to @function.
+ * @notify: (nullable): The function to call when the source is removed.
+ *
+ * Returns: The event source ID.
+ */
 guint
 milter_event_loop_add_timeout_full (MilterEventLoop *loop,
                                     gint             priority,
                                     gdouble          interval_in_seconds,
                                     GSourceFunc      function,
-                                    gpointer         data,
+                                    gpointer         user_data,
                                     GDestroyNotify   notify)
 {
     MilterEventLoopClass *loop_class;
@@ -468,7 +492,7 @@ milter_event_loop_add_timeout_full (MilterEventLoop *loop,
 
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
     return loop_class->add_timeout_full(loop, priority, interval_in_seconds,
-                                        function, data, notify);
+                                        function, user_data, notify);
 }
 
 guint
