@@ -158,12 +158,10 @@ send_abort (MilterServerContext *context, ProcessData *data)
 }
 
 static void
-set_macro (gpointer key, gpointer value, gpointer user_data)
+set_macro (MilterCommand command, GList *symbols, gpointer user_data)
 {
     MilterProtocolAgent *agent = user_data;
     GList *symbol;
-    MilterCommand command = GPOINTER_TO_UINT(key);
-    GList *symbols = value;
 
     for (symbol = symbols; symbol; symbol = g_list_next(symbols)) {
         milter_protocol_agent_set_macro(agent,
@@ -472,7 +470,8 @@ cb_negotiate_reply (MilterServerContext *context, MilterOption *option,
         data->option = g_object_ref(option);
         if (macros_requests)
             milter_macros_requests_foreach(macros_requests,
-                                           (GHFunc)set_macro, context);
+                                           set_macro,
+                                           context);
         cb_continue(context, user_data);
     }
 }
