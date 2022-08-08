@@ -131,13 +131,13 @@ guint                milter_event_loop_watch_io_full     (MilterEventLoop *loop,
 guint                milter_event_loop_watch_child       (MilterEventLoop *loop,
                                                           GPid             pid,
                                                           GChildWatchFunc  function,
-                                                          gpointer         data);
+                                                          gpointer         user_data);
 
 guint                milter_event_loop_watch_child_full  (MilterEventLoop *loop,
                                                           gint             priority,
                                                           GPid             pid,
                                                           GChildWatchFunc  function,
-                                                          gpointer         data,
+                                                          gpointer         user_data,
                                                           GDestroyNotify   notify);
 
 guint                milter_event_loop_add_timeout       (MilterEventLoop *loop,
