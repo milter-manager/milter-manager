@@ -87,8 +87,6 @@ version_h = configure_file(input: 'milter-version.h.in',
                            configuration: version_h_conf)
 headers += version_h
 
-install_headers(headers, subdir: join_paths('milter', 'core'))
-
 enums = gnome.mkenums_simple('milter-enum-types',
                              body_prefix: '#include <config.h>',
                              identifier_prefix: 'Milter',
@@ -99,6 +97,10 @@ enums = gnome.mkenums_simple('milter-enum-types',
 marshalers = gnome.genmarshal('milter-marshalers',
                               prefix: '_milter_marshal',
                               sources: files('milter-marshalers.list'))
+
+install_headers(headers, subdir: join_paths('milter', 'core'))
+install_headers(['../core.h'], subdir: join_paths('milter'))
+headers += ['../core.h']
 
 gobject = dependency('gobject-2.0')
 c_compiler = meson.get_compiler('c')

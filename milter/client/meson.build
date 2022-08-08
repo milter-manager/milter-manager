@@ -30,8 +30,6 @@ headers = files(
   'milter-client.h',
 )
 
-install_headers(headers, subdir: join_paths('milter', 'client'))
-
 enums = gnome.mkenums_simple('milter-client-enum-types',
                              body_prefix: '#include <config.h>',
                              identifier_prefix: 'Milter',
@@ -39,6 +37,10 @@ enums = gnome.mkenums_simple('milter-client-enum-types',
                              install_header: true,
                              sources: headers,
                              symbol_prefix: 'milter')
+
+install_headers(headers, subdir: join_paths('milter', 'client'))
+install_headers(['../client.h'], subdir: join_paths('milter'))
+headers += ['../client.h']
 
 dependencies = [
   config,
