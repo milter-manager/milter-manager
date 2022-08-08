@@ -362,8 +362,8 @@ milter_event_loop_watch_io (MilterEventLoop *loop,
 /**
  * milter_event_loop_watch_io_full: (rename-to milter_event_loop_watch_io)
  * @loop: A #MilterEventLoop.
- * @channel: A #GIOChannel.
  * @priority: The priority of the #GIOChannel source.
+ * @channel: A #GIOChannel.
  * @condition: The condition to watch for.
  * @function: The function to call when the condition is satisfied.
  * @user_data: User data to pass to @function.
