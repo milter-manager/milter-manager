@@ -1,7 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010, 2011  Nobuyoshi Nakada <nakada@clear-code.com>
- *  Copyright (C) 2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2011-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -55,7 +55,7 @@ void                 milter_libev_event_loop_set_release_func
                                                           (MilterEventLoop *loop,
                                                            GFunc            release,
                                                            GFunc            acquire,
-                                                           gpointer         data,
+                                                           gpointer         user_data,
                                                            GDestroyNotify   notify);
 
 

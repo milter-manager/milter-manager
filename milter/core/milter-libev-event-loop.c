@@ -1,7 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010, 2011  Nobuyoshi Nakada <nakada@clear-code.com>
- *  Copyright (C) 2011-2013  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2011-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -79,27 +79,27 @@ static guint    watch_io_full    (MilterEventLoop *loop,
                                   GIOChannel      *channel,
                                   GIOCondition     condition,
                                   GIOFunc          function,
-                                  gpointer         data,
+                                  gpointer         user_data,
                                   GDestroyNotify   notify);
 
 static guint    watch_child_full (MilterEventLoop *loop,
                                   gint             priority,
                                   GPid             pid,
                                   GChildWatchFunc  function,
-                                  gpointer         data,
+                                  gpointer         user_data,
                                   GDestroyNotify   notify);
 
 static guint    add_timeout_full (MilterEventLoop *loop,
                                   gint             priority,
                                   gdouble          interval_in_seconds,
                                   GSourceFunc      function,
-                                  gpointer         data,
+                                  gpointer         user_data,
                                   GDestroyNotify   notify);
 
 static guint    add_idle_full    (MilterEventLoop *loop,
                                   gint             priority,
                                   GSourceFunc      function,
-                                  gpointer         data,
+                                  gpointer         user_data,
                                   GDestroyNotify   notify);
 
 static gboolean remove           (MilterEventLoop *loop,
@@ -541,7 +541,7 @@ watch_child_full (MilterEventLoop *loop,
                   gint             priority,
                   GPid             pid,
                   GChildWatchFunc  function,
-                  gpointer         data,
+                  gpointer         user_data,
                   GDestroyNotify   notify)
 {
     guint id;
@@ -560,7 +560,7 @@ watch_child_full (MilterEventLoop *loop,
                       (ev_watcher *)watcher,
                       WATCHER_STOP_FUNC(ev_child_stop),
                       NULL,
-                      notify, data);
+                      notify, user_data);
 
     ev_child_init(watcher, child_func, pid, FALSE);
     ev_child_start(priv->ev_loop, watcher);
@@ -598,7 +598,7 @@ add_timeout_full (MilterEventLoop *loop,
                   gint             priority,
                   gdouble          interval_in_seconds,
                   GSourceFunc      function,
-                  gpointer         data,
+                  gpointer         user_data,
                   GDestroyNotify   notify)
 {
     guint id;
@@ -617,7 +617,7 @@ add_timeout_full (MilterEventLoop *loop,
                       (ev_watcher *)watcher,
                       WATCHER_STOP_FUNC(ev_timer_stop),
                       NULL,
-                      notify, data);
+                      notify, user_data);
 
     ev_timer_init(watcher, timer_func, interval_in_seconds, interval_in_seconds);
     ev_timer_start(priv->ev_loop, watcher);
@@ -655,7 +655,7 @@ static guint
 add_idle_full (MilterEventLoop *loop,
                gint             priority,
                GSourceFunc      function,
-               gpointer         data,
+               gpointer         user_data,
                GDestroyNotify   notify)
 {
     guint id;
@@ -674,7 +674,7 @@ add_idle_full (MilterEventLoop *loop,
                       (ev_watcher *)watcher,
                       WATCHER_STOP_FUNC(ev_idle_stop),
                       NULL,
-                      notify, data);
+                      notify, user_data);
 
     ev_idle_init(watcher, idle_func);
     ev_idle_start(priv->ev_loop, watcher);
@@ -711,11 +711,22 @@ cb_acquire (ev_loop *ev_loop)
     priv->acquire_func(loop, priv->release_data);
 }
 
+/**
+ * milter_libev_event_loop_set_release_func: (skip)
+ * @loop: A #MilterEventLoop.
+ * @release: The function to call when a thread releases this loop.
+ * @acquire: The function to call when a thread acquires this loop.
+ * @user_data: User data to pass to @function.
+ * @notify: (nullable): The function to call when this release is removed.
+ *
+ * Deprecated: 2.1.6: If you need this, please report it to
+ * https://github.com/milter-manager/milter-manager/issues .
+ */
 void
 milter_libev_event_loop_set_release_func (MilterEventLoop *loop,
                                           GFunc            release,
                                           GFunc            acquire,
-                                          gpointer         data,
+                                          gpointer         user_data,
                                           GDestroyNotify   notify)
 {
     MilterLibevEventLoopPrivate *priv;
@@ -731,7 +742,7 @@ milter_libev_event_loop_set_release_func (MilterEventLoop *loop,
     if (priv->acquire_func)
         acquire_func = cb_acquire;
     ev_set_loop_release_cb(priv->ev_loop, release_func, acquire_func);
-    priv->release_data = data;
+    priv->release_data = user_data;
     priv->release_notify = notify;
 }
 
