@@ -1,7 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
- *  Copyright (C) 2011-2013  Kouhei Sutou <nakada@clear-code.com>
+ *  Copyright (C) 2011-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -60,13 +60,13 @@ struct _MilterEventLoopClass
                                   GIOChannel      *channel,
                                   GIOCondition     condition,
                                   GIOFunc          function,
-                                  gpointer         data,
+                                  gpointer         user_data,
                                   GDestroyNotify   notify);
     guint    (*watch_child_full) (MilterEventLoop *loop,
                                   gint             priority,
                                   GPid             pid,
                                   GChildWatchFunc  function,
-                                  gpointer         data,
+                                  gpointer         user_data,
                                   GDestroyNotify   notify);
     guint    (*add_timeout_full) (MilterEventLoop *loop,
                                   gint             priority,
@@ -118,13 +118,13 @@ guint                milter_event_loop_watch_io          (MilterEventLoop *loop,
                                                           GIOChannel      *channel,
                                                           GIOCondition     condition,
                                                           GIOFunc          function,
-                                                          gpointer         data);
+                                                          gpointer         user_data);
 guint                milter_event_loop_watch_io_full     (MilterEventLoop *loop,
                                                           gint             priority,
                                                           GIOChannel      *channel,
                                                           GIOCondition     condition,
                                                           GIOFunc          function,
-                                                          gpointer         data,
+                                                          gpointer         user_data,
                                                           GDestroyNotify   notify);
 
 

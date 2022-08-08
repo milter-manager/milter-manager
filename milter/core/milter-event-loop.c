@@ -332,26 +332,52 @@ milter_event_loop_quit (MilterEventLoop *loop)
     priv->depth--;
 }
 
+/**
+ * milter_event_loop_watch_io: (skip)
+ * @loop: A #MilterEventLoop.
+ * @channel: A #GIOChannel.
+ * @condition: The condition to watch for.
+ * @function: The function to call when the condition is satisfied.
+ * @user_data: User data to pass to @function.
+ *
+ * This equals to `milter_event_loop_watch_io_full(loop,
+ * G_PRIORITY_DEFAULT, channel, condition, function, user_data,
+ * NULL)`.
+ *
+ * Returns: The event source ID.
+ */
 guint
 milter_event_loop_watch_io (MilterEventLoop *loop,
                             GIOChannel      *channel,
                             GIOCondition     condition,
                             GIOFunc          function,
-                            gpointer         data)
+                            gpointer         user_data)
 {
     return milter_event_loop_watch_io_full(loop, G_PRIORITY_DEFAULT,
                                            channel, condition,
-                                           function, data,
+                                           function, user_data,
                                            NULL);
 }
 
+/**
+ * milter_event_loop_watch_io_full: (rename-to milter_event_loop_watch_io)
+ * @loop: A #MilterEventLoop.
+ * @channel: A #GIOChannel.
+ * @priority: The priority of the #GIOChannel source.
+ * @condition: The condition to watch for.
+ * @function: The function to call when the condition is satisfied.
+ * @user_data: User data to pass to @function.
+ * @notify: (nullable): The function to call when the source is removed.
+ *
+ * Returns: The event source ID.
+ */
 guint
 milter_event_loop_watch_io_full (MilterEventLoop *loop,
                                  gint             priority,
                                  GIOChannel      *channel,
                                  GIOCondition     condition,
                                  GIOFunc          function,
-                                 gpointer         data,
+                                 gpointer         user_data,
                                  GDestroyNotify   notify)
 {
     MilterEventLoopClass *loop_class;
@@ -360,7 +386,7 @@ milter_event_loop_watch_io_full (MilterEventLoop *loop,
 
     loop_class = MILTER_EVENT_LOOP_GET_CLASS(loop);
     return loop_class->watch_io_full(loop, priority, channel, condition,
-                                     function, data, notify);
+                                     function, user_data, notify);
 }
 
 guint
