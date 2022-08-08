@@ -50,8 +50,10 @@ enum
     END_OF_HEADER,
     END_OF_HEADER_RESPONSE,
     BODY,
+    BODY_BYTES,
     BODY_RESPONSE,
     END_OF_MESSAGE,
+    END_OF_MESSAGE_BYTES,
     END_OF_MESSAGE_RESPONSE,
     ABORT,
     ABORT_RESPONSE,
@@ -73,7 +75,8 @@ enum
     PROP_OPTION,
     PROP_QUARANTINE_REASON,
     PROP_MESSAGE_RESULT,
-    PROP_PACKET_BUFFER_SIZE
+    PROP_PACKET_BUFFER_SIZE,
+    PROP_USE_BYTES,
 };
 
 static gint signals[LAST_SIGNAL] = {0};
@@ -109,6 +112,7 @@ struct _MilterClientContextPrivate
     GString *buffered_packets;
     gboolean buffering;
     guint packet_buffer_size;
+    gboolean use_bytes;
     GHashTable *mail_transaction_shelf;
 };
 
@@ -162,10 +166,15 @@ static MilterStatus default_end_of_header
 static MilterStatus default_body       (MilterClientContext *context,
                                         const gchar   *chunk,
                                         gsize          size);
+static MilterStatus default_body_bytes (MilterClientContext *context,
+                                        GBytes              *chunk);
 static MilterStatus default_end_of_message
                                        (MilterClientContext *context,
                                         const gchar   *chunk,
                                         gsize          size);
+static MilterStatus default_end_of_message_bytes
+                                       (MilterClientContext *context,
+                                        GBytes              *chunk);
 static MilterStatus default_abort      (MilterClientContext *context,
                                         MilterClientContextState state);
 static void         negotiate_response (MilterClientContext *context,
@@ -227,7 +236,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     klass->header = default_header;
     klass->end_of_header = default_end_of_header;
     klass->body = default_body;
+    klass->body_bytes = default_body_bytes;
     klass->end_of_message = default_end_of_message;
+    klass->end_of_message_bytes = default_end_of_message_bytes;
     klass->abort = default_abort;
 
     klass->negotiate_response = negotiate_response;
@@ -294,6 +305,13 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_PACKET_BUFFER_SIZE,
                                     spec);
+
+    spec = g_param_spec_boolean("use-bytes",
+                                NULL,
+                                NULL,
+                                FALSE,
+                                G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_USE_BYTES, spec);
 
     /**
      * MilterClientContext::negotiate:
@@ -1595,7 +1613,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     /**
      * MilterClientContext::body:
      * @context: The context that received the signal.
-     * @chunk: (array length=size): The body chunk.
+     * @chunk: The body chunk.
      * @size: The size of @chunk.
      *
      * This signal is emitted on body data is received. This
@@ -1728,14 +1746,38 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, body),
                      status_accumulator, NULL,
+                     NULL,
+                     MILTER_TYPE_STATUS,
+                     2,
+                     G_TYPE_STRING,
 #if GLIB_SIZEOF_SIZE_T == 8
-                     NULL,
-                     MILTER_TYPE_STATUS, 2, G_TYPE_STRING, G_TYPE_UINT64
+                     G_TYPE_UINT64
 #else
-                     NULL,
-                     MILTER_TYPE_STATUS, 2, G_TYPE_STRING, G_TYPE_UINT
+                     G_TYPE_UINT
 #endif
                      );
+
+    /**
+     * MilterClientContext::body-bytes:
+     * @context: The context that received the signal.
+     * @chunk: The body chunk.
+     *
+     * You can use this signal instead of
+     * #MilterClientContext::body-bytes by calling
+     * `milter_client_context_use_bytes(TRUE)`.
+     *
+     * Returns: response status.
+     *
+     * Since: 2.1.6.
+     */
+    signals[BODY_BYTES] =
+        g_signal_new("body-bytes",
+                     MILTER_TYPE_CLIENT_CONTEXT,
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MilterClientContextClass, body_bytes),
+                     status_accumulator, NULL,
+                     NULL,
+                     MILTER_TYPE_STATUS, 1, G_TYPE_BYTES);
 
     /**
      * MilterClientContext::body-response:
@@ -1764,8 +1806,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     /**
      * MilterClientContext::end-of-message:
      * @context: The context that received the signal.
-     * @chunk: (array length=size) (nullable): The last chunk of the
-     *   current email.
+     * @chunk: (nullable): The last chunk of the current email.
      * @size: The size of the @chunk.
      *
      * This signal is emitted after all
@@ -1863,14 +1904,38 @@ milter_client_context_class_init (MilterClientContextClass *klass)
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(MilterClientContextClass, end_of_message),
                      status_accumulator, NULL,
+                     NULL,
+                     MILTER_TYPE_STATUS,
+                     2,
+                     G_TYPE_STRING,
 #if GLIB_SIZEOF_SIZE_T == 8
-                     NULL,
-                     MILTER_TYPE_STATUS, 2, G_TYPE_STRING, G_TYPE_UINT64
+                     G_TYPE_UINT64
 #else
-                     NULL,
-                     MILTER_TYPE_STATUS, 2, G_TYPE_STRING, G_TYPE_UINT
+                     G_TYPE_UINT
 #endif
                      );
+
+    /**
+     * MilterClientContext::end-of-message-bytes:
+     * @context: The context that received the signal.
+     * @chunk: (nullable): The last chunk of the current email.
+     *
+     * You can use this signal instead of
+     * #MilterClientContext::end-of-message-bytes by calling
+     * `milter_client_context_use_bytes(TRUE)`.
+     *
+     * Returns: response status.
+     *
+     * Since: 2.1.6.
+     */
+    signals[END_OF_MESSAGE_BYTES] =
+        g_signal_new("end-of-message-bytes",
+                     MILTER_TYPE_CLIENT_CONTEXT,
+                     G_SIGNAL_RUN_LAST,
+                     G_STRUCT_OFFSET(MilterClientContextClass, end_of_message),
+                     status_accumulator, NULL,
+                     NULL,
+                     MILTER_TYPE_STATUS, 1, G_TYPE_BYTES);
 
     /**
      * MilterClientContext::end-of-message-response:
@@ -2223,6 +2288,9 @@ set_property (GObject      *object,
         milter_client_context_set_packet_buffer_size(context,
                                                      g_value_get_uint(value));
         break;
+    case PROP_USE_BYTES:
+        milter_client_context_set_use_bytes(context, g_value_get_boolean(value));
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -2259,6 +2327,9 @@ get_property (GObject    *object,
         break;
     case PROP_PACKET_BUFFER_SIZE:
         g_value_set_uint(value, priv->packet_buffer_size);
+        break;
+    case PROP_USE_BYTES:
+        g_value_set_boolean(value, priv->use_bytes);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -3066,6 +3137,18 @@ milter_client_context_delete_recipient (MilterClientContext *context,
     return write_packet_on_end_of_message(context, packet, packet_size);
 }
 
+/**
+ * milter_client_context_replace_body: (skip)
+ * @context: A #MilterClientContext.
+ * @body: (array length=body_size) (element-type guint8): the new body.
+ * @body_size: The size of @body.
+ * @error: Return location for an error, or %NULL.
+ *
+ * This is a `const gchar *` version of
+ * milter_client_context_replace_body_bytes().
+ *
+ * Returns: %TRUE on success.
+ */
 gboolean
 milter_client_context_replace_body (MilterClientContext *context,
                                     const gchar *body, gsize body_size,
@@ -3114,6 +3197,41 @@ milter_client_context_replace_body (MilterClientContext *context,
     }
 
     return TRUE;
+}
+
+/**
+ * milter_client_context_replace_body_bytes: (rename-to milter_client_context_replace_body)
+ * @context: A #MilterClientContext.
+ * @body: The new body.
+ * @error: Return location for an error, or %NULL.
+ *
+ * Replaces the body of the current message with @body. This
+ * function can be called in
+ * #MilterClientContext::end-of-message signal. See also
+ * <ulink
+ * url="https://www.milter.org/developers/api/smfi_replacebody">smfi_replacebody
+ * </ulink> on milter.org.
+ *
+ * FIXME: write about MILTER_ACTION_CHANGE_BODY.
+ *
+ * Returns: %TRUE on success.
+ *
+ * Since: 2.1.6
+ */
+gboolean
+milter_client_context_replace_body_bytes (MilterClientContext *context,
+                                          GBytes *body,
+                                          GError **error)
+{
+    const gchar *body_content = NULL;
+    gsize body_size = 0;
+    if (body) {
+        body_content = g_bytes_get_data(body, &body_size);
+    }
+    return milter_client_context_replace_body(context,
+                                              body_content,
+                                              body_size,
+                                              error);
 }
 
 gboolean
@@ -3351,8 +3469,20 @@ default_body (MilterClientContext *context, const gchar *chunk, gsize size)
 }
 
 static MilterStatus
+default_body_bytes (MilterClientContext *context, GBytes *chunk)
+{
+    return MILTER_STATUS_NOT_CHANGE;
+}
+
+static MilterStatus
 default_end_of_message (MilterClientContext *context,
                         const gchar *chunk, gsize size)
+{
+    return MILTER_STATUS_NOT_CHANGE;
+}
+
+static MilterStatus
+default_end_of_message_bytes (MilterClientContext *context, GBytes *chunk)
 {
     return MILTER_STATUS_NOT_CHANGE;
 }
@@ -4039,7 +4169,18 @@ cb_decoder_body (MilterDecoder *decoder, const gchar *chunk, gsize chunk_size,
     ensure_message_result(priv);
     disable_timeout(context);
     set_macro_context(context, MILTER_COMMAND_BODY);
-    g_signal_emit(context, signals[BODY], 0, chunk, chunk_size, &status);
+    if (priv->use_bytes) {
+        GBytes *chunk_bytes = NULL;
+        if (chunk && chunk_size > 0) {
+            chunk_bytes = g_bytes_new_static(chunk, chunk_size);
+        }
+        g_signal_emit(context, signals[BODY_BYTES], 0, chunk_bytes, &status);
+        if (chunk_bytes) {
+            g_bytes_unref(chunk_bytes);
+        }
+    } else {
+        g_signal_emit(context, signals[BODY], 0, chunk, chunk_size, &status);
+    }
     if (status == MILTER_STATUS_PROGRESS)
         return;
     g_signal_emit(context, signals[BODY_RESPONSE], 0, status);
@@ -4065,8 +4206,20 @@ cb_decoder_end_of_message (MilterDecoder *decoder, const gchar *chunk,
         g_free(priv->quarantine_reason);
         priv->quarantine_reason = NULL;
     }
-    g_signal_emit(context, signals[END_OF_MESSAGE], 0,
-                  chunk, chunk_size, &status);
+    if (priv->use_bytes) {
+        GBytes *chunk_bytes = NULL;
+        if (chunk && chunk_size > 0) {
+            chunk_bytes = g_bytes_new_static(chunk, chunk_size);
+        }
+        g_signal_emit(context, signals[END_OF_MESSAGE_BYTES], 0,
+                      chunk_bytes, &status);
+        if (chunk_bytes) {
+            g_bytes_unref(chunk_bytes);
+        }
+    } else {
+        g_signal_emit(context, signals[END_OF_MESSAGE], 0,
+                      chunk, chunk_size, &status);
+    }
     if (status == MILTER_STATUS_PROGRESS)
         return;
     g_signal_emit(context, signals[END_OF_MESSAGE_RESPONSE], 0, status);
@@ -4407,6 +4560,46 @@ milter_client_context_get_packet_buffer_size (MilterClientContext *context)
 
     priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
     return priv->packet_buffer_size;
+}
+
+/**
+ * milter_client_context_set_use_bytes: (set-property use-bytes)
+ * @context: A #MilterClientContext.
+ * @use: Whether #MilterClientContext::body-bytes and
+ *   #MilterClientContext::end-of-message-bytes are used instead of
+ *   #MilterClientContext::body and
+ *   #MilterClientContext::end-of-message.
+ *
+ * Since: 2.1.6
+ */
+void
+milter_client_context_set_use_bytes (MilterClientContext *context,
+                                     gboolean use)
+{
+    MilterClientContextPrivate *priv;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    priv->use_bytes = use;
+}
+
+/**
+ * milter_client_context_get_use_bytes: (get-property use-bytes)
+ * @context: A #MilterClientContext.
+ *
+ * Returns: Whether #MilterClientContext::body-bytes and
+ *   #MilterClientContext::end-of-message-bytes are used instead of
+ *   #MilterClientContext::body and
+ *   #MilterClientContext::end-of-message.
+ *
+ * Since: 2.1.6
+ */
+gboolean
+milter_client_context_get_use_bytes (MilterClientContext *context)
+{
+    MilterClientContextPrivate *priv;
+
+    priv = MILTER_CLIENT_CONTEXT_GET_PRIVATE(context);
+    return priv->use_bytes;
 }
 
 void

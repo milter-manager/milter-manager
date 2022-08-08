@@ -471,11 +471,16 @@ struct _MilterClientContextClass
     MilterStatus (*body)               (MilterClientContext *context,
                                         const gchar         *chunk,
                                         gsize                size);
+    MilterStatus (*body_bytes)         (MilterClientContext *context,
+                                        GBytes              *chunk);
     void         (*body_response)      (MilterClientContext *context,
                                         MilterStatus         status);
     MilterStatus (*end_of_message)     (MilterClientContext *context,
                                         const gchar         *chunk,
                                         gsize                size);
+    MilterStatus (*end_of_message_bytes)
+                                       (MilterClientContext *context,
+                                        GBytes              *chunk);
     void         (*end_of_message_response)
                                        (MilterClientContext *context,
                                         MilterStatus         status);
@@ -758,28 +763,15 @@ gboolean             milter_client_context_delete_recipient  (MilterClientContex
                                                               GError     **error);
 
 
-/**
- * milter_client_context_replace_body:
- * @context: a %MilterClientContext.
- * @body: (array length=body_size): the new body.
- * @body_size: the size of @body.
- * @error: return location for an error, or %NULL.
- *
- * Replaces the body of the current message with @body. This
- * function can be called in
- * #MilterClientContext::end-of-message signal. See also
- * <ulink
- * url="https://www.milter.org/developers/api/smfi_replacebody">smfi_replacebody
- * </ulink> on milter.org.
- *
- * FIXME: write about MILTER_ACTION_CHANGE_BODY.
- *
- * Returns: %TRUE on success.
- */
 gboolean             milter_client_context_replace_body      (MilterClientContext *context,
                                                               const gchar *body,
                                                               gsize        body_size,
                                                               GError     **error);
+
+gboolean
+milter_client_context_replace_body_bytes (MilterClientContext *context,
+                                          GBytes *body,
+                                          GError **error);
 
 /**
  * milter_client_context_progress:
@@ -1032,6 +1024,12 @@ void                 milter_client_context_set_packet_buffer_size
  */
 guint                milter_client_context_get_packet_buffer_size
                                                        (MilterClientContext *context);
+
+void
+milter_client_context_set_use_bytes(MilterClientContext *context,
+                                    gboolean use);
+gboolean
+milter_client_context_get_use_bytes(MilterClientContext *context);
 
 
 /**
