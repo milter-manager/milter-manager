@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2010-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2010-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -300,6 +300,12 @@ milter_session_result_set_disconnected (MilterSessionResult *result,
     MILTER_SESSION_RESULT_GET_PRIVATE(result)->disconnected = disconnected;
 }
 
+/**
+ * milter_session_result_get_start_time: (skip)
+ * @result: A #MilterSessionResult.
+ *
+ * Returns: The end time of the result.
+ */
 GTimeVal *
 milter_session_result_get_start_time (MilterSessionResult *result)
 {
