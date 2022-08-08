@@ -1595,9 +1595,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
 
     /**
      * MilterClientContext::body:
-     * @context: the context that received the signal.
-     * @chunk (array length=size): the body chunk.
-     * @size: the size of @chunk.
+     * @context: The context that received the signal.
+     * @chunk: (array length=size): The body chunk.
+     * @size: The size of @chunk.
      *
      * This signal is emitted on body data is received. This
      * signal is emitted zero or more times between
@@ -1765,9 +1765,9 @@ milter_client_context_class_init (MilterClientContextClass *klass)
     /**
      * MilterClientContext::end-of-message:
      * @context: The context that received the signal.
-     * @chunk: (array length=length) (nullable): The last chunk of the
+     * @chunk: (array length=size) (nullable): The last chunk of the
      *   current email.
-     * @length: The length of the @chunk.
+     * @size: The size of the @chunk.
      *
      * This signal is emitted after all
      * #MilterClientContext::body are emitted. All message

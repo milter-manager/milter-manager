@@ -761,7 +761,7 @@ gboolean             milter_client_context_delete_recipient  (MilterClientContex
 /**
  * milter_client_context_replace_body:
  * @context: a %MilterClientContext.
- * @body: the new body.
+ * @body: (array length=body_size): the new body.
  * @body_size: the size of @body.
  * @error: return location for an error, or %NULL.
  *
