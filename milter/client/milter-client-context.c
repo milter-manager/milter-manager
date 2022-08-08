@@ -1900,7 +1900,8 @@ milter_client_context_class_init (MilterClientContextClass *klass)
 
     /**
      * MilterClientContext::abort:
-     * @context: the context that received the signal.
+     * @context: The context that received the signal.
+     * @state: The state aborted on.
      *
      * This signal may be emitted at any time between
      * #MilterClientContext::envelope-from and
