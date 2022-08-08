@@ -304,7 +304,7 @@ milter_session_result_set_disconnected (MilterSessionResult *result,
  * milter_session_result_get_start_time: (skip)
  * @result: A #MilterSessionResult.
  *
- * Returns: The end time of the result.
+ * Returns: The start time of the result.
  */
 GTimeVal *
 milter_session_result_get_start_time (MilterSessionResult *result)
@@ -327,6 +327,12 @@ milter_session_result_set_start_time (MilterSessionResult *result,
     }
 }
 
+/**
+ * milter_session_result_get_end_time: (skip)
+ * @result: A #MilterSessionResult.
+ *
+ * Returns: The end time of the result.
+ */
 GTimeVal *
 milter_session_result_get_end_time (MilterSessionResult *result)
 {
