@@ -19,9 +19,9 @@ project('milter-manager',
         license: 'LGPL-3.0-or-later',
         version: '2.1.6')
 
-api_version = '1.0'
-so_version = 1
-library_version = '@0@.0.1'.format(so_version)
+api_version = '2.0'
+so_version = 2
+library_version = '@0@.0.0'.format(so_version)
 
 prefix = get_option('prefix')
 include_dir = join_paths(prefix, get_option('includedir'))

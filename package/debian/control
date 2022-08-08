@@ -51,7 +51,7 @@ Description: Documentation of milter manager
  .
  This provides reference manual of milter manager.
 
-Package: libmilter-manager0
+Package: libmilter-manager2
 Section: libs
 Architecture: any
 Replaces: milter-manager (<< 1.6.6-1)
@@ -59,8 +59,8 @@ Breaks: milter-manager (<< 1.6.6-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	libmilter-client0 (= ${binary:Version}),
-	libmilter-server0 (= ${binary:Version}),
+	libmilter-client2 (= ${binary:Version}),
+	libmilter-server2 (= ${binary:Version}),
 	ruby-milter-core (= ${binary:Version}),
 	ruby-milter-client (= ${binary:Version}),
 	ruby-milter-server (= ${binary:Version})
@@ -78,7 +78,7 @@ Breaks: milter-manager-dev (<< 1.6.6-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	libmilter-manager0 (= ${binary:Version}),
+	libmilter-manager2 (= ${binary:Version}),
 	libmilter-client-dev (= ${binary:Version}),
 	libmilter-server-dev (= ${binary:Version})
 Description: Development files to extend milter manager by C
@@ -120,7 +120,7 @@ Description: Analyze milter-manager's log
  This provides a Ruby script to generate some graphs from
  milter-manager's log.
 
-Package: libmilter-core0
+Package: libmilter-core2
 Section: libs
 Architecture: any
 Replaces: libmilter-toolkit (<< 1.6.6-1)
@@ -140,7 +140,7 @@ Breaks: libmilter-toolkit-dev (<< 1.6.6-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	libmilter-core0 (= ${binary:Version})
+	libmilter-core2 (= ${binary:Version})
 Description: Development files for milter core library
  milter "core" library is a common library for mitler "client" and
  milter "server" libraries.
@@ -148,7 +148,7 @@ Description: Development files for milter core library
  This provides development environment to build software against
  libmilter-core.
 
-Package: libmilter-client0
+Package: libmilter-client2
 Section: libs
 Architecture: any
 Replaces: libmilter-toolkit (<< 1.6.6-1)
@@ -156,7 +156,7 @@ Breaks: libmilter-toolkit (<< 1.6.6-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	libmilter-core0 (= ${binary:Version})
+	libmilter-core2 (= ${binary:Version})
 Description: Libraries and tools for implementing milter protocol (client-side)
  milter "client" library is a library which implements client-side
  (milter-side) milter protocol.
@@ -169,7 +169,7 @@ Breaks: libmilter-toolkit-dev (<< 1.6.6-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	libmilter-client0 (= ${binary:Version})
+	libmilter-client2 (= ${binary:Version})
 Description: Development files for milter client library
  milter "client" library is a library which implements client-side
  (milter-side) milter protocol.
@@ -177,7 +177,7 @@ Description: Development files for milter client library
  This provides development environment to build software against
  libmilter-client.
 
-Package: libmilter-server0
+Package: libmilter-server2
 Section: libs
 Architecture: any
 Replaces: libmilter-toolkit (<< 1.6.6-1)
@@ -185,7 +185,7 @@ Breaks: libmilter-toolkit (<< 1.6.6-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	libmilter-core0 (= ${binary:Version})
+	libmilter-core2 (= ${binary:Version})
 Description: Libraries and tools for implementing milter protocol (server-side)
  milter "server" library is a library which implements server-side
  (MTA-side) milter protocol.
@@ -198,7 +198,7 @@ Breaks: libmilter-toolkit-dev (<< 1.6.6-1)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	libmilter-server0 (= ${binary:Version})
+	libmilter-server2 (= ${binary:Version})
 Description: Development files for milter toolkit
  milter "server" library is a library which implements server-side
  (MTA-side) milter protocol.
@@ -212,7 +212,7 @@ Architecture: any
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	libmilter-client0 (= ${binary:Version})
+	libmilter-client2 (= ${binary:Version})
 Description: Milter library which has ABI compatibility with Sendmail's libmilter
  libmilter-compatible is a milter toolkit based library which has ABI
  compatibility with Sendmail's libmilter. It can be used with a milter
@@ -238,7 +238,7 @@ Breaks: libmilter-core-ruby1.8 (<< 1.8.3-1~)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	libmilter-core0 (= ${binary:Version}),
+	libmilter-core2 (= ${binary:Version}),
 	ruby-gio2,
 	ruby-glib2,
 	ruby-gobject-introspection,
@@ -257,7 +257,7 @@ Breaks: libmilter-client-ruby1.8 (<< 1.8.3-1~)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	libmilter-client0 (= ${binary:Version}),
+	libmilter-client2 (= ${binary:Version}),
 	ruby-milter-core (= ${binary:Version}),
 	ruby (>= 1:1.9.3)
 Description: Ruby bindings for milter client (Ruby interface)
@@ -274,7 +274,7 @@ Breaks: libmilter-server-ruby1.8 (<< 1.8.3-1~)
 Depends:
 	${shlibs:Depends},
 	${misc:Depends},
-	libmilter-server0 (= ${binary:Version}),
+	libmilter-server2 (= ${binary:Version}),
 	ruby-milter-core (= ${binary:Version}),
 	ruby (>= 1:1.9.3)
 Description: Ruby bindings for milter server (Ruby interface)
