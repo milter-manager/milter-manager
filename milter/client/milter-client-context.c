@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -1764,7 +1764,10 @@ milter_client_context_class_init (MilterClientContextClass *klass)
 
     /**
      * MilterClientContext::end-of-message:
-     * @context: the context that received the signal.
+     * @context: The context that received the signal.
+     * @chunk: (array length=length) (nullable): The last chunk of the
+     *   current email.
+     * @length: The length of the @chunk.
      *
      * This signal is emitted after all
      * #MilterClientContext::body are emitted. All message
