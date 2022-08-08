@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2011-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -165,6 +165,12 @@ milter_client_runner_quit (MilterClientRunner *runner)
     runner_class->quit(runner);
 }
 
+/**
+ * milter_client_runner_get_client:
+ * @runner: A #MilterClientRunner.
+ *
+ * Returns: (transfer none): The #MilterClient of the runner.
+ */
 MilterClient *
 milter_client_runner_get_client (MilterClientRunner *runner)
 {
