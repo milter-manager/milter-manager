@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -48,6 +48,10 @@ struct _MilterGenericSocketAddress
         struct sockaddr_in6 inet6;
     } address;
 };
+
+#define MILTER_TYPE_GENERIC_SOCKET_ADDRESS \
+    (milter_generic_socket_address_get_type())
+GType milter_generic_socket_address_get_type(void) G_GNUC_CONST;
 
 typedef enum
 {

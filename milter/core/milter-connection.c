@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -41,6 +41,23 @@ milter_connection_error_quark (void)
 {
     return g_quark_from_static_string("milter-connection-error-quark");
 }
+
+static MilterGenericSocketAddress *
+milter_generic_socket_address_copy (MilterGenericSocketAddress *address)
+{
+    return g_slice_dup(MilterGenericSocketAddress, address);
+}
+
+static void
+milter_generic_socket_address_free (MilterGenericSocketAddress *address)
+{
+    g_slice_free(MilterGenericSocketAddress, address);
+}
+
+G_DEFINE_BOXED_TYPE(MilterGenericSocketAddress,
+                    milter_generic_socket_address,
+                    milter_generic_socket_address_copy,
+                    milter_generic_socket_address_free)
 
 gchar *
 milter_connection_address_to_spec (const struct sockaddr *address)
