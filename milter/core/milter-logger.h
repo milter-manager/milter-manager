@@ -197,7 +197,15 @@ void             milter_logger_log_va_list    (MilterLogger        *logger,
                                                guint                line,
                                                const gchar         *function,
                                                const gchar         *format,
-                                               va_list              args);
+                                               va_list              args) G_GNUC_PRINTF(7, 0);
+void
+milter_logger_log_literal(MilterLogger        *logger,
+                          const gchar         *domain,
+                          MilterLogLevelFlags  level,
+                          const gchar         *file,
+                          guint                line,
+                          const gchar         *function,
+                          const gchar         *message);
 
 void             milter_logger_reopen         (MilterLogger        *logger);
 

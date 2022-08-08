@@ -617,6 +617,38 @@ milter_logger_log_va_list (MilterLogger *logger,
     g_free(message);
 }
 
+/**
+ * milter_logger_log_literal:
+ * @logger: A #MilterLogger.
+ * @level: A log level.
+ * @file: A file name where the log is happened.
+ * @line: A line number where the log is happened.
+ * @function: A function name where the log is happened.
+ * @message: A message to be logged.
+ *
+ * This is for language bindings.
+ *
+ * Since: 2.1.6
+ */
+void
+milter_logger_log_literal (MilterLogger *logger,
+                           const gchar *domain,
+                           MilterLogLevelFlags level,
+                           const gchar *file,
+                           guint line,
+                           const gchar *function,
+                           const gchar *message)
+{
+    milter_logger_log(logger,
+                      domain,
+                      level,
+                      file,
+                      line,
+                      function,
+                      "%s",
+                      message);
+}
+
 void
 milter_logger_reopen (MilterLogger *logger)
 {
