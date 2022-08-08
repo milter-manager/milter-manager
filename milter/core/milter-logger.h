@@ -170,6 +170,7 @@ MilterLogItemFlags  milter_log_item_flags_from_string  (const gchar *item_name,
                                                         GError     **error);
 
 MilterLogger    *milter_logger                (void);
+MilterLogger *milter_logger_get_default(void);
 void             milter_logger_default_log_handler
                                               (MilterLogger        *logger,
                                                const gchar         *domain,

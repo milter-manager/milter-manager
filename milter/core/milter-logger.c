@@ -564,6 +564,21 @@ milter_logger (void)
     return singleton_milter_logger;
 }
 
+/**
+ * milter_logger_get_default:
+ *
+ * This is same as milter_logger().
+ *
+ * Returns: (transfer none): The singleton logger in this process.
+ *
+ * Since: 2.1.6
+ */
+MilterLogger *
+milter_logger_get_default (void)
+{
+    return singleton_milter_logger;
+}
+
 MilterLogger *
 milter_logger_new (void)
 {
