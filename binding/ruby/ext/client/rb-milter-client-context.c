@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -277,7 +277,7 @@ get_mail_transaction_shelf_value (VALUE self, VALUE key)
 }
 
 static void
-build_rb_hash(gpointer key, gpointer value, gpointer data)
+build_rb_hash(const gchar *key, const gchar *value, gpointer data)
 {
     rb_hash_aset((VALUE) data, CSTR2RVAL(key), CSTR2RVAL(value));
 }

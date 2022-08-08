@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -300,9 +300,10 @@ mark (gpointer data)
 {
     MilterClient *client = data;
 
-    milter_client_processing_context_foreach(client,
-                                             (GFunc)rbgobj_gc_mark_instance,
-                                             NULL);
+    milter_client_processing_context_foreach(
+        client,
+        (MilterClientContextFunc)rbgobj_gc_mark_instance,
+        NULL);
 }
 
 static VALUE
