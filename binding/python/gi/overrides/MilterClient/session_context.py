@@ -52,7 +52,4 @@ class SessionContext(object):
         return self._macros.get(name)
 
     def __getattr__(self, name):
-        if hasattr(self._context, name):
-            return getattr(self._context, name)
-        else:
-            return super().__getattr__(name)
+        return getattr(self._context, name)

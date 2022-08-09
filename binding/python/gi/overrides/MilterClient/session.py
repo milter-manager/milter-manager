@@ -127,3 +127,9 @@ class Session(object):
 
     def _delete_recipient(self, recipient):
         self._context.delete_recipient(recipient)
+
+    def _watch_child(self, pid, callback, priority=GLib.PRIORITY_DEFAULT):
+        return self._context.event_loop.watch_child(priority, pid, callback)
+
+    def _remove_source(self, source_id):
+        return self._context.event_loop.remove(source_id)
