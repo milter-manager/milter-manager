@@ -697,7 +697,7 @@ milter_agent_set_tag (MilterAgent *agent, guint tag)
 }
 
 /**
- * milter_agent_get_event_loop:
+ * milter_agent_get_event_loop: (get-property event-loop)
  * @agent: A #MilterAgent.
  *
  * Returns: (transfer none): The event loop of the agent.
@@ -708,6 +708,13 @@ milter_agent_get_event_loop (MilterAgent *agent)
     return MILTER_AGENT_GET_PRIVATE(agent)->event_loop;
 }
 
+/**
+ * milter_agent_set_event_loop: (set-property event-loop)
+ * @agent: A #MilterAgent.
+ * @loop: A #MilterEventLoop to be used.
+ *
+ * Sets a new event loop.
+ */
 void
 milter_agent_set_event_loop (MilterAgent *agent, MilterEventLoop *loop)
 {
