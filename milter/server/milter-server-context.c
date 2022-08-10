@@ -3665,7 +3665,7 @@ milter_server_context_is_negotiated (MilterServerContext *context)
 
 /**
  * milter_server_context_is_processing_message:
- * @context: a #MilterServerContext.
+ * @context: A #MilterServerContext.
  *
  * Gets whether the context is processing message.
  *
@@ -3686,7 +3686,7 @@ milter_server_context_is_processing_message (MilterServerContext *context)
 
 /**
  * milter_server_context_set_processing_message:
- * @context: a #MilterServerContext.
+ * @context: A #MilterServerContext.
  * @processing_message: whether the context is processing message.
  *
  * Sets whether the context is processing message.
