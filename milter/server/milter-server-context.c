@@ -3722,12 +3722,27 @@ milter_server_context_set_quitted (MilterServerContext *context,
     MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->quitted = quitted;
 }
 
+/**
+ * milter_server_context_get_message_result:
+ * @context: A #MilterServerContext.
+ *
+ * Gets the message result of @context.
+ *
+ * Returns: (transfer none): The message result of @context.
+ */
 MilterMessageResult *
 milter_server_context_get_message_result (MilterServerContext *context)
 {
     return MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->message_result;
 }
 
+/**
+ * milter_server_context_set_message_result:
+ * @context: A #MilterServerContext.
+ * @result: The message result.
+ *
+ * Sets the message result of @context.
+ */
 void
 milter_server_context_set_message_result (MilterServerContext *context,
                                           MilterMessageResult *result)
