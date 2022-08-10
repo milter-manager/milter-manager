@@ -1748,6 +1748,12 @@ milter_server_context_set_option (MilterServerContext *context,
         priv->option = NULL;
 }
 
+/**
+ * milter_server_context_get_option:
+ * @context: A #MilterServerContext.
+ *
+ * Returns: (transfer none): The negotiate option.
+ */
 MilterOption *
 milter_server_context_get_option (MilterServerContext *context)
 {

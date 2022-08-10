@@ -571,12 +571,6 @@ gboolean             milter_server_context_abort       (MilterServerContext *con
 void                 milter_server_context_set_option  (MilterServerContext *context,
                                                         MilterOption        *option);
 
-/**
- * milter_server_context_get_option:
- * @context: a %MilterServerContext.
- *
- * Get negotiate option.
- */
 MilterOption        *milter_server_context_get_option  (MilterServerContext *context);
 
 /**
