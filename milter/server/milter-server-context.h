@@ -647,24 +647,9 @@ gdouble              milter_server_context_get_elapsed (MilterServerContext *con
 gboolean             milter_server_context_is_negotiated
                                                        (MilterServerContext *context);
 
-/**
- * milter_server_context_is_processing_message:
- * @context: a %MilterServerContext.
- *
- * Gets whether the context is processing message.
- *
- * Returns: %TRUE if @context is processing message, %FALSE otherwise.
- */
 gboolean             milter_server_context_is_processing_message
                                                        (MilterServerContext *context);
 
-/**
- * milter_server_context_set_processing_message:
- * @context: a %MilterServerContext.
- * @processing: whether the context is processing message.
- *
- * Sets whether the context is processing message.
- */
 void                 milter_server_context_set_processing_message
                                                        (MilterServerContext *context,
                                                         gboolean processing_message);

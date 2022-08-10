@@ -3663,6 +3663,14 @@ milter_server_context_is_negotiated (MilterServerContext *context)
     return MILTER_SERVER_CONTEXT_GET_PRIVATE(context)->negotiated;
 }
 
+/**
+ * milter_server_context_is_processing_message:
+ * @context: a #MilterServerContext.
+ *
+ * Gets whether the context is processing message.
+ *
+ * Returns: %TRUE if @context is processing message, %FALSE otherwise.
+ */
 gboolean
 milter_server_context_is_processing_message (MilterServerContext *context)
 {
@@ -3676,6 +3684,13 @@ milter_server_context_is_processing_message (MilterServerContext *context)
     return priv->processing_message;
 }
 
+/**
+ * milter_server_context_set_processing_message:
+ * @context: a #MilterServerContext.
+ * @processing_message: whether the context is processing message.
+ *
+ * Sets whether the context is processing message.
+ */
 void
 milter_server_context_set_processing_message (MilterServerContext *context,
                                               gboolean processing_message)
