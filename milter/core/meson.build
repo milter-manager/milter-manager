@@ -123,8 +123,7 @@ pkgconfig.generate(libmilter_core,
                    filebase: 'milter-core',
                    name: 'milter core library',
                    requires: ['gobject-2.0'],
-                   variables: pkgconfig_variables,
-                   version: meson.version())
+                   variables: pkgconfig_variables)
 
 milter_core_gir = gnome.generate_gir(libmilter_core,
                                      export_packages: 'milter-core',
