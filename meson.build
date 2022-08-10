@@ -50,3 +50,4 @@ config = declare_dependency(compile_args: '-DHAVE_CONFIG_H',
 
 subdir('milter/core')
 subdir('milter/client')
+subdir('milter/server')
