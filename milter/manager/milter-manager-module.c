@@ -158,6 +158,14 @@ unload (GTypeModule *module)
     cleanup(MILTER_MANAGER_MODULE(module));
 }
 
+/**
+ * milter_manager_module_collect_registered_types:
+ * @modules: (element-type MilterManagerModule):
+ *   A list of #MilterManagerModule.
+ *
+ * Returns: (transfer none) (element-type utf8):
+ *   Registered types of @modules.
+ */
 GList *
 milter_manager_module_collect_registered_types (GList *modules)
 {
