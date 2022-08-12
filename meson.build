@@ -30,19 +30,137 @@ milter_include_dir = get_option('includedir') / milter_include_sub_dir
 data_dir = prefix / get_option('datadir')
 gir_dir = data_dir / 'gir-1.0'
 
+fs = import('fs')
 gnome = import('gnome')
 pkgconfig = import('pkgconfig')
 pkgconfig_variables = ['girdir=@0@'.format(gir_dir)]
 
-config_h_conf = configuration_data()
-config_h_conf.set('GETTEXT_PACKAGE', 'milter-manager')
+
 # CentOS 7: GLib 2.50
 # AlmaLinux 8: GLib 2.56
 # AlmaLinux 9: GLib 2.68
 # Ubuntu 18.04: GLib 2.56
 # Ubuntu 20.04: GLib 2.64
 # Ubuntu 22.04: GLib 2.72
-config_h_conf.set('GLIB_VERSION_MIN_REQUIRED', 'GLIB_VERSION_2_50')
+glib_version_min_required = 'GLIB_VERSION_2_50'
+
+
+package_platform = get_option('package_platform')
+if package_platform == ''
+  uname = run_command(find_program('uname'), capture: true, check: true).stdout()
+  if uname == 'Linux'
+    if fs.is_file('/etc/debian_version') or fs.exists('/usr/bin/dpkg')
+      package_platform = 'debian'
+    elif fs.is_file('/etc/redhat-release')
+      package_platform = 'redhat'
+    endif
+  elif uname == 'FreeBSD'
+    package_platform = 'freebsd'
+  elif uname == 'NetBSD' or uname == 'DragonFly'
+    package_platform = 'pkgsrc'
+  endif
+endif
+if package_platform == 'redhat'
+  distribution_version = run_command(find_program('sh'),
+                                     '-c',
+                                     '. /etc/os-release && ' +
+                                     'echo ${VESRION_ID} | ' +
+                                     'grep -oE "^[0-9]+"',
+                                     capture: true,
+                                     check: true).stdout()
+  package_platform += distribution_version
+endif
+if package_platform == ''
+  package_platform = 'unknown'
+endif
+
+
+default_connection_spec = get_option('default_connection_spec')
+if default_connection_spec == ''
+  if package_platform == 'debian'
+    default_connection_spec =
+      'unix:/run/@0@/@0@.sock'.format(meson.project_name(),
+                                      meson.project_name())
+  elif (package_platform == 'redhat' or
+        package_platform == 'freebsd' or
+        package_platform == 'pkgsrc')
+    default_connection_spec =
+      'unix:/var/run/@0@/@0@.sock'.format(meson.project_name(),
+                                          meson.project_name())
+  else
+    default_connection_spec = 'inet:10025@[127.0.0.1]'
+  endif
+endif
+
+
+default_effective_group = get_option('default_effective_group')
+default_effective_user = get_option('default_effective_user')
+default_pid_file = get_option('default_pid_file')
+default_socket_group = get_option('default_socket_group')
+rcddir = get_option('rcddir')
+package_options = get_option('package_options')
+if rcddir != ''
+  if package_options == ''
+    package_options = 'rcddir=@0@'.format(rcddir)
+  else
+    package_options = 'rcddir=@0@,@0@'.format(rcddir, package_options)
+  endif
+endif
+
+
+config_h_conf = configuration_data()
+config_h_conf.set_quoted('CONFIG_DIR',
+                         prefix /
+                         get_option('sysconfdir') /
+                         meson.project_name())
+config_h_conf.set_quoted('CONFIG_FILE_NAME',
+                         '@0@.conf'.format(meson.project_name()))
+config_h_conf.set_quoted('CUSTOM_CONFIG_FILE_NAME',
+                         '@0@.custom.conf'.format(meson.project_name()))
+config_h_conf.set_quoted('CONFIGURATION_MODULE_DIR',
+                         prefix /
+                         get_option('libdir') /
+                         meson.project_name() /
+                         'module' /
+                         'configuration')
+config_h_conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
+config_h_conf.set('GLIB_VERSION_MIN_REQUIRED', glib_version_min_required)
+config_h_conf.set_quoted('LOCALEDIR',
+                         prefix / get_option('localedir'))
+config_h_conf.set_quoted('MILTER_MANAGER_DEFAULT_CONNECTION_SPEC',
+                         default_connection_spec)
+if default_effective_group == ''
+  config_h_conf.set('MILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP', 'NULL')
+else
+  config_h_conf.set_quoted('MILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP',
+                           default_effective_group)
+endif
+if default_effective_user == ''
+  config_h_conf.set('MILTER_MANAGER_DEFAULT_EFFECTIVE_USER', 'NULL')
+else
+  config_h_conf.set_quoted('MILTER_MANAGER_DEFAULT_EFFECTIVE_USER',
+                           default_effective_user)
+endif
+if default_pid_file == ''
+  config_h_conf.set('MILTER_MANAGER_DEFAULT_PID_FILE', 'NULL')
+else
+  config_h_conf.set_quoted('MILTER_MANAGER_DEFAULT_PID_FILE', default_pid_file)
+endif
+if default_socket_group == ''
+  config_h_conf.set('MILTER_MANAGER_DEFAULT_SOCKET_GROUP', 'NULL')
+else
+  config_h_conf.set_quoted('MILTER_MANAGER_DEFAULT_SOCKET_GROUP',
+                           default_socket_group)
+endif
+if package_options == ''
+  config_h_conf.set('MILTER_MANAGER_PACKAGE_OPTIONS', 'NULL')
+else
+  config_h_conf.set_quoted('MILTER_MANAGER_PACKAGE_OPTIONS', package_options)
+endif
+config_h_conf.set_quoted('MILTER_MANAGER_PACKAGE_PLATFORM', package_platform)
+config_h_conf.set_quoted('PACKAGE', meson.project_name())
+config_h_conf.set_quoted('PREFIX', prefix)
+config_h_conf.set_quoted('VERSION', meson.project_version())
 config_h = configure_file(input: 'meson-config.h.in',
                           output: 'config.h',
                           configuration: config_h_conf)
@@ -53,4 +171,5 @@ config = declare_dependency(compile_args: '-DHAVE_CONFIG_H',
 subdir('milter/core')
 subdir('milter/client')
 subdir('milter/server')
+subdir('milter/manager')
 subdir('libmilter')
