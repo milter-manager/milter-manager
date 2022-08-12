@@ -337,6 +337,13 @@ milter_manager_module_load_module (const gchar *base_dir, const gchar *name)
     return module;
 }
 
+/**
+ * milter_manager_module_load_modules:
+ * @base_dir: The base directory name of modules to load.
+ *
+ * Returns: (transfer full) (element-type MilterManagerModule):
+ *   Loaded modules.
+ */ 
 GList *
 milter_manager_module_load_modules (const gchar *base_dir)
 {
