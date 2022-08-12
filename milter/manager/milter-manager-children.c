@@ -4253,6 +4253,12 @@ milter_manager_children_get_smtp_client_address (MilterManagerChildren *children
     return TRUE;
 }
 
+/**
+ * milter_manager_children_get_option:
+ * @children: A #MilterManagerChildren.
+ *
+ * Returns: (transfer none): The #MilterOption of @children.
+ */
 MilterOption *
 milter_manager_children_get_option (MilterManagerChildren *children)
 {
