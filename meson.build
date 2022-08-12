@@ -24,7 +24,7 @@ so_version = 2
 library_version = '@0@.0.0'.format(so_version)
 
 prefix = get_option('prefix')
-include_dir = join_paths(prefix, get_option('includedir'))
+include_dir = join_paths(get_option('includedir'), meson.project_name())
 data_dir = join_paths(prefix, get_option('datadir'))
 gir_dir = join_paths(data_dir, 'gir-1.0')
 
