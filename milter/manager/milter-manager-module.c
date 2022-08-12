@@ -229,7 +229,8 @@ _milter_manager_module_show_error (GModule *module)
 
 /**
  * milter_manager_module_find:
- * @modules: (element-type MilterManagerModule): Modules to find.
+ * @modules: (element-type MilterManagerModule):
+ *   A list of #MilterManagerModule.
  * @name: The name of the module to find.
  *
  * Returns: (transfer none) (nullable):
