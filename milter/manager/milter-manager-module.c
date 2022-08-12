@@ -300,7 +300,7 @@ _milter_manager_module_load_func (GModule *module, const gchar *func_name,
  * @name: The name of a module to load.
  *
  * Returns: (transfer full): A loaded module.
- */ 
+ */
 MilterManagerModule *
 milter_manager_module_load_module (const gchar *base_dir, const gchar *name)
 {
@@ -343,7 +343,7 @@ milter_manager_module_load_module (const gchar *base_dir, const gchar *name)
  *
  * Returns: (transfer full) (element-type MilterManagerModule):
  *   Loaded modules.
- */ 
+ */
 GList *
 milter_manager_module_load_modules (const gchar *base_dir)
 {
