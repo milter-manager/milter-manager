@@ -1645,6 +1645,14 @@ milter_manager_configuration_add_egg (MilterManagerConfiguration *configuration,
     priv->eggs = g_list_append(priv->eggs, egg);
 }
 
+/**
+ * milter_manager_configuration_find_egg:
+ * @configuration: A #MilterManagerConfiguration.
+ * @name: The name of the egg to find.
+ *
+ * Returns: (transfer none) (nullable):
+ *   The #MilterManagerEgg if it exists, %NULL otherwise.
+ */
 MilterManagerEgg *
 milter_manager_configuration_find_egg (MilterManagerConfiguration *configuration,
                                        const gchar *name)
