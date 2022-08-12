@@ -195,6 +195,14 @@ milter_manager_module_collect_registered_types (GList *modules)
     return results;
 }
 
+/**
+ * milter_manager_module_collect_names:
+ * @modules: (element-type MilterManagerModule):
+ *   A list of #MilterManagerModule.
+ *
+ * Returns: (transfer none) (element-type utf8):
+ *    Names of @modules.
+ */
 GList *
 milter_manager_module_collect_names (GList *modules)
 {
