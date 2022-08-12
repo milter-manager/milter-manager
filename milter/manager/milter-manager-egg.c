@@ -751,6 +751,13 @@ milter_manager_egg_add_applicable_condition (MilterManagerEgg *egg,
         g_list_append(priv->applicable_conditions, condition);
 }
 
+/**
+ * milter_manager_egg_get_applicable_conditions:
+ * @egg: A #MilterManagerEgg.
+ *
+ * Returns: (transfer none) (element-type MilterManagerApplicableCondition):
+ *   A list of #MilterManagerApplicableCondition.
+ */
 const GList *
 milter_manager_egg_get_applicable_conditions (MilterManagerEgg *egg)
 {
