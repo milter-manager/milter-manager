@@ -67,19 +67,20 @@ headers = files(
 enums = gnome.mkenums_simple('milter-manager-enum-types',
                              body_prefix: '#include <config.h>',
                              identifier_prefix: 'Milter',
-                             install_dir: join_paths('milter', 'manager'),
+                             install_dir: milter_include_dir / 'manager',
                              install_header: true,
                              sources: headers,
                              symbol_prefix: 'milter')
 
-install_headers(headers, subdir: join_paths('milter', 'manager'))
-install_headers(['../manager.h'], subdir: join_paths('milter'))
+install_headers(headers, subdir: milter_include_sub_dir / 'manager')
+install_headers(['../manager.h'], subdir: milter_include_sub_dir)
 headers += ['../manager.h']
 
 dependencies = [
   config,
   milter_client,
   milter_server,
+  dependency('gmodule-2.0'),
 ]
 libmilter_manager = library('milter-manager',
                            c_args: '-DMILTER_LOG_DOMAIN="milter-manager"',
@@ -96,29 +97,31 @@ pkgconfig.generate(libmilter_manager,
                    requires: [
                      'milter-client = ' + meson.project_version(),
                      'milter-server = ' + meson.project_version(),
+                     'gmodule-2.0',
                    ],
                    variables: pkgconfig_variables)
 
 dependencies = [
+  declare_dependency(sources: milter_core_gir),
   declare_dependency(sources: milter_client_gir),
   declare_dependency(sources: milter_server_gir),
 ]
-milter_manager_gir = gnome.generate_gir(libmilter_manager,
-                                       dependencies: dependencies,
-                                       export_packages: 'milter-manager',
-                                       extra_args: [
-                                         '--warn-all',
-                                       ],
-                                       fatal_warnings: true,
-                                       header: 'milter/manager.h',
-                                       identifier_prefix: 'Milter',
-                                       includes: [
-                                         'MilterClient-' + api_version,
-                                         'MilterServer-' + api_version,
-                                         'GObject-2.0',
-                                       ],
-                                       install: true,
-                                       namespace: 'MilterManager',
-                                       nsversion: api_version,
-                                       sources: sources + headers + enums,
-                                       symbol_prefix: 'milter')
+gnome.generate_gir(libmilter_manager,
+                   dependencies: dependencies,
+                   export_packages: 'milter-manager',
+                   extra_args: [
+                     '--warn-all',
+                   ],
+                   fatal_warnings: true,
+                   header: 'milter/manager.h',
+                   identifier_prefix: 'Milter',
+                   includes: [
+                     'MilterClient-' + api_version,
+                     'MilterServer-' + api_version,
+                     'GObject-2.0',
+                   ],
+                   install: true,
+                   namespace: 'MilterManager',
+                   nsversion: api_version,
+                   sources: sources + headers + enums,
+                   symbol_prefix: 'milter')

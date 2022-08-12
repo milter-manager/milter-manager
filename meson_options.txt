@@ -1,0 +1,63 @@
+# Copyright (C) 2022  Sutou Kouhei <kou@clear-code.com>
+#
+# This library is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this library.  If not, see <http://www.gnu.org/licenses/>.
+
+option('default_connection_spec',
+       type: 'string',
+       value: '',
+       description: 'Use the specified value as the default connection spec. ' +
+                    '(default: auto)')
+
+option('default_effective_group',
+       type: 'string',
+       value: '',
+       description: 'The default effective group for milter-manager command. ' +
+                    '(default: none)')
+
+option('default_effective_user',
+       type: 'string',
+       value: '',
+       description: 'The default effective user for milter-manager command. ' +
+                    '(default: none)')
+
+option('default_pid_file',
+       type: 'string',
+       value: '',
+       description: 'The default PID file. ' +
+                    '(default: none)')
+
+option('default_socket_group',
+       type: 'string',
+       value: '',
+       description: 'The default group for UNIX domain socket file. ' +
+                    '(default: none)')
+
+option('package_options',
+       type: 'string',
+       value: '',
+       description: 'Package platform dependent options. ' +
+                    'Format is VAR1=VAL1,VAR2=VAL2,... ' +
+                    '(default: none)')
+
+option('package_platform',
+       type: 'string',
+       value: '',
+       description: 'Use the specified value as the package platform. ' +
+                    '(default: auto)')
+
+option('rcddir',
+       type: 'string',
+       value: '',
+       description: 'Use the specified value as the package platform. ' +
+                    '(default: none)')
