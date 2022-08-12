@@ -24,9 +24,10 @@ so_version = 2
 library_version = '@0@.0.0'.format(so_version)
 
 prefix = get_option('prefix')
-include_dir = join_paths(get_option('includedir'), meson.project_name())
-data_dir = join_paths(prefix, get_option('datadir'))
-gir_dir = join_paths(data_dir, 'gir-1.0')
+milter_include_sub_dir = meson.project_name() / 'milter'
+milter_include_dir = get_option('includedir') / milter_include_sub_dir
+data_dir = prefix / get_option('datadir')
+gir_dir = data_dir / 'gir-1.0'
 
 gnome = import('gnome')
 pkgconfig = import('pkgconfig')

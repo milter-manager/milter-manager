@@ -90,13 +90,13 @@ headers += version_h
 enums = gnome.mkenums_simple('milter-enum-types',
                              body_prefix: '#include <config.h>',
                              identifier_prefix: 'Milter',
-                             install_dir: join_paths(include_dir, 'milter', 'core'),
+                             install_dir: milter_include_dir / 'core',
                              install_header: true,
                              sources: headers,
                              symbol_prefix: 'milter')
 
-install_headers(headers, subdir: join_paths(include_dir, 'milter', 'core'))
-install_headers(['../core.h'], subdir: join_paths(include_dir, 'milter'))
+install_headers(headers, subdir: milter_include_sub_dir / 'core')
+install_headers(['../core.h'], subdir: milter_include_sub_dir)
 headers += ['../core.h']
 
 gobject = dependency('gobject-2.0')
