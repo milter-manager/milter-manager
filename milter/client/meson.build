@@ -53,6 +53,8 @@ libmilter_client = library('milter-client',
                            dependencies: dependencies,
                            soversion: so_version,
                            version: library_version)
+milter_client = declare_dependency(link_with: libmilter_client,
+                                   dependencies: dependencies)
 
 pkgconfig.generate(libmilter_client,
                    description: 'milter API',
