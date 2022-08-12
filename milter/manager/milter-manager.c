@@ -1419,6 +1419,13 @@ milter_manager_get_configuration (MilterManager *manager)
     return MILTER_MANAGER_GET_PRIVATE(manager)->configuration;
 }
 
+/**
+ * milter_manager_get_leaders:
+ * @manager: A #MilterManager.
+ *
+ * Returns: (transfer none) (element-type MilterManagerLeader):
+ *   The leaders of @manager.
+ */
 const GList *
 milter_manager_get_leaders (MilterManager *manager)
 {
