@@ -1329,6 +1329,12 @@ milter_manager_leader_timeout (MilterManagerLeader *leader)
     milter_manager_leader_quit(leader);
 }
 
+/**
+ * milter_manager_leader_get_configuration:
+ * @leader: A #MilterManagerLeader.
+ *
+ * Returns: (transfer none): The configuration of @leader.
+ */
 MilterManagerConfiguration *
 milter_manager_leader_get_configuration (MilterManagerLeader *leader)
 {
