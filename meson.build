@@ -24,7 +24,8 @@ so_version = 2
 library_version = '@0@.0.0'.format(so_version)
 
 prefix = get_option('prefix')
-milter_include_sub_dir = meson.project_name() / 'milter'
+project_include_sub_dir = meson.project_name()
+milter_include_sub_dir = project_include_sub_dir / 'milter'
 milter_include_dir = get_option('includedir') / milter_include_sub_dir
 data_dir = prefix / get_option('datadir')
 gir_dir = data_dir / 'gir-1.0'
@@ -52,3 +53,4 @@ config = declare_dependency(compile_args: '-DHAVE_CONFIG_H',
 subdir('milter/core')
 subdir('milter/client')
 subdir('milter/server')
+subdir('libmilter')
