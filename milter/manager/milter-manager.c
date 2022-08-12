@@ -1407,6 +1407,12 @@ worker_created (MilterClient *client)
     milter_debug("[manager][worker-created] pid=<%d>", getpid());
 }
 
+/**
+ * milter_manager_get_configuration:
+ * @manager: A #MilterManager.
+ *
+ * Returns: (transfer none): The configuration of @manager.
+ */
 MilterManagerConfiguration *
 milter_manager_get_configuration (MilterManager *manager)
 {
