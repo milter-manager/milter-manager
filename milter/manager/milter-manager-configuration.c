@@ -981,6 +981,13 @@ milter_manager_configuration_clear_load_paths (MilterManagerConfiguration *confi
     }
 }
 
+/**
+ * milter_manager_configuration_get_load_paths:
+ * @configuration: A #MilterManagerConfiguration.
+ *
+ * Returns: (transfer none) (element-type utf8):
+ *   A list of load paths of @configuration.
+ */
 const GList *
 milter_manager_configuration_get_load_paths (MilterManagerConfiguration *configuration)
 {
