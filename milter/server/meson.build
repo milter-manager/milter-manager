@@ -54,6 +54,7 @@ pkgconfig.generate(libmilter_server,
                    filebase: 'milter-server',
                    name: 'milter server library',
                    requires: ['milter-core = ' + meson.project_version()],
+                   subdirs: project_include_sub_dir,
                    variables: pkgconfig_variables)
 
 dependencies = [

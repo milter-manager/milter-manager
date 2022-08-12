@@ -61,6 +61,7 @@ pkgconfig.generate(libmilter_client,
                    filebase: 'milter-client',
                    name: 'milter client library',
                    requires: ['milter-core = ' + meson.project_version()],
+                   subdirs: project_include_sub_dir,
                    variables: pkgconfig_variables)
 
 dependencies = [

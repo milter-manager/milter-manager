@@ -43,4 +43,5 @@ pkgconfig.generate(libmilter,
                    filebase: 'libmilter',
                    name: 'Sendmail\'s libmilter compatible API by milter client library',
                    requires: ['milter-client = ' + meson.project_version()],
+                   subdirs: project_include_sub_dir / 'libmilter',
                    variables: pkgconfig_variables)

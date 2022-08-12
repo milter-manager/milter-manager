@@ -99,6 +99,7 @@ pkgconfig.generate(libmilter_manager,
                      'milter-server = ' + meson.project_version(),
                      'gmodule-2.0',
                    ],
+                   subdirs: project_include_sub_dir,
                    variables: pkgconfig_variables)
 
 dependencies = [
