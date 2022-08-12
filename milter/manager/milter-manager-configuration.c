@@ -2303,6 +2303,12 @@ milter_manager_configuration_get_location (MilterManagerConfiguration *configura
     return g_hash_table_lookup(priv->locations, key);
 }
 
+/**
+ * milter_manager_configuration_get_locations:
+ * @configuration: A #MilterManagerConfiguration.
+ *
+ * Returns: (transfer none): Locations of @configuration.
+ */
 GHashTable *
 milter_manager_configuration_get_locations (MilterManagerConfiguration *configuration)
 {
