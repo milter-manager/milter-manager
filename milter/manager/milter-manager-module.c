@@ -350,6 +350,15 @@ milter_manager_module_load_modules (const gchar *base_dir)
     return milter_manager_module_load_modules_unique(base_dir, NULL);
 }
 
+/**
+ * milter_manager_module_load_modules_unique:
+ * @base_dir: The base directory name of modules to load.
+ * @exist_modules: (element-type MilterManagerModule):
+ *   Exising modules to be excluded from newly loading.
+ *
+ * Returns: (transfer full) (element-type MilterManagerModule):
+ *   Loaded modules.
+ */
 GList *
 milter_manager_module_load_modules_unique (const gchar *base_dir,
                                            GList *exist_modules)

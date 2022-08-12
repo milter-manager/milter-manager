@@ -51,7 +51,7 @@ MilterManagerModule *milter_manager_module_load_module (const gchar    *base_dir
 GList               *milter_manager_module_load_modules(const gchar    *base_dir);
 GList               *milter_manager_module_load_modules_unique
                                                        (const gchar    *base_dir,
-                                                        GList          *modules);
+                                                        GList          *exist_modules);
 MilterManagerModule *milter_manager_module_find        (GList          *modules,
                                                         const gchar    *name);
 
