@@ -1363,6 +1363,12 @@ milter_manager_leader_set_launcher_channel (MilterManagerLeader *leader,
         g_io_channel_ref(priv->launcher_read_channel);
 }
 
+/**
+ * milter_manager_leader_get_children:
+ * @leader: A #MilterManagerLeader.
+ *
+ * Returns: (transfer none): The chidren of @manager.
+ */
 MilterManagerChildren *
 milter_manager_leader_get_children (MilterManagerLeader *leader)
 {
