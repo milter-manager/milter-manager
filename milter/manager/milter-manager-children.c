@@ -683,7 +683,7 @@ milter_manager_children_length (MilterManagerChildren *children)
  * @children: A #MilterManagerChildren.
  *
  * Returns: (transfer none) (element-type MilterManagerChild):
- *   The list of #MilterManagerChild.
+ *   A list of #MilterManagerChild.
  */
 GList *
 milter_manager_children_get_children (MilterManagerChildren *children)
