@@ -678,6 +678,13 @@ milter_manager_children_length (MilterManagerChildren *children)
     return g_list_length(MILTER_MANAGER_CHILDREN_GET_PRIVATE(children)->milters);
 }
 
+/**
+ * milter_manager_children_get_children:
+ * @children: A #MilterManagerChildren.
+ *
+ * Returns: (transfer none) (element-type MilterManagerChild):
+ *   The list of #MilterManagerChild.
+ */
 GList *
 milter_manager_children_get_children (MilterManagerChildren *children)
 {
