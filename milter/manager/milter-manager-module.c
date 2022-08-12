@@ -294,6 +294,13 @@ _milter_manager_module_load_func (GModule *module, const gchar *func_name,
     }
 }
 
+/**
+ * milter_manager_module_load_module:
+ * @base_dir: The base directory name of a module to load.
+ * @name: The name of a module to load.
+ *
+ * Returns: (transfer full): A loaded module.
+ */ 
 MilterManagerModule *
 milter_manager_module_load_module (const gchar *base_dir, const gchar *name)
 {
