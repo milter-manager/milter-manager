@@ -94,6 +94,7 @@ enums = gnome.mkenums_simple('milter-enum-types',
                              install_header: true,
                              sources: headers,
                              symbol_prefix: 'milter')
+enums_h = enums[1]
 
 install_headers(headers, subdir: milter_include_sub_dir / 'core')
 install_headers(['../core.h'], subdir: milter_include_sub_dir)
@@ -115,8 +116,9 @@ libmilter_core = library('milter-core',
                          dependencies: dependencies,
                          soversion: so_version,
                          version: library_version)
-milter_core = declare_dependency(link_with: libmilter_core,
-                                 dependencies: dependencies)
+milter_core = declare_dependency(dependencies: dependencies,
+                                 link_with: libmilter_core,
+                                 sources: [enums_h])
 
 pkgconfig.generate(libmilter_core,
                    description: 'common milter features',

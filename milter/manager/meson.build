@@ -83,12 +83,12 @@ dependencies = [
   dependency('gmodule-2.0'),
 ]
 libmilter_manager = library('milter-manager',
-                           c_args: '-DMILTER_LOG_DOMAIN="milter-manager"',
-                           sources: sources + headers + enums,
-                           install: true,
-                           dependencies: dependencies,
-                           soversion: so_version,
-                           version: library_version)
+                            c_args: '-DMILTER_LOG_DOMAIN="milter-manager"',
+                            sources: sources + headers + enums,
+                            install: true,
+                            dependencies: dependencies,
+                            soversion: so_version,
+                            version: library_version)
 
 pkgconfig.generate(libmilter_manager,
                    description: 'milter API',

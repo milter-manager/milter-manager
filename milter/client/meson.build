@@ -37,6 +37,7 @@ enums = gnome.mkenums_simple('milter-client-enum-types',
                              install_header: true,
                              sources: headers,
                              symbol_prefix: 'milter')
+enums_h = enums[1]
 
 install_headers(headers, subdir: milter_include_sub_dir / 'client')
 install_headers(['../client.h'], subdir: milter_include_sub_dir)
@@ -53,8 +54,9 @@ libmilter_client = library('milter-client',
                            dependencies: dependencies,
                            soversion: so_version,
                            version: library_version)
-milter_client = declare_dependency(link_with: libmilter_client,
-                                   dependencies: dependencies)
+milter_client = declare_dependency(dependencies: dependencies,
+                                   link_with: libmilter_client,
+                                   sources: [enums_h])
 
 pkgconfig.generate(libmilter_client,
                    description: 'milter API',
