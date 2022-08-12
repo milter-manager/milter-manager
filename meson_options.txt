@@ -16,48 +16,39 @@
 option('default_connection_spec',
        type: 'string',
        value: '',
-       description: 'Use the specified value as the default connection spec. ' +
-                    '(default: auto)')
+       description: 'Use the specified value as the default connection spec. (default: auto)')
 
 option('default_effective_group',
        type: 'string',
        value: '',
-       description: 'The default effective group for milter-manager command. ' +
-                    '(default: none)')
+       description: 'The default effective group for milter-manager command. (default: none)')
 
 option('default_effective_user',
        type: 'string',
        value: '',
-       description: 'The default effective user for milter-manager command. ' +
-                    '(default: none)')
+       description: 'The default effective user for milter-manager command. (default: none)')
 
 option('default_pid_file',
        type: 'string',
        value: '',
-       description: 'The default PID file. ' +
-                    '(default: none)')
+       description: 'The default PID file. (default: none)')
 
 option('default_socket_group',
        type: 'string',
        value: '',
-       description: 'The default group for UNIX domain socket file. ' +
-                    '(default: none)')
+       description: 'The default group for UNIX domain socket file. (default: none)')
 
 option('package_options',
        type: 'string',
        value: '',
-       description: 'Package platform dependent options. ' +
-                    'Format is VAR1=VAL1,VAR2=VAL2,... ' +
-                    '(default: none)')
+       description: 'Package platform dependent options. Format is VAR1=VAL1,VAR2=VAL2,... (default: none)')
 
 option('package_platform',
        type: 'string',
        value: '',
-       description: 'Use the specified value as the package platform. ' +
-                    '(default: auto)')
+       description: 'Use the specified value as the package platform. (default: auto)')
 
 option('rcddir',
        type: 'string',
        value: '',
-       description: 'Use the specified value as the package platform. ' +
-                    '(default: none)')
+       description: 'Use the specified value as the package platform. (default: none)')
