@@ -1883,6 +1883,13 @@ milter_manager_configuration_find_applicable_condition (MilterManagerConfigurati
     return NULL;
 }
 
+/**
+ * milter_manager_configuration_get_applicable_conditions:
+ * @configuration: A #MilterManagerConfiguration.
+ *
+ * Returns: (transfer none) (element-type MilterManagerApplicableCondition):
+ *   A list of #MilterManagerApplicableCondition.
+ */
 const GList *
 milter_manager_configuration_get_applicable_conditions (MilterManagerConfiguration *configuration)
 {
