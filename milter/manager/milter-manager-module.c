@@ -163,7 +163,7 @@ unload (GTypeModule *module)
  * @modules: (element-type MilterManagerModule):
  *   A list of #MilterManagerModule.
  *
- * Returns: (transfer none) (element-type utf8):
+ * Returns: (transfer container) (element-type utf8):
  *   Registered types of @modules.
  */
 GList *
