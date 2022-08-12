@@ -443,6 +443,13 @@ hatch (const gchar *first_name, ...)
     return child;
 }
 
+/**
+ * milter_manager_egg_hatch:
+ * @egg: A #MilterManagerEgg.
+ *
+ * Returns: (transfer full) (nullable):
+ *   A newly created milter manager egg hatch.
+ */
 MilterManagerChild *
 milter_manager_egg_hatch (MilterManagerEgg *egg)
 {
