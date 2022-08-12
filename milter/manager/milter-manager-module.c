@@ -219,6 +219,14 @@ _milter_manager_module_show_error (GModule *module)
     }
 }
 
+/**
+ * milter_manager_module_find:
+ * @modules: (element-type MilterManagerModule): Modules to find.
+ * @name: The name of the module to find.
+ *
+ * Returns: (transfer none) (nullable):
+ *   The #MilterManagerModule if it exists, %NULL otherwise.
+ */
 MilterManagerModule *
 milter_manager_module_find (GList *modules, const gchar *name)
 {
