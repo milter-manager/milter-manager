@@ -1854,6 +1854,14 @@ milter_manager_configuration_add_applicable_condition (MilterManagerConfiguratio
         g_list_append(priv->applicable_conditions, condition);
 }
 
+/**
+ * milter_manager_configuration_find_applicable_condition:
+ * @configuration: A #MilterManagerConfiguration.
+ * @name: The name of the applicable condition to find.
+ *
+ * Returns: (transfer none) (nullable):
+ *   The #MilterManagerApplicableCondition if it exists, %NULL otherwise.
+ */
 MilterManagerApplicableCondition *
 milter_manager_configuration_find_applicable_condition (MilterManagerConfiguration *configuration,
                                                         const gchar *name)
