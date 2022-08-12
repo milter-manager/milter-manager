@@ -1672,6 +1672,13 @@ milter_manager_configuration_find_egg (MilterManagerConfiguration *configuration
     return NULL;
 }
 
+/**
+ * milter_manager_configuration_get_eggs:
+ * @configuration: A #MilterManagerConfiguration.
+ *
+ * Returns: (transfer none) (element-type MilterManagerEgg):
+ *   A list of #MilterManagerEgg.
+ */
 const GList *
 milter_manager_configuration_get_eggs (MilterManagerConfiguration *configuration)
 {
