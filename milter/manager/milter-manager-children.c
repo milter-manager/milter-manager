@@ -691,14 +691,24 @@ milter_manager_children_get_children (MilterManagerChildren *children)
     return MILTER_MANAGER_CHILDREN_GET_PRIVATE(children)->milters;
 }
 
+/**
+ * milter_manager_children_foreach:
+ * @children: A #MilterManagerChildren.
+ * @func: (scope call):
+ *   The function to call for each #MilterManagerChild in @children.
+ * @user_data: User data to pass to the function.
+ *
+ * A wrapper for g_list_foreach().
+ */
 void
 milter_manager_children_foreach (MilterManagerChildren *children,
-                                 GFunc func, gpointer user_data)
+                                 MilterManagerChildrenFunc func,
+                                 gpointer user_data)
 {
     GList *milters;
 
     milters = MILTER_MANAGER_CHILDREN_GET_PRIVATE(children)->milters;
-    g_list_foreach(milters, func, user_data);
+    g_list_foreach(milters, (GFunc)func, user_data);
 }
 
 static const gchar *

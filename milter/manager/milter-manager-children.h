@@ -69,9 +69,23 @@ void                   milter_manager_children_add_child   (MilterManagerChildre
                                                             MilterManagerChild    *child);
 guint                  milter_manager_children_length      (MilterManagerChildren *children);
 GList                 *milter_manager_children_get_children(MilterManagerChildren *children);
-void                   milter_manager_children_foreach     (MilterManagerChildren *children,
-                                                            GFunc                  func,
-                                                            gpointer               user_data);
+
+/**
+ * MilterManagerChildrenFunc:
+ * @child: A #MilterManagerChild.
+ * @user_data: User data passed to milter_manager_children_foreach().
+ *
+ * It is called with each #MilterManagerChild in #MilterManagerChildren,
+ * together with the @user_data parameter which is passed to
+ * milter_manager_children_foreach().
+ */
+typedef void(*MilterManagerChildrenFunc)(MilterManagerChild *child,
+                                         gpointer  user_data);
+
+void
+milter_manager_children_foreach(MilterManagerChildren *children,
+                                MilterManagerChildrenFunc func,
+                                gpointer user_data);
 
 gboolean               milter_manager_children_negotiate   (MilterManagerChildren *children,
                                                             MilterOption          *option,
