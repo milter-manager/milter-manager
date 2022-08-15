@@ -261,6 +261,14 @@ milter_manager_module_find (GList *modules, const gchar *name)
     return NULL;
 }
 
+/**
+ * milter_manager_module_instantiate: (skip)
+ * @module: A #MilterMacrosRequests.
+ * @first_property: The value of the first property.
+ * @var_args: The values for the second and subsequent properties.
+ * 
+ * Returns: (transfer full): A newly instantiated object provided by @module.
+ */
 GObject *
 milter_manager_module_instantiate (MilterManagerModule *module,
                         const gchar *first_property, va_list var_args)
