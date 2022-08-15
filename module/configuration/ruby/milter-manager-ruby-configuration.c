@@ -551,7 +551,7 @@ real_event_loop_created (MilterManagerConfiguration *_configuration,
     if (local_error) {
         success = FALSE;
         if (!error) {
-            milter_error("[ruby-configuration][error][event-loop_created] %s",
+            milter_error("[ruby-configuration][error][event-loop-created] %s",
                          local_error->message);
         }
         g_propagate_error(error, local_error);
