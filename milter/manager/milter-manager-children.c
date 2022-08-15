@@ -702,7 +702,7 @@ milter_manager_children_get_children (MilterManagerChildren *children)
  */
 void
 milter_manager_children_foreach (MilterManagerChildren *children,
-                                 MilterManagerChildrenFunc func,
+                                 MilterManagerChildFunc func,
                                  gpointer user_data)
 {
     GList *milters;
