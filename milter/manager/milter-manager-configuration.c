@@ -908,6 +908,13 @@ milter_manager_configuration_instantiate_va_list (const gchar *first_property,
     return MILTER_MANAGER_CONFIGURATION(configuration);
 }
 
+/**
+ * milter_manager_configuration_instantiate:
+ * 
+ * This function takes the property values as variable length arguments.
+ *
+ * Returns: (transfer full): A newly created #MilterManagerConfiguration.
+ */
 MilterManagerConfiguration *
 milter_manager_configuration_instantiate (const gchar *first_property,
                                           ...)
