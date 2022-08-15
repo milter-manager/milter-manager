@@ -909,7 +909,8 @@ milter_manager_configuration_instantiate_va_list (const gchar *first_property,
 }
 
 /**
- * milter_manager_configuration_instantiate:
+ * milter_manager_configuration_instantiate: (skip)
+ * @first_property: The value of the first property.
  * 
  * This function takes the property values as variable length arguments.
  *
