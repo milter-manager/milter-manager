@@ -164,7 +164,7 @@ unload (GTypeModule *module)
  *   A list of #MilterManagerModule.
  *
  * Returns: (transfer container) (element-type utf8):
- *   Registered types of @modules.
+ *   Registered type names of @modules.
  */
 GList *
 milter_manager_module_collect_registered_types (GList *modules)
