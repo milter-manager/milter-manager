@@ -35,6 +35,12 @@ typedef GObject *(*MilterManagerModuleInstantiateFunc)  (const gchar *first_prop
 #define MILTER_MANAGER_MODULE_IMPL_EXIT           milter_manager_module_impl_exit
 #define MILTER_MANAGER_MODULE_IMPL_INSTANTIATE    milter_manager_module_impl_instantiate
 
+/**
+ * milter_manager_module_impl_init: (skip)
+ * @module: A #GTypeModule.
+ * 
+ * Returns: (transfer full) (element-type utf8): The registered types.
+ */
 GList   *MILTER_MANAGER_MODULE_IMPL_INIT           (GTypeModule  *module);
 void     MILTER_MANAGER_MODULE_IMPL_EXIT           (void);
 GObject *MILTER_MANAGER_MODULE_IMPL_INSTANTIATE    (const gchar *first_property,
