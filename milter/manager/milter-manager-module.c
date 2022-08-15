@@ -200,7 +200,7 @@ milter_manager_module_collect_registered_types (GList *modules)
  * @modules: (element-type MilterManagerModule):
  *   A list of #MilterManagerModule.
  *
- * Returns: (transfer none) (element-type utf8):
+ * Returns: (transfer container) (element-type utf8):
  *    Names of @modules.
  */
 GList *
