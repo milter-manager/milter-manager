@@ -489,7 +489,7 @@ if test "$ruby_available" = "yes"; then
 	  end
 	end
 	ruby_glib2_path = ruby_glib2_gem.full_gem_path
-	print("-I ", File.join(ruby_glib2_path, "ext", "glib2"))')
+	print("-I ", File.join(ruby_glib2_path, "lib"))')
       if test $? -eq 0; then
         CFLAGS="$CFLAGS $RUBY_GLIB2_CFLAGS"
       else
