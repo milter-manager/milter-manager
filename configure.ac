@@ -632,12 +632,13 @@ EOM
 	      [use_bundled_ruby_gobject_introspection="$withval"],
               [use_bundled_ruby_gobject_introspection="auto"])
 
-  RUBY_GOBJECT_INTROSPECTION_CFLAGS="$RUBY_GLIB2_CFLAGS"
   ruby_gobject_introspection_available=no
+  ruby_gobject_introspection_type="bundled"
   if test "x$use_bundled_ruby_gobject_introspection" != "xyes"; then
     if test "$ruby_gobject_introspection_available" = "no"; then
       if ruby -r gobject-introspection -e '1'; then
         ruby_gobject_introspection_available="yes"
+        ruby_gobject_introspection_type="system"
       else
         ruby_gobject_introspection_available="no"
       fi
@@ -660,7 +661,6 @@ EOM
           $RUBY $ac_abs_ruby_srcdir/gobject-introspection-$ac_used_bundled_ruby_gobject_introspection_version/extconf.rb); then
       ruby_gobject_introspection_available=yes
       ac_ruby_gobject_introspection_source_dir="$ac_ruby_gobject_introspection_dir/ext/gobject-introspection"
-      RUBY_GOBJECT_INTROSPECTION_CFLAGS="-I \$(top_srcdir)/$ac_ruby_gobject_introspection_source_dir"
       sed -e '/^install-headers:/a\
 xxx	$(MAKEDIRS) $(RUBYARCHDIR)' \
 	  $ac_ruby_gobject_introspection_dir/ext/gobject-introspection/Makefile | \
@@ -736,8 +736,6 @@ EOM
     AC_MSG_ERROR([Ruby/GObjectIntrospection is required.])
   fi
 
-  AC_SUBST(RUBY_GOBJECT_INTROSPECTION_CFLAGS)
-
   AC_ARG_WITH([bundled-ruby-gio2],
 	      AS_HELP_STRING([--with-bundled-ruby-gio2],
 			     [Use bundled Ruby/GIO2
@@ -746,12 +744,13 @@ EOM
 	      [use_bundled_ruby_gio2="$withval"],
               [use_bundled_ruby_gio2="auto"])
 
-  RUBY_GIO2_CFLAGS="$RUBY_GLIB2_CFLAGS"
   ruby_gio2_available=no
+  ruby_gio2_type="bundled"
   if test "x$use_bundled_ruby_gio2" != "xyes"; then
     if test "$ruby_gio2_available" = "no"; then
       if ruby -r gio2 -e '1'; then
         ruby_gio2_available="yes"
+        ruby_gio2_type="system"
       else
         ruby_gio2_available="no"
       fi
@@ -774,7 +773,6 @@ EOM
           $RUBY $ac_abs_ruby_srcdir/gio2-$ac_used_bundled_ruby_gio2_version/extconf.rb); then
       ruby_gio2_available=yes
       ac_ruby_gio2_source_dir="$ac_ruby_gio2_dir/ext/gio2"
-      RUBY_GIO2_CFLAGS="-I \$(top_srcdir)/$ac_ruby_gio2_source_dir"
       sed -e '/^install-headers:/a\
 xxx	$(MAKEDIRS) $(RUBYARCHDIR)' \
 	  $ac_ruby_gio2_dir/ext/gio2/Makefile | \
@@ -847,8 +845,6 @@ EOM
   if test "$ruby_gio2_available" != "yes"; then
     AC_MSG_ERROR([Ruby/GIO2 is required.])
   fi
-
-  AC_SUBST(RUBY_GIO2_CFLAGS)
 
   AC_CHECK_FUNCS(rb_errinfo rb_fork rb_last_status_set)
   AC_CHECK_FUNCS(rb_thread_check_ints)
@@ -1357,8 +1353,8 @@ echo "  libev                   : $libev_configure_result"
 echo "  Ruby                    : $RUBY"
 echo "  Ruby version              : `$RUBY -v`"
 echo "  Ruby/GLib2                : $RUBY_GLIB2_CFLAGS"
-echo "  Ruby/GObjectIntrospection : $RUBY_GOBJECT_INTROSPECTION_CFLAGS"
-echo "  Ruby/GIO2                 : $RUBY_GIO2_CFLAGS"
+echo "  Ruby/GObjectIntrospection : $ruby_gobject_introspection_type"
+echo "  Ruby/GIO2                 : $$ruby_gio2_type"
 echo "  Ruby milter PATH          : $ruby_milterdir"
 echo
 echo "  rd2                     : $RD2"
