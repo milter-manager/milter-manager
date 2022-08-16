@@ -635,56 +635,12 @@ EOM
   RUBY_GOBJECT_INTROSPECTION_CFLAGS="$RUBY_GLIB2_CFLAGS"
   ruby_gobject_introspection_available=no
   if test "x$use_bundled_ruby_gobject_introspection" != "xyes"; then
-    CFLAGS="$CFLAGS $GLIB_CFLAGS"
     if test "$ruby_gobject_introspection_available" = "no"; then
-      RUBY_GOBJECT_INTROSPECTION_CFLAGS=$($RUBY -e '
-        begin
-          require "rubygems"
-          ruby_gobject_introspection_gem = Gem::Specification.find_by_name("gobject-introspection")
-        rescue LoadError
-          ruby_gobject_introspection_gem = nil
-        end
-	if ruby_gobject_introspection_gem.nil?
-	  begin
-	    require "gobject_introspection"
-	    ruby_gobject_introspection_path = $".grep(/gobject-introspection\.(?!rb\z)\w+\z/).first
-	    exit(false) if ruby_gobject_introspection_path.nil?
-	    print("-I ", File.dirname(ruby_gobject_introspection_path))
-	    exit(true)
-	  rescue LoadError
-	    exit(false)
-	  end
-	end
-	ruby_gobject_introspection_path = ruby_gobject_introspection_gem.full_gem_path
-	print("-I ", File.join(ruby_gobject_introspection_path, "ext", "gobject-introspection"))')
-      if test $? -eq 0; then
-        CFLAGS="$CFLAGS $RUBY_GOBJECT_INTROSPECTION_CFLAGS"
+      if ruby -r gobject-introspection -e '1'; then
+        ruby_gobject_introspection_available="yes"
       else
-        RUBY_GOBJECT_INTROSPECTION_CFLAGS=""
+        ruby_gobject_introspection_available="no"
       fi
-      AC_CHECK_HEADERS(rbgiversion.h,
-		       [ruby_gobject_introspection_available="yes"],
-		       [ruby_gobject_introspection_available="no"],
-		       [$ruby_undef_package_macros])
-    fi
-    if test "$ruby_gobject_introspection_available" = "yes"; then
-      AC_TRY_COMPILE([
-		      $ruby_undef_package_macros
-		      #include <rbgobject.h>
-		      #include <rb-gobject_introspection.h>
-		     ],
-		     [
-		      #if RBGLIB_MAJOR_VERSION == 3 && RBGLIB_MINOR_VERSION == 4 && RBGLIB_MICRO_VERSION == 9
-  		      #  if GI_MAJOR_VERSION 1 && GI_MINOR_VERSION == 46 && RBGLIB_MICRO_VERSION == 0
-		      #  else
-		      #    error "Ruby/GObjectIntrospection must be 1.46.0"
-		      #  endif
-		      #else
-		      #  error "Ruby/GOBJECT_INTROSPECTION must be 3.4.9"
-		      #endif
-		     ],
-		     [],
-		     [ruby_gobject_introspection_available="no"])
     fi
   fi
 
@@ -793,52 +749,12 @@ EOM
   RUBY_GIO2_CFLAGS="$RUBY_GLIB2_CFLAGS"
   ruby_gio2_available=no
   if test "x$use_bundled_ruby_gio2" != "xyes"; then
-    CFLAGS="$CFLAGS $GLIB_CFLAGS"
     if test "$ruby_gio2_available" = "no"; then
-      RUBY_GIO2_CFLAGS=$($RUBY -e '
-        begin
-          require "rubygems"
-          ruby_gio2_gem = Gem::Specification.find_by_name("gio2")
-        rescue LoadError
-          ruby_gio2_gem = nil
-        end
-	if ruby_gio2_gem.nil?
-	  begin
-	    require "gio2"
-	    ruby_gio2_path = $".grep(/gio2\.(?!rb\z)\w+\z/).first
-	    exit(false) if ruby_gio2_path.nil?
-	    print("-I ", File.dirname(ruby_gio2_path))
-	    exit(true)
-	  rescue LoadError
-	    exit(false)
-	  end
-	end
-	ruby_gio2_path = ruby_gio2_gem.full_gem_path
-	print("-I ", File.join(ruby_gio2_path, "ext", "gio2"))')
-      if test $? -eq 0; then
-        CFLAGS="$CFLAGS $RUBY_GIO2_CFLAGS"
+      if ruby -r gio2 -e '1'; then
+        ruby_gio2_available="yes"
       else
-        RUBY_GIO2_CFLAGS=""
+        ruby_gio2_available="no"
       fi
-      AC_CHECK_HEADERS(rbgobject.h,
-		       [ruby_gio2_available="yes"],
-		       [ruby_gio2_available="no"],
-		       [$ruby_undef_package_macros])
-    fi
-    if test "$ruby_gio2_available" = "yes"; then
-      AC_TRY_COMPILE([
-		      $ruby_undef_package_macros
-		      #include <rbgobject.h>
-		      #include <rb-gio2.h>
-		     ],
-		     [
-		      #if RBGLIB_MAJOR_VERSION == 3 && RBGLIB_MINOR_VERSION == 4 && RBGLIB_MICRO_VERSION == 9
-		      #else
-		      #  error "Ruby/GIO2 must be 3.4.9"
-		      #endif
-		     ],
-		     [],
-		     [ruby_gio2_available="no"])
     fi
   fi
 
