@@ -78,13 +78,13 @@ endif
 default_connection_spec = get_option('default_connection_spec')
 if default_connection_spec == ''
   if package_platform == 'debian'
-    default_connection_spec =
+    default_connection_spec = \
       'unix:/run/@0@/@0@.sock'.format(meson.project_name(),
                                       meson.project_name())
   elif (package_platform == 'redhat' or
         package_platform == 'freebsd' or
         package_platform == 'pkgsrc')
-    default_connection_spec =
+    default_connection_spec = \
       'unix:/var/run/@0@/@0@.sock'.format(meson.project_name(),
                                           meson.project_name())
   else
