@@ -54,4 +54,3 @@ class MilterExternal(milter.client.Session):
 command_line = milter.client.CommandLine()
 with command_line.run() as (client, options):
     client.register(MilterExternal, 1)
-    client.set_connection_spec('inet:10025')

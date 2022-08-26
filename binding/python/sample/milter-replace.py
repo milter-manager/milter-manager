@@ -64,4 +64,3 @@ with command_line.run() as (client, options):
         re.compile("viagra", re.IGNORECASE): "XXX",
     }
     client.register(MilterReplace, patterns)
-    client.set_connection_spec('inet:10025')

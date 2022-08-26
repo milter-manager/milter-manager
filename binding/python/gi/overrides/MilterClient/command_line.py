@@ -36,11 +36,14 @@ class CommandLine(object):
         client = Client()
         def on_error(_client, error):
             milter.core.Logger.error(f"[client][error] {type(error)}: {error}")
+        self._setup_client(client, args)
         client.connect("error", on_error)
         client.event_loop = client.create_event_loop(True)
         yield client, args
         client.listen()
         client.drop_privilege()
+        if args.daemon:
+            client.daemonize()
         with gi._ossighelper.register_sigint_fallback(lambda: client.shutdown()):
             with gi._ossighelper.wakeup_on_signal():
                 client.run()
@@ -72,18 +75,19 @@ class CommandLine(object):
 
     def _setup_milter_arguments(self):
         milter = self.parser.add_argument_group("milter", "milter options")
-        basic.add_argument("-s", "--connection-spec",
-                           help="Specify connection spec as SPEC",
-                           metavar="connection_spec")
-        basic.add_argument("--daemon"
-                           action=argparse.BooleanOptionalAction,
-                           dest="daemon",
-                           help="Run as a daemon process",
-                           nargs=0)
-        basic.add_argument("--pid-file",
-                           dest="pid_file",
-                           metavar="FILE",
-                           help="Write process ID to FILE")
+        milter.add_argument("-s", "--connection-spec",
+                            default="inet:20025",
+                            dest="connection_spec",
+                            help="Specify connection spec as SPEC",
+                            metavar="SPEC")
+        milter.add_argument("--daemon",
+                            action=argparse.BooleanOptionalAction,
+                            dest="daemon",
+                            help="Run as a daemon process")
+        milter.add_argument("--pid-file",
+                            dest="pid_file",
+                            metavar="FILE",
+                            help="Write process ID to FILE")
 
         # TODO: See Milter::Client::CommandLine#setup_milter_options
 
@@ -92,3 +96,7 @@ class CommandLine(object):
 
         # TODO: See Milter::Client::CommandLine#setup_logger_options
 
+    def _setup_client(self, client, args):
+        client.set_connection_spec(args.connection_spec)
+        if args.pid_file:
+            client.set_pid_file(args.pid_file)
