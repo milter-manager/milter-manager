@@ -14,7 +14,9 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
+import configparser
 import contextlib
+import os
 import sys
 
 import gi._ossighelper
@@ -28,7 +30,10 @@ class CommandLine(object):
         self._setup_arguments()
 
     def parse(self, argv=None):
-        return self.parser.parse_args(argv)
+        args = self.parser.parse_args(argv)
+        if not hasattr(args, "config"):
+            args.config = configparser.ConfigParser()
+        return args
 
     @contextlib.contextmanager
     def run(self, argv=None):
@@ -58,6 +63,27 @@ class CommandLine(object):
             print(milter.core.VERSION)
             sys.exit(0)
 
+    class ConfigurationLoadAction(argparse.Action):
+        def __call__(self, parser, namespace, path, option_string):
+            if not hasattr(namespace, "config"):
+                namespace.config = configparser.ConfigParser()
+            config = namespace.config
+            with open(path) as input:
+                config.read_file(input, path)
+
+            def set_config(key, section, option, getter=config.get):
+                if not section in config:
+                    return
+                current_value = getattr(namespace, key)
+                setattr(namespace,
+                        key,
+                        getter(section, key, fallback=current_value))
+
+            set_config("environment", "basic", "environment")
+            set_config("connection_spec", "milter", "connection_spec")
+            set_config("daemon", "milter", "daemon", config.getboolean)
+            set_config("pid_file", "milter", "pid_file")
+
     def _setup_basic_arguments(self):
         basic = self.parser.add_argument_group("Basic", "Basic options")
         basic.add_argument("--library-version",
@@ -65,10 +91,11 @@ class CommandLine(object):
                            help="Show milter library version",
                            nargs=0)
         basic.add_argument("-c", "--configuration",
-                           dest="configuration",
+                           action=self.ConfigurationLoadAction,
                            help="Load configuration from FILE",
                            metavar="FILE")
         basic.add_argument("-e", "--environment",
+                           default=os.environ.get("MILTER_ENV", "development"),
                            dest="environment",
                            help="Set milter environment as ENVIRONMENT",
                            metavar="ENVIRONMENT")
