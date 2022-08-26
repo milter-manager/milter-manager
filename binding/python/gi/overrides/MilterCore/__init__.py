@@ -31,3 +31,7 @@ MilterCore.StepFlags.NO_REPLY_MASK = \
     MilterCore.StepFlags.NO_REPLY_UNKNOWN | \
     MilterCore.StepFlags.NO_REPLY_END_OF_HEADER | \
     MilterCore.StepFlags.NO_REPLY_BODY
+
+MilterCore.VERSION = ".".join([str(MilterCore.TOOLKIT_VERSION_MAJOR),
+                               str(MilterCore.TOOLKIT_VERSION_MINOR),
+                               str(MilterCore.TOOLKIT_VERSION_MICRO)])
