@@ -173,6 +173,7 @@ subdir('milter/client')
 subdir('milter/server')
 subdir('milter/manager')
 subdir('libmilter')
+subdir('tool')
 
 python = import('python').find_installation(get_option('python_path'),
                                             required: get_option('python'))
