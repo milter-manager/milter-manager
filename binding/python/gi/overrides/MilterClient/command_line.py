@@ -28,17 +28,17 @@ class CommandLine(object):
         self._setup_arguments()
 
     def parse(self, argv=None):
-        self.parser.parse_args(argv)
+        return self.parser.parse_args(argv)
 
     @contextlib.contextmanager
     def run(self, argv=None):
-        self.parse(argv)
+        args = self.parse(argv)
         client = Client()
         def on_error(_client, error):
             milter.core.Logger.error(f"[client][error] {type(error)}: {error}")
         client.connect("error", on_error)
         client.event_loop = client.create_event_loop(True)
-        yield client, self.parser
+        yield client, args
         client.listen()
         client.drop_privilege()
         with gi._ossighelper.register_sigint_fallback(lambda: client.shutdown()):
@@ -59,12 +59,36 @@ class CommandLine(object):
         basic = self.parser.add_argument_group("Basic", "Basic options")
         basic.add_argument("--library-version",
                            action=self.ShowLibraryVersionAction,
-                           nargs=0,
-                           help="Show milter library version")
+                           help="Show milter library version",
+                           nargs=0)
+        basic.add_argument("-c", "--configuration",
+                           dest="configuration",
+                           help="Load configuration from FILE",
+                           metavar="FILE")
+        basic.add_argument("-e", "--environment",
+                           dest="environment",
+                           help="Set milter environment as ENVIRONMENT",
+                           metavar="ENVIRONMENT")
 
     def _setup_milter_arguments(self):
-        pass
+        milter = self.parser.add_argument_group("milter", "milter options")
+        basic.add_argument("-s", "--connection-spec",
+                           help="Specify connection spec as SPEC",
+                           metavar="connection_spec")
+        basic.add_argument("--daemon"
+                           action=argparse.BooleanOptionalAction,
+                           dest="daemon",
+                           help="Run as a daemon process",
+                           nargs=0)
+        basic.add_argument("--pid-file",
+                           dest="pid_file",
+                           metavar="FILE",
+                           help="Write process ID to FILE")
+
+        # TODO: See Milter::Client::CommandLine#setup_milter_options
 
     def _setup_logger_arguments(self):
         pass
+
+        # TODO: See Milter::Client::CommandLine#setup_logger_options
 
