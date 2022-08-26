@@ -38,6 +38,15 @@ option('default_socket_group',
        value: '',
        description: 'The default group for UNIX domain socket file. (default: none)')
 
+option('python',
+       type: 'feature',
+       description: 'Whether Python support is enabled or not (default: auto)')
+
+option('python_path',
+       type: 'string',
+       value: 'python3',
+       description: 'Python path to be used (default: python3)')
+
 option('package_options',
        type: 'string',
        value: '',
