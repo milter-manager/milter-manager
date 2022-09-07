@@ -31,10 +31,6 @@
 #  include <rubysig.h>
 #endif
 
-#ifndef HAVE_RB_ERRINFO
-#define rb_errinfo() ruby_errinfo
-#endif
-
 typedef struct {
     VALUE receiver;
     ID name;
