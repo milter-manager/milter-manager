@@ -17,14 +17,14 @@ require 'glib2'
 GLib::Log.cancel_handler
 
 begin
+  require "milter_core.so"
+rescue LoadError
   require "gobject-introspection"
   Milter = GObjectIntrospection.load("MilterCore")
   module Milter
     class Error < StandardError
     end
   end
-rescue LoadError
-  require "milter_core.so"
 end
 
 require 'milter/core/compatible'

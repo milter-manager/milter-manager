@@ -16,13 +16,13 @@
 require 'milter/core'
 
 begin
+  require "milter_server.so"
+rescue LoadError
   require "gobject-introspection"
   MilterServer = GObjectIntrospection.load("MilterServer")
   module Milter
     ServerContext = MilterServer::ServerContext
   end
-rescue LoadError
-  require "milter_manager.so"
 end
 
 module Milter

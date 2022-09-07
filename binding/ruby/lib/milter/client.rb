@@ -16,13 +16,13 @@
 require "milter/core"
 
 begin
+  require "milter_client.so"
+rescue LoadError
   require "gobject-introspection"
   MilterClient = GObjectIntrospection.load("MilterClient")
   module Milter
     Client = MilterClient::Client
   end
-rescue LoadError
-  require "milter_client.so"
 end
 
 require "milter/client/session"

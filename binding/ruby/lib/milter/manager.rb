@@ -24,6 +24,8 @@ require "rexml/streamlistener"
 
 require 'milter'
 begin
+  require "milter_manager.so"
+rescue LoadError
   require "gobject-introspection"
   MilterManager = GObjectIntrospection.load("MilterManager")
   module Milter
@@ -31,8 +33,6 @@ begin
       Configuration = MilterManager::ManagerConfiguration
     end
   end
-rescue LoadError
-  require "milter_manager.so"
 end
 
 require 'milter/manager/exception'
