@@ -48,6 +48,7 @@ jobs:
             libev-dev \
             libgirepository1.0-dev \
             meson
+          sudo gem install gio2
       - name: Setup
         run: |
           meson setup \
