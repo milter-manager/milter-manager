@@ -60,4 +60,4 @@ jobs:
           ninja -C ../milter-manager.build
       - name: Install
         run: |
-          ninja -C ../milter-manager.build install
+          sudo ninja -C ../milter-manager.build install
