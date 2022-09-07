@@ -57,7 +57,13 @@ jobs:
             .
       - name: Build
         run: |
-          ninja -C ../milter-manager.build
+          meson compile -C ../milter-manager.build
       - name: Install
         run: |
-          sudo ninja -C ../milter-manager.build install
+          sudo meson install -C ../milter-manager.build
+      - name: Test
+        run: |
+          meson devenv -C ../milter-manager.build \
+            meson test \
+              --print-errors \
+              --verbose

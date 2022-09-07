@@ -21,6 +21,7 @@ begin
 rescue LoadError
   require "gobject-introspection"
   Milter = GObjectIntrospection.load("MilterCore")
+  Milter.init
   module Milter
     class Error < StandardError
     end

@@ -72,3 +72,10 @@ install_data('lib/milter/manager/address-matcher.rb',
              'lib/milter/manager/rspamd-proxy-detector.rb',
              'lib/milter/manager/systemd-detector.rb',
              install_dir: ruby_install_dir / 'milter' / 'manager')
+
+test_env = environment()
+test_run_test_rb = files('test/run-test.rb')
+test('ruby',
+     ruby,
+     args: [test_run_test_rb],
+     env: test_env)
