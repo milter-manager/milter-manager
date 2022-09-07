@@ -71,6 +71,7 @@ enums = gnome.mkenums_simple('milter-manager-enum-types',
                              install_header: true,
                              sources: headers,
                              symbol_prefix: 'milter')
+enums_h = enums[1]
 
 install_headers(headers, subdir: milter_include_sub_dir / 'manager')
 install_headers(['../manager.h'], subdir: milter_include_sub_dir)
@@ -89,6 +90,9 @@ libmilter_manager = library('milter-manager',
                             dependencies: dependencies,
                             soversion: so_version,
                             version: library_version)
+milter_manager = declare_dependency(dependencies: dependencies,
+                                    link_with: libmilter_manager,
+                                    sources: [enums_h])
 
 pkgconfig.generate(libmilter_manager,
                    description: 'milter API',
