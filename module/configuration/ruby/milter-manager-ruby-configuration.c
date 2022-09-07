@@ -21,17 +21,13 @@
 #  include <config.h>
 #endif
 
-#include <rb-milter-manager.h>
-
 #include <signal.h>
 #include <gmodule.h>
 
-#include <milter/manager/milter-manager-configuration.h>
-#include <milter/manager/milter-manager-module-impl.h>
+#include <rbgobject.h>
 
-#ifndef HAVE_RB_ERRINFO
-#  define rb_errinfo() (ruby_errinfo)
-#endif
+#include <milter/manager.h>
+#include <milter/manager/milter-manager-module-impl.h>
 
 #define MILTER_TYPE_MANAGER_RUBY_CONFIGURATION            (milter_manager_ruby_configuration_get_type())
 #define MILTER_MANAGER_RUBY_CONFIGURATION(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), MILTER_TYPE_MANAGER_RUBY_CONFIGURATION, MilterManagerRubyConfiguration))
@@ -281,34 +277,19 @@ add_load_path (void)
     if (milter_manager_rubylib) {
         ruby_incpush(milter_manager_rubylib);
     }
-    ruby_incpush(BINDING_LIB_DIR);
-    ruby_incpush(BINDING_EXT_DIR);
-}
-
-#if RBGLIB_MINOR_VERSION == 17
-static gboolean
-cb_dummy (gpointer data)
-{
-    return FALSE;
-}
+#ifdef RUBY_BINDINGS_LIB_DIR
+    ruby_incpush(RUBY_BINDINGS_LIB_DIR);
 #endif
+#ifdef RUBY_BINDINGS_EXT_DIR
+    ruby_incpush(RUBY_BINDINGS_EXT_DIR);
+#endif
+}
 
 static void
 load_libraries (void)
 {
     VALUE milter, milter_manager;
     GError *error = NULL;
-
-#if RBGLIB_MINOR_VERSION == 17
-    {
-        guint id;
-
-        do {
-            id = g_idle_add(cb_dummy, NULL);
-            g_source_remove(id);
-        } while (id % 2 == 0);
-    }
-#endif
 
     rb_funcall_protect(&error,
                        Qnil, rb_intern("require"),
@@ -353,9 +334,6 @@ init_ruby (void)
     add_load_path();
     ruby_process_options(argc, argv);
     load_libraries();
-#if RBGLIB_MINOR_VERSION <= 16
-    g_main_context_set_poll_func(NULL, NULL);
-#endif
     rb_milter_ruby_interpreter_initialized = TRUE;
 }
 
@@ -380,33 +358,6 @@ static void
 ruby_cleanup_without_signal_change (int exit_code)
 {
     void (*sigint_handler)_((int));
-#ifdef HAVE_RB_THREAD_RESET_TIMER_THREAD
-    const gchar *milter_manager_ruby_reset_timer_thread_before_cleanup = NULL;
-#endif
-#ifdef HAVE_RB_THREAD_STOP_TIMER_THREAD
-    const gchar *milter_manager_ruby_stop_timer_thread_before_cleanup;
-#endif
-
-#ifdef HAVE_RB_THREAD_RESET_TIMER_THREAD
-    milter_manager_ruby_reset_timer_thread_before_cleanup =
-        g_getenv("MILTER_MANAGER_RUBY_RESET_TIMER_THREAD_BEFORE_CLEANUP");
-    if (milter_manager_ruby_reset_timer_thread_before_cleanup &&
-        strcmp(milter_manager_ruby_reset_timer_thread_before_cleanup, "yes") == 0) {
-        void rb_thread_reset_timer_thread(void);
-        rb_thread_reset_timer_thread();
-    }
-#endif
-
-#ifdef HAVE_RB_THREAD_STOP_TIMER_THREAD
-    milter_manager_ruby_stop_timer_thread_before_cleanup =
-        g_getenv("MILTER_MANAGER_RUBY_STOP_TIMER_THREAD_BEFORE_CLEANUP");
-    if (milter_manager_ruby_stop_timer_thread_before_cleanup &&
-        strcmp(milter_manager_ruby_stop_timer_thread_before_cleanup, "yes") == 0) {
-        void rb_thread_stop_timer_thread(void);
-        rb_thread_stop_timer_thread();
-    }
-#endif
-
     sigint_handler = signal(SIGINT, SIG_DFL);
     ruby_cleanup(exit_code);
     signal(SIGINT, sigint_handler);
@@ -609,10 +560,6 @@ real_clear (MilterManagerConfiguration *_configuration, GError **error)
 static GPid
 real_fork (MilterManagerConfiguration *_configuration)
 {
-#ifdef HAVE_RB_FORK
-    int status;
-    return (GPid)rb_fork(&status, NULL, NULL, Qnil);
-#else
     VALUE pid;
 
     pid = rb_funcall2(rb_mKernel, rb_intern("fork"), 0, 0);
@@ -621,7 +568,6 @@ real_fork (MilterManagerConfiguration *_configuration)
     } else {
 	return (GPid)NUM2INT(pid);
     }
-#endif
 }
 
 /*

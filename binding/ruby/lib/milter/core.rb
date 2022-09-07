@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,17 @@
 
 require 'glib2'
 GLib::Log.cancel_handler
-require 'milter_core.so'
+
+begin
+  require "gobject-introspection"
+  Milter = GObjectIntrospection.load("MilterCore")
+  module Milter
+    class Error < StandardError
+    end
+  end
+rescue LoadError
+  require "milter_core.so"
+end
 
 require 'milter/core/compatible'
 

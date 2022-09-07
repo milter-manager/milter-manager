@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -23,7 +23,17 @@ require "rexml/document"
 require "rexml/streamlistener"
 
 require 'milter'
-require 'milter_manager.so'
+begin
+  require "gobject-introspection"
+  MilterManager = GObjectIntrospection.load("MilterManager")
+  module Milter
+    module Manager
+      Configuration = MilterManager::ManagerConfiguration
+    end
+  end
+rescue LoadError
+  require "milter_manager.so"
+end
 
 require 'milter/manager/exception'
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2011  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2022  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -13,18 +13,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-require 'milter/core'
-
-begin
-  require "gobject-introspection"
-  MilterServer = GObjectIntrospection.load("MilterServer")
-  module Milter
-    ServerContext = MilterServer::ServerContext
-  end
-rescue LoadError
-  require "milter_manager.so"
-end
-
-module Milter
-  autoload :TestServer, 'milter/server/testing'
-end
+shared_module('milter-manager-ruby-configuration',
+              'milter-manager-ruby-configuration.c',
+              c_args: '-DMILTER_LOG_DOMAIN="milter-manager-ruby-configuration"',
+              dependencies: [milter_manager, rb_glib2],
+              install: true,
+              install_dir: module_configuration_dir,
+              name_prefix: '')

@@ -38,6 +38,11 @@ option('default_socket_group',
        value: '',
        description: 'The default group for UNIX domain socket file. (default: none)')
 
+option('ruby_install_dir',
+       type: 'string',
+       value: 'site',
+       description: 'Where Ruby bindings installed to. "site" and "vendor" are special values. "site" uses sitelibdir in ruby.pc. "vendor" uses vendorlibdir in ruby.pc. (default: site)')
+
 option('python',
        type: 'feature',
        description: 'Whether Python support is enabled or not (default: auto)')

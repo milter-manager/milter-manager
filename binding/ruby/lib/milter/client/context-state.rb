@@ -1,4 +1,4 @@
-# Copyright (C) 2013  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2013-2022  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -14,7 +14,6 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 require "milter/core"
-require "milter_client.so"
 
 module Milter
   class ClientContextState

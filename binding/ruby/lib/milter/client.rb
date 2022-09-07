@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2013  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2022  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,16 @@
 
 require "milter/core"
 
-require "milter_client.so"
+begin
+  require "gobject-introspection"
+  MilterClient = GObjectIntrospection.load("MilterClient")
+  module Milter
+    Client = MilterClient::Client
+  end
+rescue LoadError
+  require "milter_client.so"
+end
+
 require "milter/client/session"
 require "milter/client/fallback-session"
 require "milter/client/session-context"

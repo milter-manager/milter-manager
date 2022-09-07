@@ -29,6 +29,9 @@ milter_include_sub_dir = project_include_sub_dir / 'milter'
 milter_include_dir = get_option('includedir') / milter_include_sub_dir
 data_dir = prefix / get_option('datadir')
 gir_dir = data_dir / 'gir-1.0'
+project_lib_dir = get_option('libdir') / meson.project_name()
+module_dir = project_lib_dir / 'module'
+module_configuration_dir = module_dir / 'configuration'
 
 fs = import('fs')
 gnome = import('gnome')
@@ -173,6 +176,28 @@ subdir('milter/client')
 subdir('milter/server')
 subdir('milter/manager')
 subdir('libmilter')
+libruby = dependency('ruby-3.2', 'ruby-3.1', 'ruby-3.0', 'ruby-2.7', 'ruby',
+                     required: true)
+ruby_install_dir = get_option('ruby_install_dir')
+if ruby_install_dir == 'site'
+  ruby_install_dir = libruby.get_variable('sitelibdir')
+elif ruby_install_dir == 'vendor'
+  ruby_install_dir = libruby.get_variable('vendorlibdir')
+endif
+ruby = find_program(libruby.get_variable('ruby'), required: true)
+rb_glib2_gem_path = \
+  run_command(ruby,
+              '-e',
+              'print(Gem::Specification.find_by_name("glib2").full_gem_path)',
+              capture: true,
+              check: true).stdout()
+rb_glib2_compile_args = [
+  '-I@0@/lib'.format(rb_glib2_gem_path),
+]
+rb_glib2 = declare_dependency(compile_args: rb_glib2_compile_args,
+                              dependencies: [libruby])
+subdir('binding/ruby')
+subdir('module/configuration/ruby')
 subdir('src')
 subdir('tool')
 
