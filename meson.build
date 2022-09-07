@@ -48,7 +48,7 @@ pkgconfig_variables = ['girdir=@0@'.format(gir_dir)]
 glib_version_min_required = 'GLIB_VERSION_2_50'
 
 
-package_platform = get_option('package_platform')
+package_platform = get_option('package-platform')
 if package_platform == ''
   uname = run_command(find_program('uname'), capture: true, check: true).stdout()
   if uname == 'Linux'
@@ -78,7 +78,7 @@ if package_platform == ''
 endif
 
 
-default_connection_spec = get_option('default_connection_spec')
+default_connection_spec = get_option('default-connection-spec')
 if default_connection_spec == ''
   if package_platform == 'debian'
     default_connection_spec = \
@@ -96,12 +96,12 @@ if default_connection_spec == ''
 endif
 
 
-default_effective_group = get_option('default_effective_group')
-default_effective_user = get_option('default_effective_user')
-default_pid_file = get_option('default_pid_file')
-default_socket_group = get_option('default_socket_group')
+default_effective_group = get_option('default-effective-group')
+default_effective_user = get_option('default-effective-user')
+default_pid_file = get_option('default-pid-file')
+default_socket_group = get_option('default-socket-group')
 rcddir = get_option('rcddir')
-package_options = get_option('package_options')
+package_options = get_option('package-options')
 if rcddir != ''
   if package_options == ''
     package_options = 'rcddir=@0@'.format(rcddir)
@@ -178,7 +178,7 @@ subdir('milter/manager')
 subdir('libmilter')
 libruby = dependency('ruby-3.2', 'ruby-3.1', 'ruby-3.0', 'ruby-2.7', 'ruby',
                      required: true)
-ruby_install_dir = get_option('ruby_install_dir')
+ruby_install_dir = get_option('ruby-install-dir')
 if ruby_install_dir == 'site'
   ruby_install_dir = libruby.get_variable('sitelibdir')
 elif ruby_install_dir == 'vendor'
@@ -201,7 +201,7 @@ subdir('module/configuration/ruby')
 subdir('src')
 subdir('tool')
 
-python = import('python').find_installation(get_option('python_path'),
+python = import('python').find_installation(get_option('python-path'),
                                             required: get_option('python'))
 if python.found()
   subdir('binding/python')

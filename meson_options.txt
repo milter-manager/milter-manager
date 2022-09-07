@@ -13,32 +13,32 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-option('default_connection_spec',
+option('default-connection-spec',
        type: 'string',
        value: '',
        description: 'Use the specified value as the default connection spec. (default: auto)')
 
-option('default_effective_group',
+option('default-effective-group',
        type: 'string',
        value: '',
        description: 'The default effective group for milter-manager command. (default: none)')
 
-option('default_effective_user',
+option('default-effective-user',
        type: 'string',
        value: '',
        description: 'The default effective user for milter-manager command. (default: none)')
 
-option('default_pid_file',
+option('default-pid-file',
        type: 'string',
        value: '',
        description: 'The default PID file. (default: none)')
 
-option('default_socket_group',
+option('default-socket-group',
        type: 'string',
        value: '',
        description: 'The default group for UNIX domain socket file. (default: none)')
 
-option('ruby_install_dir',
+option('ruby-install-dir',
        type: 'string',
        value: 'site',
        description: 'Where Ruby bindings installed to. "site" and "vendor" are special values. "site" uses sitelibdir in ruby.pc. "vendor" uses vendorlibdir in ruby.pc. (default: site)')
@@ -47,17 +47,17 @@ option('python',
        type: 'feature',
        description: 'Whether Python support is enabled or not (default: auto)')
 
-option('python_path',
+option('python-path',
        type: 'string',
        value: 'python3',
        description: 'Python path to be used (default: python3)')
 
-option('package_options',
+option('package-options',
        type: 'string',
        value: '',
        description: 'Package platform dependent options. Format is VAR1=VAL1,VAR2=VAL2,... (default: none)')
 
-option('package_platform',
+option('package-platform',
        type: 'string',
        value: '',
        description: 'Use the specified value as the package platform. (default: auto)')
