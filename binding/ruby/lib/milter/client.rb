@@ -22,6 +22,7 @@ rescue LoadError
   MilterClient = GObjectIntrospection.load("MilterClient")
   module Milter
     Client = MilterClient::Client
+    ClientEventLoopBackend = MilterClient::ClientEventLoopBackend
   end
 end
 
