@@ -75,7 +75,7 @@ class TestClient < Test::Unit::TestCase
   end
 
   def test_n_workers_invalid
-    assert_raise(TypeError) do
+    assert_raise(ArgumentError, TypeError) do
       @client.n_workers = nil
     end
     assert_raise(TypeError) do
