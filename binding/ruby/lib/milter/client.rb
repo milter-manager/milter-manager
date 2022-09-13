@@ -22,6 +22,15 @@ rescue LoadError
   MilterClient = GObjectIntrospection.load("MilterClient")
   module Milter
     Client = MilterClient::Client
+    class Client
+      alias_method :start_syslog_raw, :start_syslog
+      def start_syslog(identify, facility=nil)
+        set_syslog_identify(identify)
+        set_syslog_facility(facility) if facility
+        start_syslog_raw
+      end
+    end
+
     ClientEventLoopBackend = MilterClient::ClientEventLoopBackend
   end
 end
