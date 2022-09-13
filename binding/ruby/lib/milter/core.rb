@@ -33,6 +33,10 @@ rescue LoadError
         add_idle_raw(priority, &block)
       end
     end
+
+    LogLevelFlags.values.each do |value|
+      const_set("LOG_LEVEL_#{value.nick.upcase}", value)
+    end
   end
 end
 

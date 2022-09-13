@@ -26,7 +26,7 @@ module MilterTestUtils
   end
 end
 
-Milter::Logger.default.target_level = :none
+Milter::Logger.default.target_level = Milter::LOG_LEVEL_NONE
 
 require "milter-encoder-test-utils"
 require "milter-manager-encoder-test-utils"
