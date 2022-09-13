@@ -25,6 +25,14 @@ rescue LoadError
   module Milter
     class Error < StandardError
     end
+
+    class EventLoop
+      alias_method :add_idle_raw, :add_idle
+      def add_idle(priority: nil, &block)
+        priority ||= GLib::PRIORITY_DEFAULT_IDLE
+        add_idle_raw(priority, &block)
+      end
+    end
   end
 end
 

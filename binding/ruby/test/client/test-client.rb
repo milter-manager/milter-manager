@@ -122,9 +122,7 @@ class TestClient < Test::Unit::TestCase
     socket = Tempfile.new("test-client-on-error")
     @client.connection_spec = "unix:///#{socket.path}"
     @client.unix_socket_group = "nonexistent"
-    assert_nothing_raised do
-      @client.listen
-    end
+    @client.listen
     assert_equal({:before => 1, :after => 0}, n_called)
   end
 
@@ -138,9 +136,7 @@ class TestClient < Test::Unit::TestCase
       raise "failed"
       n_called[:after] += 1
     end
-    assert_nothing_raised do
-      @client.signal_emit("maintain")
-    end
+    @client.signal_emit("maintain")
     assert_equal({:before => 1, :after => 0}, n_called)
   end
 
@@ -160,9 +156,7 @@ class TestClient < Test::Unit::TestCase
     end
     socket = Tempfile.new("test-client-on-event-loop-created")
     @client.connection_spec = "unix:///#{socket.path}"
-    assert_nothing_raised do
-      @client.run
-    end
+    @client.run
     assert_equal({:before => 1, :after => 0}, n_called)
   end
 
