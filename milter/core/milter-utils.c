@@ -913,6 +913,16 @@ parse_file_mode_numeric (const gchar *string, guint *mode, gchar **error_message
     return TRUE;
 }
 
+/**
+ * milter_utils_parse_file_mode:
+ * @string: a mode string to be parsed.
+ * @mode: (out): return location for parsed mode.
+ * @error_message: (out): return location for error message on error.
+ *
+ * Parses mode string such as "u+rw".
+ *
+ * Returns: %TRUE on success, %FALSE otherwise.
+ */
 gboolean
 milter_utils_parse_file_mode (const gchar *string,
                               guint *mode, gchar **error_message)

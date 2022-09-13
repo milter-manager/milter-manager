@@ -29,6 +29,20 @@ rescue LoadError
         set_syslog_facility(facility) if facility
         start_syslog_raw
       end
+
+      alias_method :set_unix_socket_mode_raw, :set_unix_socket_mode
+      def set_unix_socket_mode(mode)
+        case mode
+        when nil
+          mode = 0
+        when String
+          original_mode = mode
+          success, mode, error_message = Milter.utils_parse_file_mode(mode)
+          raise ArgumentError, error_message unless success
+        end
+        set_unix_socket_mode_raw(mode)
+      end
+      alias_method :unix_socket_mode=, :set_unix_socket_mode
     end
 
     ClientEventLoopBackend = MilterClient::ClientEventLoopBackend
