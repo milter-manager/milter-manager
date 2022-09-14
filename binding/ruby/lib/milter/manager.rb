@@ -30,7 +30,11 @@ rescue LoadError
   MilterManager = GObjectIntrospection.load("MilterManager")
   module Milter
     module Manager
+      ApplicableCondition = MilterManager::ManagerApplicableCondition
       Configuration = MilterManager::ManagerConfiguration
+      ControlCommandEncoder = MilterManager::ManagerControlCommandEncoder
+      ControlReplyEncoder = MilterManager::ManagerControlReplyEncoder
+      Egg = MilterManager::ManagerEgg
     end
   end
 end
