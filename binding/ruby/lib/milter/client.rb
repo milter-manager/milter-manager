@@ -23,6 +23,15 @@ rescue LoadError
   module Milter
     Client = MilterClient::Client
     class Client
+      DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE =
+        MilterClient::CLIENT_DEFAULT_SUSPEND_TIME_ON_UNACCEPTABLE
+      DEFAULT_MAX_CONNECTIONS =
+        MilterClient::CLIENT_DEFAULT_MAX_CONNECTIONS
+
+      MilterClient::ClientEventLoopBackend.values.each do |value|
+        const_set("EVENT_LOOP_BACKEND_#{value.nick.upcase}", value)
+      end
+
       alias_method :start_syslog_raw, :start_syslog
       def start_syslog(identify, facility=nil)
         set_syslog_identify(identify)
