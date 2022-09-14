@@ -192,28 +192,21 @@ static VALUE
 replace_body (VALUE self, VALUE rb_chunk)
 {
     GError *error = NULL;
-    const gchar *chunk;
 
-    chunk = RVAL2CSTR(rb_chunk);
-    if (!milter_client_context_replace_body(SELF(self),
-                                            chunk, RSTRING_LEN(rb_chunk),
-                                            &error))
-        RAISE_GERROR(error);
-
-    return self;
-}
-
-static VALUE
-replace_body_bytes (VALUE self, VALUE rb_chunk)
-{
-    GError *error = NULL;
-    GBytes *chunk;
-
-    chunk = RVAL2BOXED(rb_chunk, G_TYPE_BYTES);
-    if (!milter_client_context_replace_body_bytes(SELF(self),
-                                                  chunk,
-                                                  &error)) {
-        RAISE_GERROR(error);
+    if (RVAL2CBOOL(rb_obj_is_kind_of(rb_mode, rb_cString))) {
+        const gchar *chunk = RVAL2CSTR(rb_chunk);
+        if (!milter_client_context_replace_body(SELF(self),
+                                                chunk, RSTRING_LEN(rb_chunk),
+                                                &error)) {
+            RAISE_GERROR(error);
+        }
+    } else {
+        GBytes *chunk = RVAL2BOXED(rb_chunk, G_TYPE_BYTES);;
+        if (!milter_client_context_replace_body_bytes(SELF(self),
+                                                      chunk,
+                                                      &error)) {
+            RAISE_GERROR(error);
+        }
     }
 
     return self;
@@ -346,8 +339,6 @@ Init_milter_client_context (void)
     rb_define_method(rb_cMilterClientContext, "delete_recipient",
                      delete_recipient, 1);
     rb_define_method(rb_cMilterClientContext, "replace_body", replace_body, 1);
-    rb_define_method(rb_cMilterClientContext, "replace_body_bytes",
-                     replace_body_bytes, 1);
     rb_define_method(rb_cMilterClientContext, "socket_address",
                      get_socket_address, 0);
     rb_define_method(rb_cMilterClientContext, "n_processing_sessions",
