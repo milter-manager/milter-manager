@@ -1,7 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
  *  Copyright (C) 2010  Nobuyoshi Nakada <nakada@clear-code.com>
- *  Copyright (C) 2011-2013  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2011-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -217,6 +217,15 @@ get_property (GObject    *object,
     }
 }
 
+/**
+ * milter_glib_event_loop_new:
+ * @context: (nullable): a #GMainContext.
+ *
+ * Creates a new GLib based event loop. If you pass %NULL as @context,
+ * the default context is used.
+ *
+ * Returns: A newly created #MilterEventLoop.
+ */
 MilterEventLoop *
 milter_glib_event_loop_new (GMainContext *context)
 {
