@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -53,7 +53,6 @@ Init_milter_core (void)
     milter_init();
 
     Init_milter_logger();
-    Init_milter_socket_address();
     Init_milter_utils();
     Init_milter_connection();
     Init_milter_protocol();

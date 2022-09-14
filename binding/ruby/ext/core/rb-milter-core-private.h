@@ -28,10 +28,8 @@
 
 void Init_milter_core (void);
 void Init_milter_logger (void);
-void Init_milter_socket_address (void);
 void Init_milter_utils (void);
 void Init_milter_connection (void);
-void Init_milter_socket_address (void);
 void Init_milter_protocol (void);
 void Init_milter_option (void);
 void Init_milter_macros_requests (void);
