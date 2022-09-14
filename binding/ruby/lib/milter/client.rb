@@ -148,9 +148,18 @@ module Milter
        :data, :unknown, :header, :end_of_header, :body, :end_of_message,
        :finished].each do |event|
         next unless session.respond_to?(event)
-        context.signal_connect(event) do |_context, *args|
+        if event == :body
+          signal = "body-bytes"
+        else
+          signal = event
+        end
+        context.signal_connect(signal) do |_context, *args|
           begin
-            if event == :end_of_message
+            case event
+            when :body
+              body, = args
+              session.send(event, body.to_s)
+            when :end_of_message
               session.send(event)
             else
               session.send(event, *args)

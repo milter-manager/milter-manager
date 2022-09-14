@@ -124,7 +124,8 @@ module Milter
     end
 
     def replace_body(chunk)
-      @context.replace_body(chunk)
+      chunk = GLib::Bytes.new(chunk.dup.freeze) if chunk.is_a?(String)
+      @context.replace_body_bytes(chunk)
     end
 
     def change_from(from)

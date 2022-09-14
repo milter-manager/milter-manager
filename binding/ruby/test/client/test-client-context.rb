@@ -214,18 +214,16 @@ class TestClientContext < Test::Unit::TestCase
                      received_value, received_value.encoding])
     end
 
-    def test_body
+    def test_body_bytes
       received_chunk = nil
-      @context.signal_connect("body") do |_, chunk|
+      @context.signal_connect("body-bytes") do |_, chunk|
         received_chunk = chunk
         Milter::STATUS_CONTINUE
       end
 
-      chunk = "XXX\nYYY\n"
-      chunk.force_encoding(Encoding::UTF_8)
-      @context.signal_emit("body", chunk, chunk.bytesize)
-      assert_equal([chunk, Encoding::ASCII_8BIT],
-                   [received_chunk, received_chunk.encoding])
+      chunk = GLib::Bytes.new("XXX\n\0YYY\n".freeze)
+      @context.signal_emit("body-bytes", chunk)
+      assert_equal(chunk.to_s, received_chunk.to_s)
     end
   end
 end
