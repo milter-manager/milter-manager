@@ -264,6 +264,7 @@ set_mail_transaction_shelf_value (VALUE self, VALUE key, VALUE value)
     milter_client_context_set_mail_transaction_shelf_value(SELF(self),
                                                            RVAL2CSTR(key),
                                                            RVAL2CSTR(value));
+    rb_iv_set(self, "@mail_transaction_shelf", RUBY_Qnil);
     return self;
 }
 
