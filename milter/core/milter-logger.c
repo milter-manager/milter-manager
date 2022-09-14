@@ -801,6 +801,17 @@ milter_logger_get_path (MilterLogger *logger)
     return MILTER_LOGGER_GET_PRIVATE(logger)->path;
 }
 
+/**
+ * milter_logger_set_path:
+ * @logger: A #MilterLogger.
+ * @path: (nullable): An output path.
+ * @error: (nullable): Return location for a #GError or %NULL.
+ *
+ * Sets output path. If @path is %NULL or `"-"`, log messages are
+ * outputted to the standard output.
+ *
+ * Returns: %TRUE on success, %FALSE otherwise.
+ */
 gboolean
 milter_logger_set_path (MilterLogger *logger, const gchar *path, GError **error)
 {
