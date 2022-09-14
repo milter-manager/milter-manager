@@ -196,14 +196,10 @@ class TestClientContext < Test::Unit::TestCase
       end
 
       name = "Subject"
-      name.force_encoding(Encoding::UTF_8)
       value = "This is test subject."
-      value.force_encoding(Encoding::UTF_8)
       @context.signal_emit("header", name ,value)
-      assert_equal([name, Encoding::ASCII_8BIT,
-                     value, Encoding::ASCII_8BIT],
-                   [received_name, received_name.encoding,
-                     received_value, received_value.encoding])
+      assert_equal([name, value],
+                   [received_name, received_value])
     end
 
     def test_body_bytes
