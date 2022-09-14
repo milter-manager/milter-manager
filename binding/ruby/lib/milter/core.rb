@@ -45,6 +45,7 @@ rescue LoadError
 
     define_backward_compatible_enum_constants(self, ActionFlags, "ACTION")
     define_backward_compatible_enum_constants(self, LogLevelFlags, "LOG_LEVEL")
+    define_backward_compatible_enum_constants(self, Status, "STATUS")
 
     class StepFlags
       NO_EVENT_MASK = new(Milter::STEP_NO_EVENT_MASK)
