@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -351,11 +351,25 @@ milter_command_encoder_encode_end_of_header (MilterCommandEncoder *encoder,
     milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
+/**
+ * milter_command_encoder_encode_body: (skip)
+ * @encoder: A #MilterCommandEncoder.
+ * @packet: (out) (array length=packet_size) (element-type guint8) (transfer none):
+ *   Return location for encoded command.
+ * @packet_size: (out): Return location for encoded command size in bytes.
+ * @chunk: (array length=chunk_size) (element-type guint8):
+ *   A chunk of body.
+ * @chunk_size: The size of @chunk in bytes.
+ * @packed_size: (out): Return location for packed size in bytes.
+ *
+ * Encodes body command.
+ */
 void
 milter_command_encoder_encode_body (MilterCommandEncoder *encoder,
                                     const gchar **packet,
                                     gsize *packet_size,
-                                    const gchar *chunk, gsize size,
+                                    const gchar *chunk,
+                                    gsize chunk_size,
                                     gsize *packed_size)
 {
     MilterEncoder *base_encoder;
@@ -367,15 +381,44 @@ milter_command_encoder_encode_body (MilterCommandEncoder *encoder,
     buffer = milter_encoder_get_buffer(base_encoder);
 
     g_string_append_c(buffer, MILTER_COMMAND_BODY);
-    if (size > MILTER_CHUNK_SIZE)
+    if (chunk_size > MILTER_CHUNK_SIZE)
         packed_chunk_size = MILTER_CHUNK_SIZE;
     else
-        packed_chunk_size = size;
+        packed_chunk_size = chunk_size;
     g_string_append_len(buffer, chunk, packed_chunk_size);
     milter_encoder_pack(base_encoder, packet, packet_size);
 
     if (packed_size)
         *packed_size = packed_chunk_size;
+}
+
+/**
+ * milter_command_encoder_encode_body_bytes: (rename-to milter_command_encoder_encode_body)
+ * @encoder: A #MilterCommandEncoder.
+ * @packet: (out) (array length=packet_size) (element-type guint8) (transfer none):
+ *   Return location for encoded command.
+ * @packet_size: (out): Return location for encoded command size in bytes.
+ * @chunk: A chunk of body.
+ * @packed_size: (out): Return location for packed size in bytes.
+ *
+ * Encodes body command.
+ */
+void
+milter_command_encoder_encode_body_bytes (MilterCommandEncoder *encoder,
+                                          const gchar **packet,
+                                          gsize *packet_size,
+                                          GBytes *chunk,
+                                          gsize *packed_size)
+{
+    const gchar *chunk_content = NULL;
+    gsize chunk_size = 0;
+    chunk_content = g_bytes_get_data(chunk, &chunk_size);
+    milter_command_encoder_encode_body(encoder,
+                                       packet,
+                                       packet_size,
+                                       chunk_content,
+                                       chunk_size,
+                                       packed_size);
 }
 
 void

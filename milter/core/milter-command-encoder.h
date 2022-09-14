@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -108,7 +108,13 @@ void             milter_command_encoder_encode_body
                                              const gchar         **packet,
                                              gsize                *packet_size,
                                              const gchar          *chunk,
-                                             gsize                 size,
+                                             gsize                 chunk_size,
+                                             gsize                *packed_size);
+void             milter_command_encoder_encode_body_bytes
+                                            (MilterCommandEncoder *encoder,
+                                             const gchar         **packet,
+                                             gsize                *packet_size,
+                                             GBytes               *chunk,
                                              gsize                *packed_size);
 void             milter_command_encoder_encode_end_of_message
                                             (MilterCommandEncoder *encoder,

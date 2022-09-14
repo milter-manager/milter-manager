@@ -1,4 +1,4 @@
-# Copyright (C) 2008  Kouhei Sutou <kou@cozmixng.org>
+# Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -145,6 +145,9 @@ class TestCommandDecoder < Test::Unit::TestCase
       decoded_chunk = chunk
     end
 
+    # TODO: Use binary data and "body-bytes" signal when we add support for
+    #   GBytes to Milter::CommandDecoder.
+    # chunk = "XXX\n\0YYY"
     chunk = "XXX\nYYY"
     @decoder.decode(@encoder.encode_body(chunk)[0])
     @decoder.end_decode
