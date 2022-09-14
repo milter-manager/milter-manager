@@ -346,6 +346,17 @@ milter_decoder_decode_header_content (const gchar *buffer, gint length,
     return TRUE;
 }
 
+/**
+ * milter_decoder_decode:
+ * @decoder: A #MilterDecoder.
+ * @chunk: (array length=size) (element-type guint8): The string to be decoded.
+ * @size: The size of @chunk in bytes.
+ * @error: (nullable): Return location for an error, or %NULL.
+ *
+ * Decodes a chunk. You can get decoded data by MilterDecoder::decode signals.
+ *
+ * Returns: %TRUE on success, %FALSE otherwise.
+ */
 gboolean
 milter_decoder_decode (MilterDecoder *decoder, const gchar *chunk, gsize size,
                        GError **error)
