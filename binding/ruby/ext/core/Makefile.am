@@ -36,7 +36,6 @@ milter_core_la_SOURCES =			\
 	rb-milter-reply-encoder.c		\
 	rb-milter-connection.c			\
 	rb-milter-protocol.c			\
-	rb-milter-socket-address.c		\
 	rb-milter-macros-requests.c		\
 	rb-milter-option.c			\
 	rb-milter-error-emittable.c		\
