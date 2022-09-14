@@ -35,6 +35,13 @@ rescue LoadError
     class Error < StandardError
     end
 
+    class CommandEncoder
+      alias_method :encode_connect_raw, :encode_connect
+      def encode_connect(host_name, address)
+        encode_connect_raw(host_name, address.pack)
+      end
+    end
+
     class EventLoop
       alias_method :add_idle_raw, :add_idle
       def add_idle(priority: nil, &block)

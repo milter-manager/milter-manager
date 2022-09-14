@@ -201,6 +201,19 @@ encode_connect_unknown (GString *buffer, const struct sockaddr *address)
     g_string_append_c(buffer, MILTER_SOCKET_FAMILY_UNKNOWN);
 }
 
+/**
+ * milter_command_encoder_encode_connect:
+ * @encoder: A #MilterCommandEncoder.
+ * @packet: (out) (array length=packet_size) (element-type guint8) (transfer none):
+ *   Return location for encoded command.
+ * @packet_size: (out): Return location for encoded command size in bytes.
+ * @host_name: A host name connected.
+ * @address: (array length=address_size) (element-type guint8):
+ *   An address connected.
+ * @address_size: The size of @address in bytes.
+ *
+ * Encodes connect command.
+ */
 void
 milter_command_encoder_encode_connect (MilterCommandEncoder *encoder,
                                        const gchar **packet,
