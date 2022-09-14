@@ -204,6 +204,22 @@ replace_body (VALUE self, VALUE rb_chunk)
 }
 
 static VALUE
+replace_body_bytes (VALUE self, VALUE rb_chunk)
+{
+    GError *error = NULL;
+    GBytes *chunk;
+
+    chunk = RVAL2BOXED(rb_chunk, G_TYPE_BYTES);
+    if (!milter_client_context_replace_body_bytes(SELF(self),
+                                                  chunk,
+                                                  &error)) {
+        RAISE_GERROR(error);
+    }
+
+    return self;
+}
+
+static VALUE
 get_socket_address (VALUE self)
 {
     MilterGenericSocketAddress *address;
@@ -330,6 +346,8 @@ Init_milter_client_context (void)
     rb_define_method(rb_cMilterClientContext, "delete_recipient",
                      delete_recipient, 1);
     rb_define_method(rb_cMilterClientContext, "replace_body", replace_body, 1);
+    rb_define_method(rb_cMilterClientContext, "replace_body_bytes",
+                     replace_body_bytes, 1);
     rb_define_method(rb_cMilterClientContext, "socket_address",
                      get_socket_address, 0);
     rb_define_method(rb_cMilterClientContext, "n_processing_sessions",
