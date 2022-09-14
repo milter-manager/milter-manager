@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -27,10 +27,6 @@
 
 extern VALUE rb_mMilter;
 extern VALUE rb_eMilterError;
-extern VALUE rb_cMilterSocketAddressIPv4;
-extern VALUE rb_cMilterSocketAddressIPv6;
-extern VALUE rb_cMilterSocketAddressUnix;
-extern VALUE rb_cMilterSocketAddressUnknown;
 
 #ifndef CSTR2RVAL_FREE
 #  define CSTR2RVAL_FREE(string) CSTR2RVAL2(string)

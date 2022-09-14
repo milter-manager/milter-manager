@@ -18,6 +18,21 @@ require "socket"
 
 module Milter
   module SocketAddress
+    class << self
+      def resolve(address)
+        addrinfo = Addrinfo.new(address)
+        if addrinfo.ipv4?
+          IPv4.new(addrinfo.ip_address, ip_port)
+        elsif addrinfo.ipv6?
+          IPv6.new(addrinfo.ip_address, ip_port)
+        elsif addrinfo.unix?
+          Unix.new(addrinfo.unix_path)
+        else
+          Unknown.new
+        end
+      end
+    end
+
     class IPv4
       def initialize(address, port)
         @addrinfo = Addrinfo.tcp(address, port)

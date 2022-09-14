@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2013  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -79,69 +79,31 @@ rb_milter__macros2rval (GHashTable *macros)
     return rb_macros;
 }
 
+static VALUE
+rb_milter__address2rval_raw (VALUE rb_address)
+{
+    ID id_resolve;
+    CONST_ID(id_resolve, "resolve");
+    return rb_funcall(rb_const_get(rb_mMilter, rb_intern("SocketAddress")),
+                      id_resolve,
+                      1,
+                      rb_address);
+}
+
 VALUE
 rb_milter__address2rval (struct sockaddr *address, socklen_t address_length)
 {
-    static ID id_new = 0;
-    VALUE rb_address = Qnil;
+    VALUE rb_address = rb_str_new((gchar *)address, address_length);
+    return rb_milter__address2rval_raw(rb_address);
+}
 
-    if (id_new == 0)
-	id_new = rb_intern("new");
-
-    switch (address->sa_family) {
-      case AF_INET:
-	{
-	    gchar address_string[INET_ADDRSTRLEN];
-	    struct sockaddr_in *address_in;
-
-	    address_in = (struct sockaddr_in *)address;
-	    if (inet_ntop(AF_INET, &(address_in->sin_addr),
-			  address_string, INET_ADDRSTRLEN)) {
-		rb_address = rb_funcall(rb_cMilterSocketAddressIPv4, id_new, 2,
-					rb_str_new2(address_string),
-					UINT2NUM(ntohs(address_in->sin_port)));
-	    } else {
-		g_warning("fail to unpack IPv4 address: %s", g_strerror(errno));
-		rb_address = rb_str_new((char *)address, address_length);
-	    }
-	}
-	break;
-      case AF_INET6:
-	{
-	    gchar address_string[INET6_ADDRSTRLEN];
-	    struct sockaddr_in6 *address_in6;
-
-	    address_in6 = (struct sockaddr_in6 *)address;
-	    if (inet_ntop(AF_INET6, &(address_in6->sin6_addr),
-			  address_string, INET6_ADDRSTRLEN)) {
-		rb_address = rb_funcall(rb_cMilterSocketAddressIPv6, id_new, 2,
-					rb_str_new2(address_string),
-					UINT2NUM(ntohs(address_in6->sin6_port)));
-	    } else {
-		g_warning("fail to unpack IPv6 address: %s", g_strerror(errno));
-		rb_address = rb_str_new((char *)address, address_length);
-	    }
-	}
-	break;
-      case AF_UNIX:
-	{
-	    struct sockaddr_un *address_un;
-
-	    address_un = (struct sockaddr_un *)address;
-	    rb_address = rb_funcall(rb_cMilterSocketAddressUnix, id_new, 1,
-				    rb_str_new2(address_un->sun_path));
-	}
-	break;
-      case AF_UNSPEC:
-	rb_address = rb_funcall(rb_cMilterSocketAddressUnknown, id_new, 0);
-	break;
-      default:
-	g_warning("unexpected family: %d", address->sa_family);
-	rb_address = rb_str_new((char *)address, address_length);
-	break;
-    }
-
-    return rb_address;
+VALUE
+rb_milter__address2rval_free (struct sockaddr *address,
+                              socklen_t address_length)
+{
+    VALUE rb_address = rb_str_new((gchar *)address, address_length);
+    g_free(address);
+    return rb_milter__address2rval_raw(rb_address);
 }
 
 VALUE
