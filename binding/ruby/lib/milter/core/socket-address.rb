@@ -80,6 +80,18 @@ module Milter
       def to_ip_address
         @ip_address ||= IPAddr.new(@addrinfo.ip_address)
       end
+
+      def address
+        @addrinfo.ip_address
+      end
+
+      def port
+        @addrinfo.ip_port
+      end
+
+      def to_s
+        "inet:#{port}@[#{address}]"
+      end
     end
 
     class IPv6
@@ -117,6 +129,18 @@ module Milter
 
       def to_ip_address
         @ip_address ||= IPAddr.new(@addrinfo.ip_address)
+      end
+
+      def address
+        @addrinfo.ip_address
+      end
+
+      def port
+        @addrinfo.ip_port
+      end
+
+      def to_s
+        "inet6:#{port}@[#{address}]"
       end
     end
 
@@ -156,6 +180,14 @@ module Milter
       def to_ip_address
         nil
       end
+
+      def path
+        @addrinfo.unix_path
+      end
+
+      def to_s
+        "unix:#{path}"
+      end
     end
 
     class Unknown
@@ -185,6 +217,10 @@ module Milter
 
       def to_ip_address
         nil
+      end
+
+      def to_s
+        "unknown"
       end
     end
   end
