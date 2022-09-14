@@ -54,6 +54,8 @@ rescue LoadError
       alias_method :unix_socket_mode=, :set_unix_socket_mode
     end
 
+    ClientContext = MilterClient::ClientContext
+
     ClientEventLoopBackend = MilterClient::ClientEventLoopBackend
   end
 end
