@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -80,7 +80,7 @@ GList                 *milter_manager_children_get_children(MilterManagerChildre
  * milter_manager_children_foreach().
  */
 typedef void(*MilterManagerChildFunc)(MilterManagerChild *child,
-                                         gpointer  user_data);
+                                      gpointer  user_data);
 
 void
 milter_manager_children_foreach(MilterManagerChildren *children,

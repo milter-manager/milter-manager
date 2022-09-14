@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -534,9 +534,8 @@ disconnect_default_handler (void)
 }
 
 static void
-collect_child_name (gpointer data, gpointer user_data)
+collect_child_name (MilterManagerChild *child, gpointer user_data)
 {
-    MilterManagerChild *child = data;
     gchar *name = NULL;
 
     g_object_get(child,
@@ -1269,10 +1268,8 @@ cb_stop_on_connect (MilterServerContext *context,
 }
 
 static void
-connect_stop_signals (gpointer data, gpointer user_data)
+connect_stop_signals (MilterManagerChild *child, gpointer user_data)
 {
-    MilterManagerChild *child = data;
-
 #define CONNECT(name)                                                   \
     g_signal_connect(child, #name, G_CALLBACK(cb_ ## name), NULL)
 
