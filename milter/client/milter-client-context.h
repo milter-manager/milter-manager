@@ -508,15 +508,16 @@ MilterClientContext *milter_client_context_new               (MilterClient *clie
 
 /**
  * milter_client_context_feed:
- * @context: a %MilterClientContext.
- * @chunk: the string to be fed to @context.
- * @size: the size of @chunk.
- * @error: return location for an error, or %NULL.
+ * @context: A #MilterClientContext.
+ * @chunk: (array length=size) (element-type uint8_t): The string to be fed
+ *   to @context.
+ * @size: The size of @chunk in bytes.
+ * @error: (nullable): Return location for an error, or %NULL.
  *
  * Feeds a chunk to the @context. You can use it for testing
  * or debugging.
  *
- * Returns: %TRUE on success.
+ * Returns: %TRUE on success, %FALSE otherwise.
  */
 gboolean             milter_client_context_feed              (MilterClientContext *context,
                                                               const gchar *chunk,
