@@ -715,11 +715,10 @@ gboolean             milter_client_context_change_from       (MilterClientContex
 
 /**
  * milter_client_context_add_recipient:
- * @context: a %MilterClientContext.
- * @recipient: the new envelope recipient address.
- * @parameters: the ESMTP's 'RCPT TO' parameter. It can be
- * %NULL.
- * @error: return location for an error, or %NULL.
+ * @context: A #MilterClientContext.
+ * @recipient: The new envelope recipient address.
+ * @parameters: (nullable): The ESMTP's 'RCPT TO' parameter.
+ * @error: (nullable): Return location for an error, or %NULL.
  *
  * Adds a new envelope recipient address to the current
  * message.  ESMTP's 'RCPT TO' parameter can be set by
