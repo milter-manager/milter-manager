@@ -68,6 +68,16 @@ milter_command_encoder_new (void)
     return g_object_new(MILTER_TYPE_COMMAND_ENCODER, NULL);
 }
 
+/**
+ * milter_command_encoder_encode_negotiate:
+ * @encoder: A #MilterCommandEncoder.
+ * @packet: (out) (array length=packet_size) (element-type guint8) (transfer none):
+ *   Return location for encoded command.
+ * @packet_size: (out): Return location for encoded command size in bytes.
+ * @option: (nullable): A #MilterOption.
+ *
+ * Encodes negotiate command.
+ */
 void
 milter_command_encoder_encode_negotiate (MilterCommandEncoder *encoder,
                                          const gchar **packet,

@@ -509,7 +509,7 @@ MilterClientContext *milter_client_context_new               (MilterClient *clie
 /**
  * milter_client_context_feed:
  * @context: A #MilterClientContext.
- * @chunk: (array length=size) (element-type uint8_t): The string to be fed
+ * @chunk: (array length=size) (element-type guint8): The string to be fed
  *   to @context.
  * @size: The size of @chunk in bytes.
  * @error: (nullable): Return location for an error, or %NULL.
