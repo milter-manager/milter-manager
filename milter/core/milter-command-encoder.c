@@ -397,6 +397,15 @@ milter_command_encoder_encode_end_of_message (MilterCommandEncoder *encoder,
     milter_encoder_pack(base_encoder, packet, packet_size);
 }
 
+/**
+ * milter_command_encoder_encode_abort:
+ * @encoder: A #MilterCommandEncoder.
+ * @packet: (out) (array length=packet_size) (element-type guint8) (transfer none):
+ *   Return location for encoded command.
+ * @packet_size: (out): Return location for encoded command size in bytes.
+ *
+ * Encodes abort command.
+ */
 void
 milter_command_encoder_encode_abort (MilterCommandEncoder *encoder,
                                      const gchar **packet,
