@@ -690,11 +690,10 @@ gboolean             milter_client_context_delete_header     (MilterClientContex
 
 /**
  * milter_client_context_change_from:
- * @context: a %MilterClientContext.
- * @from: the new envelope from address.
- * @parameters: the ESMTP's 'MAIL FROM' parameter. It can be
- * %NULL.
- * @error: return location for an error, or %NULL.
+ * @context: A #MilterClientContext.
+ * @from: The new envelope from address.
+ * @parameters: (nullable): The ESMTP's 'MAIL FROM' parameter.
+ * @error: (nullable): Return location for an error, or %NULL.
  *
  * Changes the envelope from address of the current message.
  * ESMTP's 'MAIL FROM' parameter can be set by
@@ -706,7 +705,7 @@ gboolean             milter_client_context_delete_header     (MilterClientContex
  *
  * FIXME: write about MILTER_ACTION_CHANGE_FROM.
  *
- * Returns: %TRUE on success.
+ * Returns: %TRUE on success, %FALSE otherwise.
  */
 gboolean             milter_client_context_change_from       (MilterClientContext *context,
                                                               const gchar *from,
