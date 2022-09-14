@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -146,10 +146,8 @@ class TestClientContext < Test::Unit::TestCase
       end
 
       fqdn = "delian"
-      fqdn.force_encoding(Encoding::UTF_8)
       @context.signal_emit("helo", fqdn)
-      assert_equal([fqdn, Encoding::ASCII_8BIT],
-                   [received_fqdn, received_fqdn.encoding])
+      assert_equal(fqdn, received_fqdn)
     end
 
     def test_envelope_from
@@ -160,10 +158,8 @@ class TestClientContext < Test::Unit::TestCase
       end
 
       from = "from@example.com"
-      from.force_encoding(Encoding::UTF_8)
       @context.signal_emit("envelope-from", from)
-      assert_equal([from, Encoding::ASCII_8BIT],
-                   [received_from, received_from.encoding])
+      assert_equal(from, received_from)
     end
 
     def test_envelope_recipient
@@ -174,10 +170,8 @@ class TestClientContext < Test::Unit::TestCase
       end
 
       to = "to@example.com"
-      to.force_encoding(Encoding::UTF_8)
       @context.signal_emit("envelope-recipient", to)
-      assert_equal([to, Encoding::ASCII_8BIT],
-                   [received_to, received_to.encoding])
+      assert_equal(to, received_to)
     end
 
     def test_unknown
@@ -188,10 +182,8 @@ class TestClientContext < Test::Unit::TestCase
       end
 
       command = "UNKNOWN COMMAND WITH ARGUMENT"
-      command.force_encoding(Encoding::UTF_8)
       @context.signal_emit("unknown", command)
-      assert_equal([command, Encoding::ASCII_8BIT],
-                   [received_command, received_command.encoding])
+      assert_equal(command, received_command)
     end
 
     def test_header
