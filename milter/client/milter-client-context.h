@@ -496,7 +496,7 @@ struct _MilterClientContextClass
 
 /**
  * milter_client_context_new:
- * @client: a %MilterClient for the context.
+ * @client: (nullable): a %MilterClient for the context.
  *
  * Creates a new context object. Normally, context object is
  * created by %MilterClient and passed by
