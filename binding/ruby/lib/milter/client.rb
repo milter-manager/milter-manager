@@ -56,6 +56,12 @@ rescue LoadError
     end
 
     ClientContext = MilterClient::ClientContext
+    class ClientContext
+      Milter.define_backward_compatible_enum_constants(
+        self,
+        MilterClient::ClientContextState,
+        "STATE")
+    end
 
     ClientEventLoopBackend = MilterClient::ClientEventLoopBackend
   end
