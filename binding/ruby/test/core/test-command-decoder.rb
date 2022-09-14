@@ -52,9 +52,9 @@ class TestCommandDecoder < Test::Unit::TestCase
   def test_connect
     decoded_host_name = nil
     decoded_address = nil
-    @decoder.signal_connect("connect") do |_, host_name, address|
-        decoded_host_name = host_name
-        decoded_address = address
+    @decoder.signal_connect("connect") do |_, host_name, address, address_size|
+      decoded_host_name = host_name
+      decoded_address = Milter::SocketAddress.resolve(address, address_size)
     end
 
     host_name = "mx.local.net"

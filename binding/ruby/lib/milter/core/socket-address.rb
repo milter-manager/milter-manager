@@ -16,15 +16,26 @@
 require "ipaddr"
 require "socket"
 
+require "fiddle"
+
 module Milter
   module SocketAddress
     class << self
-      def resolve(address)
-        addrinfo = Addrinfo.new(address)
+      def resolve(address, address_size=nil)
+        case address
+        when IPv4, IPv6, Unix, Unknown
+          return address
+        end
+        if address.is_a?(GLib::Pointer)
+          address = Fiddle::Pointer.new(address).to_s(address_size)
+        end
+        if address.is_a?(String)
+          addrinfo = Addrinfo.new(address)
+        end
         if addrinfo.ipv4?
-          IPv4.new(addrinfo.ip_address, ip_port)
+          IPv4.new(addrinfo.ip_address, addrinfo.ip_port)
         elsif addrinfo.ipv6?
-          IPv6.new(addrinfo.ip_address, ip_port)
+          IPv6.new(addrinfo.ip_address, addrinfo.ip_port)
         elsif addrinfo.unix?
           Unix.new(addrinfo.unix_path)
         else
@@ -43,8 +54,7 @@ module Milter
       end
 
       def ==(other)
-        other.is_a?(self.class) and
-          @addrinfo == other.instance_variable_get(:@addrinfo)
+        other.is_a?(self.class) and pack == other.pack
       end
 
       def local?
@@ -82,8 +92,7 @@ module Milter
       end
 
       def ==(other)
-        other.is_a?(self.class) and
-          @addrinfo == other.instance_variable_get(:@addrinfo)
+        other.is_a?(self.class) and pack == other.pack
       end
 
       def local?
@@ -121,8 +130,7 @@ module Milter
       end
 
       def ==(other)
-        other.is_a?(self.class) and
-          @addrinfo == other.instance_variable_get(:@addrinfo)
+        other.is_a?(self.class) and pack == other.pack
       end
 
       def local?
