@@ -63,6 +63,8 @@ rescue LoadError
         "STATE")
     end
 
+    ClientContextState = MilterClient::ClientContextState
+
     ClientEventLoopBackend = MilterClient::ClientEventLoopBackend
   end
 end
