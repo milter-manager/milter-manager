@@ -294,9 +294,6 @@ get_mail_transaction_shelf (VALUE self)
     milter_client_context_mail_transaction_shelf_foreach(SELF(self),
                                                          build_rb_hash,
                                                          (gpointer) rb_hash);
-    if (RHASH_EMPTY_P(rb_hash))
-        return Qnil;
-
     shelf = rb_iv_set(self, "@mail_transaction_shelf", rb_hash);
     return shelf;
 }

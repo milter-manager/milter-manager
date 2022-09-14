@@ -22,7 +22,7 @@ class TestClientContext < Test::Unit::TestCase
   end
 
   def test_mail_transaction_shelf
-    assert_nil(@context.mail_transaction_shelf)
+    assert_equal({}, @context.mail_transaction_shelf)
     @context.set_mail_transaction_shelf_value("key1", "value1")
     @context.set_mail_transaction_shelf_value("key2", "value2")
     @context.set_mail_transaction_shelf_value("key3", "value3")
