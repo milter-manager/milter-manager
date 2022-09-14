@@ -193,7 +193,7 @@ replace_body (VALUE self, VALUE rb_chunk)
 {
     GError *error = NULL;
 
-    if (RVAL2CBOOL(rb_obj_is_kind_of(rb_mode, rb_cString))) {
+    if (RVAL2CBOOL(rb_obj_is_kind_of(rb_chunk, rb_cString))) {
         const gchar *chunk = RVAL2CSTR(rb_chunk);
         if (!milter_client_context_replace_body(SELF(self),
                                                 chunk, RSTRING_LEN(rb_chunk),
