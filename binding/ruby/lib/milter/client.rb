@@ -28,9 +28,10 @@ rescue LoadError
       DEFAULT_MAX_CONNECTIONS =
         MilterClient::CLIENT_DEFAULT_MAX_CONNECTIONS
 
-      MilterClient::ClientEventLoopBackend.values.each do |value|
-        const_set("EVENT_LOOP_BACKEND_#{value.nick.upcase}", value)
-      end
+      Milter.define_backward_compatible_enum_constants(
+        self,
+        MilterClient::ClientEventLoopBackend,
+        "EVENT_LOOP_BACKEND")
 
       alias_method :start_syslog_raw, :start_syslog
       def start_syslog(identify, facility=nil)

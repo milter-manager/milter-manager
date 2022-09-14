@@ -23,6 +23,15 @@ rescue LoadError
   Milter = GObjectIntrospection.load("MilterCore")
   Milter.init
   module Milter
+    class << self
+      def define_backward_compatible_enum_constants(target, enum, prefix)
+        enum.values.each do |value|
+          name = "#{prefix}_" + value.nick.gsub(/-/, "_").upcase
+          target.const_set(name, value)
+        end
+      end
+    end
+
     class Error < StandardError
     end
 
@@ -34,9 +43,8 @@ rescue LoadError
       end
     end
 
-    LogLevelFlags.values.each do |value|
-      const_set("LOG_LEVEL_#{value.nick.upcase}", value)
-    end
+    define_backward_compatible_enum_constants(self, ActionFlags, "ACTION")
+    define_backward_compatible_enum_constants(self, LogLevelFlags, "LOG_LEVEL")
 
     class StepFlags
       NO_EVENT_MASK = new(Milter::STEP_NO_EVENT_MASK)
