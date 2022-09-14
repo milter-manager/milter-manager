@@ -37,6 +37,13 @@ rescue LoadError
     LogLevelFlags.values.each do |value|
       const_set("LOG_LEVEL_#{value.nick.upcase}", value)
     end
+
+    class StepFlags
+      NO_EVENT_MASK = new(Milter::STEP_NO_EVENT_MASK)
+      NO_REPLY_MASK = new(Milter::STEP_NO_REPLY_MASK)
+      NO_MASK = (NO_EVENT_MASK | NO_REPLY_MASK)
+      YES_MASK = new(Milter::STEP_YES_MASK)
+    end
   end
 end
 
