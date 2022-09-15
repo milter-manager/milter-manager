@@ -58,7 +58,7 @@ module Milter
       end
 
       def local?
-        @addrinfo.ipv4_private?
+        @addrinfo.ipv4_loopback? or @addrinfo.ipv4_private?
       end
 
       def ipv4?
