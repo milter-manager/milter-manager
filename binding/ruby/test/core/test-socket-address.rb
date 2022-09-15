@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2009  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -85,7 +85,7 @@ class TestSocketAddresss < Test::Unit::TestCase
     assert_false(ipv6("::2", 2929).local?)
 
     assert_true(ipv6("fe80::1", 2929).local?)
-    assert_false(ipv6("fe81::1", 2929).local?)
+    assert_false(ipv6("ff80::1", 2929).local?)
   end
 
   def test_unix_accessor
