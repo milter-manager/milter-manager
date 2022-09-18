@@ -176,7 +176,16 @@ subdir('milter/client')
 subdir('milter/server')
 subdir('milter/manager')
 subdir('libmilter')
-libruby = dependency('ruby', required: true)
+
+foreach ruby: ['ruby-3.2', 'ruby-3.1', 'ruby-3.0', 'ruby-2.7', 'ruby']
+  libruby = dependency(ruby, required: false)
+  if libruby.found()
+    break
+  endif
+endforeach
+if not libruby.found()
+  error('Ruby not found.')
+endif
 ruby_install_dir = get_option('ruby-install-dir')
 if ruby_install_dir == 'site'
   ruby_install_dir = libruby.get_variable(pkgconfig: 'sitelibdir')
