@@ -94,4 +94,7 @@ libmilter_core_la_LIBADD =		\
 	$(MILTER_CORE_LIBS)		\
 	$(LIBEV_LIBS)
 
+libmilter_core_la_LDFLAGS =			\
+	-version-info $(LT_VERSION_INFO)
+
 include $(top_srcdir)/build/enum-types.mk

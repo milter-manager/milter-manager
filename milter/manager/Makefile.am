@@ -84,4 +84,7 @@ libmilter_manager_la_LIBADD =					\
 	$(top_builddir)/milter/server/libmilter-server.la	\
 	$(MILTER_MANAGER_LIBS)
 
+libmilter_manager_la_LDFLAGS =			\
+	-version-info $(LT_VERSION_INFO)
+
 include $(top_srcdir)/build/enum-types.mk

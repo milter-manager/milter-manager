@@ -37,4 +37,7 @@ libmilter_server_la_LIBADD =					\
 	$(top_builddir)/milter/core/libmilter-core.la		\
 	$(MILTER_SERVER_LIBS)
 
+libmilter_server_la_LDFLAGS =			\
+	-version-info $(LT_VERSION_INFO)
+
 include $(top_srcdir)/build/enum-types.mk
