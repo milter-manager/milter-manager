@@ -177,22 +177,45 @@ subdir('milter/server')
 subdir('milter/manager')
 subdir('libmilter')
 
-foreach ruby: ['ruby-3.2', 'ruby-3.1', 'ruby-3.0', 'ruby-2.7', 'ruby']
-  libruby = dependency(ruby, required: false)
-  if libruby.found()
-    break
+if meson.version().version_compare('>=0.60.0')
+  libruby = dependency('ruby-3.2', 'ruby-3.1', 'ruby-3.0', 'ruby-2.7', 'ruby',
+                       required: true)
+else
+  # depencency():
+  # Before 0.60.0 only a single dependency name was allowed.
+  # https://mesonbuild.com/Reference-manual_functions.html#dependency
+  foreach ruby: ['ruby-3.2', 'ruby-3.1', 'ruby-3.0', 'ruby-2.7', 'ruby']
+    libruby = dependency(ruby, required: false)
+    if libruby.found()
+      break
+    endif
+  endforeach
+  if not libruby.found()
+    error('Ruby not found.')
   endif
-endforeach
-if not libruby.found()
-  error('Ruby not found.')
 endif
+
 ruby_install_dir = get_option('ruby-install-dir')
-if ruby_install_dir == 'site'
-  ruby_install_dir = libruby.get_variable(pkgconfig: 'sitelibdir')
-elif ruby_install_dir == 'vendor'
-  ruby_install_dir = libruby.get_variable(pkgconfig: 'vendorlibdir')
+
+if meson.version().version_compare('>=0.58.0')
+  if ruby_install_dir == 'site'
+    ruby_install_dir = libruby.get_variable('sitelibdir')
+  elif ruby_install_dir == 'vendor'
+    ruby_install_dir = libruby.get_variable('vendorlibdir')
+  endif
+  ruby = find_program(libruby.get_variable('ruby'), required: true)
+else
+  # dep.get_variable():
+  # Before 0.58.0 `varname` was not implemented.
+  # https://mesonbuild.com/Reference-manual_returned_dep.html#depget_variable
+  if ruby_install_dir == 'site'
+    ruby_install_dir = libruby.get_variable(pkgconfig: 'sitelibdir')
+  elif ruby_install_dir == 'vendor'
+    ruby_install_dir = libruby.get_variable(pkgconfig: 'vendorlibdir')
+  endif
+  ruby = find_program(libruby.get_variable(pkgconfig: 'ruby'), required: true)
 endif
-ruby = find_program(libruby.get_variable(pkgconfig: 'ruby'), required: true)
+
 rb_glib2_gem_path = \
   run_command(ruby,
               '-e',
