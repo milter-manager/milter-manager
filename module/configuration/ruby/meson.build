@@ -16,7 +16,7 @@
 shared_module('milter-manager-ruby-configuration',
               'milter-manager-ruby-configuration.c',
               c_args: '-DMILTER_LOG_DOMAIN="milter-manager-ruby-configuration"',
-              dependencies: [milter_manager, rb_glib2],
+              dependencies: [milter_manager, ruby_glib2],
               install: true,
               install_dir: module_configuration_dir,
               name_prefix: '')

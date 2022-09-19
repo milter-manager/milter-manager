@@ -202,17 +202,25 @@ elif ruby_install_dir == 'vendor'
   ruby_install_dir = libruby.get_variable(pkgconfig: 'vendorlibdir')
 endif
 ruby = find_program(libruby.get_variable(pkgconfig: 'ruby'), required: true)
-rb_glib2_gem_path = \
+ruby_glib2_compile_args = []
+ruby_glib2_gem_path = \
   run_command(ruby,
               '-e',
               'print(Gem::Specification.find_by_name("glib2").full_gem_path)',
               capture: true,
               check: true).stdout()
-rb_glib2_compile_args = [
-  '-I@0@/lib'.format(rb_glib2_gem_path),
+if fs.is_dir(ruby_glib2_gem_path)
+  ruby_glib2_compile_args += [
+    '-I@0@/ext/glib2'.format(ruby_glib2_gem_path),
+    '-I@0@/lib'.format(ruby_glib2_gem_path),
+  ]
+endif
+ruby_vendor_arch_dir = libruby.get_variable(pkgconfig: 'vendorarchdir')
+ruby_glib2_compile_args += [
+  '-I@0@'.format(ruby_vendor_arch_dir),
 ]
-rb_glib2 = declare_dependency(compile_args: rb_glib2_compile_args,
-                              dependencies: [libruby])
+ruby_glib2 = declare_dependency(compile_args: ruby_glib2_compile_args,
+                                dependencies: [libruby])
 subdir('binding/ruby')
 subdir('module/configuration/ruby')
 subdir('src')
