@@ -255,6 +255,9 @@ make %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
+mkdir -p ${buildroot}/%{ruby_prefix}/
+cp -a %{ruby_prefix}/local ${buildroot}/%{ruby_prefix}/
+
 make install DESTDIR=%{buildroot}
 install -D -m 644 %{buildroot}/%{_datadir}/milter-manager/milter-manager.service %{buildroot}/%{_unitdir}/milter-manager.service
 find $RPM_BUILD_ROOT%{_libdir}/ -name \*.la | xargs rm
@@ -438,30 +441,12 @@ fi
 %{ruby_prefix}/local/lib*/gems/
 %{ruby_prefix}/local/share/gems/
 %{ruby_libdir}/milter/core.rb
-%{_libdir}/milter-manager/binding/ext/glib2.so
-%{_libdir}/milter-manager/binding/ext/rbg*.h
-%{_libdir}/milter-manager/binding/ext/glib*.h
 %{_libdir}/milter-manager/binding/ext/milter_core.so
 %{_libdir}/milter-manager/binding/ext/rb-milter-core.h
 %{_libdir}/milter-manager/binding/lib/milter.rb
 %{_libdir}/milter-manager/binding/lib/milter/core.rb
 %{_libdir}/milter-manager/binding/lib/milter/core/
-%{_libdir}/milter-manager/binding/lib/glib*.rb
-%if %ruby_version > 185
-%{_libdir}/milter-manager/binding/lib/glib2/*.rb
-%endif
-%if %ruby_version > 191
-%{_libdir}/milter-manager/binding/lib/gnome2/rake/*.rb
-%endif
-%{_libdir}/milter-manager/binding/lib/*gnome2*.rb
 %{_libdir}/pkgconfig/ruby-milter-core.pc
-%{_libdir}/milter-manager/binding/ext/*.so
-%{_libdir}/milter-manager/binding/ext/*.h
-%{_libdir}/milter-manager/binding/lib/gi*.rb
-%{_libdir}/milter-manager/binding/lib/gio2/*.rb
-%{_libdir}/milter-manager/binding/lib/gobject-introspection.rb
-%{_libdir}/milter-manager/binding/lib/gobject-introspection/*.rb
-%{_libdir}/milter-manager/binding/lib/mkmf-gnome.rb
 
 %files -n ruby-milter-client
 %defattr(-,root,root)
