@@ -21,8 +21,13 @@ RUN \
     libgirepository1.0-dev \
     libglib2.0-dev \
     lsb-release \
+    meson \
+    ninja-build \
+    python \
     rrdtool \
     ruby \
     ruby-dev \
-    ruby-gnome-dev && \
+    ruby-gio2 \
+    ruby-pkg-config \
+    ruby-test-unit && \
   apt clean

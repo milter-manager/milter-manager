@@ -1,4 +1,5 @@
 %define ruby_version %(ruby -e "print RUBY_VERSION.tr('.', '')")
+%define ruby_prefix %(ruby -rrbconfig -e 'print RbConfig::CONFIG["prefix"]')
 %define ruby_libdir %(ruby -rrbconfig -e 'print RbConfig::CONFIG["rubylibdir"]')
 
 %if %{rhel} >= 8
@@ -228,6 +229,7 @@ Documentation for milter manager
 %setup -q
 
 %build
+gem install gio2
 # Recently, hardened build is enabled by default, but there is a case
 # that it causes error (-Wl,-z,now) for some plugins systems. To fix
 # such a issue, lazy binding (-Wl,-z,lazy) should be enabled
@@ -244,10 +246,7 @@ export CXXFLAGS="$RPM_OPT_FLAGS -fPIC -pie -Wl,-z,relro -Wl,-z,lazy"
     --with-default-pid-file=/var/run/milter-manager/milter-manager.pid	\
     --with-default-connection-spec=unix:/var/run/milter-manager/milter-manager.sock \
     --with-ruby=$(command -v ruby)					\
-    --with-bundled-ruby-glib2						\
-    --with-bundled-ruby-gio2						\
-    --with-bundled-ruby-gobject-introspection				\
-    --enable-ruby-milter=%{ruby_libdir}
+    --enable-ruby-milter
 
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
@@ -436,6 +435,8 @@ fi
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
 %doc %{_datadir}/gtk-doc/html/milter-manager/
+%{ruby_prefix}/local/lib*/gems/
+%{ruby_prefix}/local/share/gems/
 %{ruby_libdir}/milter/core.rb
 %{_libdir}/milter-manager/binding/ext/glib2.so
 %{_libdir}/milter-manager/binding/ext/rbg*.h

@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2011-2013  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2011-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -27,9 +27,6 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "rb-milter-core-private.h"
-#ifndef HAVE_RB_THREAD_CHECK_INTS
-#  include <rubysig.h>
-#endif
 
 typedef struct {
     VALUE receiver;
@@ -199,17 +196,8 @@ rb_loop_watch_io (int argc, VALUE *argv, VALUE self)
 static VALUE
 last_status_set(gint status, GPid pid)
 {
-#ifdef HAVE_RB_LAST_STATUS_SET
     rb_last_status_set(status, (rb_pid_t)pid);
     return rb_last_status_get();
-#else
-    extern VALUE rb_last_status;
-    VALUE last_status = rb_obj_alloc(rb_path2class("Process::Status"));
-    rb_iv_set(last_status, "status", INT2FIX(status));
-    rb_iv_set(last_status, "pid", INT2FIX(pid));
-    rb_last_status = last_status;
-    return last_status;
-#endif
 }
 
 static void
@@ -419,7 +407,6 @@ libev_initialize (VALUE self)
     return Qnil;
 }
 
-#ifdef HAVE_RB_THREAD_CHECK_INTS
 static gboolean
 custom_iterate (MilterEventLoop *loop, gboolean may_block, gpointer user_data)
 {
@@ -431,19 +418,6 @@ custom_iterate (MilterEventLoop *loop, gboolean may_block, gpointer user_data)
 
     return dispatched;
 }
-#else
-static gboolean
-custom_iterate (MilterEventLoop *loop, gboolean may_block, gpointer user_data)
-{
-    gboolean dispatched;
-
-    TRAP_BEG;
-    dispatched = milter_event_loop_iterate_without_custom(loop, may_block);
-    TRAP_END;
-
-    return dispatched;
-}
-#endif
 
 void
 rb_milter_event_loop_setup (MilterEventLoop *loop)

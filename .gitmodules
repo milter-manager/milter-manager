@@ -1,18 +1,9 @@
-[submodule "binding/ruby/test-unit"]
-	path = binding/ruby/test-unit
-	url = https://github.com/test-unit/test-unit.git
 [submodule "html/blog/clear-code"]
 	path = html/blog/clear-code
 	url = https://github.com/clear-code/tdiary.git
 [submodule "vendor/cutter-source"]
 	path = vendor/cutter-source
 	url = https://github.com/clear-code/cutter.git
-[submodule "binding/ruby/pkg-config"]
-	path = binding/ruby/pkg-config
-	url = https://github.com/ruby-gnome/pkg-config
-[submodule "binding/ruby/native-package-installer"]
-	path = binding/ruby/native-package-installer
-	url = https://github.com/ruby-gnome/native-package-installer
 [submodule "vendor/groonga-source"]
 	path = vendor/groonga-source
 	url = https://github.com/groonga/groonga.git

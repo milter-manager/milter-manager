@@ -331,11 +331,11 @@ dnl **************************************************************
 dnl Check for Ruby
 dnl **************************************************************
 ruby_available="no"
+ruby_package_name=
 AC_ARG_WITH([ruby],
             AS_HELP_STRING([--with-ruby=PATH],
                            [Ruby interpreter path (default: auto-detect)]),
             [RUBY="$withval"])
-
 if test "$RUBY" = "no"; then
   : # ignore
 elif test "$RUBY" = ""; then
@@ -344,531 +344,37 @@ elif test "$RUBY" = ""; then
     ruby_available="yes"
   fi
 else
+  ruby_available="yes"
   AC_CHECK_FILE([$RUBY],
-                [ruby_available="yes"],
-                [AC_MSG_WARN([$RUBY is not found. Disable milter manager.])])
+                [],
+                [ruby_package_name=$RUBY])
 fi
 
-bundled_latest_ruby_glib2_version=3.5.0
-bundled_available_ruby_glib2_versions="3.5.0"
-bundled_latest_ruby_gobject_introspection_version=3.5.0
-bundled_available_ruby_gobject_introspection_="3.5.0"
-bundled_latest_ruby_gio2_version=3.5.0
-bundled_available_ruby_gio2_versions="3.5.0"
-if test "$ruby_available" = "yes"; then
-  rbconfig="$RUBY -rrbconfig -rshellwords -e "
+if test "$ruby_available" = "yes" -a -z "$ruby_package_name"; then
+  ruby_package_name=$($RUBY -rrbconfig -e 'print(File.basename(RbConfig::CONFIG.fetch(%(ruby_pc)), %(.*)))')
+fi
+if test -n "$ruby_package_name"; then
+  PKG_CHECK_MODULES(LIBRUBY, $ruby_package_name)
+  PKG_CHECK_VAR(RUBY, $ruby_package_name, ruby)
+  AC_SUBST(LIBRUBY_CFLAGS)
+  AC_SUBST(LIBRUBY_LIBS)
 
-  changequote(<<, >>)
-  for var_name in archdir sitearchdir vendorarchdir arch \
-      	       	  libdir sitelibdir vendorlibdir \
-      	       	  CFLAGS LIBRUBYARG LIBS RUBY_SO_NAME \
-                  rubyarchhdrdir sitearchhdrdir vendorarchhdrdir \
-                  rubyhdrdir sitehdrdir vendorhdrdir; do
-    rbconfig_value=`$rbconfig "print Shellwords.shellwords(RbConfig::CONFIG['$var_name'] || '').join(' ')"`
-    eval "rbconfig_$var_name=\"\$rbconfig_value\""
-  done
-  # XXX: RbConfig::CONFIG["LIBRUBYARG"] is the following on Travis CI:
-  #   "-Wl,-rpath,'${ORIGIN}/../lib' -Wl,-R -Wl,'${ORIGIN}/../lib' -L'${ORIGIN}/../lib' -lruby"
-  #   https://travis-ci.org/milter-manager/milter-manager/jobs/37108226#L431
-  # We don't know who sets "${ORIGIN}".
-  #  The following code is just a workaround. :<
-  rbconfig_LIBRUBYARG="`echo \"$rbconfig_LIBRUBYARG\" | sed -e \"s,\\\${ORIGIN},$rbconfig_libdir,g\"`"
-  ruby_major_version="`$RUBY -e 'print RUBY_VERSION.split(/\\./)[0]'`"
-  ruby_minor_version="`$RUBY -e 'print RUBY_VERSION.split(/\\./)[1]'`"
-  ruby_micro_version="`$RUBY -e 'print RUBY_VERSION.split(/\\./)[2]'`"
-  changequote([, ])
-  ruby_version="${ruby_major_version}${ruby_minor_version}${ruby_micro_version}"
-
-  if test "$rbconfig_rubyhdrdir" = ""; then
-    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitearchdir"
-    if test "$rbconfig_vendorarchdir" != ""; then
-      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorarchdir"
-    fi
-    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_archdir"
-  else
-    if test -d "$rbconfig_sitearchhdrdir"; then
-      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitearchhdrdir"
-    fi
-    if test -d "$rbconfig_vendorarchhdrdir"; then
-      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorarchhdrdir"
-    fi
-    if test -d "$rbconfig_rubyarchhdrdir"; then
-      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_rubyarchhdrdir"
-    fi
-    if test -d "$rbconfig_sitehdrdir"; then
-      if test -d "$rbconfig_sitehdrdir/$rbconfig_arch"; then
-        RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitehdrdir/$rbconfig_arch"
-      fi
-      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_sitehdrdir"
-    fi
-    if test -d "$rbconfig_vendorhdrdir"; then
-      if test -d "$rbconfig_vendorhdrdir/$rbconfig_arch"; then
-        RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorhdrdir/$rbconfig_arch"
-      fi
-      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_vendorhdrdir"
-    fi
-    if test -d "$rbconfig_rubyhdrdir/$rbconfig_arch"; then
-      RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_rubyhdrdir/$rbconfig_arch"
-    fi
-    RUBY_CFLAGS="$RUBY_CFLAGS -I$rbconfig_rubyhdrdir"
-  fi
-
-  RUBY_CFLAGS="$RUBY_CFLAGS $rbconfig_CFLAGS"
-  RUBY_LIBS="$rbconfig_LIBRUBYARG $rbconfig_LIBS"
-  RUBY_LDFLAGS="-L$rbconfig_libdir"
-
-  AC_SUBST(RUBY_CFLAGS)
-  AC_SUBST(RUBY_LIBS)
-  AC_SUBST(RUBY_LDFLAGS)
-
-  _SAVE_CFLAGS=$CFLAGS
-  _SAVE_LIBS=$LIBS
-  _SAVE_LDFLAGS=$LDFLAGS
-  ruby_undef_package_macros="
-#undef PACKAGE_NAME
-#undef PACKAGE_TARNAME
-#undef PACKAGE_STRING
-#undef PACKAGE_VERSION
-#undef PACKAGE_BUGREPORT
-"
-  CFLAGS="$CFLAGS $RUBY_CFLAGS"
-  LDFLAGS="$LDFLAGS $RUBY_LDFLAGS"
-  AC_CHECK_HEADERS(ruby.h, [],
-                   [ruby_available="no"],
-                   [$ruby_undef_package_macros])
-  if test "x$ruby_available" = "xyes"; then
-    AC_CHECK_LIB($rbconfig_RUBY_SO_NAME,
-                 ruby_init,
-                 [],
-                 [ruby_available="no"],
-                 $RUBY_LIBS)
-  fi
-  if test "x$ruby_available" != "xyes"; then
-    AC_MSG_ERROR([Ruby is required.])
-  fi
-
-  case $srcdir in
-    /*) # Absolute path
-     ac_abs_ruby_srcdir="$srcdir/binding/ruby"
-     ;;
-    *)
-     ac_abs_ruby_srcdir="$ac_pwd/$srcdir/binding/ruby"
-     ;;
-  esac
-
-  # TODO: Remove duplication for bundled-ruby-*.
-  AC_ARG_WITH([bundled-ruby-glib2],
-	      AS_HELP_STRING([--with-bundled-ruby-glib2],
-			     [Use bundled Ruby/GLib2
-                              (default: try system Ruby/GLib2 and them
-                                            bundled Ruby/GLib2)]),
-	      [use_bundled_ruby_glib2="$withval"],
-              [use_bundled_ruby_glib2="auto"])
-
-  RUBY_GLIB2_CFLAGS=""
-  ruby_glib2_available=no
-  if test "x$use_bundled_ruby_glib2" != "xyes"; then
-    CFLAGS="$CFLAGS $GLIB_CFLAGS"
-    if test "$ruby_glib2_available" = "no"; then
-      RUBY_GLIB2_CFLAGS=$($RUBY -e '
-        begin
-          require "rubygems"
-          ruby_glib2_gem = Gem::Specification.find_by_name("glib2")
-        rescue LoadError
-          ruby_glib2_gem = nil
-        end
-	if ruby_glib2_gem.nil?
-	  begin
-	    require "glib2"
-	    ruby_glib2_path = $".grep(/glib2\.(?!rb\z)\w+\z/).first
-	    exit(false) if ruby_glib2_path.nil?
-	    print("-I ", File.dirname(ruby_glib2_path))
-	    exit(true)
-	  rescue LoadError
-	    exit(false)
-	  end
-	end
-	ruby_glib2_path = ruby_glib2_gem.full_gem_path
-	print("-I ", File.join(ruby_glib2_path, "lib"))')
-      if test $? -eq 0; then
-        CFLAGS="$CFLAGS $RUBY_GLIB2_CFLAGS"
-      else
-        RUBY_GLIB2_CFLAGS=""
-      fi
-      AC_CHECK_HEADERS(rbgobject.h,
-		       [ruby_glib2_available="yes"],
-		       [ruby_glib2_available="no"],
-		       [$ruby_undef_package_macros])
-    fi
-    if test "$ruby_glib2_available" = "yes"; then
-      AC_TRY_COMPILE([
-		      $ruby_undef_package_macros
-		      #include <rbgobject.h>
-		     ],
-		     [
-		      #if RBGLIB_MINOR_VERSION == 17
-		      #  error "Ruby/GLib2 0.17.0 has GC related bug."
-		      #endif
-		      #if RBGLIB_MINOR_VERSION == 18
-		      #  error "Ruby/GLib2 0.18.x has memory leak bugs."
-		      #endif
-		      #if RBGLIB_MINOR_VERSION == 19 && RBGLIB_MICRO_VERSION < 4
-		      #  error "Ruby/GLib2 0.19.[0123] have memory leak bugs."
-		      #endif
-		     ],
-		     [],
-		     [ruby_glib2_available="no"])
-    fi
-  fi
-
-  if test "x$use_bundled_ruby_glib2" != "xno" -a \
-          "x$ruby_glib2_available" != "xyes"; then
-    ac_used_bundled_ruby_glib2_version=${bundled_latest_ruby_glib2_version}
-    if test "x$use_bundled_ruby_glib2" != "xauto" -a \
-            "x$use_bundled_ruby_glib2" != "xyes" -a \
-            "x$use_bundled_ruby_glib2" != "xno"; then
-      ac_used_bundled_ruby_glib2_version=$use_bundled_ruby_glib2
-    fi
-    AC_MSG_NOTICE([checking bundled Ruby/GLib2 $ac_used_bundled_ruby_glib2_version])
-    ac_ruby_glib2_dir="binding/ruby/glib2-$ac_used_bundled_ruby_glib2_version"
-    if $RUBY -run -e mkdir -- -p $ac_ruby_glib2_dir && \
-       (cd $ac_ruby_glib2_dir && \
-        RUBYLIB=$ac_abs_ruby_srcdir/pkg-config/lib:$ac_abs_ruby_srcdir/native-package-installer/lib \
-          $RUBY $ac_abs_ruby_srcdir/glib2-$ac_used_bundled_ruby_glib2_version/extconf.rb ); then
-      ruby_glib2_available=yes
-      ac_ruby_glib2_source_dir="$ac_ruby_glib2_dir/ext/glib2"
-      RUBY_GLIB2_CFLAGS="-I\$(top_builddir)/$ac_ruby_glib2_source_dir"
-      RUBY_GLIB2_CFLAGS="$RUBY_GLIB2_CFLAGS -I\$(top_srcdir)/$ac_ruby_glib2_source_dir"
-      sed -e '/^install-headers:/a\
-xxx	$(MAKEDIRS) $(RUBYARCHDIR)' \
-	  $ac_ruby_glib2_dir/ext/glib2/Makefile | \
-          sed -e 's/^xxx//' > \
-	  $ac_ruby_glib2_dir/ext/glib2/Makefile.fix-install-headers
-      mv $ac_ruby_glib2_dir/ext/glib2/Makefile.fix-install-headers \
-	 $ac_ruby_glib2_dir/ext/glib2/Makefile
-      sed -e '/^pre-install-rb:/a\
-xxx	$(MAKEDIRS) $(RUBYLIBDIR)/gnome2/rake' \
-          -e '/^pre-install-rb:/a\
-xxx	$(MAKEDIRS) $(RUBYLIBDIR)/glib2' \
-          $ac_ruby_glib2_dir/Makefile.lib | \
-          sed -e 's/^xxx//' > \
-          $ac_ruby_glib2_dir/Makefile.lib.fix-pre-install-rb
-      mv $ac_ruby_glib2_dir/Makefile.lib.fix-pre-install-rb \
-         $ac_ruby_glib2_dir/Makefile.lib
-      sed -e "s,^CPPFLAGS = ,CPPFLAGS = ${CPPFLAGS} ," \
-          $ac_ruby_glib2_source_dir/Makefile > \
-          $ac_ruby_glib2_source_dir/Makefile.fix_cppflags
-      mv $ac_ruby_glib2_source_dir/Makefile.fix_cppflags \
-         $ac_ruby_glib2_source_dir/Makefile
-      sed -e 's/ install/ RUBYARCHDIR=$(binding_extdir) RUBYLIBDIR=$(binding_libdir) libdir=$(libdir) install/' \
-          $ac_ruby_glib2_dir/Makefile > \
-          $ac_ruby_glib2_dir/Makefile.fix_install
-      mv $ac_ruby_glib2_dir/Makefile.fix_install \
-         $ac_ruby_glib2_dir/Makefile
-      cat <<EOM >> $ac_ruby_glib2_dir/Makefile
-
-srcdir_prefix = `test "${srcdir}" = . || echo "../../../$srcdir/$ac_ruby_glib2_dir/"`
-prefix = $prefix
-exec_prefix = $milter_manager_exec_prefix
-libdir = \$(DESTDIR)$libdir
-pkglibdir = \$(libdir)/$PACKAGE_NAME
-bindingdir = $bindingdir
-binding_extdir = $binding_extdir
-binding_libdir = $binding_libdir
-RUBY = $RUBY
-
-check:
-# 	\$(RUBY) \$(srcdir_prefix)test/run-test.rb
-
-distdir:
-
-dist:
-
-dvi:
-
-installcheck:
-
-uninstall:
-	-rm -f \$(pkglibdir)/binding/ext/glib-enum-types.h
-	-rm -f \$(pkglibdir)/binding/ext/glib2.so
-	-rm -f \$(pkglibdir)/binding/ext/rbg*.h
-	-rm -f \$(pkglibdir)/binding/lib/glib-mkenums.rb
-	-rm -f \$(pkglibdir)/binding/lib/glib2.rb
-	-rm -f \$(pkglibdir)/binding/lib/gnome2-raketask.rb
-	-rm -f \$(pkglibdir)/binding/lib/mkmf-gnome.rb
-	-rm -f \$(pkglibdir)/binding/lib/mkmf-gnome2.rb
-	-rm -f \$(pkglibdir)/binding/lib/glib2/*.rb
-	-rm -f \$(pkglibdir)/binding/lib/gnome2/*.rb
-	-rm -f \$(pkglibdir)/binding/lib/gnome2/*/*.rb
-EOM
-    fi
-  fi
-
-  for bundled_available_ruby_glib2_version in ${bundled_available_ruby_glib2_versions}; do
-    if test "$ac_used_bundled_ruby_glib2_version" != "${bundled_available_ruby_glib2_version}"; then
-      $RUBY -run -e mkdir -- -p binding/ruby/glib2-${bundled_available_ruby_glib2_version}
-      cat <<EOM > binding/ruby/glib2-${bundled_available_ruby_glib2_version}/Makefile
-all:
-distdir:
-distclean:
-dvi:
-installcheck:
-uninstall:
-EOM
-    fi
-  done
-
-  if test "$ruby_glib2_available" != "yes"; then
-    AC_MSG_ERROR([Ruby/GLib2 is required.])
-  fi
-
+  RUBY_GLIB2_CFLAGS="-I$($RUBY -rglib2 -e 'print(Gem::Specification.find_by_name(%(glib2)).gem_dir)')/ext/glib2"
   AC_SUBST(RUBY_GLIB2_CFLAGS)
-
-  AC_ARG_WITH([bundled-ruby-gobject-introspection],
-	      AS_HELP_STRING([--with-bundled-ruby-gobject-introspection],
-			     [Use bundled Ruby/GObjectIntrospection
-                              (default: try system Ruby/GObjectIntrospection and then
-                                            bundled Ruby/GObjectIntrospection)]),
-	      [use_bundled_ruby_gobject_introspection="$withval"],
-              [use_bundled_ruby_gobject_introspection="auto"])
-
-  ruby_gobject_introspection_available=no
-  ruby_gobject_introspection_type="bundled"
-  if test "x$use_bundled_ruby_gobject_introspection" != "xyes"; then
-    if test "$ruby_gobject_introspection_available" = "no"; then
-      if ruby -r gobject-introspection -e '1'; then
-        ruby_gobject_introspection_available="yes"
-        ruby_gobject_introspection_type="system"
-      else
-        ruby_gobject_introspection_available="no"
-      fi
-    fi
-  fi
-
-  if test "x$use_bundled_ruby_gobject_introspection" != "xno" -a \
-          "x$ruby_gobject_introspection_available" != "xyes"; then
-    ac_used_bundled_ruby_gobject_introspection_version=${bundled_latest_ruby_gobject_introspection_version}
-    if test "x$use_bundled_ruby_gobject_introspection" != "xauto" -a \
-            "x$use_bundled_ruby_gobject_introspection" != "xyes" -a \
-            "x$use_bundled_ruby_gobject_introspection" != "xno"; then
-      ac_used_bundled_ruby_gobject_introspection_version=$use_bundled_ruby_gobject_introspection
-    fi
-    AC_MSG_NOTICE([checking bundled Ruby/GObjectIntrospection $ac_used_bundled_ruby_gobject_introspection_version])
-    ac_ruby_gobject_introspection_dir="binding/ruby/gobject-introspection-$ac_used_bundled_ruby_gobject_introspection_version"
-    if $RUBY -run -e mkdir -- -p $ac_ruby_gobject_introspection_dir && \
-       (cd $ac_ruby_gobject_introspection_dir && \
-        RUBYLIB=$ac_abs_ruby_srcdir/pkg-config/lib:$ac_abs_ruby_srcdir/native-package-installer/lib \
-          $RUBY $ac_abs_ruby_srcdir/gobject-introspection-$ac_used_bundled_ruby_gobject_introspection_version/extconf.rb); then
-      ruby_gobject_introspection_available=yes
-      ac_ruby_gobject_introspection_source_dir="$ac_ruby_gobject_introspection_dir/ext/gobject-introspection"
-      sed -e '/^install-headers:/a\
-xxx	$(MAKEDIRS) $(RUBYARCHDIR)' \
-	  $ac_ruby_gobject_introspection_dir/ext/gobject-introspection/Makefile | \
-          sed -e 's/^xxx//' > \
-	  $ac_ruby_gobject_introspection_dir/ext/gobject-introspection/Makefile.fix-install-headers
-      mv $ac_ruby_gobject_introspection_dir/ext/gobject-introspection/Makefile.fix-install-headers \
-	 $ac_ruby_gobject_introspection_dir/ext/gobject-introspection/Makefile
-      sed -e '/^pre-install-rb:/a\
-xxx	$(MAKEDIRS) $(RUBYLIBDIR)/gobject-introspection' \
-          $ac_ruby_gobject_introspection_dir/Makefile.lib | \
-          sed -e 's/^xxx//' > \
-          $ac_ruby_gobject_introspection_dir/Makefile.lib.fix-pre-install-rb
-      mv $ac_ruby_gobject_introspection_dir/Makefile.lib.fix-pre-install-rb \
-         $ac_ruby_gobject_introspection_dir/Makefile.lib
-      sed -e "s,^CPPFLAGS = ,CPPFLAGS = ${CPPFLAGS} ," \
-          $ac_ruby_gobject_introspection_source_dir/Makefile > \
-          $ac_ruby_gobject_introspection_source_dir/Makefile.fix_cppflags
-      mv $ac_ruby_gobject_introspection_source_dir/Makefile.fix_cppflags \
-         $ac_ruby_gobject_introspection_source_dir/Makefile
-      sed -e 's/ install/ RUBYARCHDIR=$(binding_extdir) RUBYLIBDIR=$(binding_libdir) libdir=$(libdir) install/' \
-          $ac_ruby_gobject_introspection_dir/Makefile > \
-          $ac_ruby_gobject_introspection_dir/Makefile.fix_install
-      mv $ac_ruby_gobject_introspection_dir/Makefile.fix_install \
-         $ac_ruby_gobject_introspection_dir/Makefile
-      cat <<EOM >> $ac_ruby_gobject_introspection_dir/Makefile
-
-srcdir_prefix = `test "${srcdir}" = . || echo "../../../$srcdir/$ac_ruby_gobject_introspection_dir/"`
-prefix = $prefix
-exec_prefix = $milter_manager_exec_prefix
-libdir = \$(DESTDIR)$libdir
-pkglibdir = \$(libdir)/$PACKAGE_NAME
-bindingdir = $bindingdir
-binding_extdir = $binding_extdir
-binding_libdir = $binding_libdir
-RUBY = $RUBY
-
-check:
-# 	\$(RUBY) \$(srcdir_prefix)test/run-test.rb
-
-distdir:
-
-dist:
-
-dvi:
-
-installcheck:
-
-uninstall:
-	-rm -f \$(pkglibdir)/binding/ext/gobject_introspection.so
-	-rm -f \$(pkglibdir)/binding/ext/rb-gobject-introspection.h
-	-rm -f \$(pkglibdir)/binding/lib/gi.rb
-	-rm -f \$(pkglibdir)/binding/lib/gobject-introspection.rb
-	-rm -f \$(pkglibdir)/binding/lib/gobject-introspection/*.rb
-EOM
-    fi
-  fi
-
-  for bundled_available_ruby_gobject_introspection_version in ${bundled_available_ruby_gobject_introspection_versions}; do
-    if test "$ac_used_bundled_ruby_gobject_introspection_version" != "${bundled_available_ruby_gobject_introspection_version}"; then
-      $RUBY -run -e mkdir -- -p binding/ruby/gobject-introspection-${bundled_available_ruby_gobject_introspection_version}
-      cat <<EOM > binding/ruby/gobject-introspection-${bundled_available_ruby_gobject_introspection_version}/Makefile
-all:
-distdir:
-distclean:
-dvi:
-installcheck:
-uninstall:
-EOM
-    fi
-  done
-
-  if test "$ruby_gobject_introspection_available" != "yes"; then
-    AC_MSG_ERROR([Ruby/GObjectIntrospection is required.])
-  fi
-
-  AC_ARG_WITH([bundled-ruby-gio2],
-	      AS_HELP_STRING([--with-bundled-ruby-gio2],
-			     [Use bundled Ruby/GIO2
-                              (default: try system Ruby/GIO2 and then
-                                            bundled Ruby/GIO2)]),
-	      [use_bundled_ruby_gio2="$withval"],
-              [use_bundled_ruby_gio2="auto"])
-
-  ruby_gio2_available=no
-  ruby_gio2_type="bundled"
-  if test "x$use_bundled_ruby_gio2" != "xyes"; then
-    if test "$ruby_gio2_available" = "no"; then
-      if ruby -r gio2 -e '1'; then
-        ruby_gio2_available="yes"
-        ruby_gio2_type="system"
-      else
-        ruby_gio2_available="no"
-      fi
-    fi
-  fi
-
-  if test "x$use_bundled_ruby_gio2" != "xno" -a \
-          "x$ruby_gio2_available" != "xyes"; then
-    ac_used_bundled_ruby_gio2_version=${bundled_latest_ruby_gio2_version}
-    if test "x$use_bundled_ruby_gio2" != "xauto" -a \
-            "x$use_bundled_ruby_gio2" != "xyes" -a \
-            "x$use_bundled_ruby_gio2" != "xno"; then
-      ac_used_bundled_ruby_gio2_version=$use_bundled_ruby_gio2
-    fi
-    AC_MSG_NOTICE([checking bundled Ruby/GIO2 $ac_used_bundled_ruby_gio2_version])
-    ac_ruby_gio2_dir="binding/ruby/gio2-$ac_used_bundled_ruby_gio2_version"
-    if $RUBY -run -e mkdir -- -p $ac_ruby_gio2_dir && \
-       (cd $ac_ruby_gio2_dir && \
-        RUBYLIB=$ac_abs_ruby_srcdir/pkg-config/lib:$ac_abs_ruby_srcdir/native-package-installer/lib \
-          $RUBY $ac_abs_ruby_srcdir/gio2-$ac_used_bundled_ruby_gio2_version/extconf.rb); then
-      ruby_gio2_available=yes
-      ac_ruby_gio2_source_dir="$ac_ruby_gio2_dir/ext/gio2"
-      sed -e '/^install-headers:/a\
-xxx	$(MAKEDIRS) $(RUBYARCHDIR)' \
-	  $ac_ruby_gio2_dir/ext/gio2/Makefile | \
-          sed -e 's/^xxx//' > \
-	  $ac_ruby_gio2_dir/ext/gio2/Makefile.fix-install-headers
-      mv $ac_ruby_gio2_dir/ext/gio2/Makefile.fix-install-headers \
-	 $ac_ruby_gio2_dir/ext/gio2/Makefile
-      sed -e '/^pre-install-rb:/a\
-xxx	$(MAKEDIRS) $(RUBYLIBDIR)/gio2' \
-          $ac_ruby_gio2_dir/Makefile.lib | \
-          sed -e 's/^xxx//' > \
-          $ac_ruby_gio2_dir/Makefile.lib.fix-pre-install-rb
-      mv $ac_ruby_gio2_dir/Makefile.lib.fix-pre-install-rb \
-         $ac_ruby_gio2_dir/Makefile.lib
-      sed -e "s,^CPPFLAGS = ,CPPFLAGS = ${CPPFLAGS} ," \
-          $ac_ruby_gio2_source_dir/Makefile > \
-          $ac_ruby_gio2_source_dir/Makefile.fix_cppflags
-      mv $ac_ruby_gio2_source_dir/Makefile.fix_cppflags \
-         $ac_ruby_gio2_source_dir/Makefile
-      sed -e 's/ install/ RUBYARCHDIR=$(binding_extdir) RUBYLIBDIR=$(binding_libdir) libdir=$(libdir) install/' \
-          $ac_ruby_gio2_dir/Makefile > \
-          $ac_ruby_gio2_dir/Makefile.fix_install
-      mv $ac_ruby_gio2_dir/Makefile.fix_install \
-         $ac_ruby_gio2_dir/Makefile
-      cat <<EOM >> $ac_ruby_gio2_dir/Makefile
-
-srcdir_prefix = `test "${srcdir}" = . || echo "../../../$srcdir/$ac_ruby_gio2_dir/"`
-prefix = $prefix
-exec_prefix = $milter_manager_exec_prefix
-libdir = \$(DESTDIR)$libdir
-pkglibdir = \$(libdir)/$PACKAGE_NAME
-bindingdir = $bindingdir
-binding_extdir = $binding_extdir
-binding_libdir = $binding_libdir
-RUBY = $RUBY
-
-check:
-# 	\$(RUBY) \$(srcdir_prefix)test/run-test.rb
-
-distdir:
-
-dist:
-
-dvi:
-
-installcheck:
-
-uninstall:
-	-rm -f \$(pkglibdir)/binding/ext/gio2.so
-	-rm -f \$(pkglibdir)/binding/lib/gio2.rb
-	-rm -f \$(pkglibdir)/binding/lib/gio2/*.rb
-EOM
-    fi
-  fi
-
-  for bundled_available_ruby_gio2_version in ${bundled_available_ruby_gio2_versions}; do
-    if test "$ac_used_bundled_ruby_gio2_version" != "${bundled_available_ruby_gio2_version}"; then
-      $RUBY -run -e mkdir -- -p binding/ruby/gio2-${bundled_available_ruby_gio2_version}
-      cat <<EOM > binding/ruby/gio2-${bundled_available_ruby_gio2_version}/Makefile
-all:
-distdir:
-distclean:
-dvi:
-installcheck:
-uninstall:
-EOM
-    fi
-  done
-
-  if test "$ruby_gio2_available" != "yes"; then
-    AC_MSG_ERROR([Ruby/GIO2 is required.])
-  fi
-
-  AC_CHECK_FUNCS(rb_last_status_set)
-  AC_CHECK_FUNCS(rb_thread_check_ints)
-  CFLAGS=$_SAVE_CFLAGS
-  LIBS=$_SAVE_LIBS
-  LDFLAGS=$_SAVE_LDFLAGS
 fi
 
 AC_ARG_ENABLE([ruby-milter],
               AS_HELP_STRING([--enable-ruby-milter[=DIR]],
                              [Enable milter development with Ruby.
                               DIR should be one of the Ruby's LOAD_PATH.
-                              (default: vendor_ruby or site_ruby directoy)]),
+                              (default: vendor_ruby directoy)]),
               [ruby_milterdir="$enableval"],
               [ruby_milterdir="no"])
 
 if test "$ruby_available" = "yes" -a "$ruby_milterdir" != "no"; then
   AC_MSG_CHECKING([where to Ruby milter install])
   if test "$ruby_milterdir" = "yes" ; then
-     if test -n "$rbconfig_vendorlibdir"; then
-       ruby_milterdir="$rbconfig_vendorlibdir"
-     else
-       ruby_milterdir="$rbconfig_sitelibdir"
-     fi
+    PKG_CHECK_VAR(ruby_milterdir, $ruby_package_name, vendorlibdir)
   fi
   AC_MSG_RESULT([$ruby_milterdir])
 else
@@ -880,10 +386,6 @@ sample_rubydir="\$(pkgdatadir)/sample/ruby"
 AC_SUBST(sample_rubydir)
 
 AM_CONDITIONAL([WITH_RUBY], [test "$ruby_available" = "yes"])
-AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_2_2_5],
-               [test "$ac_used_bundled_ruby_glib2_version" = "2.2.5"])
-AM_CONDITIONAL([WITH_BUNDLED_RUBY_GLIB2_LATEST],
-               [test "$ac_used_bundled_ruby_glib2_version" = "${bundled_latest_ruby_glib2_version}"])
 AM_CONDITIONAL([WITH_RUBY_MILTER], [test -n "$ruby_milterdir"])
 
 dnl **************************************************************
@@ -1174,7 +676,7 @@ AC_SUBST(OSDN_HTDOCS)
 
 
 MILTER_TOOLKIT_CFLAGS="\$(GLIB_CFLAGS) -DG_DISABLE_DEPRECATED"
-MILTER_RUBY_CFLAGS="\$(RUBY_GLIB2_CFLAGS) \$(RUBY_CFLAGS)"
+MILTER_RUBY_CFLAGS="\$(RUBY_GLIB2_CFLAGS) \$(LIBRUBY_CFLAGS)"
 MILTER_MANAGER_CFLAGS="\$(MILTER_TOOLKIT_CFLAGS)"
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DCONFIGURATION_MODULE_DIR=\\\"\$(module_configurationdir)\\\""
 MILTER_MANAGER_CFLAGS="$MILTER_MANAGER_CFLAGS -DRUBY_BINDINGS_EXT_DIR=\\\"\$(binding_extdir)\\\""
@@ -1196,7 +698,7 @@ AC_SUBST(MILTER_MANAGER_CFLAGS)
 MILTER_CORE_LIBS="\$(NETWORK_LIBS) \$(GLIB_LIBS)"
 MILTER_CLIENT_LIBS="\$(GLIB_LIBS)"
 MILTER_SERVER_LIBS="\$(NETWORK_LIBS) \$(GLIB_LIBS)"
-MILTER_RUBY_LIBS="\$(GLIB_LIBS) \$(RUBY_LDFLAGS) \$(RUBY_LIBS)"
+MILTER_RUBY_LIBS="\$(GLIB_LIBS) \$(LIBRUBY_LIBS)"
 MILTER_MANAGER_LIBS="\$(GLIB_LIBS)"
 AC_SUBST(MILTER_CORE_LIBS)
 AC_SUBST(MILTER_CLIENT_LIBS)
@@ -1330,11 +832,9 @@ echo
 echo "  GLib                    : $glib_version"
 echo "  libev                   : $libev_available"
 echo "  Ruby                    : $RUBY"
-echo "  Ruby version              : `$RUBY -v`"
-echo "  Ruby/GLib2                : $RUBY_GLIB2_CFLAGS"
-echo "  Ruby/GObjectIntrospection : $ruby_gobject_introspection_type"
-echo "  Ruby/GIO2                 : $$ruby_gio2_type"
-echo "  Ruby milter PATH          : $ruby_milterdir"
+echo "  Ruby version            : $($RUBY -v)"
+echo "  Ruby/GLib2              : $RUBY_GLIB2_CFLAGS"
+echo "  Ruby milter PATH        : $ruby_milterdir"
 echo
 echo "  rd2                     : $RD2"
 echo "  GTK-Doc                 : $enable_gtk_doc"
