@@ -356,6 +356,12 @@ fi
 if test -n "$ruby_package_name"; then
   PKG_CHECK_MODULES(LIBRUBY, $ruby_package_name)
   PKG_CHECK_VAR(RUBY, $ruby_package_name, ruby)
+  case "$RUBY" in
+    /opt/rh/*)
+      PKG_CHECK_VAR(ruby_libdir, $ruby_package_name, libdir)
+      LIBRUBY_LIBS="-L$ruby_libdir $LIBRUBY_LIBS"
+      ;;
+  esac
   AC_SUBST(LIBRUBY_CFLAGS)
   AC_SUBST(LIBRUBY_LIBS)
 
