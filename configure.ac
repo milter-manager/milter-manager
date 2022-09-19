@@ -467,6 +467,7 @@ AC_ARG_WITH(libev,
 if test "x$with_libev" != "xno"; then
   _SAVE_CFLAGS="$CFLAGS"
   _SAVE_LDFLAGS="$LDFLAGS"
+  _SAVE_LIBS="$LIBS"
   if test "x$with_libev" = "xauto" -o "x$with_libev" = "xyes"; then
     libev_prefixes="/usr/local /usr"
   else
@@ -492,7 +493,7 @@ if test "x$with_libev" != "xno"; then
 	  [EV_VERSION_MAJOR > 4 || (EV_VERSION_MAJOR == 4 && EV_VERSION_MINOR >= 1)])],
 	[],
 	[libev_available=no])
-      LDFLAGS="$LDFLAGS -lev"
+      LIBS="$LIBS -lev"
       AC_MSG_CHECKING([libev version])
       AC_RUN_IFELSE(
         [AC_LANG_PROGRAM(
@@ -507,6 +508,7 @@ if test "x$with_libev" != "xno"; then
     fi
     CFLAGS="$_SAVE_CFLAGS"
     LDFLAGS="$_SAVE_LDFLAGS"
+    LIBS="$_SAVE_LIBS"
     if test "x$libev_available" != "xno"; then
       LIBEV_INCLUDES="-I$libev_prefix/include"
       LIBEV_LA=""
@@ -514,6 +516,9 @@ if test "x$with_libev" != "xno"; then
       break
     fi
   done
+  CFLAGS="$_SAVE_CFLAGS"
+  LDFLAGS="$_SAVE_LDFLAGS"
+  LIBS="$_SAVE_LIBS"
 fi
 
 if test "x$libev_available" = "xno"; then
