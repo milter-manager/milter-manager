@@ -27,7 +27,6 @@ parse_spec (VALUE self, VALUE spec)
     gint domain;
     struct sockaddr *address;
     socklen_t address_size;
-    VALUE rb_address;
     GError *error = NULL;
 
     if (!milter_connection_parse_spec(RVAL2CSTR(spec),
