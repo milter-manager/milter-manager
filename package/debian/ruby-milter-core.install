@@ -1,11 +1,5 @@
 usr/lib/*/pkgconfig/ruby-milter-core.pc
-# usr/lib/*/milter-manager/binding/ext/glib*
-# usr/lib/*/milter-manager/binding/ext/rbg*
 usr/lib/*/milter-manager/binding/ext/milter_core.*
-# usr/lib/*/milter-manager/binding/lib/g*.rb
-# usr/lib/*/milter-manager/binding/lib/glib2/*.rb
-# usr/lib/*/milter-manager/binding/lib/mkmf-gnome2.rb
 usr/lib/*/milter-manager/binding/lib/milter/core.rb
 usr/lib/*/milter-manager/binding/lib/milter/core/*
-usr/lib/ruby/vendor_ruby/milter.rb
-usr/lib/ruby/vendor_ruby/milter/core.rb
+usr/lib/ruby/vendor_ruby/*/milter/core.rb

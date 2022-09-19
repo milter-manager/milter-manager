@@ -6,16 +6,16 @@ Uploaders: Youhei SASAKI <uwabami@gfd-dennou.org>
 Vcs-Git: https://anonscm.debian.org/git/collab-maint/milter-manager.git
 Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/milter-manager.git
 Build-Depends:
-	autotools-dev,
 	debhelper (>= 11),
 	debhelper-compat (= 11),
+	gobject-introspection,
 	intltool,
 	libev-dev,
 	libgirepository1.0-dev,
 	libglib2.0-dev,
 	meson,
 	ninja-build,
-	python,
+	python3,
 	rrdtool,
 	ruby,
 	ruby-dev,
@@ -77,6 +77,18 @@ Description: Libraries for extending milter manager by C
  .
  This provides libraries for extending milter manager by C.
 
+Package: gir1.2-miltermanager-2.0
+Section: introspection
+Architecture: any
+Depends:
+	${gir:Depends},
+	${misc:Depends}
+Description: GObject Introspection typelib files for milter manager
+ milter manager administrates milters instead of MTA to reduce milter
+ administration cost and combine milters flexibly.
+ .
+ This provides GObject Introspection typelib files for milter manager.
+
 Package: libmilter-manager-dev
 Section: libdevel
 Architecture: any
@@ -85,6 +97,7 @@ Breaks: milter-manager-dev (<< 1.6.6-1)
 Depends:
 	${misc:Depends},
 	${shlibs:Depends},
+	gir1.2-miltermanager-2.0 (= ${binary:Version}),
 	libmilter-client-dev (= ${binary:Version}),
 	libmilter-manager2 (= ${binary:Version}),
 	libmilter-server-dev (= ${binary:Version})
@@ -139,6 +152,18 @@ Description: Common library for implementing milter protocol
  milter "core" library is a common library for mitler "client" and
  milter "server" libraries.
 
+Package: gir1.2-miltercore-2.0
+Section: introspection
+Architecture: any
+Depends:
+	${gir:Depends},
+	${misc:Depends}
+Description: GObject Introspection typelib files for milter core library
+ milter "core" library is a common library for mitler "client" and
+ milter "server" libraries.
+ .
+ This provides GObject Introspection typelib files for milter core library.
+
 Package: libmilter-core-dev
 Section: libdevel
 Architecture: any
@@ -147,6 +172,7 @@ Breaks: libmilter-toolkit-dev (<< 1.6.6-1)
 Depends:
 	${misc:Depends},
 	${shlibs:Depends},
+	gir1.2-miltercore-2.0 (= ${binary:Version}),
 	libmilter-core2 (= ${binary:Version})
 Description: Development files for milter core library
  milter "core" library is a common library for mitler "client" and
@@ -168,6 +194,18 @@ Description: Libraries and tools for implementing milter protocol (client-side)
  milter "client" library is a library which implements client-side
  (milter-side) milter protocol.
 
+Package: gir1.2-milterclient-2.0
+Section: introspection
+Architecture: any
+Depends:
+	${gir:Depends},
+	${misc:Depends}
+Description: GObject Introspection typelib files for milter client library
+ milter "client" library is a library which implements client-side
+ (milter-side) milter protocol.
+ .
+ This provides GObject Introspection typelib files for milter client library.
+
 Package: libmilter-client-dev
 Section: libdevel
 Architecture: any
@@ -176,6 +214,7 @@ Breaks: libmilter-toolkit-dev (<< 1.6.6-1)
 Depends:
 	${misc:Depends},
 	${shlibs:Depends},
+	gir1.2-milterclient-2.0 (= ${binary:Version}),
 	libmilter-client2 (= ${binary:Version})
 Description: Development files for milter client library
  milter "client" library is a library which implements client-side
@@ -197,6 +236,18 @@ Description: Libraries and tools for implementing milter protocol (server-side)
  milter "server" library is a library which implements server-side
  (MTA-side) milter protocol.
 
+Package: gir1.2-milterserver-2.0
+Section: introspection
+Architecture: any
+Depends:
+	${gir:Depends},
+	${misc:Depends}
+Description: GObject Introspection typelib files for milter server library
+ milter "server" library is a library which implements server-side
+ (MTA-side) milter protocol.
+ .
+ This provides GObject Introspection typelib files for milter server library.
+
 Package: libmilter-server-dev
 Section: libdevel
 Architecture: any
@@ -205,6 +256,7 @@ Breaks: libmilter-toolkit-dev (<< 1.6.6-1)
 Depends:
 	${misc:Depends},
 	${shlibs:Depends},
+	gir1.2-milterserver-2.0 (= ${binary:Version}),
 	libmilter-server2 (= ${binary:Version})
 Description: Development files for milter toolkit
  milter "server" library is a library which implements server-side
@@ -246,15 +298,27 @@ Depends:
 	${misc:Depends},
 	${shlibs:Depends},
 	libmilter-core2 (= ${binary:Version}),
-	ruby,
-	ruby-gio2,
-	ruby-glib2,
-	ruby-gobject-introspection
+	ruby-gio2
 Description: Ruby bindings for milter core library (Ruby interface)
  milter "core" library is a common library for mitler "client" and
  milter "server" libraries.
  .
  This provides Ruby bindings for libmilter-core.
+
+Package: python3-milter-core
+Section: python
+Architecture: any
+Depends:
+	${misc:Depends},
+	${shlibs:Depends},
+	gir1.2-miltercore-2.0 (= ${binary:Version}),
+	python3,
+	python3-gi
+Description: Python bindings for milter core library (Python interface)
+ milter "core" library is a common library for mitler "client" and
+ milter "server" libraries.
+ .
+ This provides Python bindings for libmilter-core.
 
 Package: ruby-milter-client
 Section: ruby
@@ -265,13 +329,27 @@ Depends:
 	${misc:Depends},
 	${shlibs:Depends},
 	libmilter-client2 (= ${binary:Version}),
-	ruby,
 	ruby-milter-core (= ${binary:Version})
 Description: Ruby bindings for milter client (Ruby interface)
  milter "client" library is a library which implements client-side
  (milter-side) milter protocol.
  .
  This provides Ruby bindings for libmilter-client.
+
+Package: python3-milter-client
+Section: python
+Architecture: any
+Depends:
+	${misc:Depends},
+	${shlibs:Depends},
+	gir1.2-milterclient-2.0 (= ${binary:Version}),
+	python3,
+	python3-milter-core (= ${binary:Version})
+Description: Python bindings for milter client (Python interface)
+ milter "client" library is a library which implements client-side
+ (milter-side) milter protocol.
+ .
+ This provides Python bindings for libmilter-client.
 
 Package: ruby-milter-server
 Section: ruby
@@ -282,7 +360,6 @@ Depends:
 	${misc:Depends},
 	${shlibs:Depends},
 	libmilter-server2 (= ${binary:Version}),
-	ruby,
 	ruby-milter-core (= ${binary:Version})
 Description: Ruby bindings for milter server (Ruby interface)
  milter "server" library is a library which implements server-side

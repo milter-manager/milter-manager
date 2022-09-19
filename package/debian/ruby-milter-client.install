@@ -4,4 +4,5 @@ usr/lib/*/milter-manager/binding/ext/milter_client.*
 usr/lib/*/milter-manager/binding/lib/milter.rb
 usr/lib/*/milter-manager/binding/lib/milter/client.rb
 usr/lib/*/milter-manager/binding/lib/milter/client/*
-usr/lib/ruby/vendor_ruby/milter/client.rb
+usr/lib/ruby/vendor_ruby/*/milter.rb
+usr/lib/ruby/vendor_ruby/*/milter/client.rb

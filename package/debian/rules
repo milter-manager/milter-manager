@@ -12,25 +12,49 @@ include /usr/share/dpkg/buildflags.mk
 export DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 %:
-	dh $@ --without autoreconf
+	dh $@ --without autoreconf --with gir
 
 override_dh_auto_configure:
-	dh_auto_configure									\
-	  --											\
-	  --with-default-effective-user=milter-manager						\
-	  --with-default-effective-group=mail							\
-	  --with-default-socket-group=mail							\
-	  --with-default-pid-file=/run/milter-manager/milter-manager.pid			\
-	  --with-default-connection-spec=unix:/run/milter-manager/milter-manager.sock		\
-	  --with-default-connection-spec=unix:/run/milter-manager/milter-manager.sock		\
-	  --enable-ruby-milter
+	dh_auto_configure							 \
+	  --builddirectory=meson-build						 \
+	  --buildsystem=meson+ninja						 \
+	  --									 \
+	  -Ddefault-connection-spec=unix:/run/milter-manager/milter-manager.sock \
+	  -Ddefault-connection-spec=unix:/run/milter-manager/milter-manager.sock \
+	  -Ddefault-effective-group=mail					 \
+	  -Ddefault-effective-user=milter-manager				 \
+	  -Ddefault-pid-file=/run/milter-manager/milter-manager.pid		 \
+	  -Ddefault-socket-group=mail						 \
+	  -Druby-install-dir=vendor
+	dh_auto_configure								\
+	  --										\
+	  --enable-ruby-milter								\
+	  --with-default-connection-spec=unix:/run/milter-manager/milter-manager.sock	\
+	  --with-default-connection-spec=unix:/run/milter-manager/milter-manager.sock	\
+	  --with-default-effective-group=mail						\
+	  --with-default-effective-user=milter-manager					\
+	  --with-default-pid-file=/run/milter-manager/milter-manager.pid		\
+	  --with-default-socket-group=mail
 
 override_dh_auto_test:
 	TZ=Asia/Tokyo dh_auto_test
 
-override_dh_install:
-	find $(CURDIR)/debian/tmp/usr/lib/ -name *.la -delete
-	dh_install
+override_dh_auto_install:
+	dh_auto_install				\
+	  --builddirectory=meson-build		\
+	  --buildsystem=meson+ninja		\
+	  --destdir=debian/tmp-meson
+	dh_auto_install
+	find debian/tmp/usr/lib/ -name *.la -delete
+	mv debian/tmp-meson/usr/share/gir-1.0/	\
+	   debian/tmp/usr/share/
+	mv debian/tmp-meson/usr/lib/$(DEB_HOST_MULTIARCH)/girepository-1.0/	\
+	   debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/
+	mkdir -p debian/tmp/usr/lib/python3/
+	mv debian/tmp-meson/usr/lib/python*/site-packages/	\
+	   debian/tmp/usr/lib/python3/dist-packages/
+	mv debian/tmp-meson/usr/share/milter-manager/python/	\
+	   debian/tmp/usr/share/milter-manager/
 
 override_dh_installchangelogs:
 	dh_installchangelogs --all -k NEWS
@@ -39,6 +63,9 @@ override_dh_installdocs:
 	dh_installdocs --all NEWS.ja README.ja TODO
 
 override_dh_auto_clean:
+	dh_auto_clean				\
+	  --builddirectory=meson-build		\
+	  --buildsystem=meson+ninja
 	dh_auto_clean
 	-find $(CURDIR)/binding/ruby -name Makefile | xargs rm -f
 	-rm -fr $(CURDIR)/doc/reference/ja/*.xml

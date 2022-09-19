@@ -2,3 +2,4 @@ usr/lib/*/libmilter-client.so
 usr/lib/*/pkgconfig/milter-client.pc
 usr/include/milter-manager/milter/client.h
 usr/include/milter-manager/milter/client/*
+usr/share/gir-1.0/MilterClient-*.gir
