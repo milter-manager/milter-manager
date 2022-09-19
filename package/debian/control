@@ -19,7 +19,7 @@ Build-Depends:
 	rrdtool,
 	ruby,
 	ruby-dev,
-	ruby-gnome-dev || ruby-gnome2-dev,
+	ruby-gnome-dev | ruby-gnome2-dev,
 	ruby-test-unit
 Standards-Version: 4.1.4
 Homepage: http://milter-manager.osdn.jp/
