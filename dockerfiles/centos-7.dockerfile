@@ -16,6 +16,7 @@ RUN yum update -q -y && \
       gtk-doc \
       intltool \
       libtool \
+      libev-devel \
       make \
       ${SCL}-ruby \
       ${SCL}-ruby-devel \

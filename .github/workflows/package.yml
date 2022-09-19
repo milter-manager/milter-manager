@@ -19,9 +19,11 @@ jobs:
             gtk-doc-tools \
             inkscape \
             intltool \
+            libev-dev \
             poxml
           sudo gem install \
             fast_gettext \
+            gio2 \
             rdtool \
             rttool
       - run: ./autogen.sh
