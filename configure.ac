@@ -741,6 +741,7 @@ AC_CONFIG_FILES([Makefile
 		 milter/server/Makefile
 		 milter/manager/Makefile
 		 binding/Makefile
+		 binding/python/Makefile
 		 binding/ruby/Makefile
 		 binding/ruby/ext/Makefile
 		 binding/ruby/ext/core/Makefile

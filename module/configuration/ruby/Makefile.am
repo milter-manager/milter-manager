@@ -1,3 +1,6 @@
+EXTRA_DIST =					\
+	meson.build
+
 AM_CPPFLAGS =						\
 	-I$(top_builddir)				\
 	-I$(top_srcdir)					\

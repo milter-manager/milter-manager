@@ -1,1 +1,3 @@
-SUBDIRS = ruby
+SUBDIRS =					\
+	python					\
+	ruby

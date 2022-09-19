@@ -14,7 +14,8 @@ LIBS =							\
 
 CLEANFILES = *.gcno *.gcda
 
-EXTRA_DIST =
+EXTRA_DIST =					\
+	meson.build
 BUILT_SOURCES =
 
 milter_manager_public_headers =				\

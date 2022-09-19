@@ -34,12 +34,15 @@ pkgconfig_DATA +=				\
 endif
 
 EXTRA_DIST =					\
-	autogen.sh				\
-	gpg_uid					\
+	NEWS					\
+	NEWS.ja					\
 	README					\
 	README.ja				\
-	NEWS					\
-	NEWS.ja
+	autogen.sh				\
+	gpg_uid					\
+	meson-config.h.in			\
+	meson.build				\
+	meson_options.txt
 
 AM_DISTCHECK_CONFIGURE_FLAGS =			\
 	--enable-gtk-doc

@@ -8,7 +8,8 @@ AM_CFLAGS =					\
 	$(GLIB_CFLAGS)				\
 	$(COVERAGE_CFLAGS)
 
-EXTRA_DIST =
+EXTRA_DIST =					\
+	meson.build
 CLEANFILES =
 BUILT_SOURCES =
 

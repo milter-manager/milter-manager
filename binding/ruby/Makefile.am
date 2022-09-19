@@ -1,6 +1,7 @@
-SUBDIRS =
+EXTRA_DIST =					\
+	meson.build
 
-SUBDIRS +=					\
+SUBDIRS =					\
 	ext					\
 	lib					\
 	ruby-milter				\
