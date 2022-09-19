@@ -16,6 +16,7 @@ RUN \
     glib2-devel \
     gtk-doc \
     intltool \
+    libev-devel \
     make \
     pkgconfig\(gobject-introspection-1.0\) \
     ${SCL}-ruby \

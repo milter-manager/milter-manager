@@ -92,7 +92,5 @@ libmilter_core_la_SOURCES =		\
 libmilter_core_la_LIBADD =		\
 	$(MILTER_CORE_LIBS)		\
 	$(LIBEV_LIBS)
-libmilter_core_la_DEPENDENCIES =	\
-	$(LIBEV_LA)
 
 include $(top_srcdir)/build/enum-types.mk

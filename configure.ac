@@ -950,7 +950,6 @@ dnl **************************************************************
 
 libev_available=no
 libev_version=""
-m4_define([BUNDLED_LIBEV_VERSION], [4.19])
 LIBEV_CFLAGS='-DEV_COMPAT3=0'
 AC_ARG_WITH(libev,
   [AS_HELP_STRING([--with-libev],
@@ -1007,27 +1006,14 @@ if test "x$with_libev" != "xno"; then
       break
     fi
   done
-  if test "$libev_available" = no; then
-    libev_available=yes
-    libev_prefix=bundled
-    libev_version=BUNDLED_LIBEV_VERSION
-    m4_include([libev-]BUNDLED_LIBEV_VERSION[/libev.m4])
-    AC_DEFINE(HAVE_LIBEV, [1], [Define to 1 if libev is available.])
-    LIBEV_INCLUDES='-I$(top_srcdir)/libev-'BUNDLED_LIBEV_VERSION
-    LIBEV_LA='$(top_builddir)/libev-'BUNDLED_LIBEV_VERSION'/libev.la'
-    LIBEV_LIBS='$(LIBEV_LA)'
-  fi
-  AC_DEFINE(HAVE_LIBEV, [1], [Define to 1 if libev is available.])
 fi
 
 if test "x$libev_available" = "xno"; then
   AC_MSG_ERROR([libev is required.])
 fi
 
-AM_CONDITIONAL(WITH_BUNDLED_LIBEV, [test "x$libev_prefix" = xbundled])
 AC_SUBST(LIBEV_INCLUDES)
 AC_SUBST(LIBEV_CFLAGS)
-AC_SUBST(LIBEV_LA)
 AC_SUBST(LIBEV_LIBS)
 
 dnl **************************************************************
@@ -1228,7 +1214,6 @@ AC_CONFIG_FILES([Makefile
 		 ruby-milter-core.pc
 		 ruby-milter-client.pc
 		 ruby-milter-server.pc
-		 libev-]BUNDLED_LIBEV_VERSION[/Makefile
 		 milter/Makefile
 		 milter/core/Makefile
 		 milter/core/milter-version.h
@@ -1330,12 +1315,6 @@ AC_OUTPUT
 
 glib_version="$glib_config_major_version.$glib_config_minor_version.$glib_config_micro_version"
 
-if test "$libev_available" = "yes"; then
-   libev_configure_result="$libev_version ($libev_prefix)"
-else
-   libev_configure_result="$libev_version ($libev_available)"
-fi
-
 echo
 echo "Configure Result:"
 echo
@@ -1349,7 +1328,7 @@ echo "  Default Connection Spec : $MILTER_MANAGER_DEFAULT_CONNECTION_SPEC"
 echo "  Default PID File        : $MILTER_MANAGER_DEFAULT_PID_FILE"
 echo
 echo "  GLib                    : $glib_version"
-echo "  libev                   : $libev_configure_result"
+echo "  libev                   : $libev_available"
 echo "  Ruby                    : $RUBY"
 echo "  Ruby version              : `$RUBY -v`"
 echo "  Ruby/GLib2                : $RUBY_GLIB2_CFLAGS"

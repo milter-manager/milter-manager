@@ -1,13 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_OPTIONS}
 
-SUBDIRS =
-
-if WITH_BUNDLED_LIBEV
-SUBDIRS +=					\
-	libev-4.19
-endif
-
-SUBDIRS +=					\
+SUBDIRS =					\
 	milter					\
 	libmilter				\
 	binding					\
