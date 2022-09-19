@@ -19,9 +19,6 @@ set -eux
 
 cd /build
 ../host/configure \
-  --with-bundled-ruby-glib2 \
-  --with-bundled-ruby-gio2 \
-  --with-bundled-ruby-gobject-introspection \
   --with-default-connection-spec="inet:10025@[127.0.0.1]"
 make -j$(nproc)
 
