@@ -842,6 +842,8 @@ echo
 echo "  GLib                    : $glib_version"
 echo "  libev                   : $libev_available"
 echo "  Ruby                    : $RUBY"
+echo "    CFLAGS                : $LIBRUBY_CFLAGS"
+echo "    LIBS                  : $LIBRUBY_LIBS"
 echo "  Ruby version            : $($RUBY -v)"
 echo "  Ruby/GLib2              : $RUBY_GLIB2_CFLAGS"
 echo "  Ruby milter PATH        : $ruby_milterdir"
