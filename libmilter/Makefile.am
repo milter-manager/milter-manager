@@ -1,7 +1,7 @@
 EXTRA_DIST =					\
 	meson.build
 
-AM_CPPFLAGS = 				\
+AM_CPPFLAGS =				\
 	 -I$(top_builddir)		\
 	 -I$(top_srcdir)
 
@@ -23,7 +23,8 @@ libmilter_la_SOURCES =		\
 	libmilter-compatible.h
 
 libmilter_la_LIBADD =						\
-	$(top_builddir)/milter/client/libmilter-client.la
+	$(top_builddir)/milter/client/libmilter-client.la	\
+	$(GLIB_LIBS)
 
 libmilter_la_LDFLAGS =					\
 	-version-info $(LIBMILTER_LT_VERSION_INFO)
