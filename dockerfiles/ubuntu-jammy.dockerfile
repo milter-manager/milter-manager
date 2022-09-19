@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:jammy
 
 RUN \
   echo "debconf debconf/frontend select Noninteractive" | \

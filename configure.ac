@@ -359,7 +359,13 @@ if test -n "$ruby_package_name"; then
   AC_SUBST(LIBRUBY_CFLAGS)
   AC_SUBST(LIBRUBY_LIBS)
 
-  RUBY_GLIB2_CFLAGS="-I$($RUBY -rglib2 -e 'print(Gem::Specification.find_by_name(%(glib2)).gem_dir)')/ext/glib2"
+  ruby_glib2_gem_dir="$($RUBY -rglib2 -e 'print(Gem::Specification.find_by_name(%(glib2)).gem_dir)')"
+  if test -d "$ruby_glib2_gem_dir"; then
+    RUBY_GLIB2_CFLAGS="-I$ruby_glib2_gem_dir/ext/glib2"
+  else
+    PKG_CHECK_VAR(RUBY_VENDOR_ARCH_DIR, $ruby_package_name, vendorarchdir)
+    RUBY_GLIB2_CFLAGS="-I$RUBY_VENDOR_ARCH_DIR"
+  fi
   AC_SUBST(RUBY_GLIB2_CFLAGS)
 fi
 

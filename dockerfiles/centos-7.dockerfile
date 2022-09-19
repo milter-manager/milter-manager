@@ -25,7 +25,11 @@ RUN yum update -q -y && \
       rrdtool \
       sudo \
       tar \
-      tzdata
+      tzdata && \
+   (source /opt/rh/${SCL}/enable && \
+    gem install \
+      gio2 \
+      test-unit)
 
 RUN useradd -m --user-group --shell /bin/bash milter-manager
 RUN mkdir /build && \

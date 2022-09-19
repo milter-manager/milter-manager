@@ -27,7 +27,6 @@ RUN \
     rrdtool \
     ruby \
     ruby-dev \
-    ruby-gio2 \
-    ruby-pkg-config \
+    ruby-gnome-dev \
     ruby-test-unit && \
   apt clean

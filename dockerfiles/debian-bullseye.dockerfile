@@ -18,7 +18,8 @@ RUN apt-get update && \
       rrdtool \
       ruby \
       ruby-dev \
-      ruby-gnome2-dev \
+      ruby-gnome-dev \
+      ruby-test-unit \
       sudo \
       tzdata && \
     curl -L https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | CUTTER_MASTER=yes sh
