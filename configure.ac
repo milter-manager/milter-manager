@@ -16,8 +16,8 @@ AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_SRCDIR([milter/manager.h])
 AM_CONFIG_HEADER([config.h])
 
-AM_INIT_AUTOMAKE(tar-pax)
-m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
+AM_INIT_AUTOMAKE([foreign tar-pax])
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 PACKAGE_TITLE="milter manager"
 AC_SUBST(PACKAGE_TITLE)
