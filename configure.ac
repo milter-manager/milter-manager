@@ -803,7 +803,6 @@ AC_CONFIG_FILES([Makefile
 		 license/Makefile
 		 build/Makefile
 		 package/Makefile
-		 package/apt/Makefile
                  vendor/Makefile])
 
 AC_OUTPUT
