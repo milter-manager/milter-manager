@@ -196,26 +196,12 @@ else
 endif
 
 ruby_install_dir = get_option('ruby-install-dir')
-
-if meson.version().version_compare('>=0.58.0')
-  if ruby_install_dir == 'site'
-    ruby_install_dir = libruby.get_variable('sitelibdir')
-  elif ruby_install_dir == 'vendor'
-    ruby_install_dir = libruby.get_variable('vendorlibdir')
-  endif
-  ruby = find_program(libruby.get_variable('ruby'), required: true)
-else
-  # dep.get_variable():
-  # Before 0.58.0 `varname` was not implemented.
-  # https://mesonbuild.com/Reference-manual_returned_dep.html#depget_variable
-  if ruby_install_dir == 'site'
-    ruby_install_dir = libruby.get_variable(pkgconfig: 'sitelibdir')
-  elif ruby_install_dir == 'vendor'
-    ruby_install_dir = libruby.get_variable(pkgconfig: 'vendorlibdir')
-  endif
-  ruby = find_program(libruby.get_variable(pkgconfig: 'ruby'), required: true)
+if ruby_install_dir == 'site'
+  ruby_install_dir = libruby.get_variable(pkgconfig: 'sitelibdir')
+elif ruby_install_dir == 'vendor'
+  ruby_install_dir = libruby.get_variable(pkgconfig: 'vendorlibdir')
 endif
-
+ruby = find_program(libruby.get_variable(pkgconfig: 'ruby'), required: true)
 rb_glib2_gem_path = \
   run_command(ruby,
               '-e',
