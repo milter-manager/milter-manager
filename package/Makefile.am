@@ -1,6 +1,5 @@
 SUBDIRS =					\
-	apt					\
-	solaris
+	apt
 
 # Just for testing
 EXTRA_DIST =					\

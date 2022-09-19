@@ -782,28 +782,8 @@ AC_CONFIG_FILES([Makefile
 		 data/cron.d/redhat/Makefile
 		 data/cron.d/freebsd/Makefile
 		 data/munin/Makefile
-		 data/smf/Makefile
-		 data/smf/manifest/Makefile
-		 data/smf/manifest/milter-manager.xml
-		 data/smf/method/Makefile
 		 data/systemd/Makefile
 		 data/systemd/redhat/Makefile
-		 package/solaris/Makefile
-		 package/solaris/prototypes/Makefile
-		 package/solaris/prototypes/milter-manager/Makefile
-		 package/solaris/prototypes/milter-manager/pkginfo
-		 package/solaris/prototypes/cutter/Makefile
-		 package/solaris/prototypes/cutter/pkginfo
-		 package/solaris/prototypes/gettext/Makefile
-		 package/solaris/prototypes/gettext/pkginfo
-		 package/solaris/prototypes/glib/Makefile
-		 package/solaris/prototypes/glib/pkginfo
-		 package/solaris/prototypes/iconv/Makefile
-		 package/solaris/prototypes/iconv/pkginfo
-		 package/solaris/prototypes/mysql/Makefile
-		 package/solaris/prototypes/mysql/pkginfo
-		 package/solaris/prototypes/ruby/Makefile
-		 package/solaris/prototypes/ruby/pkginfo
 		 tool/Makefile
 		 test/Makefile
 		 test/lib/Makefile
