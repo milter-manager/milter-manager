@@ -1,7 +1,6 @@
 SUBDIRS =					\
 	apt					\
 	ubuntu					\
-	yum					\
 	solaris
 
 # Just for testing

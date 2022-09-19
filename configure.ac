@@ -810,7 +810,6 @@ AC_CONFIG_FILES([Makefile
 		 package/Makefile
 		 package/apt/Makefile
 		 package/ubuntu/Makefile
-		 package/yum/Makefile
                  vendor/Makefile])
 
 AC_OUTPUT
