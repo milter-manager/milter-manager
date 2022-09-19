@@ -824,7 +824,6 @@ AC_CONFIG_FILES([Makefile
 		 build/Makefile
 		 package/Makefile
 		 package/apt/Makefile
-		 package/ubuntu/Makefile
                  vendor/Makefile])
 
 AC_OUTPUT
