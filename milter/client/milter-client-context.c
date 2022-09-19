@@ -4563,7 +4563,7 @@ milter_client_context_get_packet_buffer_size (MilterClientContext *context)
 }
 
 /**
- * milter_client_context_set_use_bytes: (set-property use-bytes)
+ * milter_client_context_set_use_bytes:
  * @context: A #MilterClientContext.
  * @use: Whether #MilterClientContext::body-bytes and
  *   #MilterClientContext::end-of-message-bytes are used instead of
@@ -4583,7 +4583,7 @@ milter_client_context_set_use_bytes (MilterClientContext *context,
 }
 
 /**
- * milter_client_context_get_use_bytes: (get-property use-bytes)
+ * milter_client_context_get_use_bytes:
  * @context: A #MilterClientContext.
  *
  * Returns: Whether #MilterClientContext::body-bytes and
