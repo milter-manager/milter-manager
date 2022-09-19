@@ -255,8 +255,8 @@ make %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
-mkdir -p ${buildroot}/%{ruby_prefix}/
-cp -a %{ruby_prefix}/local ${buildroot}/%{ruby_prefix}/
+mkdir -p %{buildroot}/%{ruby_prefix}/
+cp -a %{ruby_prefix}/local %{buildroot}/%{ruby_prefix}/
 
 make install DESTDIR=%{buildroot}
 install -D -m 644 %{buildroot}/%{_datadir}/milter-manager/milter-manager.service %{buildroot}/%{_unitdir}/milter-manager.service
