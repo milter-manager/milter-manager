@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby" -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -55,9 +55,8 @@ add_child_less_than (VALUE self, VALUE child)
 }
 
 static void
-cb_each (gpointer data, gpointer user_data)
+cb_each (MilterManagerChild *child, gpointer user_data)
 {
-    MilterManagerChild *child = data;
     rb_yield(GOBJ2RVAL(child));
 }
 
