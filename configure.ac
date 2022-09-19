@@ -382,7 +382,8 @@ AC_ARG_ENABLE([ruby-milter],
 if test "$ruby_available" = "yes" -a "$ruby_milterdir" != "no"; then
   AC_MSG_CHECKING([where to Ruby milter install])
   if test "$ruby_milterdir" = "yes" ; then
-    PKG_CHECK_VAR(ruby_milterdir, $ruby_package_name, vendorlibdir)
+    PKG_CHECK_VAR(ruby_vendor_lib_dir, $ruby_package_name, vendorlibdir)
+    ruby_milterdir=$ruby_vendor_lib_dir
   fi
   AC_MSG_RESULT([$ruby_milterdir])
 else
