@@ -71,6 +71,7 @@ jobs:
         label:
           - CentOS 7
           - Debian GNU/Linux bullseye
+          - Ubuntu Focal Fossa
           - AlmaLinux 8
           - AlmaLinux 9
         include:
@@ -84,6 +85,11 @@ jobs:
             task-namespace: apt
             target: debian-bullseye
             test-docker-image: debian:bullseye
+          - label: Ubuntu Focal Fossa
+            id: ubuntu-focal
+            task-namespace: apt
+            target: ubuntu-focal
+            test-docker-image: ubuntu:focal
           - label: AlmaLinux 8
             id: almalinux-8
             task-namespace: yum
@@ -160,6 +166,7 @@ jobs:
         label:
           - CentOS 7
           - Debian GNU/Linux bullseye
+          - Ubuntu Focal Fossa
           - AlmaLinux 8
           - AlmaLinux 9
         include:
@@ -173,6 +180,11 @@ jobs:
             task-namespace: apt
             target: debian-bullseye
             test-docker-image: debian:bullseye
+          - label: Ubuntu Focal Fossa
+            id: ubuntu-focal
+            task-namespace: apt
+            target: ubuntu-focal
+            test-docker-image: ubuntu:focal
           - label: AlmaLinux 8
             id: almalinux-8
             task-namespace: yum
