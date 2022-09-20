@@ -72,6 +72,7 @@ jobs:
           - CentOS 7
           - Debian GNU/Linux bullseye
           - Ubuntu Focal Fossa
+          - Ubuntu Jammy Jellyfish
           - AlmaLinux 8
           - AlmaLinux 9
         include:
@@ -90,6 +91,11 @@ jobs:
             task-namespace: apt
             target: ubuntu-focal
             test-docker-image: ubuntu:focal
+          - label: Ubuntu Jammy Jellyfish
+            id: ubuntu-jammy
+            task-namespace: apt
+            target: ubuntu-jammy
+            test-docker-image: ubuntu:jammy
           - label: AlmaLinux 8
             id: almalinux-8
             task-namespace: yum
@@ -167,6 +173,7 @@ jobs:
           - CentOS 7
           - Debian GNU/Linux bullseye
           - Ubuntu Focal Fossa
+          - Ubuntu Jammy Jellyfish
           - AlmaLinux 8
           - AlmaLinux 9
         include:
@@ -185,6 +192,11 @@ jobs:
             task-namespace: apt
             target: ubuntu-focal
             test-docker-image: ubuntu:focal
+          - label: Ubuntu Jammy Jellyfish
+            id: ubuntu-jammy
+            task-namespace: apt
+            target: ubuntu-jammy
+            test-docker-image: ubuntu:jammy
           - label: AlmaLinux 8
             id: almalinux-8
             task-namespace: yum

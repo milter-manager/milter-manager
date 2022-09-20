@@ -30,6 +30,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       :id => "ubuntu-focal",
       :box => "bento/ubuntu-20.04",
     },
+    {
+      :id => "ubuntu-jammy",
+      :box => "bento/ubuntu-22.04",
+    },
   ]
 
   n_cpus = ENV["VM_N_CPUS"] || 2
