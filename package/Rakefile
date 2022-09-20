@@ -63,6 +63,71 @@ class MilterManagerTask < PackagesGroongaOrgPackageTask
   def dput_incoming
     ENV["DPUT_INCOMING"] || "~milter-manager/ppa/ubuntu/"
   end
+
+  def apt_targets_default
+    [
+      "debian-bullseye",
+    ]
+  end
+
+  def yum_targets_default
+    [
+      "centos-7",
+      "almalinux-8",
+      "almalinux-9",
+    ]
+  end
+
+  def use_built_package?
+    true
+  end
+
+  def github_repository
+    "milter-manager/milter-manager"
+  end
+
+  def github_actions_workflow_file_name(target_namespace, target)
+    "package.yml"
+  end
+
+  def github_actions_artifact_name(target_namespace, target)
+    target
+  end
+
+  def built_package_url(target_namespace, target)
+    url = "https://github.com/milter-manager/milter-manager/releases/download/#{@version}/"
+    url << "#{target}.tar.gz"
+    url
+  end
+
+  def built_package_n_split_components
+    3
+  end
+
+  def release(target_namespace)
+    base_dir = __send__("#{target_namespace}_dir")
+    repositories_dir = Pathname("#{base_dir}/repositories")
+    repositories_dir.glob("**/*.{deb,dsc,rpm}") do |path|
+      case path.extname
+      when ".deb", ".dsc"
+        relative_path = path.relative_from(repositories_dir)
+        # e.g.: "debian/pool/bullseye/main/m/milter-manager/milter-manager_*.deb"
+        components = path.to_s.split("/")
+        distribution = components[0]
+        version = components[2]
+      when ".rpm"
+        relative_path = path.relative_from(repositories_dir)
+        # e.g.: "centos/7/x86_64/Packages/milter-manager-*.rpm"
+        components = path.to_s.split("/")
+        distribution = "el"
+        version = components[1]
+      end
+      sh("package_cloud",
+         "push",
+         "milter-manager/repos/#{distribusion}/#{version}",
+         package)
+    end
+  end
 end
 
 task = MilterManagerTask.new
