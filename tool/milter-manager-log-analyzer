@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# Copyright (C) 2008-2016  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1144,6 +1144,20 @@ EOF
     end
   end
 
+  RFC2822_MONTH_NAMES = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ]
   def update
     return unless @update_db
 
@@ -1174,7 +1188,7 @@ EOF
         else
           next
         end
-        month = Time::RFC2822_MONTH_NAME.index(month_name)
+        month = RFC2822_MONTH_NAMES.index(month_name)
         next if month.nil?
         time_stamp = Time.local(year, month + 1, day.to_i,
                                 hour.to_i, minute.to_i, second.to_i)
