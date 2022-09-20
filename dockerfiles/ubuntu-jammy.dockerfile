@@ -20,7 +20,8 @@ RUN apt-get update && \
       ruby-dev \
       ruby-gnome-dev \
       ruby-test-unit \
-      sudo && \
+      sudo \
+      tzdata && \
     curl -L https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | CUTTER_MASTER=yes sh
 
 RUN useradd -m --user-group --shell /bin/bash milter-manager
