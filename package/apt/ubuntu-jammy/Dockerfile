@@ -23,7 +23,7 @@ RUN \
     lsb-release \
     meson \
     ninja-build \
-    python \
+    python3 \
     rrdtool \
     ruby \
     ruby-dev \
