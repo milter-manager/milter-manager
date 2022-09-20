@@ -20,7 +20,8 @@ Build-Depends:
 	ruby,
 	ruby-dev,
 	ruby-gnome-dev | ruby-gnome2-dev,
-	ruby-test-unit
+	ruby-test-unit,
+	tzdata
 Standards-Version: 4.1.4
 Homepage: http://milter-manager.osdn.jp/
 
