@@ -28,5 +28,6 @@ RUN \
     ruby \
     ruby-dev \
     ruby-gnome-dev \
-    ruby-test-unit && \
+    ruby-test-unit \
+    tzdata && \
   apt clean
