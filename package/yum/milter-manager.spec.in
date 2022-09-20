@@ -1,6 +1,6 @@
 %define ruby_version %(ruby -e "print RUBY_VERSION.tr('.', '')")
 %define ruby_prefix %(ruby -rrbconfig -e 'print RbConfig::CONFIG["prefix"]')
-%define ruby_libdir %(ruby -rrbconfig -e 'print RbConfig::CONFIG["rubylibdir"]')
+%define ruby_vendor_lib_dir %(ruby -rrbconfig -e 'print RbConfig::CONFIG["rubyvendorlibdir"]')
 
 %if %{rhel} >= 8
 %define required_ruby_package ruby
@@ -440,7 +440,7 @@ fi
 %doc %{_datadir}/gtk-doc/html/milter-manager/
 %{ruby_prefix}/local/lib*/gems/
 %{ruby_prefix}/local/share/gems/
-%{ruby_libdir}/milter/core.rb
+%{ruby_vendor_lib_dir}/milter/core.rb
 %{_libdir}/milter-manager/binding/ext/milter_core.so
 %{_libdir}/milter-manager/binding/ext/rb-milter-core.h
 %{_libdir}/milter-manager/binding/lib/milter.rb
@@ -452,8 +452,8 @@ fi
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
 %doc %{_datadir}/gtk-doc/html/milter-manager/
-%{ruby_libdir}/milter.rb
-%{ruby_libdir}/milter/client.rb
+%{ruby_vendor_lib_dir}/milter.rb
+%{ruby_vendor_lib_dir}/milter/client.rb
 %{_libdir}/milter-manager/binding/ext/milter_client.so
 %{_libdir}/milter-manager/binding/ext/rb-milter-client.h
 %{_libdir}/milter-manager/binding/lib/milter/client.rb
@@ -466,7 +466,7 @@ fi
 %defattr(-,root,root)
 %doc README README.ja NEWS NEWS.ja TODO
 %doc %{_datadir}/gtk-doc/html/milter-manager/
-%{ruby_libdir}/milter/server.rb
+%{ruby_vendor_lib_dir}/milter/server.rb
 %{_libdir}/milter-manager/binding/ext/milter_server.so
 %{_libdir}/milter-manager/binding/ext/rb-milter-server.h
 %{_libdir}/milter-manager/binding/lib/milter/server.rb

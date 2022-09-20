@@ -375,7 +375,7 @@ AC_ARG_ENABLE([ruby-milter],
               AS_HELP_STRING([--enable-ruby-milter[=DIR]],
                              [Enable milter development with Ruby.
                               DIR should be one of the Ruby's LOAD_PATH.
-                              (default: vendor_ruby directoy)]),
+                              (default: vendor directoy)]),
               [ruby_milterdir="$enableval"],
               [ruby_milterdir="no"])
 
