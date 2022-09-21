@@ -110,7 +110,7 @@ load (GTypeModule *module)
         return FALSE;
 
     if (!_milter_manager_module_load_func(priv->library,
-                               G_STRINGIFY(MILTER_MANAGER_MODULE_IMPL_INIT),
+                                          G_STRINGIFY(MILTER_MANAGER_MODULE_IMPL_INIT),
                                           (gpointer)&priv->init) ||
         !_milter_manager_module_load_func(priv->library,
                                           G_STRINGIFY(MILTER_MANAGER_MODULE_IMPL_EXIT),
@@ -266,7 +266,7 @@ milter_manager_module_find (GList *modules, const gchar *name)
  * @module: A #MilterMacrosRequests.
  * @first_property: The value of the first property.
  * @var_args: The values for the second and subsequent properties.
- * 
+ *
  * Returns: (transfer full): A newly instantiated object provided by @module.
  */
 GObject *
