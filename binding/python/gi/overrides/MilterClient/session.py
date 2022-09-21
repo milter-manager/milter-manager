@@ -31,11 +31,11 @@ class Session(object):
             "helo",
             "envelope_from",
             "envelope_recipient",
-            "body",
-            "unknown",
+            "data",
             "header",
             "end_of_header",
-            "data",
+            "body",
+            "unknown",
         ]
         for event in events:
             if not hasattr(self, event):
