@@ -20,9 +20,9 @@ set -exu
 sudo apt update
 sudo apt install -V -y curl lsb-release
 
+distribution=$(lsb_release --short --id | tr 'A-Z' 'a-z')
 code_name=$(lsb_release --codename --short)
 architecture=$(dpkg --print-architecture)
-distribution=$(lsb_release --short --id | tr 'A-Z' 'a-z')
 
 # TODO: Need this for testing package upgrade
 # curl -s https://packagecloud.io/install/repositories/milter-manager/repos/script.deb.sh | \
