@@ -22,7 +22,7 @@ class TestServer(object):
 
     def run(self, *options):
         command_line = [
-            self.milter_test_server,
+            self._milter_test_server,
             "--output-message",
             "--color", "no",
             *self.options,
@@ -31,7 +31,7 @@ class TestServer(object):
         completed_process = subprocess.run(command_line,
                                            check=True,
                                            capture_output=True)
-        return self._parse(command_result.stdout)
+        return self._parse(completed_process.stdout)
 
     def _guess_milter_test_server(self):
         import os
@@ -47,34 +47,37 @@ class TestServer(object):
 
     def _parse(self, output):
         result = TestServerResult()
+        lines = output.splitlines(keepends=True)
         # "status: accept\n" -> "accept"
-        result.status = output.readline().rstrip().split(": ", 2)[1]
+        result.status = lines.pop(0).split(b": ", 2)[1].rstrip().decode()
         # "elapsed-time: 0.003769 seconds" -> 0.003769
         result.elapsed_time = \
-            float(output.readline().rstrip().split(": ", 2)[1].split()[0])
-        output.readline()
+            float(lines.pop(0).split(b": ", 2)[1].split()[0].rstrip().decode())
+        lines.pop(0)
 
         mode = None
-        for line in output:
-            if line.startswith("Envelope:"):
+        while len(lines) > 0:
+            line = lines.pop(0)
+            if line.startswith(b"Envelope:"):
                 mode = "envelope"
-            elif line.startswith("Header:"):
+            elif line.startswith(b"Header:"):
                 mode = "headers"
-            elif line.startswith("Body:"):
+            elif line.startswith(b"Body:"):
                 break
             else:
                 if mode == "envelope":
-                    if line[0] == "-":
+                    if line[0] == b"-":
                         continue
-                    target, value = line[1:].strip().split(":", 2)
-                    if target == "MAIL FROM":
+                    target, value = line[1:].strip().split(b":", 2)
+                    if target == b"MAIL FROM":
                         result.envelope_from = value
-                    elif target == "RCPT TO":
+                    elif target == b"RCPT TO":
                         result.envelope_recipients.append(value)
                 elif mode == "headers":
-                    name, value = line.split(":", 2)
-                    result.headers.append([name.strip(), value.strip()])
-        result.body = output.read()
+                    name, value = line.split(b":", 2)
+                    result.headers.append([name.strip().decode(),
+                                           value.strip().decode()])
+        result.body = b"".join(lines)
 
         return result
 

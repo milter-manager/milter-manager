@@ -21,6 +21,7 @@ from gi.repository import MilterServer
 
 __all__ = [
     "ServerContext",
+    "TestServer",
 ]
 current_module = sys.modules[__name__]
 for name in __all__:
