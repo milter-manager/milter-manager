@@ -13,6 +13,8 @@
 .gdb_history
 .libs
 .test-result
+/.cache/
+/.vagrant/
 /aclocal.m4
 /autom4te.cache
 /binding/ruby/ruby-milter/milter.rb
@@ -62,6 +64,7 @@
 /doc/reference/tmp/
 /doc/reference/tmpl/
 /doc/reference/xml/
+/gtk-doc.*
 /html/blog/data/ja/cache/
 /html/blog/data/ja/category/
 /html/blog/data/ja/log/
@@ -75,6 +78,7 @@
 /libmilter.pc
 /libtool
 /log
+/m4/
 /milter-client.pc
 /milter-core.pc
 /milter-manager-*.tar.gz
@@ -86,11 +90,13 @@
 /misc
 /package/apt/build.sh
 /package/apt/build/
+/package/apt/env.sh
 /package/apt/repositories/
 /package/apt/tmp/
 /package/milter-manager-*.tar.gz
 /package/yum/build.sh
 /package/yum/build/
+/package/yum/env.sh
 /package/yum/repositories/
 /package/yum/tmp/
 /ruby-milter-client.pc
