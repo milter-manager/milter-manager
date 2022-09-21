@@ -20,12 +20,14 @@ MilterClient.Client.init()
 
 from .client import Client
 from .command_line import CommandLine
+from .milter_runner import MilterRunner
 from .session import Session
 from .session_context import SessionContext
 
 __all__ = [
     "Client",
     "CommandLine",
+    "MilterRunner",
     "Session",
     "SessionContext",
 ]

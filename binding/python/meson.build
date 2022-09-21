@@ -16,6 +16,7 @@
 python.install_sources('gi/overrides/MilterClient/__init__.py',
                        'gi/overrides/MilterClient/client.py',
                        'gi/overrides/MilterClient/command_line.py',
+                       'gi/overrides/MilterClient/milter_runner.py',
                        'gi/overrides/MilterClient/session.py',
                        'gi/overrides/MilterClient/session_context.py',
                        subdir: 'gi/overrides/MilterClient/')

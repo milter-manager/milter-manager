@@ -22,6 +22,7 @@ from gi.repository import MilterClient
 __all__ = [
     "Client",
     "CommandLine",
+    "MilterRunner",
     "Session",
     "SessionContext",
 ]
