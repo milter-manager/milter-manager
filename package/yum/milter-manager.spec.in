@@ -230,14 +230,6 @@ Documentation for milter manager
 
 %build
 gem install gio2
-# Recently, hardened build is enabled by default, but there is a case
-# that it causes error (-Wl,-z,now) for some plugins systems. To fix
-# such a issue, lazy binding (-Wl,-z,lazy) should be enabled
-# explicitly. Enable most of hardening feature except -Wl,-z,now, we
-# need to set flags manually.
-# https://fedoraproject.org/wiki/Changes/Harden_All_Packages#Troubleshooting_steps_for_package_maintainers
-export CFLAGS="$RPM_OPT_FLAGS -fPIC -pie -Wl,-z,relro -Wl,-z,lazy"
-export CXXFLAGS="$RPM_OPT_FLAGS -fPIC -pie -Wl,-z,relro -Wl,-z,lazy"
 %configure								\
     --disable-static							\
     --with-default-effective-user=milter-manager			\
@@ -508,6 +500,9 @@ fi
 
 
 %changelog
+* Mon Sep 19 2022 Sutou Kouhei <kou@clear-code.com> - 2.1.7-1
+- New upstream release.
+
 * Thu Jan 13 2022 Kentaro Hayashi <hayashi@clear-code.com> - 2.1.6-1
 - new upstream release.
 

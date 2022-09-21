@@ -15,8 +15,14 @@ AM_CFLAGS = 								\
 	$(MILTER_RUBY_CFLAGS)
 #	$(COVERAGE_CFLAGS)
 
+# Recently, hardened build is enabled by default on Fedora and RHEL
+# related systems, but there is a case that it causes error
+# (-Wl,-z,now) for some plugins systems. To fix such a issue, lazy
+# binding (-Wl,-z,lazy) should be enabled explicitly.
+# https://fedoraproject.org/wiki/Changes/Harden_All_Packages#Troubleshooting_steps_for_package_maintainers
 LIBS =					\
-	$(MILTER_RUBY_LIBS)
+	$(MILTER_RUBY_LIBS)		\
+	-Wl,-z,lazy
 
 AM_LDFLAGS =				\
 	-module				\

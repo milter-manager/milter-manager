@@ -19,4 +19,11 @@ shared_module('milter-manager-ruby-configuration',
               dependencies: [milter_manager, ruby_glib2],
               install: true,
               install_dir: module_configuration_dir,
+              # Recently, hardened build is enabled by default on
+              # Fedora and RHEL related systems, but there is a case
+              # that it causes error (-Wl,-z,now) for some plugins
+              # systems. To fix such a issue, lazy binding
+              # (-Wl,-z,lazy) should be enabled explicitly.
+              # https://fedoraproject.org/wiki/Changes/Harden_All_Packages#Troubleshooting_steps_for_package_maintainers
+              link_args: ['-Wl,-z,lazy'],
               name_prefix: '')
