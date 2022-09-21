@@ -22,6 +22,7 @@ sudo apt install -V -y curl lsb-release
 
 code_name=$(lsb_release --codename --short)
 architecture=$(dpkg --print-architecture)
+distribution=$(lsb_release --short --id | tr 'A-Z' 'a-z')
 
 # TODO: Need this for testing package upgrade
 # curl -s https://packagecloud.io/install/repositories/milter-manager/repos/script.deb.sh | \
@@ -29,7 +30,7 @@ architecture=$(dpkg --print-architecture)
 
 repositories_dir=/vagrant/package/apt/repositories
 sudo apt install -V -y \
-  ${repositories_dir}/debian/pool/${code_name}/*/*/*/*_{${architecture},all}.deb
+  ${repositories_dir}/${distribution}/pool/${code_name}/*/*/*/*_{${architecture},all}.deb
 
 systemctl status milter-manager
 
