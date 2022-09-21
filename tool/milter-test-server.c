@@ -2286,7 +2286,7 @@ start_process (MilterServerContext *context, ProcessData *process_data)
 
     print_result(context, process_data);
 
-    return TRUE;
+    return process_data->success;
 }
 
 static gpointer
