@@ -1,2 +1,2 @@
-usr/lib/python3/dist-packages/gi/overrides/MilterClient
-usr/lib/python3/dist-packages/milter/client/
+usr/lib/python3/*-packages/gi/overrides/MilterClient
+usr/lib/python3/*-packages/milter/client/
