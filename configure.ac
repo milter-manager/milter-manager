@@ -354,7 +354,18 @@ if test "$ruby_available" = "yes" -a -z "$ruby_package_name"; then
   ruby_package_name=$($RUBY -rrbconfig -e 'print(File.basename(RbConfig::CONFIG.fetch(%(ruby_pc)), %(.*)))')
 fi
 if test -n "$ruby_package_name"; then
+  AC_REQUIRE([PKG_PROG_PKG_CONFIG])
+  _SAVE_PKG_CONFIG="$PKG_CONFIG"
+  # Ignore DLDFLAGS= in ruby.pc because it may have -Wl,-z,now. For
+  # example, Ruby on AlmaLinux 8 and 9 has -Wl,-z,now. If -Wl,-z,now
+  # exists, milter-manager-ruby-configuration.so can't be loaded with
+  # `dlopen(RTLD_LAZY)` because milter-manager-ruby-configuration.so
+  # has a reference to glib2.so (Ruby/GLib2). glib2.so is loaded by
+  # 'require "glib2"' after milter-manager-ruby-configuration.so is
+  # loaded.
+  PKG_CONFIG="$PKG_CONFIG --define-variable=DLDFLAGS="
   PKG_CHECK_MODULES(LIBRUBY, $ruby_package_name)
+  PKG_CONFIG="$_SAVE_PKG_CONFIG"
   PKG_CHECK_VAR(RUBY, $ruby_package_name, ruby)
   PKG_CHECK_VAR(ruby_libdir, $ruby_package_name, libdir)
   LIBRUBY_LIBS="-L$ruby_libdir $LIBRUBY_LIBS"
