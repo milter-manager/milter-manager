@@ -49,13 +49,17 @@ libmilter_server = library('milter-server',
 milter_server = declare_dependency(dependencies: dependencies,
                                    link_with: libmilter_server)
 
+milter_server_pkgconfig_variables = pkgconfig_variables
+milter_server_pkgconfig_variables += [
+  'milter_test_server=${bindir}/milter-test-server',
+]
 pkgconfig.generate(libmilter_server,
                    description: 'milter API',
                    filebase: 'milter-server',
                    name: 'milter server library',
                    requires: ['milter-core = ' + meson.project_version()],
                    subdirs: project_include_sub_dir,
-                   variables: pkgconfig_variables)
+                   variables: milter_server_pkgconfig_variables)
 
 dependencies = [
   declare_dependency(sources: milter_core_gir),

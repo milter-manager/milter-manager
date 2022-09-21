@@ -27,8 +27,9 @@ prefix = get_option('prefix')
 project_include_sub_dir = meson.project_name()
 milter_include_sub_dir = project_include_sub_dir / 'milter'
 milter_include_dir = get_option('includedir') / milter_include_sub_dir
-data_dir = prefix / get_option('datadir')
-gir_dir = data_dir / 'gir-1.0'
+data_dir = get_option('datadir')
+relative_gir_dir = 'gir-1.0'
+gir_dir = data_dir / relative_gir_dir
 project_lib_dir = get_option('libdir') / meson.project_name()
 module_dir = project_lib_dir / 'module'
 module_configuration_dir = module_dir / 'configuration'
@@ -36,7 +37,11 @@ module_configuration_dir = module_dir / 'configuration'
 fs = import('fs')
 gnome = import('gnome')
 pkgconfig = import('pkgconfig')
-pkgconfig_variables = ['girdir=@0@'.format(gir_dir)]
+pkgconfig_variables = [
+  'bindir=${prefix}/@0@'.format(get_option('bindir')),
+  'datadir=${prefix}/@0@'.format(data_dir),
+  'girdir=${datadir}/@0@'.format(relative_gir_dir),
+]
 
 
 # CentOS 7: GLib 2.50
