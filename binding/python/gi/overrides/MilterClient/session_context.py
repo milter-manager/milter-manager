@@ -48,7 +48,7 @@ class SessionContext(object):
 
     def __getitem__(self, name):
         if self._macros is None:
-            self._macros = self._context.available_macros() or {}
+            self._macros = self._context.get_available_macros() or {}
         return self._macros.get(name)
 
     def __getattr__(self, name):

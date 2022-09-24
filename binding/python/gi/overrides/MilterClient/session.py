@@ -133,3 +133,6 @@ class Session(object):
 
     def _remove_source(self, source_id):
         return self._context.event_loop.remove(source_id)
+
+    def __getitem__(self, name):
+        return self._context[name]
