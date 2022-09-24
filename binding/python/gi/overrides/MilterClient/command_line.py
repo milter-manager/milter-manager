@@ -65,6 +65,7 @@ class CommandLine(object):
 
     class ConfigurationLoadAction(argparse.Action):
         def __call__(self, parser, namespace, path, option_string):
+            namespace.config_path = path
             if not hasattr(namespace, "config"):
                 namespace.config = configparser.ConfigParser()
             config = namespace.config
