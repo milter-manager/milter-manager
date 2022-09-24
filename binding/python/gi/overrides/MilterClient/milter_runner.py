@@ -19,6 +19,27 @@ import sys
 import tempfile
 import time
 
+class MilterRunError(Exception):
+    def __init__(self, return_code, command_line, stdout, stderr):
+        self.return_code = return_code
+        self.command_line = command_line
+        self.stdout = stdout
+        self.stderr = stderr
+
+    def __str__(self):
+        return f"""
+Command line: {self.command_line}
+Return code: {self.return_code}
+Standard output:
+=================================
+{self.stdout.strip()}
+=================================
+Standard error:
+=================================
+{self.stderr.strip()}
+=================================
+"""
+
 class MilterRunner(object):
     def __init__(self,
                  path,
@@ -40,11 +61,13 @@ class MilterRunner(object):
             "--connection-spec", self.connection_spec,
             *self._args,
         ]
-        self.stdout = tempfile.TemporaryFile()
-        self.stderr = tempfile.TemporaryFile()
+        self.stdout = tempfile.NamedTemporaryFile(mode="w+",
+                                                  suffix=".stdout.log")
+        self.stderr = tempfile.NamedTemporaryFile(mode="w+",
+                                                  suffix=".stderr.log")
         self.process = subprocess.Popen(command_line,
-                                        stdout=subprocess.PIPE,
-                                        stderr=subprocess.PIPE,
+                                        stdout=self.stdout,
+                                        stderr=self.stderr,
                                         text=True)
         start = time.time()
         while True:
@@ -53,6 +76,13 @@ class MilterRunner(object):
                 tcp_client.connect((self._host, self._port))
                 break
             except ConnectionRefusedError:
+                if self.process.poll() is not None:
+                    self.stdout.seek(0)
+                    self.stderr.seek(0)
+                    raise MilterRunError(self.process.returncode,
+                                         self.process.args,
+                                         self.stdout.read(),
+                                         self.stderr.read())
                 if time.time() - start > self._start_timeout:
                     raise
             finally:
