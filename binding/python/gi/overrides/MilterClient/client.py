@@ -42,6 +42,9 @@ def _setup_session(self, context, session_class, init_arguments):
                 if event == "end_of_message":
                     event_callable()
                 else:
+                    if event == "body":
+                        # GBytes -> byte
+                        args = (args[0].get_data(), *args[1:])
                     event_callable(*args)
             except Exception as error:
                 milter.core.Logger.error(error)
