@@ -101,6 +101,7 @@ typedef struct _ProcessData
 {
     MilterEventLoop *loop;
     GTimer *timer;
+    gboolean succeeded_to_connect;
     gboolean success;
     guint reply_code;
     gchar *reply_extended_code;
@@ -918,6 +919,7 @@ static void
 cb_ready (MilterServerContext *context, gpointer user_data)
 {
     ProcessData *data = user_data;
+    data->succeeded_to_connect = TRUE;
     setup(context, data);
     g_timer_start(data->timer);
     negotiate(context);
@@ -928,6 +930,7 @@ cb_connection_error (MilterErrorEmittable *emittable, GError *error, gpointer us
 {
     ProcessData *data = user_data;
 
+    data->succeeded_to_connect = FALSE;
     data->success = FALSE;
     data->error = g_error_copy(error);
     milter_event_loop_quit(data->loop);
@@ -1674,6 +1677,7 @@ init_process_data (ProcessData *data)
 {
     data->loop = milter_glib_event_loop_new(NULL);
     data->timer = g_timer_new();
+    data->succeeded_to_connect = TRUE;
     data->success = TRUE;
     data->quarantine_reason = NULL;
     data->option = NULL;
@@ -2286,7 +2290,7 @@ start_process (MilterServerContext *context, ProcessData *process_data)
 
     print_result(context, process_data);
 
-    return process_data->success;
+    return process_data->succeeded_to_connect;
 }
 
 static gpointer
