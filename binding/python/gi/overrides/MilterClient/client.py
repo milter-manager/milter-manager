@@ -29,6 +29,14 @@ def register(self, session_class, *init_arguments):
     self.connect("connection-established", on_connection_established)
 Client.register = register
 
+start_syslog_raw = Client.start_syslog
+def start_syslog(self, identify, facility=None):
+    self.set_syslog_identify(identify)
+    if facility:
+        self.set_syslog_facility(facility)
+    start_syslog_raw(self)
+Client.start_syslog = start_syslog
+
 def _setup_session(self, context, session_class, init_arguments):
     session_context = SessionContext(context)
     session = session_class(session_context, *init_arguments)
