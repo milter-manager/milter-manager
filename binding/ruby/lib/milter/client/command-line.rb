@@ -252,7 +252,7 @@ module Milter
         end
 
         @option_parser.on("--log-path=PATH",
-                          "Specify log output path to PATH.",
+                          "Specify log output path as PATH.",
                           "If PATH is '-', the standard output is used",
                           "(The standard output)") do |path|
           log_conf.path = path
