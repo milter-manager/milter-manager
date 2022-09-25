@@ -18,6 +18,7 @@ import configparser
 import contextlib
 import os
 import sys
+import syslog
 
 import gi._ossighelper
 
@@ -25,19 +26,15 @@ import milter.core
 from .client import Client
 
 class CommandLine(object):
-    def __init__(self, **kwargs):
+    def __init__(self, name=None, **kwargs):
+        self.name = name or os.path.splitext(os.path.basename(sys.argv[0]))[0]
         self.parser = argparse.ArgumentParser(**kwargs)
         self._setup_arguments()
 
-    def parse(self, argv=None):
-        args = self.parser.parse_args(argv)
-        if not hasattr(args, "config"):
-            args.config = configparser.ConfigParser()
-        return args
-
     @contextlib.contextmanager
     def run(self, argv=None):
-        args = self.parse(argv)
+        args = self._parse(argv)
+        self._apply_args(args)
         client = Client()
         def on_error(_client, error):
             milter.core.Logger.error(f"[client][error] {type(error)}: {error}")
@@ -84,6 +81,10 @@ class CommandLine(object):
             set_config("connection_spec", "milter", "connection_spec")
             set_config("daemon", "milter", "daemon", config.getboolean)
             set_config("pid_file", "milter", "pid_file")
+            set_config("log_level", "log", "level")
+            set_config("log_path", "log", "path")
+            set_config("use_syslog", "log", "use_syslog", config.getboolean)
+            set_config("syslog_facility", "log", "syslog_facility")
 
     def _setup_basic_arguments(self):
         basic = self.parser.add_argument_group("Basic", "Basic options")
@@ -98,15 +99,23 @@ class CommandLine(object):
         basic.add_argument("-e", "--environment",
                            default=os.environ.get("MILTER_ENV", "development"),
                            dest="environment",
-                           help="Set milter environment as ENVIRONMENT",
+                           help="Set milter environment as ENVIRONMENT.\n" +
+                           "(default: %(default)s)",
                            metavar="ENVIRONMENT")
 
     def _setup_milter_arguments(self):
         milter = self.parser.add_argument_group("milter", "milter options")
+        milter.add_argument("--name",
+                            default=self.name,
+                            dest="name",
+                            help="Specify name as NAME.\n" +
+                            "(default: %(default)s)",
+                            metavar="NAME")
         milter.add_argument("-s", "--connection-spec",
                             default="inet:20025",
                             dest="connection_spec",
-                            help="Specify connection spec as SPEC",
+                            help="Specify connection spec as SPEC.\n" +
+                            "(default: %(default)s)",
                             metavar="SPEC")
         milter.add_argument("--daemon",
                             action=argparse.BooleanOptionalAction,
@@ -120,11 +129,83 @@ class CommandLine(object):
         # TODO: See Milter::Client::CommandLine#setup_milter_options
 
     def _setup_logger_arguments(self):
-        pass
+        logger = self.parser.add_argument_group("Logger", "Logger options")
+        level_names = [
+            value.first_value_nick
+            for value
+            in milter.core.LogLevelFlags.__flags_values__.values()
+        ]
+        level_names += ["all"]
+        logger.add_argument("--log-level",
+                            choices=level_names,
+                            default="default",
+                            dest="log_level",
+                            help="Specify log level as LEVEL.\n" +
+                            "(available values: %(choices)s)\n" +
+                            "(default: %(default)s)",
+                            metavar="LEVEL")
+        logger.add_argument("--log-path",
+                            default="-",
+                            dest="log_path",
+                            help="Specify log output path as PATH.\n" +
+                            "If PATH is '-', the standard output is used.\n" +
+                            "(default: %(default)s)",
+                            metavar="PATH")
+        logger.add_argument("--syslog",
+                            default=False,
+                            action=argparse.BooleanOptionalAction,
+                            dest="use_syslog",
+                            help="Use syslog")
+        no_facility_names = [
+            "LOG_EMERG",
+            "LOG_ALERT",
+            "LOG_CRIT",
+            "LOG_ERR",
+            "LOG_WARNING",
+            "LOG_NOTICE",
+            "LOG_INFO",
+            "LOG_DEBUG",
+            "LOG_PID",
+            "LOG_CONS",
+            "LOG_NDELAY",
+            "LOG_ODELAY",
+            "LOG_NOWAIT",
+            "LOG_PERROR",
+        ]
+        syslog_facilities = [
+            key.replace("LOG_", "", 1).lower()
+            for key
+            in syslog.__dict__
+            if key.startswith("LOG_") and not key in no_facility_names
+        ]
+        logger.add_argument("--syslog-facility",
+                            choices=syslog_facilities,
+                            default="mail",
+                            dest="syslog_facility",
+                            help="Use FACILITY as syslog facility.\n" +
+                            "(available values: %(choices)s).\n" +
+                            "(default: %(default)s)",
+                            metavar="FACILITY")
+        logger.add_argument("--verbose",
+                            action="store_const",
+                            const="all",
+                            dest="log_level",
+                            help="Show messages verbosely.\n" +
+                            "Alias of --log-level=all.")
 
-        # TODO: See Milter::Client::CommandLine#setup_logger_options
+    def _parse(self, argv=None):
+        args = self.parser.parse_args(argv)
+        if not hasattr(args, "config"):
+            args.config = configparser.ConfigParser()
+        return args
+
+    def _apply_args(self, args):
+        milter.core.Logger.get_default().target_level = args.log_level
+        milter.core.Logger.get_default().path = args.log_path
 
     def _setup_client(self, client, args):
         client.set_connection_spec(args.connection_spec)
         if args.pid_file:
             client.set_pid_file(args.pid_file)
+        if args.use_syslog:
+            client.start_syslog(args.name, args.syslog_facility)
