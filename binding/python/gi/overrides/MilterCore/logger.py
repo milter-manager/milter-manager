@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
+import functools
 import inspect
 import io
 import traceback
@@ -21,12 +22,37 @@ import gi.module
 
 MilterCore = gi.module.get_introspection_module("MilterCore")
 Logger = MilterCore.Logger
+LogLevelFlags = MilterCore.LogLevelFlags
 
 Logger.domain = "milter"
+LogLevelFlags.ALL = functools.reduce(lambda x, y: x | y,
+                                     LogLevelFlags.__flags_values__.values())
+
+def resolve_log_level_flags(level):
+    if level is None:
+        return LogLevelFlags.NONE
+    if not isinstance(level, LogLevelFlags):
+        level = getattr(LogLevelFlags, level.upper())
+    return level
+
+def get_target_level(self):
+    return self.get_target_level()
+Logger.target_level = property(get_target_level)
+
+def set_target_level(self, level):
+    self.set_target_level(resolve_log_level_flags(level))
+Logger.target_level = Logger.target_level.setter(set_target_level)
+
+def get_path(self):
+    return self.get_path()
+Logger.path = property(get_path)
+
+def set_path(self, path):
+    self.set_path(path)
+Logger.path = Logger.path.setter(set_path)
 
 def log(self, level, message, n_call_depth=None):
-    if not isinstance(level, MilterCore.LogLevelFlags):
-        level = getattr(MilterCore.LogLevelFlags, level.upper())
+    level = resolve_log_level_flags(level)
     if not self.get_interesting_level() & level:
         return
     frame_info = inspect.stack()[n_call_depth or 1]
