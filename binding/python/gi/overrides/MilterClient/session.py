@@ -17,8 +17,9 @@ import gi
 from gi.repository import GLib
 
 import milter.core
-State = milter.core.State
 StepFlags = milter.core.StepFlags
+MilterClient = gi.module.get_introspection_module("MilterClient")
+ClientContextState = MilterClient.ClientContextState
 
 class Session(object):
     def __init__(self, context):
@@ -80,7 +81,7 @@ class Session(object):
             self._context.set_reply(code, extended_code, reason)
         else:
             self._context.status = "reject"
-        if not self._context.state == State.ENVELOPE_RECIPIENT:
+        if not self._context.state == ClientContextState.ENVELOPE_RECIPIENT:
             self.reset()
 
     def _temporary_failure(self, code=None, extended_code=None, reason=None):
@@ -91,7 +92,7 @@ class Session(object):
             self._context.set_reply(code, extended_code, reason)
         else:
             self._context.status = "temporary_failure"
-        if not self._context.state == State.ENVELOPE_RECIPIENT:
+        if not self._context.state == ClientContextState.ENVELOPE_RECIPIENT:
             self.reset()
 
     def _quarantine(self, reason):

@@ -15,21 +15,15 @@
 
 import gi.module
 
+import milter.core
+
 MilterClient = gi.module.get_introspection_module("MilterClient")
-MilterClient.Client.init()
+ClientContext = MilterClient.ClientContext
 
-from .client import Client
-from .client_context import ClientContext
-from .command_line import CommandLine
-from .milter_runner import MilterRunner
-from .session import Session
-from .session_context import SessionContext
+def get_state(self):
+    return self.get_state()
+ClientContext.state = property(get_state)
 
-__all__ = [
-    "Client",
-    "ClientContext",
-    "CommandLine",
-    "MilterRunner",
-    "Session",
-    "SessionContext",
-]
+def set_state(self, state):
+    self.set_state(state)
+ClientContext.state = ClientContext.state.setter(set_state)
