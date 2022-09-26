@@ -17,15 +17,32 @@ import argparse
 import configparser
 import contextlib
 import os
+import resource
 import sys
 import syslog
 
 import gi._ossighelper
+import gi.module
 
 import milter.core
 from .client import Client
 
+MilterClient = gi.module.get_introspection_module("MilterClient")
+
 class CommandLine(object):
+    AVAILABLE_EVENT_LOOP_BACKENDS = [
+        enum.value_nick
+        for enum
+        in MilterClient.ClientEventLoopBackend.__enum_values__.values()
+    ]
+
+    AVAILABLE_FALLBACK_STATUSES = [
+        "accept",
+        "reject",
+        "temporary-failure",
+        "discard",
+    ]
+
     def __init__(self, name=None, **kwargs):
         self.name = name or os.path.splitext(os.path.basename(sys.argv[0]))[0]
         self.parser = argparse.ArgumentParser(**kwargs)
@@ -69,7 +86,9 @@ class CommandLine(object):
             with open(path) as input:
                 config.read_file(input, path)
 
-            def set_config(key, section, option, getter=config.get):
+            def set_config(key, section, option,
+                           getter=config.get,
+                           available_values=None):
                 if not section in config:
                     return
                 current_value = getattr(namespace, key)
@@ -81,6 +100,19 @@ class CommandLine(object):
             set_config("connection_spec", "milter", "connection_spec")
             set_config("daemon", "milter", "daemon", config.getboolean)
             set_config("pid_file", "milter", "pid_file")
+            set_config("fallback_status",
+                       "milter",
+                       "fallback_status",
+                       available_values=CommandLine.AVAILABLE_FALLBACK_STATUSES)
+            set_config("effective_user", "milter", "user")
+            set_config("effective_group", "milter", "group")
+            set_config("unix_socket_group", "milter", "unix_socket_group")
+            set_config("unix_socket_mode", "milter", "unix_socket_mode")
+            set_config("max_file_descriptors", "milter", "max_file_descriptors")
+            set_config("event_loop_backend",
+                       "milter",
+                       "event_loop_backend",
+                       available_values=CommandLine.AVAILABLE_EVENT_LOOP_BACKENDS)
             set_config("log_level", "log", "level")
             set_config("log_path", "log", "path")
             set_config("use_syslog", "log", "use_syslog", config.getboolean)
@@ -123,8 +155,45 @@ class CommandLine(object):
                             help="Run as a daemon process")
         milter.add_argument("--pid-file",
                             dest="pid_file",
-                            metavar="FILE",
-                            help="Write process ID to FILE")
+                            help="Write process ID to FILE",
+                            metavar="FILE")
+        milter.add_argument("--fallback-status",
+                            choices=self.AVAILABLE_FALLBACK_STATUSES,
+                            default="accept",
+                            dest="fallback_status",
+                            help="Use STATUS as fallback status.\n" +
+                            "(available values: %(choises)s)\n" +
+                            "(default: %(default)s)",
+                            metavar="STATUS")
+        milter.add_argument("--user",
+                            dest="effective_user",
+                            help="Run as USER's process (need root privilege)",
+                            metavar="USER")
+        milter.add_argument("--group",
+                            dest="effective_group",
+                            help="Run as GROUP's process (need root privilege)",
+                            metavar="GROUP")
+        milter.add_argument("--unix-socket-group",
+                            dest="unix_socket_group",
+                            help="Change UNIX domain socket group to GROUP",
+                            metavar="GROUP")
+        milter.add_argument("--unix-socket-mode",
+                            dest="unix_socket_mode",
+                            help="Change UNIX domain socket mode to MODE",
+                            metavar="MODE")
+        milter.add_argument("--max-file-descriptors",
+                            dest="max_file_descriptors",
+                            help="Change maximum number of file descriptors to N",
+                            metavar="N",
+                            type=int)
+        milter.add_argument("--event-loop-backend",
+                            choices=self.AVAILABLE_EVENT_LOOP_BACKENDS,
+                            default="default",
+                            dest="event_loop_backend",
+                            help="Use BACKEND as event loop backend.\n" +
+                            "(available values: %(choices)s)\n" +
+                            "(default: %(default)s)",
+                            metavar="BACKEND")
 
         # TODO: See Milter::Client::CommandLine#setup_milter_options
 
@@ -213,3 +282,26 @@ class CommandLine(object):
             client.set_pid_file(args.pid_file)
         if args.use_syslog:
             client.start_syslog(args.name, args.syslog_facility)
+        if args.effective_user:
+            client.set_effective_user(args.effective_user)
+        if args.effective_group:
+            client.set_effective_user(args.effective_group)
+        if args.unix_socket_group:
+            client.set_unix_socket_group(args.unix_socket_group)
+        mode = args.unix_socket_mode
+        if mode:
+            if mode.startswith("0"):
+                mode = int(mode, 8)
+            else:
+                mode = int(mode)
+            client.set_unix_socket_mode(mode)
+        max_file_descriptors = args.max_file_descriptors
+        if max_file_descriptors:
+            max_file_descriptors = int(max_file_descriptors)
+            if max_file_descriptors > 0:
+                resource.setrlimit(resource.RLIMIT_NOFILE,
+                                   (max_file_descriptors, max_file_descriptors))
+        if args.event_loop_backend:
+            client.set_event_loop_backend(
+                getattr(MilterClient.ClientEventLoopBackend,
+                        args.event_loop_backend.upper()))

@@ -21,6 +21,7 @@ from gi.repository import MilterClient
 
 __all__ = [
     "Client",
+    "ClientEventLoopBackend",
     "CommandLine",
     "MilterRunner",
     "Session",

@@ -25,9 +25,12 @@ from .milter_runner import MilterRunner
 from .session import Session
 from .session_context import SessionContext
 
+ClientEventLoopBackend = MilterClient.ClientEventLoopBackend
+
 __all__ = [
     "Client",
     "ClientContext",
+    "ClientEventLoopBackend",
     "CommandLine",
     "MilterRunner",
     "Session",
