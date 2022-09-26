@@ -57,7 +57,7 @@ class CommandLine(object):
             milter.core.Logger.error(f"[client][error] {type(error)}: {error}")
         self._setup_client(client, args)
         client.connect("error", on_error)
-        client.event_loop = client.create_event_loop(True)
+        client.set_event_loop(client.create_event_loop(True))
         yield client, args
         client.listen()
         client.drop_privilege()
