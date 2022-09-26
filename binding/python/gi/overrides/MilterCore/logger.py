@@ -28,6 +28,8 @@ Logger.domain = "milter"
 LogLevelFlags.ALL = functools.reduce(lambda x, y: x | y,
                                      LogLevelFlags.__flags_values__.values())
 
+Logger.default = Logger.get_default()
+
 def resolve_log_level_flags(level):
     if level is None:
         return LogLevelFlags.NONE
@@ -78,6 +80,12 @@ def log(self, level, message, n_call_depth=None):
                          message_line.rstrip())
 Logger.log = log
 
-def error(message=None):
-    Logger.get_default().log("error", message, 1)
-Logger.error = staticmethod(error)
+for log_level_flag in LogLevelFlags.__flags_values__.values():
+    name = log_level_flag.first_value_nick
+    if name in ["default", "none"]:
+        continue
+    def create_log_method(name):
+        def log_method(self, message=None):
+            self.log(name, message, 1)
+        return log_method
+    setattr(Logger, name, create_log_method(name))
