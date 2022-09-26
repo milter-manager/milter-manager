@@ -137,11 +137,15 @@ class CommandLine(object):
         ]
         level_names += ["all"]
         logger.add_argument("--log-level",
-                            choices=level_names,
                             default="default",
                             dest="log_level",
                             help="Specify log level as LEVEL.\n" +
-                            "(available values: %(choices)s)\n" +
+                            "You can set levels by LEVEL1|LEVEL2|...." +
+                            "You can add one or more levels " +
+                            "to the default levels by +LEVEL1|+LEVEL2." +
+                            "You can remove one or more levels " +
+                            "from the default levels by -LEVEL1|-LEVEL2." +
+                            f"(available levels: {', '.join(level_names)})\n" +
                             "(default: %(default)s)",
                             metavar="LEVEL")
         logger.add_argument("--log-path",

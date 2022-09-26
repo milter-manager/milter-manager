@@ -42,7 +42,10 @@ def get_target_level(self):
 Logger.target_level = property(get_target_level)
 
 def set_target_level(self, level):
-    self.set_target_level(resolve_log_level_flags(level))
+    if isinstance(level, str):
+        self.set_target_level_by_string(level)
+    else:
+        self.set_target_level(resolve_log_level_flags(level))
 Logger.target_level = Logger.target_level.setter(set_target_level)
 
 def get_path(self):
