@@ -21,7 +21,16 @@ from .session_context import SessionContext
 MilterClient = gi.module.get_introspection_module("MilterClient")
 Client = MilterClient.Client
 
-Client.fallback_status = "accept"
+def get_fallback_status(self):
+    if hasattr(self, "_fallback_status"):
+        return getattr(self, "_fallback_status")
+    else:
+        return "accept"
+Client.fallback_status = property(get_fallback_status)
+
+def set_fallback_status(self, status):
+    self._fallback_status = status
+Client.fallback_status = Client.fallback_status.setter(set_fallback_status)
 
 def register(self, session_class, *init_arguments):
     def on_connection_established(client, context):

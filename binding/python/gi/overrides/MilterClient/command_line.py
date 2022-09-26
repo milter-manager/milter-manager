@@ -280,6 +280,8 @@ class CommandLine(object):
         client.set_connection_spec(args.connection_spec)
         if args.pid_file:
             client.set_pid_file(args.pid_file)
+        if args.fallback_status:
+            client.fallback_status = args.fallback_status
         if args.use_syslog:
             client.start_syslog(args.name, args.syslog_facility)
         if args.effective_user:

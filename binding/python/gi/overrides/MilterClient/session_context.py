@@ -33,7 +33,7 @@ class SessionContext(object):
     def _normalize_status(self, value):
         if isinstance(value, MilterCore.Status):
             return value
-        return getattr(MilterCore.Status, value.upper())
+        return getattr(MilterCore.Status, value.replace("-", "_").upper())
 
     @status.setter
     def status(self, value):
