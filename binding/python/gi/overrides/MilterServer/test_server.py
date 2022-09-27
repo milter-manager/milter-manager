@@ -49,11 +49,15 @@ class TestServer(object):
         result = TestServerResult()
         lines = output.splitlines(keepends=True)
         # "status: accept\n" -> "accept"
-        result.status = lines.pop(0).split(b": ", 2)[1].rstrip().decode()
+        result.status = lines.pop(0).split(b": ", 1)[1].rstrip().decode()
         # "elapsed-time: 0.003769 seconds" -> 0.003769
         result.elapsed_time = \
-            float(lines.pop(0).split(b": ", 2)[1].split()[0].rstrip().decode())
-        lines.pop(0)
+            float(lines.pop(0).split(b": ", 1)[1].split()[0].rstrip().decode())
+        may_quarantine_reason = lines.pop(0)
+        if may_quarantine_reason.startswith(b"Quarantine reason: "):
+            result.quarantine_reason = \
+                may_quarantine_reason.split(b": ", 1)[1].rstrip().decode()[1:-1]
+            lines.pop(0)
 
         mode = None
         while len(lines) > 0:
@@ -86,6 +90,7 @@ class TestServerResult(object):
     def __init__(self):
         self.status = None
         self.elapsed_time = None
+        self.quarantine_reason = None
         self.envelope_from = None
         self.envelope_recipients = []
         self.headers = []
@@ -95,6 +100,7 @@ class TestServerResult(object):
         return {
             "status": self.status,
             "elapsed_time": self.elapsed_time,
+            "quarantine_reason": self.quarantine_reason,
             "envelope_from": self.envelope_from,
             "envelope_recipients": self.envelope_recipients,
             "headers": self.headers,
