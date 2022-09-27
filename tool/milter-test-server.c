@@ -1740,6 +1740,76 @@ macros_new (void)
     return g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
 }
 
+static void
+pre_add_default_connect_macros (void)
+{
+    add_macro_values(connect_macros,
+                     "{daemon_name}", g_get_prgname(),
+                     "{if_name}", "localhost",
+                     "{if_addr}", "127.0.0.1",
+                     "j", "mail.example.com",
+                     NULL);
+}
+
+static void
+pre_add_default_helo_macros (void)
+{
+    add_macro_values(helo_macros,
+                     "{tls_version}", "0",
+                     "{cipher}", "0",
+                     "{cipher_bits}", "0",
+                     "{cert_subject}", "cert_subject",
+                     "{cert_issuer}", "cert_issuer",
+                     NULL);
+}
+
+static void
+pre_add_default_envelope_from_macros (void)
+{
+    add_macro_values(envelope_from_macros,
+                     "i", "i",
+                     "{mail_mailer}", "mail_mailer",
+                     "{mail_host}", "mail_host",
+                     "{mail_addr}", "mail_addr",
+                     NULL);
+}
+
+static void
+pre_add_default_envelope_recipient_macros (void)
+{
+    add_macro_values(envelope_recipient_macros,
+                     "{rcpt_mailer}", "rcpt_mailer",
+                     "{rcpt_host}", "rcpt_host",
+                     NULL);
+}
+
+static void
+pre_add_default_data_macros (void)
+{
+}
+
+static void
+pre_add_default_end_of_header_macros (void)
+{
+}
+
+static void
+pre_add_default_end_of_message_macros (void)
+{
+}
+
+static void
+pre_add_default_macros (void)
+{
+    pre_add_default_connect_macros();
+    pre_add_default_helo_macros();
+    pre_add_default_envelope_from_macros();
+    pre_add_default_envelope_recipient_macros();
+    pre_add_default_data_macros();
+    pre_add_default_end_of_header_macros();
+    pre_add_default_end_of_message_macros();
+}
+
 static gboolean
 pre_option_parse (GOptionContext *option_context,
                   GOptionGroup *option_group,
@@ -1757,42 +1827,24 @@ pre_option_parse (GOptionContext *option_context,
     end_of_header_macros = macros_new();
     end_of_message_macros = macros_new();
 
+    pre_add_default_macros();
+
     return TRUE;
 }
 
 static void
-apply_options_to_connect_macros (void)
+post_apply_options_to_connect_macros (void)
 {
-    add_macro_values(connect_macros,
-                     "{daemon_name}", g_get_prgname(),
-                     "{if_name}", "localhost",
-                     "{if_addr}", "127.0.0.1",
-                     "j", "mail.example.com",
-                     NULL);
 }
 
 static void
-apply_options_to_helo_macros (void)
+post_apply_options_to_helo_macros (void)
 {
-    add_macro_values(helo_macros,
-                     "{tls_version}", "0",
-                     "{cipher}", "0",
-                     "{cipher_bits}", "0",
-                     "{cert_subject}", "cert_subject",
-                     "{cert_issuer}", "cert_issuer",
-                     NULL);
 }
 
 static void
-apply_options_to_envelope_from_macros (void)
+post_apply_options_to_envelope_from_macros (void)
 {
-    add_macro_values(envelope_from_macros,
-                     "i", "i",
-                     "{mail_mailer}", "mail_mailer",
-                     "{mail_host}", "mail_host",
-                     "{mail_addr}", "mail_addr",
-                     NULL);
-
     if (authenticated_name)
         add_macro_values(envelope_from_macros,
                          "{auth_authen}", authenticated_name,
@@ -1808,42 +1860,35 @@ apply_options_to_envelope_from_macros (void)
 }
 
 static void
-apply_options_to_envelope_recipient_macros (void)
-{
-    add_macro_values(envelope_recipient_macros,
-                     "{rcpt_mailer}", "rcpt_mailer",
-                     "{rcpt_host}", "rcpt_host",
-                     NULL);
-}
-
-static void
-apply_options_to_data_macros (void)
+post_apply_options_to_envelope_recipient_macros (void)
 {
 }
 
 static void
-apply_options_to_end_of_header_macros (void)
+post_apply_options_to_data_macros (void)
 {
 }
 
 static void
-apply_options_to_end_of_message_macros (void)
+post_apply_options_to_end_of_header_macros (void)
 {
-    add_macro_values(end_of_message_macros,
-                     "i", "message-id",
-                     NULL);
 }
 
 static void
-apply_options_to_macros (void)
+post_apply_options_to_end_of_message_macros (void)
 {
-    apply_options_to_connect_macros();
-    apply_options_to_helo_macros();
-    apply_options_to_envelope_from_macros();
-    apply_options_to_envelope_recipient_macros();
-    apply_options_to_data_macros();
-    apply_options_to_end_of_header_macros();
-    apply_options_to_end_of_message_macros();
+}
+
+static void
+post_apply_options_to_macros (void)
+{
+    post_apply_options_to_connect_macros();
+    post_apply_options_to_helo_macros();
+    post_apply_options_to_envelope_from_macros();
+    post_apply_options_to_envelope_recipient_macros();
+    post_apply_options_to_data_macros();
+    post_apply_options_to_end_of_header_macros();
+    post_apply_options_to_end_of_message_macros();
 }
 
 static gboolean
@@ -1888,7 +1933,7 @@ post_option_parse (GOptionContext *option_context,
         body_chunks = g_strsplit(body, ",", -1);
     }
 
-    apply_options_to_macros();
+    post_apply_options_to_macros();
 
     return TRUE;
 }
