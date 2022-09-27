@@ -56,6 +56,9 @@ class Session(object):
     def reset(self):
         pass
 
+    def on_error(self, event, exception):
+        pass
+
     def _need_header_value_with_leading_space(self):
         return False
 
