@@ -1793,7 +1793,7 @@ pre_add_default_data_macros (void)
 static void
 pre_add_default_end_of_header_macros (void)
 {
-    add_macro_values(data_macros,
+    add_macro_values(end_of_header_macros,
                      "i", "i",
                      NULL);
 }

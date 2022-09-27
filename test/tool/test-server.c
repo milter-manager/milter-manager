@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
- *  Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -1704,8 +1704,7 @@ option_test_assert_authenticated_info (const gchar *key, const gchar *value)
         g_hash_table_lookup(actual_defined_macros,
                             GINT_TO_POINTER(MILTER_COMMAND_ENVELOPE_FROM));
     expected_macros =
-        gcut_take_new_hash_table_string_string("i", "i",
-                                               "mail_mailer", "mail_mailer",
+        gcut_take_new_hash_table_string_string("mail_mailer", "mail_mailer",
                                                "mail_host", "mail_host",
                                                "mail_addr", "mail_addr",
                                                key, value,
@@ -2303,7 +2302,6 @@ data_macro (void)
                              "cipher_bits", "0",
                              "tls_version", "0",
                              "command:envelope-from",
-                             "i", "i",
                              "mail_addr", "mail_addr",
                              "mail_host", "mail_host",
                              "mail_mailer", "mail_mailer",
@@ -2311,8 +2309,12 @@ data_macro (void)
                              "rcpt_addr", "<receiver@example.org>",
                              "rcpt_host", "rcpt_host",
                              "rcpt_mailer", "rcpt_mailer",
+                             "command:data",
+                             "i", "i",
+                             "command:end-of-header",
+                             "i", "i",
                              "command:end-of-message",
-                             "i", "message-id",
+                             "i", "i",
                              NULL),
         NULL);
 
@@ -2330,7 +2332,6 @@ data_macro (void)
                              "cipher_bits", "0",
                              "tls_version", "0",
                              "command:envelope-from",
-                             "i", "i",
                              "mail_addr", "mail_addr",
                              "mail_host", "mail_host",
                              "mail_mailer", "mail_mailer",
@@ -2338,8 +2339,12 @@ data_macro (void)
                              "rcpt_addr", "<receiver@example.org>",
                              "rcpt_host", "rcpt_host",
                              "rcpt_mailer", "rcpt_mailer",
+                             "command:data",
+                             "i", "i",
+                             "command:end-of-header",
+                             "i", "i",
                              "command:end-of-message",
-                             "i", "message-id",
+                             "i", "i",
                              NULL),
         "--connect-macro client_connections:10");
 
@@ -2357,7 +2362,6 @@ data_macro (void)
                              "client_ptr", "unknown",
                              "tls_version", "0",
                              "command:envelope-from",
-                             "i", "i",
                              "mail_addr", "mail_addr",
                              "mail_host", "mail_host",
                              "mail_mailer", "mail_mailer",
@@ -2365,8 +2369,12 @@ data_macro (void)
                              "rcpt_addr", "<receiver@example.org>",
                              "rcpt_host", "rcpt_host",
                              "rcpt_mailer", "rcpt_mailer",
+                             "command:data",
+                             "i", "i",
+                             "command:end-of-header",
+                             "i", "i",
                              "command:end-of-message",
-                             "i", "message-id",
+                             "i", "i",
                              NULL),
         "--helo-macro client_ptr:unknown");
 
@@ -2385,7 +2393,6 @@ data_macro (void)
                              "command:envelope-from",
                              "client_addr", "192.168.0.3",
                              "client_name", "local-sender.example.net",
-                             "i", "i",
                              "mail_addr", "mail_addr",
                              "mail_host", "mail_host",
                              "mail_mailer", "mail_mailer",
@@ -2393,8 +2400,12 @@ data_macro (void)
                              "rcpt_addr", "<receiver@example.org>",
                              "rcpt_host", "rcpt_host",
                              "rcpt_mailer", "rcpt_mailer",
+                             "command:data",
+                             "i", "i",
+                             "command:end-of-header",
+                             "i", "i",
                              "command:end-of-message",
-                             "i", "message-id",
+                             "i", "i",
                              NULL),
         "--envelope-from-macro client_addr:192.168.0.3 "
         "--envelope-from-macro client_name:local-sender.example.net");
@@ -2412,7 +2423,6 @@ data_macro (void)
                              "cipher_bits", "0",
                              "tls_version", "0",
                              "command:envelope-from",
-                             "i", "i",
                              "mail_addr", "mail_addr",
                              "mail_host", "mail_host",
                              "mail_mailer", "mail_mailer",
@@ -2421,8 +2431,12 @@ data_macro (void)
                              "rcpt_addr", "<receiver@example.org>",
                              "rcpt_host", "rcpt_host",
                              "rcpt_mailer", "rcpt_mailer",
+                             "command:data",
+                             "i", "i",
+                             "command:end-of-header",
+                             "i", "i",
                              "command:end-of-message",
-                             "i", "message-id",
+                             "i", "i",
                              NULL),
         "--envelope-recipient-macro client_port:2929");
 
@@ -2439,7 +2453,6 @@ data_macro (void)
                              "cipher_bits", "0",
                              "tls_version", "0",
                              "command:envelope-from",
-                             "i", "i",
                              "mail_addr", "mail_addr",
                              "mail_host", "mail_host",
                              "mail_mailer", "mail_mailer",
@@ -2449,8 +2462,10 @@ data_macro (void)
                              "rcpt_mailer", "rcpt_mailer",
                              "command:data",
                              "i", "queue-id-2929",
+                             "command:end-of-header",
+                             "i", "i",
                              "command:end-of-message",
-                             "i", "message-id",
+                             "i", "i",
                              NULL),
         "--data-macro i:queue-id-2929");
 
@@ -2467,7 +2482,6 @@ data_macro (void)
                              "cipher_bits", "0",
                              "tls_version", "0",
                              "command:envelope-from",
-                             "i", "i",
                              "mail_addr", "mail_addr",
                              "mail_host", "mail_host",
                              "mail_mailer", "mail_mailer",
@@ -2475,10 +2489,13 @@ data_macro (void)
                              "rcpt_addr", "<receiver@example.org>",
                              "rcpt_host", "rcpt_host",
                              "rcpt_mailer", "rcpt_mailer",
+                             "command:data",
+                             "i", "i",
                              "command:end-of-header",
+                             "i", "i",
                              "n-headers", "100",
                              "command:end-of-message",
-                             "i", "message-id",
+                             "i", "i",
                              NULL),
         "--end-of-header-macro n-headers:100");
 
@@ -2495,7 +2512,6 @@ data_macro (void)
                              "cipher_bits", "0",
                              "tls_version", "0",
                              "command:envelope-from",
-                             "i", "i",
                              "mail_addr", "mail_addr",
                              "mail_host", "mail_host",
                              "mail_mailer", "mail_mailer",
@@ -2503,9 +2519,13 @@ data_macro (void)
                              "rcpt_addr", "<receiver@example.org>",
                              "rcpt_host", "rcpt_host",
                              "rcpt_mailer", "rcpt_mailer",
+                             "command:data",
+                             "i", "i",
+                             "command:end-of-header",
+                             "i", "i",
                              "command:end-of-message",
                              "elapsed", "0.29",
-                             "i", "message-id",
+                             "i", "i",
                              NULL),
         "--end-of-message-macro elapsed:0.29");
 
