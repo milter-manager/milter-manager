@@ -1767,7 +1767,6 @@ static void
 pre_add_default_envelope_from_macros (void)
 {
     add_macro_values(envelope_from_macros,
-                     "i", "i",
                      "{mail_mailer}", "mail_mailer",
                      "{mail_host}", "mail_host",
                      "{mail_addr}", "mail_addr",
