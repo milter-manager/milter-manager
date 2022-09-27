@@ -66,6 +66,7 @@ class MilterRunner(object):
         self.stderr = tempfile.NamedTemporaryFile(mode="w+",
                                                   suffix=".stderr.log")
         self.process = subprocess.Popen(command_line,
+                                        env=self._env,
                                         stdout=self.stdout,
                                         stderr=self.stderr,
                                         text=True)
