@@ -101,7 +101,7 @@ class Session(object):
     def _quarantine(self, reason):
         success = self._context.quarantine(reason)
         if success:
-            self.accept()
+            self._accept()
         return success
 
     def _add_header(self, name, value):
