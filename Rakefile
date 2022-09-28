@@ -20,6 +20,7 @@ def version
   File.read(meson_build).scan(/version: '([^']+)'/)[0][0]
 end
 
+desc "Tag #{version} and push"
 task :tag do
   cd(__dir__) do
     sh("git", "tag", "-a", version, "-m", "Released #{version}!!!")
