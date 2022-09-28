@@ -44,6 +44,7 @@
 #define DEFAULT_NEGOTIATE_VERSION 6
 #define MILTER_TEST_SERVER_ALL_TIMEOUTS_UNSPECIFIED -1.0
 
+static const gchar *program_name = NULL;
 static gboolean verbose = FALSE;
 static gboolean output_message = FALSE;
 static gchar *spec = NULL;
@@ -952,7 +953,7 @@ print_version (const gchar *option_name,
                gpointer data,
                GError **error)
 {
-    g_print("%s %s\n", g_get_prgname(), VERSION);
+    g_print("%s %s\n", program_name, VERSION);
     exit(EXIT_SUCCESS);
     return TRUE;
 }
@@ -1744,7 +1745,7 @@ static void
 pre_add_default_connect_macros (void)
 {
     add_macro_values(connect_macros,
-                     "{daemon_name}", g_get_prgname(),
+                     "{daemon_name}", program_name,
                      "{if_name}", "localhost",
                      "{if_addr}", "127.0.0.1",
                      "j", "mail.example.com",
@@ -2377,6 +2378,12 @@ main (int argc, char *argv[])
 
     milter_init();
     milter_server_init();
+
+    if (g_str_has_prefix(g_get_prgname(), "lt-")) {
+        program_name = g_get_prgname() + strlen("lt-");
+    } else {
+        program_name = g_get_prgname();
+    }
 
     option_context = g_option_context_new(NULL);
     g_option_context_add_main_entries(option_context, option_entries, NULL);
