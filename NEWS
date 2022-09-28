@@ -2,6 +2,15 @@
 
 = NEWS --- The history of milter manager
 
+== [release-2-1-8] 2.1.8: 2022-09-28
+
+=== Package
+
+==== Fixes
+
+  * deb: Fixed bugs that Python and GObject Introspection related
+    packages can't be used.
+
 == [release-2-1-7] 2.1.7: 2022-09-28
 
 === Package
