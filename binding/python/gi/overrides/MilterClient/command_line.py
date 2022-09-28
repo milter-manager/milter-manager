@@ -162,7 +162,7 @@ class CommandLine(object):
                             default="accept",
                             dest="fallback_status",
                             help="Use STATUS as fallback status.\n" +
-                            "(available values: %(choises)s)\n" +
+                            "(available values: %(choices)s)\n" +
                             "(default: %(default)s)",
                             metavar="STATUS")
         milter.add_argument("--user",
