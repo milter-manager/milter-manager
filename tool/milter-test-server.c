@@ -2379,12 +2379,6 @@ main (int argc, char *argv[])
     milter_init();
     milter_server_init();
 
-    if (g_str_has_prefix(g_get_prgname(), "lt-")) {
-        program_name = g_get_prgname() + strlen("lt-");
-    } else {
-        program_name = g_get_prgname();
-    }
-
     option_context = g_option_context_new(NULL);
     g_option_context_add_main_entries(option_context, option_entries, NULL);
     main_group = g_option_context_get_main_group(option_context);
@@ -2398,6 +2392,12 @@ main (int argc, char *argv[])
         g_option_context_free(option_context);
         free_option_values();
         exit(EXIT_FAILURE);
+    }
+
+    if (g_str_has_prefix(g_get_prgname(), "lt-")) {
+        program_name = g_get_prgname() + strlen("lt-");
+    } else {
+        program_name = g_get_prgname();
     }
 
     if (verbose)
