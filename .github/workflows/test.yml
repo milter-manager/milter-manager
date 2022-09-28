@@ -37,7 +37,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .cache/ccache
-          key: test-${{ matrix.service }}-ccache-${{ hashFiles('**/*.{c,h}') }}
+          key: test-${{ matrix.service }}-ccache-${{ hashFiles('libmilter/**', 'milter/**', 'src/**', 'tool/**', 'test/**') }}
           restore-keys: test-${{ matrix.service }}-ccache-
       - name: Prepare ccache directory
         run: |
@@ -65,7 +65,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.ccache
-          key: test-meson-ccache-${{ hashFiles('**/*.{c,h}') }}
+          key: test-meson-ccache-${{ hashFiles('libmilter/**', 'milter/**', 'src/**', 'tool/**', 'test/**') }}
           restore-keys: test-meson-ccache-
       - name: Setup
         run: |

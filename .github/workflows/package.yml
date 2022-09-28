@@ -32,7 +32,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.ccache
-          key: source-ccache-${{ hashFiles('**/*.{c,h}') }}
+          key: source-ccache-${{ hashFiles('libmilter/**', 'milter/**', 'src/**', 'tool/**', 'test/**') }}
           restore-keys: source-ccache-
       - run: ./autogen.sh
       - run: mkdir -p .build
@@ -153,7 +153,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: package/${{ matrix.task-namespace }}/build/${{ matrix.target }}/ccache
-          key: package-${{ matrix.id }}-ccache-${{ hashFiles('**/*.{c,h}') }}
+          key: package-${{ matrix.id }}-ccache-${{ hashFiles('libmilter/**', 'milter/**', 'src/**', 'tool/**', 'test/**') }}
           restore-keys: package-${{ matrix.id }}-ccache-
       - name: Build with docker
         run: |
