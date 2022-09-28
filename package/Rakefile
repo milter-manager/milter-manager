@@ -47,8 +47,13 @@ class MilterManagerTask < PackagesGroongaOrgPackageTask
 
   def define_archive_task
     file @archive_name do
-      File.symlink("../#{@archive_name}",
-                   @archive_name)
+      if File.exist?("../#{@archive_name}")
+        ln_s("../#{@archive_name}",
+             @archive_name)
+      else
+        download("https://github.com/milter-manager/milter-manager/releases/download/#{@version}/#{@archive_name}",
+                 @archive_name)
+      end
     end
   end
 
@@ -110,22 +115,22 @@ class MilterManagerTask < PackagesGroongaOrgPackageTask
     repositories_dir.glob("**/*.{deb,dsc,rpm}") do |path|
       case path.extname
       when ".deb", ".dsc"
-        relative_path = path.relative_from(repositories_dir)
+        relative_path = path.relative_path_from(repositories_dir)
         # e.g.: "debian/pool/bullseye/main/m/milter-manager/milter-manager_*.deb"
-        components = path.to_s.split("/")
+        components = relative_path.to_s.split("/")
         distribution = components[0]
         version = components[2]
       when ".rpm"
-        relative_path = path.relative_from(repositories_dir)
+        relative_path = path.relative_path_from(repositories_dir)
         # e.g.: "centos/7/x86_64/Packages/milter-manager-*.rpm"
-        components = path.to_s.split("/")
+        components = relative_path.to_s.split("/")
         distribution = "el"
         version = components[1]
       end
       sh("package_cloud",
          "push",
-         "milter-manager/repos/#{distribusion}/#{version}",
-         package)
+         "milter-manager/repos/#{distribution}/#{version}",
+         path.to_s)
     end
   end
 end
