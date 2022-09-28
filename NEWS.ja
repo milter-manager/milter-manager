@@ -2,6 +2,82 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-2-1-7] 2.1.7: 2022-09-28
+
+=== パッケージ
+
+==== 改良
+
+  * AlmaLinux 8に対応しました。
+  * AlmaLinux 9に対応しました。
+  * 部分的にMesonに対応しました。
+  * deb: GObject Intospectionに対応しました。
+
+=== すべて
+
+==== 改良
+
+  * GLib 2.46から(({g_mem_set_vtable()}))が非推奨になっていたのでメモ
+    リープロファイル機能を削除しました。
+  * GLib 2.50以降が必須になりました。
+  * GObject Introspectionに対応しました。
+  * いくつかAPI/ABI非互換な変更が入りました。そのため、共有ライブラリー
+    のバージョンを(({0}))から(({2}))にあげています。
+    * (({milter_macros_requests_foreach()})): (({GHFunc}))の代わりに
+      (({MilterMacrosRequestFunc}))を使うようになりました。
+    * (({milter_client_processing_context_foreach()})): (({GFunc}))の
+      代わりに(({MilterClientContextFunc}))を使うようになりました。
+      （これはAPI非互換なだけです。）
+  * libevのバンドルをやめました。
+  * Ruby/GLib2、Ruby/GIO2、Ruby/GObojectIntrospectionのバンドルをやめ
+    ました。
+
+=== milter core
+
+==== 改良
+
+  * (({milter_logger_get_default()}))を追加しました。
+  * (({milter_logger_log_literal()}))を追加しました。
+
+=== milter client
+
+==== 改良
+
+  * (({MilterClientContext})):
+    * チャンクを(({GBytes}))として受け取る(({body-bytes}))シグナルと
+      (({end-of-message-bytes}))シグナルを追加しました。
+    * ↑の(({GBytes}))版シグナルを使うための(({use-bytes}))プロパティーを
+      追加しました。
+    * (({milter_client_context_get_use_bytes()}))を追加しました。
+    * (({milter_client_context_set_use_bytes()}))を追加しました。
+    * (({milter_client_context_replace_body_bytes()}))を追加しました。
+
+=== milter server
+
+==== 改良
+
+  * (({milter-server.pc}))に(({milter_test_server}))変数を追加しました。
+  * (({milter-test-server})):
+    * milterに接続できなかった場合は0以外の終了コードを返すようになり
+      ました。
+    * デフォルトで(({i}))はPostfixと同じように送るようになりました。
+      * 変更前：(({i}))を「MAIL」と「end-of-message」のときに送信。
+      * 変更後：(({i}))を「DATA」と「end-of-header」と「end-of-message」
+        のときに送信。
+
+=== milter-manager-log-analyzer
+
+==== 改良
+
+  * Ruby 3.2に対応しました。
+
+=== Python
+
+==== 改良
+
+  * GObject Introspectionベースのバインディングを追加しました。milter
+    をPythonで実装できます。
+
 == [release-2-1-6] 2.1.6: 2022-01-13
 
 === Document
