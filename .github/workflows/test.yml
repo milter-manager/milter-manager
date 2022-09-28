@@ -39,6 +39,10 @@ jobs:
           path: .cache/ccache
           key: test-${{ matrix.service }}-ccache-${{ hashFiles('**/*.{c,h}') }}
           restore-keys: test-${{ matrix.service }}-ccache-
+      - name: Prepare ccache directory
+        run: |
+          sudo mkdir -p .cache/ccache/
+          sudo chmod -R o+rwx .cache/ccache/
       - run: docker-compose run --rm ${{ matrix.service }}
 
   # Temporary. We should integrate this to the above test job.

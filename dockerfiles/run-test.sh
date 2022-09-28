@@ -18,8 +18,9 @@
 set -eux
 
 cache_dir=/host/.cache/ccache/$(. /etc/os-release && echo "${ID}-${VERSION_ID}")
-mkdir -p ${cache_dir}
-export CCACHE_DIR=${cache_dir}
+if mkdir -p ${cache_dir}; then
+  export CCACHE_DIR=${cache_dir}
+fi
 
 cd /build
 ../host/configure \
