@@ -43,8 +43,9 @@ class CommandLine(object):
         "discard",
     ]
 
-    def __init__(self, name=None, **kwargs):
+    def __init__(self, name=None, version=None, **kwargs):
         self.name = name or os.path.splitext(os.path.basename(sys.argv[0]))[0]
+        self.version = version
         self.parser = argparse.ArgumentParser(**kwargs)
         self._setup_arguments()
 
@@ -120,6 +121,11 @@ class CommandLine(object):
 
     def _setup_basic_arguments(self):
         basic = self.parser.add_argument_group("Basic", "Basic options")
+        if self.version:
+            basic.add_argument("--version",
+                               action="version",
+                               help="Show version",
+                               version=f"%(prog)s {self.version}")
         basic.add_argument("--library-version",
                            action=self.ShowLibraryVersionAction,
                            help="Show milter library version",
