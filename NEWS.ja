@@ -10,6 +10,7 @@
 
   * AlmaLinux 8に対応しました。
   * AlmaLinux 9に対応しました。
+  * Ubuntu 18.04の対応をやめました。
   * 部分的にMesonに対応しました。
   * deb: GObject Intospectionに対応しました。
 
