@@ -111,8 +111,8 @@ update-latest-release:
 	  $(PACKAGE)						\
 	  $(OLD_RELEASE) $(OLD_RELEASE_DATE)			\
 	  $(VERSION) $(NEW_RELEASE_DATE)			\
-	  package/rpm/centos/milter-manager.spec.in		\
 	  package/debian/changelog				\
+	  package/yum/milter-manager.spec.in			\
 	  html/index.html					\
 	  html/index.html.ja					\
 	  html/blog/tdiary.en.conf				\
