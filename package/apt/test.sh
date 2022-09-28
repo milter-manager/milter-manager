@@ -34,6 +34,11 @@ sudo apt install -V -y \
 
 systemctl status milter-manager
 
+python3 -c "import milter"
+python3 -c "import milter.core"
+python3 -c "import milter.client"
+python3 -c "import milter.server"
+
 # TODO: Run tests or something
 
 # TODO: Test package purge

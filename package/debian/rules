@@ -50,9 +50,9 @@ override_dh_auto_install:
 	   debian/tmp/usr/share/
 	mv debian/tmp-meson/usr/lib/$(DEB_HOST_MULTIARCH)/girepository-1.0/	\
 	   debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/
-	mkdir -p debian/tmp/usr/lib/python3/
-	mv debian/tmp-meson/usr/lib/python*/*-packages/	\
-	   debian/tmp/usr/lib/python3/
+	mkdir -p debian/tmp/usr/lib/python3/dist-packages/
+	mv debian/tmp-meson/usr/lib/python*/*-packages/*	\
+	   debian/tmp/usr/lib/python3/dist-packages/
 	mv debian/tmp-meson/usr/share/milter-manager/python/	\
 	   debian/tmp/usr/share/milter-manager/
 
