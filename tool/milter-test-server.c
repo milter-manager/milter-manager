@@ -1825,6 +1825,11 @@ pre_option_parse (GOptionContext *option_context,
                   gpointer data,
                   GError **error)
 {
+    program_name = g_get_prgname();
+    if (g_str_has_prefix(program_name, "lt-")) {
+        program_name += strlen("lt-");
+    }
+
     option_headers = milter_headers_new();
     use_color = milter_utils_guess_console_color_usability();
 
@@ -2392,12 +2397,6 @@ main (int argc, char *argv[])
         g_option_context_free(option_context);
         free_option_values();
         exit(EXIT_FAILURE);
-    }
-
-    if (g_str_has_prefix(g_get_prgname(), "lt-")) {
-        program_name = g_get_prgname() + strlen("lt-");
-    } else {
-        program_name = g_get_prgname();
     }
 
     if (verbose)
