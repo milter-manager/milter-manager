@@ -17,30 +17,48 @@
 
 set -exu
 
+echo "::group::Prepare"
+echo "debconf debconf/frontend select Noninteractive" | \
+  sudo debconf-set-selections
 sudo apt update
 sudo apt install -V -y curl lsb-release
+echo "::endgroup::"
 
+echo "::group::Install"
 distribution=$(lsb_release --short --id | tr 'A-Z' 'a-z')
 code_name=$(lsb_release --codename --short)
 architecture=$(dpkg --print-architecture)
 
-# TODO: Need this for testing package upgrade
-# curl -s https://packagecloud.io/install/repositories/milter-manager/repos/script.deb.sh | \
-#   sudo bash
-
 repositories_dir=/vagrant/package/apt/repositories
 sudo apt install -V -y \
   ${repositories_dir}/${distribution}/pool/${code_name}/*/*/*/*_{${architecture},all}.deb
+echo "::endgroup::"
 
+echo "::group::Test milter-manager"
 systemctl status milter-manager
+# TODO: More test
+echo "::endgroup::"
 
-python3 -c "import milter"
-python3 -c "import milter.core"
-python3 -c "import milter.client"
+echo "::group::Test Python bindings"
+/usr/share/doc/python3-milter-client/examples/milter-external.py --help
 python3 -c "import milter.server"
+# TODO: More test
+echo "::endgroup::"
 
-# TODO: Run tests or something
+echo "::group::Test Ruby bindings"
+# TODO
+echo "::endgroup::"
 
-# TODO: Test package purge
+echo "::group::Purge"
+sudo apt purge -y libmilter-core2
+! systemctl status milter-manager
+echo "::endgroup::"
 
-# TODO: Test package upgrade
+echo "::group::Upgrade"
+curl -s https://packagecloud.io/install/repositories/milter-manager/repos/script.deb.sh | \
+  sudo bash
+sudo apt install -V -y milter-manager
+sudo apt install -V -y \
+  ${repositories_dir}/${distribution}/pool/${code_name}/*/*/*/*_{${architecture},all}.deb
+systemctl status milter-manager
+echo "::endgroup::"
