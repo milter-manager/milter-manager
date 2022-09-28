@@ -367,3 +367,18 @@ Description: Ruby bindings for milter server (Ruby interface)
  (MTA-side) milter protocol.
  .
  This provides Ruby bindings for libmilter-server.
+
+Package: python3-milter-server
+Section: python
+Architecture: any
+Depends:
+	${misc:Depends},
+	${shlibs:Depends},
+	gir1.2-milterserver-2.0 (= ${binary:Version}),
+	python3,
+	python3-milter-core (= ${binary:Version})
+Description: Python bindings for milter server (Python interface)
+ milter "server" library is a library which implements server-side
+ (milter-side) milter protocol.
+ .
+ This provides Python bindings for libmilter-server.
