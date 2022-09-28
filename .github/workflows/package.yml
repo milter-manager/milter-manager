@@ -54,11 +54,23 @@ jobs:
           path: milter-manager-*.tar.gz
 
       # Release
+      - name: Extract release note
+        if: |
+          startsWith(github.ref, 'refs/tags/')
+        run: |
+          # TODO: Use Markdown not RD in NEWS
+          (echo "```rd" && \
+           ruby \
+             -e 'print("== "); puts(ARGF.read.split(/^== /)[1])' \
+             NEWS && \
+           echo "```") > release-note.md
       - name: Upload to release
         uses: softprops/action-gh-release@v1
         if: |
           startsWith(github.ref, 'refs/tags/')
         with:
+          body_path: release-note.md
+          discussion_category_name: "Releases"
           files: |
             milter-manager-*.tar.gz
 
