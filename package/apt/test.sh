@@ -55,8 +55,13 @@ sudo apt purge -y libmilter-core2
 echo "::endgroup::"
 
 echo "::group::Upgrade"
-curl -s https://packagecloud.io/install/repositories/milter-manager/repos/script.deb.sh | \
-  sudo bash
+if [ "${distribution}" = "ubuntu" ]; then
+  sudo apt -y install software-properties-common
+  sudo add-apt-repository -y ppa:milter-manager/ppa
+else
+  curl -s https://packagecloud.io/install/repositories/milter-manager/repos/script.deb.sh | \
+    sudo bash
+fi
 sudo apt install -V -y milter-manager
 sudo apt install -V -y \
   ${repositories_dir}/${distribution}/pool/${code_name}/*/*/*/*_{${architecture},all}.deb
