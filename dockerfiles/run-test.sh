@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C) 2021  Sutou Kouhei <kou@clear-code.com>
+# Copyright (C) 2021-2022  Sutou Kouhei <kou@clear-code.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,6 +16,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 set -eux
+
+cache_dir=/host/.cache/ccache/$(. /etc/os-release && echo "${ID}-${VERSION_ID}")
+mkdir -p ${cache_dir}
+export CCACHE_DIR=${cache_dir}
 
 cd /build
 ../host/configure \

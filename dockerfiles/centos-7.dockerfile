@@ -5,8 +5,10 @@ ENV SCL=rh-ruby30
 RUN yum update -q -y && \
     yum install -q -y \
       centos-release-scl-rh \
+      epel-release \
       http://sourceforge.net/projects/cutter/files/centos/cutter-release-1.3.0-1.noarch.rpm && \
     yum install -q -y \
+      ccache \
       cutter \
       gcc \
       gettext \
@@ -30,6 +32,8 @@ RUN yum update -q -y && \
     gem install \
       gio2 \
       test-unit)
+
+ENV PATH=/usr/lib64/ccache:$PATH
 
 RUN useradd -m --user-group --shell /bin/bash milter-manager
 RUN mkdir /build && \

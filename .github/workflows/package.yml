@@ -8,24 +8,32 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: recursive
       - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y -V \
+            ccache \
             curl \
             gtk-doc-tools \
             inkscape \
             intltool \
             libev-dev \
             poxml
+          echo "/usr/lib/ccache" >> $GITHUB_PATH
           sudo gem install \
             fast_gettext \
             gio2 \
             rdtool \
             rttool
+      - name: Cache ccache
+        uses: actions/cache@v3
+        with:
+          path: ~/.ccache
+          key: source-ccache-${{ hashFiles('**/*.{c,h}') }}
+          restore-keys: source-ccache-
       - run: ./autogen.sh
       - run: mkdir -p .build
       - name: Configure
@@ -142,10 +150,10 @@ jobs:
           cd package
           rake version:update RELEASE_DATE=$(date +%Y-%m-%d)
       - name: Cache ccache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: package/${{ matrix.task-namespace }}/build/${{ matrix.target }}/ccache
-          key: package-${{ matrix.id }}-ccache-${{ hashFiles('src/**/*.c', 'milter/**/*.c', 'milter/**/*.h', 'libmilter/**/*.c', 'libmilter/**/*.h') }}
+          key: package-${{ matrix.id }}-ccache-${{ hashFiles('**/*.{c,h}') }}
           restore-keys: package-${{ matrix.id }}-ccache-
       - name: Build with docker
         run: |

@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install dependencies
         run: |
           sudo apt update
@@ -33,6 +33,12 @@ jobs:
             https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh
       - run: ./autogen.sh
       - run: docker-compose build ${{ matrix.service }}
+      - name: Cache ccache
+        uses: actions/cache@v3
+        with:
+          path: .cache/ccache
+          key: test-${{ matrix.service }}-ccache-${{ hashFiles('**/*.{c,h}') }}
+          restore-keys: test-${{ matrix.service }}-ccache-
       - run: docker-compose run --rm ${{ matrix.service }}
 
   # Temporary. We should integrate this to the above test job.
@@ -41,15 +47,22 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y -V \
+            ccache \
             libev-dev \
             libgirepository1.0-dev \
             meson
           sudo gem install gio2
+      - name: Cache ccache
+        uses: actions/cache@v3
+        with:
+          path: ~/.ccache
+          key: test-meson-ccache-${{ hashFiles('**/*.{c,h}') }}
+          restore-keys: test-meson-ccache-
       - name: Setup
         run: |
           meson setup \

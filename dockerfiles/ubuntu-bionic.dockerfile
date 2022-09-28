@@ -4,8 +4,9 @@ RUN \
   echo "debconf debconf/frontend select Noninteractive" | \
     debconf-set-selections
 
-RUN apt-get update && \
-    apt-get install -qq -y \
+RUN apt update && \
+    apt install -qq -y \
+      ccache \
       curl \
       gtk-doc-tools \
       intltool \
@@ -22,6 +23,8 @@ RUN apt-get update && \
       sudo \
       tzdata && \
     curl -L https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh
+
+ENV PATH=/usr/lib/ccache:$PATH
 
 RUN useradd -m --user-group --shell /bin/bash milter-manager
 RUN mkdir /build && \
