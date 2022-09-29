@@ -94,6 +94,7 @@
 /package/apt/repositories/
 /package/apt/tmp/
 /package/milter-manager-*.tar.gz
+/package/milter-manager-*.tar.gz.asc
 /package/ubuntu/
 /package/yum/build.sh
 /package/yum/build/

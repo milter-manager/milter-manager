@@ -21,6 +21,11 @@ class MilterManagerTask < PackagesGroongaOrgPackageTask
     super("milter-manager", detect_version, detect_release_time)
   end
 
+  def define
+    super
+    define_source_tasks
+  end
+
   private
   def detect_version
     version_env = ENV["VERSION"]
@@ -132,6 +137,40 @@ class MilterManagerTask < PackagesGroongaOrgPackageTask
          "milter-manager/repos/#{distribution}/#{version}",
          path.to_s)
     end
+  end
+
+  def gpg_uid
+    File.read(File.join(__dir__, "..", "gpg_uid")).strip
+  end
+
+  def source_dir
+    "source"
+  end
+
+  def define_source_tasks
+    source_tasks = []
+    namespace :source do
+      archive_asc = "#{@archive_name}.asc"
+      file archive_asc => @archive_name do
+        sh("gpg",
+           "--armor",
+           "--detach-sign",
+           "--local-user",  gpg_uid,
+           "--yes",
+           @archive_name)
+      end
+
+      desc "Upload sign"
+      source_tasks << :upload
+      task :upload => archive_asc do
+        require "octokit"
+        client = Octokit::Client.new
+        client.access_token = github_access_token
+        release_path = "/repos/#{github_repository}/releases/tags/#{@version}"
+        client.upload_asset(release_path, archive_asc)
+      end
+    end
+    task :source => source_tasks.collect {|task| "source:#{task}"}
   end
 end
 
