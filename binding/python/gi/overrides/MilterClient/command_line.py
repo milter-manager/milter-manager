@@ -29,6 +29,11 @@ from .client import Client
 
 MilterClient = gi.module.get_introspection_module("MilterClient")
 
+if hasattr(argparse, "BooleanOptionalAction"):
+    boolean_optional_action = argparse.BooleanOptionalAction
+else:
+    boolean_optional_action = "store_true"
+
 class CommandLine(object):
     AVAILABLE_EVENT_LOOP_BACKENDS = [
         enum.value_nick
@@ -155,11 +160,10 @@ class CommandLine(object):
                             help="Specify connection spec as SPEC.\n" +
                             "(default: %(default)s)",
                             metavar="SPEC")
-        if hasattr(argparse, "BooleanOptionalAction"):
-            milter.add_argument("--daemon",
-                                action=argparse.BooleanOptionalAction,
-                                dest="daemon",
-                                help="Run as a daemon process")
+        milter.add_argument("--daemon",
+                            action=boolean_optional_action,
+                            dest="daemon",
+                            help="Run as a daemon process")
         milter.add_argument("--pid-file",
                             dest="pid_file",
                             help="Write process ID to FILE",
@@ -231,12 +235,11 @@ class CommandLine(object):
                             "If PATH is '-', the standard output is used.\n" +
                             "(default: %(default)s)",
                             metavar="PATH")
-        if hasattr(argparse, "BooleanOptionalAction"):
-            logger.add_argument("--syslog",
-                                default=False,
-                                action=argparse.BooleanOptionalAction,
-                                dest="use_syslog",
-                                help="Use syslog")
+        logger.add_argument("--syslog",
+                            default=False,
+                            action=boolean_optional_action,
+                            dest="use_syslog",
+                            help="Use syslog")
         no_facility_names = [
             "LOG_EMERG",
             "LOG_ALERT",
