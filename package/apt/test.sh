@@ -42,7 +42,8 @@ echo "::endgroup::"
 echo "::group::Test Python bindings"
 /usr/share/doc/python3-milter-client/examples/milter-external.py --help
 /usr/share/doc/python3-milter-client/examples/milter-replace.py \
-  --pid-file=/tmp/milter-repace.pid &
+  --daemon \
+  --pid-file=/tmp/milter-repace.pid
 milter-test-server --connection-spec inet:20025@127.0.0.1
 kill $(cat /tmp/milter-replace.pid)
 
