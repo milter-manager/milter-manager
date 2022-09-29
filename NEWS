@@ -2,6 +2,25 @@
 
 = NEWS --- The history of milter manager
 
+== [release-2-2-1] 2.2.1: 2022-09-29
+
+=== Package
+
+==== Fixes
+
+  * deb: Fixed an upgrade failure.
+    [GitHub#176][Reported by Kazuhiro NISHIYAMA]
+
+=== Python
+
+==== Fixes
+
+  * Fixed a bug that milter client doesn't work with Python 3.8.
+
+=== Thanks
+
+  * Kazuhiro NISHIYAMA
+
 == [release-2-2-0] 2.2.0: 2022-09-29
 
 === Package
