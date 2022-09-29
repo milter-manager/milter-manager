@@ -216,13 +216,25 @@ Depends:
 	${misc:Depends},
 	${shlibs:Depends},
 	gir1.2-milterclient-2.0 (= ${binary:Version}),
-	libmilter-client2 (= ${binary:Version})
+	libmilter-client2 (= ${binary:Version}),
+	milter-test-client
 Description: Development files for milter client library
  milter "client" library is a library which implements client-side
  (milter-side) milter protocol.
  .
  This provides development environment to build software against
  libmilter-client.
+
+Package: milter-test-client
+Architecture: any
+Replaces: libmilter-client0
+Breaks: libmilter-client0
+Depends:
+	${misc:Depends},
+	${shlibs:Depends},
+	libmilter-client2 (= ${binary:Version})
+Description: A milter protocol implementation for testing
+ milter-test-client is useful to test a MTA-side milter protocol.
 
 Package: libmilter-server2
 Section: libs
@@ -258,13 +270,25 @@ Depends:
 	${misc:Depends},
 	${shlibs:Depends},
 	gir1.2-milterserver-2.0 (= ${binary:Version}),
-	libmilter-server2 (= ${binary:Version})
+	libmilter-server2 (= ${binary:Version}),
+	milter-test-server
 Description: Development files for milter toolkit
  milter "server" library is a library which implements server-side
  (MTA-side) milter protocol.
  .
  This provides development environment to build software against
  libmilter-server.
+
+Package: milter-test-server
+Architecture: any
+Replaces: libmilter-server0
+Breaks: libmilter-server0
+Depends:
+	${misc:Depends},
+	${shlibs:Depends},
+	libmilter-server2 (= ${binary:Version})
+Description: A MTA-side milter protocol implementation for testing
+ milter-test-server is useful to test a milter.
 
 Package: libmilter-compatible
 Section: libs

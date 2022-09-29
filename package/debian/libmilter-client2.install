@@ -1,4 +1,3 @@
-usr/bin/milter-test-client
 usr/lib/*/libmilter-client.so.*
 usr/share/man/man1/milter-test-client.*
 usr/share/man/ja/man1/milter-test-client.*
