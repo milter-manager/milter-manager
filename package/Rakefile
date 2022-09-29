@@ -62,6 +62,10 @@ class MilterManagerTask < PackagesGroongaOrgPackageTask
     end
   end
 
+  def docker_image(os, architecture)
+    "ghcr.io/milter-manager/#{super}"
+  end
+
   def enable_windows?
     false
   end
