@@ -1407,7 +1407,7 @@ parse_mail_contents (const gchar *contents, GError **error)
     first_lines = lines;
 
     /* Ignore mbox separation 'From ' mark. */
-    if (g_str_has_prefix(*lines, "From "))
+    if (*lines && g_str_has_prefix(*lines, "From "))
         lines++;
 
     if (!parse_mail_contents_header_part(&lines, error)) {
