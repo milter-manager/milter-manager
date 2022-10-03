@@ -70,7 +70,10 @@ def log(self, level, message, n_call_depth=None):
         message = ""
     elif isinstance(message, Exception):
         output = io.StringIO()
-        traceback.print_exception(message, file=output)
+        traceback.print_exception(type(message),
+                                  message,
+                                  message.__traceback__,
+                                  file=output)
         message = output.getvalue()
     else:
         message = str(message)
