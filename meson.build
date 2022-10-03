@@ -17,7 +17,7 @@
 project('milter-manager',
         'c',
         license: 'LGPL-3.0-or-later',
-        version: '2.2.2')
+        version: '2.2.3')
 
 api_version = '2.0'
 so_version = 2
