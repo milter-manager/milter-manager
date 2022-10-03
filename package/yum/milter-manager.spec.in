@@ -500,6 +500,9 @@ fi
 
 
 %changelog
+* Tue Oct 04 2022 Sutou Kouhei <kou@clear-code.com> - 2.2.2-1
+- new upstream release.
+
 * Thu Sep 29 2022 Sutou Kouhei <kou@clear-code.com> - 2.2.1-1
 - new upstream release.
 
