@@ -2,6 +2,20 @@
 
 = お知らせ --- milter managerの歴史
 
+== [release-2-2-3] 2.2.3: 2022-10-04
+
+=== Python
+
+==== 改良
+
+  * (({milter.client.SessionContext}))に(({fallback_status}))を設定す
+    るようにしました。
+
+==== 修正
+
+  * エラー発生時に(({fallback_status}))が使われないことがある問題を修
+    正しました。
+
 == [release-2-2-2] 2.2.2: 2022-10-04
 
 === パッケージ
