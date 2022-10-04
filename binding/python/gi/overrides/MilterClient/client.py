@@ -70,6 +70,7 @@ def _setup_session(self, context, session_class, init_arguments):
                     session.on_error(event, exception)
                 except Exception as nested_exception:
                     milter.core.Logger.default.error(nested_exception)
+                finally:
                     session_context.status = session_context.fallback_status
             status = session_context.status
             session_context.clear()
