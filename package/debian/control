@@ -61,6 +61,8 @@ Description: Documentation of milter manager
 Package: libmilter-manager2
 Section: libs
 Architecture: any
+Conflicts:
+	libmilter-manager0
 Replaces:
 	libmilter-manager0,
 	milter-manager (<< 1.6.6-1)
