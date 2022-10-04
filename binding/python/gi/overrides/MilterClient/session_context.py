@@ -20,6 +20,7 @@ MilterCore = gi.module.get_introspection_module("MilterCore")
 class SessionContext(object):
     def __init__(self, context):
         self._context = context
+        self._fallback_status = MilterCore.Status.ACCEPT
         self.clear()
 
     def clear(self):
@@ -38,6 +39,14 @@ class SessionContext(object):
     @status.setter
     def status(self, value):
         self._status = self._normalize_status(value)
+
+    @property
+    def fallback_status(self):
+        return self._fallback_status
+
+    @fallback_status.setter
+    def fallback_status(self, value):
+        self._fallback_status = self._normalize_status(value)
 
     def set_reply(self, code, extended_code, reason):
         self._context.set_reply(code, extended_code, reason)

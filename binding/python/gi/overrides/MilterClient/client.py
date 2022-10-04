@@ -48,6 +48,7 @@ Client.start_syslog = start_syslog
 
 def _setup_session(self, context, session_class, init_arguments):
     session_context = SessionContext(context)
+    session_context.fallback_status = self.fallback_status
     session = session_class(session_context, *init_arguments)
 
     context.set_use_bytes(True)
@@ -69,7 +70,7 @@ def _setup_session(self, context, session_class, init_arguments):
                     session.on_error(event, exception)
                 except Exception as nested_exception:
                     milter.core.Logger.default.error(nested_exception)
-                session_context.status = self.fallback_status
+                    session_context.status = session_context.fallback_status
             status = session_context.status
             session_context.clear()
             return status
@@ -103,13 +104,13 @@ def _setup_session(self, context, session_class, init_arguments):
                 session.abort(*args)
             except Exception as error:
                 milter.core.Logger.error(error)
-                session_context.status = self.fallback_status
+                session_context.status = session_context.fallback_status
 
         try:
             session.reset()
         except Exception as error:
             milter.core.Logger.error(error)
-            session_context.status = self.fallback_status
+            session_context.status = session_context.fallback_status
 
         status = session_context.status
         session_context.clear()
