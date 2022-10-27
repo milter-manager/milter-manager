@@ -11,7 +11,6 @@ https://milter-manager.osdn.jp/
 
 Use the following rules:
 
-  * Files that describe their license: their license
   * Commands: GPL3(license/gpl.txt)
   * Documents: GFDL(license/fdl.txt)
   * Images: Public Domain
@@ -19,8 +18,6 @@ Use the following rules:
 
 Here is a concrete list:
 
-  * Files that describe their license:
-    * milter/core/milter-memory-profile.c: LGPL2+
   * Commands: GPL3
     * src/*
     * tool/*

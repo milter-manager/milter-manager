@@ -14,7 +14,6 @@ milter manager
 
 以下の規則に従います。
 
-  * ライセンスが明記してあるファイル: そのライセンス
   * コマンド: GPL3(license/gpl.txt)
   * ドキュメント: GFDL(license/fdl.txt)
   * 画像: Public Domain
@@ -22,8 +21,6 @@ milter manager
 
 具体的には以下の通りです。
 
-  * ライセンスが明記してあるファイル:
-    * milter/core/milter-memory-profile.c: LGPL2+
   * コマンド: GPL3
     * src/以下
     * tool/直下
