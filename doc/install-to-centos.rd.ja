@@ -40,6 +40,10 @@ milter managerはdnfでインストールできます。
 
 参考: ((<URL:https://packagecloud.io/milter-manager/repos/install>))
 
+(({ruby:3.0}))モジュールを有効にします。
+
+  % sudo dnf module -y enable ruby:3.0
+
 登録が完了したらmilter managerをインストールできます。
 
   % sudo dnf install -y milter-manager

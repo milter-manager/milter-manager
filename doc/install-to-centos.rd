@@ -40,6 +40,10 @@ Register milter manager yum repository like the following:
 
 See also: ((<URL:https://packagecloud.io/milter-manager/repos/install>))
 
+Enable (({ruby:3.0})) module:
+
+  % sudo dnf module -y enable ruby:3.0
+
 Now, you install milter manager:
 
   % sudo dnf install -y milter-manager
