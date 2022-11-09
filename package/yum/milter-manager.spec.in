@@ -1,3 +1,5 @@
+# -*- sh-shell: rpm -*-
+
 %define ruby_version %(ruby -e "print RUBY_VERSION.tr('.', '')")
 %define ruby_prefix %(ruby -rrbconfig -e 'print RbConfig::CONFIG["prefix"]')
 %define ruby_vendor_lib_dir %(ruby -rrbconfig -e 'print RbConfig::CONFIG["vendorlibdir"]')
