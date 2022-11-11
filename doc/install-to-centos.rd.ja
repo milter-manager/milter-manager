@@ -353,7 +353,6 @@ Postfixを有効にします。
 
   milter_protocol = 6
   milter_default_action = accept
-  milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 
 それぞれ以下のような設定です。
 

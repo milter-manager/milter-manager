@@ -361,7 +361,6 @@ Configure Postfix for milters. Append following lines to
 /etc/postfix/main.cf:
   milter_protocol = 6
   milter_default_action = accept
-  milter_mail_macros = {auth_author} {auth_type} {auth_authen}
 
 For details for each lines.
 
