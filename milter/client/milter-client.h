@@ -948,8 +948,8 @@ const gchar         *milter_client_get_pid_file         (MilterClient  *client);
 
 /**
  * milter_client_set_pid_file:
- * @client: a %MilterClient.
- * @pid_file: the PID file of @client.
+ * @client: a #MilterClient.
+ * @pid_file: (nullable): the PID file of @client.
  *
  * Sets the PID file of @client.
  */
