@@ -620,6 +620,7 @@ milter_logger_log_va_list (MilterLogger *logger,
 /**
  * milter_logger_log_literal:
  * @logger: A #MilterLogger.
+ * @domain: A log domain.
  * @level: A log level.
  * @file: A file name where the log is happened.
  * @line: A line number where the log is happened.
