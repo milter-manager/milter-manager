@@ -54,6 +54,12 @@ rescue LoadError
         priority ||= GLib::PRIORITY_DEFAULT_IDLE
         add_idle_raw(priority, &block)
       end
+
+      alias_method :watch_io_raw, :watch_io
+      def watch_io(channel, condition, priority: nil, &block)
+        priority ||= GLib::PRIORITY_DEFAULT_IDLE
+        watch_io_raw(priority, channel, condition, &block)
+      end
     end
 
     define_backward_compatible_enum_constants(self, ActionFlags, "ACTION")
