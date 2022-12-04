@@ -1,6 +1,6 @@
 /* -*- c-file-style: "ruby"; indent-tabs-mode: nil -*- */
 /*
- *  Copyright (C) 2009-2013  Kouhei Sutou <kou@clear-code.com>
+ *  Copyright (C) 2009-2022  Sutou Kouhei <kou@clear-code.com>
  *
  *  This library is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -71,6 +71,25 @@ log_full (VALUE self, VALUE domain, VALUE level, VALUE file, VALUE line,
                       RVAL2CSTR(function),
                       "%s",
                       RVAL2CSTR(message));
+    return self;
+}
+
+static VALUE
+log_literal (VALUE self,
+             VALUE domain,
+             VALUE level,
+             VALUE file,
+             VALUE line,
+             VALUE function,
+             VALUE message)
+{
+    milter_logger_log_literal(SELF(self),
+                              RVAL2CSTR(domain),
+                              RVAL2LOG_LEVEL(level),
+                              RVAL2CSTR(file),
+                              NUM2UINT(line),
+                              RVAL2CSTR(function),
+                              RVAL2CSTR(message));
     return self;
 }
 
@@ -158,6 +177,7 @@ Init_milter_logger (void)
     rb_define_singleton_method(rb_cMilterLogger, "default", s_default, 0);
 
     rb_define_method(rb_cMilterLogger, "log_full", log_full, 6);
+    rb_define_method(rb_cMilterLogger, "log_literal", log_literal, 6);
     rb_undef_method(rb_cMilterLogger, "set_target_level");
     rb_undef_method(rb_cMilterLogger, "target_level=");
     rb_define_method(rb_cMilterLogger, "set_target_level", set_target_level, 1);

@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2011  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -67,8 +67,12 @@ module Milter
       file, line, info = caller[n_call_depth].split(/:(\d+):/, 3)
       message ||= yield
       ensure_message(message).each_line do |one_line_message|
-        log_full(self.class.domain, level, file, line.to_i, info.to_s,
-                 one_line_message.chomp)
+        log_literal(self.class.domain,
+                    level,
+                    file,
+                    line.to_i,
+                    info.to_s,
+                    one_line_message.chomp)
       end
     end
 
