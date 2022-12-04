@@ -62,6 +62,20 @@ rescue LoadError
       end
     end
 
+    class Logger
+      alias_method :set_target_level_raw, :set_target_level
+      def set_target_level(level)
+        case level
+        when Numeric, LogLevelFlags
+          set_target_level_raw(level)
+        else
+          set_target_level_by_string(level)
+        end
+      end
+      alias_method :target_level_raw=, :target_level=
+      alias_method :target_level=, :set_target_level
+    end
+
     define_backward_compatible_enum_constants(self, ActionFlags, "ACTION")
     define_backward_compatible_enum_constants(self, LogLevelFlags, "LOG_LEVEL")
     define_backward_compatible_enum_constants(self, Status, "STATUS")
