@@ -32,6 +32,12 @@ rescue LoadError
       end
     end
 
+    VERSION = [
+      TOOLKIT_VERSION_MAJOR,
+      TOOLKIT_VERSION_MINOR,
+      TOOLKIT_VERSION_MICRO,
+    ].freeze
+
     class Error < StandardError
     end
 
