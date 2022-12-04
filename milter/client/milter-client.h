@@ -393,8 +393,8 @@ const gchar         *milter_client_get_unix_socket_group
 
 /**
  * milter_client_set_unix_socket_group:
- * @client: a %MilterClient.
- * @group: the UNIX domain socket group.
+ * @client: a #MilterClient.
+ * @group: (nullable): the UNIX domain socket group.
  *
  * Sets the group of UNIX domain socket.
  */
