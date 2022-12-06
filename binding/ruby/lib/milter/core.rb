@@ -55,6 +55,12 @@ rescue LoadError
         add_idle_raw(priority, &block)
       end
 
+      alias_method :add_timeout_raw, :add_timeout
+      def add_timeout(interval_in_seconds, priority: nil, &block)
+        priority ||= GLib::PRIORITY_DEFAULT_IDLE
+        add_timeout_raw(priority, interval_in_seconds, &block)
+      end
+
       alias_method :watch_io_raw, :watch_io
       def watch_io(channel, condition, priority: nil, &block)
         priority ||= GLib::PRIORITY_DEFAULT_IDLE
