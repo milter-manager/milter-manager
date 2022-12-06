@@ -1,4 +1,4 @@
-# Copyright (C) 2010-2014  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2010-2022  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -33,6 +33,11 @@ module Milter::Manager
     end
 
     private
+    def run_command(command_line, flags=0)
+      flags |= GLib::Spawn::SEARCH_PATH
+      GLib::Spawn.sync(nil, command_line, nil, flags)
+    end
+
     def detect_threshold_n_connections
       threshold = 0
       log_tag = "[breaker][detect][threshold]"
@@ -98,12 +103,12 @@ module Milter::Manager
 
     def postfix_postconf
       postconf = detect_postfix_postconf
-      result = `#{postconf} 2>&1`
-      if $?.success?
-        result
+      stdout, stderr, exit_status = run_command(["postconf"])
+      if exit_status.zero?
+        stdout
       else
         Milter::Logger.error("[breaker][detect][error][postfix][postconf] " +
-                             "failed to run postconf: <#{result.strip}>")
+                             "failed to run postconf: <#{stderr.strip}>")
         ""
       end
     end
@@ -122,7 +127,7 @@ module Milter::Manager
     end
 
     def detect_postfix_prefix
-      `ps ax -o command`.each_line do |line|
+      run_command(["ps", "ax", "-o", "command"])[0].each_line do |line|
         case line
         when /\/lib(?:exec)?\/postfix\/master\b/
           return $PREMATCH
@@ -136,14 +141,14 @@ module Milter::Manager
     end
 
     def postfix?
-      `ps ax`.each_line do |line|
+      run_command(["ps", "ax"])[0].each_line do |line|
         return true if /master/ =~ line and /postfix/i =~ line
       end
       false
     end
 
     def sendmail?
-      `ps ax`.each_line do |line|
+      run_command(["ps", "ax"])[0].each_line do |line|
         return true if /sendmail: sever/ =~ line
       end
       false
