@@ -33,6 +33,8 @@ gir_dir = data_dir / relative_gir_dir
 project_lib_dir = get_option('libdir') / meson.project_name()
 module_dir = project_lib_dir / 'module'
 module_configuration_dir = module_dir / 'configuration'
+sysconf_dir = get_option('sysconfdir')
+project_sysconf_dir = sysconf_dir/ meson.project_name()
 
 fs = import('fs')
 gnome = import('gnome')
@@ -230,6 +232,7 @@ subdir('binding/ruby')
 subdir('module/configuration/ruby')
 subdir('src')
 subdir('tool')
+subdir('data')
 
 python = import('python').find_installation(get_option('python-path'),
                                             required: get_option('python'))

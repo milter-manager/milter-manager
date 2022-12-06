@@ -1,6 +1,9 @@
 defaultsdir = $(pkgsysconfdir)/defaults
-dist_defaults_DATA =		\
-	freebsd.conf		\
-	pkgsrc.conf		\
-	debian.conf		\
-	redhat.conf
+dist_defaults_DATA =				\
+	debian.conf				\
+	freebsd.conf				\
+	pkgsrc.conf				\
+	redhat.conf				\
+	redhat7.conf				\
+	redhat8.conf				\
+	redhat9.conf
