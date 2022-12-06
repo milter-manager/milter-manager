@@ -31,7 +31,21 @@ rescue LoadError
   module Milter
     module Manager
       ApplicableCondition = MilterManager::ManagerApplicableCondition
+
       Configuration = MilterManager::ManagerConfiguration
+      class Configuration
+        alias_method :remove_applicable_condition_raw,
+                     :remove_applicable_condition
+        def remove_applicable_condition(condition)
+          case condition
+          when String
+            remove_applicable_condition_by_name(condition)
+          else
+            remove_applicable_condition_raw(condition)
+          end
+        end
+      end
+
       ControlCommandEncoder = MilterManager::ManagerControlCommandEncoder
       ControlReplyEncoder = MilterManager::ManagerControlReplyEncoder
       Egg = MilterManager::ManagerEgg
