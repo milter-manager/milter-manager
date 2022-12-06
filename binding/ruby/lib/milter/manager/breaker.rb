@@ -33,11 +33,6 @@ module Milter::Manager
     end
 
     private
-    def run_command(command_line, flags=0)
-      flags |= GLib::Spawn::SEARCH_PATH
-      GLib::Spawn.sync(nil, command_line, nil, flags)
-    end
-
     def detect_threshold_n_connections
       threshold = 0
       log_tag = "[breaker][detect][threshold]"
@@ -103,7 +98,7 @@ module Milter::Manager
 
     def postfix_postconf
       postconf = detect_postfix_postconf
-      stdout, stderr, exit_status = run_command(["postconf"])
+      stdout, stderr, exit_status = Milter::CommandRunner.run(["postconf"])
       if exit_status.zero?
         stdout
       else
@@ -127,7 +122,8 @@ module Milter::Manager
     end
 
     def detect_postfix_prefix
-      run_command(["ps", "ax", "-o", "command"])[0].each_line do |line|
+      stdout, = Milter::CommandRunner.run(["ps", "ax", "-o", "command"])
+      stdout.each_line do |line|
         case line
         when /\/lib(?:exec)?\/postfix\/master\b/
           return $PREMATCH
@@ -141,14 +137,16 @@ module Milter::Manager
     end
 
     def postfix?
-      run_command(["ps", "ax"])[0].each_line do |line|
+      stdout, = Milter::CommandRunner.run(["ps", "ax"])
+      stdout.each_line do |line|
         return true if /master/ =~ line and /postfix/i =~ line
       end
       false
     end
 
     def sendmail?
-      run_command(["ps", "ax"])[0].each_line do |line|
+      stdout, = Milter::CommandRunner.run(["ps", "ax"])
+      stdout.each_line do |line|
         return true if /sendmail: sever/ =~ line
       end
       false

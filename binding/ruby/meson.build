@@ -21,6 +21,7 @@ install_data('lib/milter/client.rb',
              'lib/milter/server.rb',
              install_dir: ruby_install_dir / 'milter')
 install_data('lib/milter/core/callback.rb',
+             'lib/milter/core/command-runner.rb',
              'lib/milter/core/compatible.rb',
              'lib/milter/core/logger.rb',
              'lib/milter/core/macro.rb',

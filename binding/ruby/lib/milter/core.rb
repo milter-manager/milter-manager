@@ -95,10 +95,11 @@ rescue LoadError
   end
 end
 
-require 'milter/core/compatible'
+require "milter/core/compatible"
 
-require 'milter/core/logger'
-require 'milter/core/socket-address'
-require 'milter/core/macro'
-require 'milter/core/path'
-require 'milter/core/callback'
+require "milter/core/callback"
+require "milter/core/command-runner"
+require "milter/core/logger"
+require "milter/core/macro"
+require "milter/core/path"
+require "milter/core/socket-address"
