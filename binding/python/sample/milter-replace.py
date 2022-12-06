@@ -32,7 +32,7 @@ class MilterReplace(milter.client.Session):
         self._headers.append([name, value])
 
     def body(self, chunk):
-        self._body += chunk.get_data()
+        self._body += chunk
 
     def end_of_message(self):
         header_indexes = {}
