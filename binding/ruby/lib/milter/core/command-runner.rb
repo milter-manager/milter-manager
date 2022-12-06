@@ -16,12 +16,12 @@
 module Milter
   class CommandRunner
     class << self
-      def run(command_line, **kwargs)
-        new(command_line, **kwargs).run
+      def run(*command_line, **kwargs)
+        new(*command_line, **kwargs).run
       end
     end
 
-    def initialize(command_line, flags: 0)
+    def initialize(*command_line, flags: 0)
       @command_line = command_line
       @flags = flags
     end

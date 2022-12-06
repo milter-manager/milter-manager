@@ -98,7 +98,7 @@ module Milter::Manager
 
     def postfix_postconf
       postconf = detect_postfix_postconf
-      stdout, stderr, exit_status = Milter::CommandRunner.run(["postconf"])
+      stdout, stderr, exit_status = Milter::CommandRunner.run("postconf")
       if exit_status.zero?
         stdout
       else
@@ -122,7 +122,7 @@ module Milter::Manager
     end
 
     def detect_postfix_prefix
-      stdout, = Milter::CommandRunner.run(["ps", "ax", "-o", "command"])
+      stdout, = Milter::CommandRunner.run("ps", "ax", "-o", "command")
       stdout.each_line do |line|
         case line
         when /\/lib(?:exec)?\/postfix\/master\b/
@@ -137,7 +137,7 @@ module Milter::Manager
     end
 
     def postfix?
-      stdout, = Milter::CommandRunner.run(["ps", "ax"])
+      stdout, = Milter::CommandRunner.run("ps", "ax")
       stdout.each_line do |line|
         return true if /master/ =~ line and /postfix/i =~ line
       end
@@ -145,7 +145,7 @@ module Milter::Manager
     end
 
     def sendmail?
-      stdout, = Milter::CommandRunner.run(["ps", "ax"])
+      stdout, = Milter::CommandRunner.run("ps", "ax")
       stdout.each_line do |line|
         return true if /sendmail: sever/ =~ line
       end
