@@ -158,6 +158,10 @@ module Milter
         context.signal_connect(signal) do |_context, *args|
           begin
             case event
+            when :connect
+              host, address, address_size = args
+              address = SocketAddress.resolve(address, address_size)
+              session.send(event, host, address)
             when :body
               body, = args
               session.send(event, body.to_s)
