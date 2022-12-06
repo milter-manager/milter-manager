@@ -1,3 +1,6 @@
+EXTRA_DIST =					\
+	meson.build
+
 SUBDIRS =			\
 	packet			\
 	applicable-conditions	\

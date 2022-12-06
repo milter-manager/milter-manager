@@ -1,3 +1,6 @@
+EXTRA_DIST =					\
+	meson.build
+
 conditionsdir = $(pkgsysconfdir)/applicable-conditions
 
 dist_conditions_DATA =			\

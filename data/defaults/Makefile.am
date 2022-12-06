@@ -1,3 +1,6 @@
+EXTRA_DIST =					\
+	meson.build
+
 defaultsdir = $(pkgsysconfdir)/defaults
 dist_defaults_DATA =				\
 	debian.conf				\
