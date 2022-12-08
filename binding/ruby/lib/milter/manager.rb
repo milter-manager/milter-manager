@@ -1106,7 +1106,10 @@ module Milter
           end
 
           def memory_usage_in_kb
-            `ps -o rss -p #{Process.pid}`.split(/\n/).last.to_i
+            stdout, = CommandRunner.run("ps",
+                                        "-o", "rss",
+                                        "-p", Process.pid.to_s)
+            stdout.split(/\n/).last.to_i
           end
         end
       end
