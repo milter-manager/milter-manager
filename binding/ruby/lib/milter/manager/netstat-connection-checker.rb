@@ -32,7 +32,7 @@ module Milter::Manager
       @options = (options || {}).dup
       @database = nil
       @last_update = nil
-      detect_netstat_command
+      detect_netstat_command_line
     end
 
     def connected?(context)
@@ -68,19 +68,21 @@ module Milter::Manager
 
     private
     def netstat
-      result = `#{@netstat_command}`
-      status = $?
-      if status.success?
-        result
+      stdout, stderr, wait_status =
+                      Milter::CommandRunner.run(@netstat_command_line,
+                                                env: @netstat_command_env)
+      if wait_status.zero?
+        stdout
       else
         Milter::Logger.error("[netstat][error] failed to run netstat: " +
-                             "<#{@netstat_command}>: <#{result}>")
+                             "<#{@netstat_command_line.join(' ')}>: " +
+                             "<#{stderr.strip}>")
         ""
       end
     end
 
     def connection_info(address, options={})
-      return nil if @netstat_command.nil?
+      return nil if @netstat_command_line.nil?
       type = nil
       case address
       when Milter::SocketAddress::IPv4
@@ -159,24 +161,35 @@ module Milter::Manager
       [ip_address, port]
     end
 
-    def detect_netstat_command
-      @netstat_command = nil
-      commands = ["env LANG=C netstat -n -W 2>&1",
-                  "env LANG=C netstat -n 2>&1"]
-      commands.each do |command|
-        result = `#{command}`
-        if $?.success?
-          @netstat_command = command
-          break
+    def detect_netstat_command_line
+      @netstat_command_line = nil
+      @netstat_command_env = ENV.to_h
+      @netstat_command_env["LANG"] = "C"
+      command_lines = [
+        ["netstat", "-n", "-W"],
+        ["netstat", "-n"],
+      ]
+      command_lines.each do |command_line|
+        begin
+          _, _, wait_status =
+                Milter::CommandRunner.run(*command_line,
+                                          env: @netstat_commmand_env)
+          if wait_status.zero?
+            @netstat_command_line = command_line
+            break
+          end
+        rescue GLib::SpawnError
         end
       end
-      if @netstat_command
-        Milter::Logger.info("[netstat][detect] <#{@netstat_command}>")
+      if @netstat_command_line
+        Milter::Logger.info("[netstat][detect] " +
+                            "<#{@netstat_command_line.join(' ')}>")
       else
-        inspected_commands = commands.collect do |command|
-          "<#{command}>"
+        inspected_command_lines = command_lines.collect do |command_line|
+          "<#{command_line.join(' ')}>"
         end.join(" ")
-        Milter::Logger.error("[netstat][not-available] #{inspected_commands}")
+        Milter::Logger.error("[netstat][not-available] " +
+                             inspected_command_lines)
       end
     end
   end

@@ -98,8 +98,8 @@ module Milter::Manager
 
     def postfix_postconf
       postconf = detect_postfix_postconf
-      stdout, stderr, exit_status = Milter::CommandRunner.run("postconf")
-      if exit_status.zero?
+      stdout, stderr, wait_status = Milter::CommandRunner.run("postconf")
+      if wait_status.zero?
         stdout
       else
         Milter::Logger.error("[breaker][detect][error][postfix][postconf] " +

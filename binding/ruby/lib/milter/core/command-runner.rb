@@ -21,8 +21,9 @@ module Milter
       end
     end
 
-    def initialize(*command_line, flags: 0)
+    def initialize(*command_line, env: nil, flags: 0)
       @command_line = command_line
+      @env = nil
       @flags = flags
     end
 
@@ -30,7 +31,7 @@ module Milter
       flags = @flags | GLib::Spawn::SEARCH_PATH
       GLib::Spawn.sync(nil,
                        @command_line,
-                       nil,
+                       @env,
                        flags)
     end
   end
