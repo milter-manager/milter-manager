@@ -10,7 +10,15 @@ module Milter::Manager
       return unless @rspamadm_path
       return unless File.executable?(@rspamadm_path)
 
-      config = JSON.parse(`#{@rspamadm_path} configdump --json` || "{}")
+      stdout, _stderr, wait_status =
+                       Milter::CommandRunner.run(@rspamadm_path,
+                                                 "configdump",
+                                                 "--json")
+      if wait_status.zero?
+        config = JSON.parse(stdout.strip)
+      else
+        config = {}
+      end
       workers = config["worker"]
       return unless workers
       rspamd_proxy = workers.detect do |worker|
