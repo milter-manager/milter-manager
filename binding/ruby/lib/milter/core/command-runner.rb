@@ -31,7 +31,7 @@ module Milter
       GLib::Spawn.sync(nil,
                        @command_line,
                        nil,
-                       flags)p
+                       flags)
     end
   end
 end
