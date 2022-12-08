@@ -46,6 +46,10 @@ jobs:
       - run: make distcheck
         working-directory: .build
       - run: mv .build/milter-manager-*.tar.gz ./
+      - name: Show binding/ruby/test/ log
+        if: failure()
+        run: |
+          cat .build/milter-manager-*/_build/sub/binding/ruby/test/test-suite.log || :
       - name: Show test/tool/ log
         if: failure()
         run: |
