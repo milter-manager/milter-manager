@@ -237,7 +237,7 @@ RD2REFENTRY_LIB_FILE = rd2refentry-lib.rb
 RD2REFENTRY_LIB = $(RD2LIB_DIR)/$(RD2REFENTRY_LIB_FILE)
 RD2DOCBOOK = $(RUBY) -Eutf-8:utf-8 -I $(RD2LIB_DIR) $(RD2) -r $(RD2REFENTRY_LIB_FILE) --name=MILTER-MANAGER
 RD2DOCBOOK_JA = $(RD2DOCBOOK) --po=$(srcdir)/ja.po
-SVG2PNG = inkscape --export-dpi=60 --export-background=white --export-png
+SVG2PNG = inkscape --export-dpi=60 --export-background=white --export-filename
 
 html-ja-build.stamp: sgml.stamp $(CATALOGS) $(DOC_MAIN_SGML_FILE) $(content_files) $(expand_content_files)
 	for catalog in $(CATALOGS); do					\
