@@ -64,11 +64,11 @@ jobs:
           meson compile -C ../milter-manager.build
       - name: Install
         run: |
-          sudo meson install -C ../milter-manager.build
+          meson install -C ../milter-manager.build
       - name: Move reference manuals
         run: |
           mkdir -p site/_site/reference/
-          mv \
+          cp -a \
             /tmp/local/share/doc/milter-manager/* \
             site/_site/reference/
       - uses: actions/upload-pages-artifact@v1
