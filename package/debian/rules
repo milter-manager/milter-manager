@@ -56,11 +56,8 @@ override_dh_auto_install:
 	mv debian/tmp-meson/usr/share/milter-manager/python/	\
 	   debian/tmp/usr/share/milter-manager/
 
-override_dh_installchangelogs:
-	dh_installchangelogs --all -k NEWS
-
 override_dh_installdocs:
-	dh_installdocs --all NEWS.ja README.ja TODO
+	dh_installdocs --all README.ja TODO
 
 override_dh_auto_clean:
 	dh_auto_clean				\

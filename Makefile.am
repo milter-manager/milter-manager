@@ -34,8 +34,6 @@ pkgconfig_DATA +=				\
 endif
 
 EXTRA_DIST =					\
-	NEWS					\
-	NEWS.ja					\
 	README					\
 	README.ja				\
 	autogen.sh				\
