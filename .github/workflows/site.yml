@@ -72,6 +72,8 @@ jobs:
             /tmp/local/share/doc/milter-manager/* \
             site/_site/reference/
       - uses: actions/upload-pages-artifact@v1
+        with:
+          path: site/_site/
 
   deploy:
     environment:
