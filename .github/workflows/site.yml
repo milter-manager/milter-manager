@@ -16,3 +16,5 @@ jobs:
             run \
             site.yml \
             --raw-field source-reference=master
+        env:
+          GH_TOKEN: ${{ github.token }}
