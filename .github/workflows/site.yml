@@ -19,7 +19,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      BUNDLE_GEMFILE=site/Gemfile
+      BUNDLE_GEMFILE: site/Gemfile
     steps:
       - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
