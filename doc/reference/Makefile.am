@@ -62,7 +62,6 @@ HTML_IMAGES = $(generated_image_files)
 content_files =					\
 	version.xml				\
 	readme.xml				\
-	news.xml				\
 	introduction.xml			\
 	configuration.xml			\
 	performance.xml				\
@@ -121,8 +120,6 @@ endif
 generated_xml_files =				\
 	readme.xml				\
 	readme.xml.ja				\
-	news.xml				\
-	news.xml.ja				\
 	introduction.xml			\
 	introduction.xml.ja			\
 	configuration.xml			\
@@ -303,12 +300,6 @@ readme.xml: $(top_srcdir)/README $(RD2REFENTRY_LIB) readme.xml.ja
 
 readme.xml.ja: $(top_srcdir)/README.ja $(RD2REFENTRY_LIB) ja.po
 	$(RD2DOCBOOK_JA) $(top_srcdir)/README.ja > readme.xml.ja
-
-news.xml: $(top_srcdir)/NEWS $(RD2REFENTRY_LIB) news.xml.ja
-	$(RD2DOCBOOK) $(top_srcdir)/NEWS > news.xml
-
-news.xml.ja: $(top_srcdir)/NEWS.ja $(RD2REFENTRY_LIB) ja.po
-	$(RD2DOCBOOK_JA) $(top_srcdir)/NEWS.ja > news.xml.ja
 
 introduction.xml: $(top_srcdir)/doc/introduction.rd $(RD2REFENTRY_LIB) introduction.xml.ja
 	$(RD2DOCBOOK) $(top_srcdir)/doc/introduction.rd > introduction.xml
