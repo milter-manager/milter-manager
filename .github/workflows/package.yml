@@ -70,12 +70,9 @@ jobs:
         if: |
           startsWith(github.ref, 'refs/tags/')
         run: |
-          # TODO: Use Markdown not RD in NEWS
-          (echo '```rd' && \
-           ruby \
-             -e 'print("== "); puts(ARGF.read.split(/^== /)[1])' \
-             NEWS && \
-           echo '```') > release-note.md
+          ruby \
+            -e 'print("## "); puts(ARGF.read.split(/^## /)[1])' \
+            NEWS.md > release-note.md
       - name: Upload to release
         uses: softprops/action-gh-release@v1
         if: |
