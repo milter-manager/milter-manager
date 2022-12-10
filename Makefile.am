@@ -129,7 +129,9 @@ update-latest-release:
 	  site/_config.yml
 
 tag:
-	cd $(srcdir) && git tag -a "$(VERSION)" -m "released $(VERSION)!!!"
+	cd $(srcdir) &&							\
+	  git tag -a "$(VERSION)" -m "released $(VERSION)!!!" &&	\
+	  git push origin $(VERSION)
 
 echo-abs-top-srcdir:
 	@echo $(abs_top_srcdir)
