@@ -45,6 +45,7 @@ jobs:
             libev-dev \
             libgirepository1.0-dev \
             meson
+          sudo gem install gio2
       - name: Cache ccache
         uses: actions/cache@v3
         with:
