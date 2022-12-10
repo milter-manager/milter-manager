@@ -144,3 +144,25 @@ milter_core_gir = gnome.generate_gir(libmilter_core,
                                      nsversion: api_version,
                                      sources: sources + headers + enums,
                                      symbol_prefix: 'milter')
+
+if enable_doc
+  gi_docgen_toml = configure_file(input: 'gi-docgen.toml.in',
+                                  output: 'gi-docgen.toml',
+                                  configuration: gi_docgen_toml_conf)
+  custom_target('milter-core-doc',
+                command: [
+                  find_program('gi-docgen'),
+                  'generate',
+                  '--config=@INPUT0@',
+                  '--output-dir=@OUTPUT0@',
+                  '--no-namespace-dir',
+                  '@INPUT1@',
+                ],
+                input: [
+                  gi_docgen_toml,
+                  milter_core_gir[0],
+                ],
+                install: true,
+                install_dir: doc_dir,
+                output: ['milter-core'])
+endif

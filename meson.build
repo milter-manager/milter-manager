@@ -117,6 +117,13 @@ if rcddir != ''
   endif
 endif
 
+enable_doc = get_option('doc')
+doc_dir = get_option('datadir') / 'doc' / meson.project_name()
+source_reference = get_option('source-reference')
+gi_docgen_toml_conf = configuration_data()
+gi_docgen_toml_conf.set('API_VERSION', api_version)
+gi_docgen_toml_conf.set('SOURCE_REFERENCE', source_reference)
+gi_docgen_toml_conf.set('VERSION', meson.project_version())
 
 config_h_conf = configuration_data()
 config_h_conf.set_quoted('CONFIG_DIR',

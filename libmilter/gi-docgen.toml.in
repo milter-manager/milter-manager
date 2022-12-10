@@ -1,0 +1,29 @@
+# Copyright (C) 2022  Sutou Kouhei <kou@clear-code.com>
+#
+# This library is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this library.  If not, see <http://www.gnu.org/licenses/>.
+
+[library]
+name = "libmilter"
+version = "@VERSION@"
+browse_url = "https://github.com/milter-manager/milter-manager/tree/@SOURCE_REFERENCE@"
+repository_url = "https://github.com/milter-manager/milter-manager.git"
+website_url = "https://milter-manager.github.io/"
+authors = "Sutou Kouhei"
+license = "LGPL-3.0+"
+description = "Sendmail's libmilter compatible API"
+dependencies = []
+search_index = true
+
+[source-location]
+base_url = "https://github.com/milter-manager/milter-manager/blob/@SOURCE_REFERENCE@/"

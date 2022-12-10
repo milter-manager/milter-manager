@@ -45,3 +45,39 @@ pkgconfig.generate(libmilter,
                    requires: ['milter-client = ' + meson.project_version()],
                    subdirs: project_include_sub_dir / 'libmilter',
                    variables: pkgconfig_variables)
+
+libmilter_gir = gnome.generate_gir(libmilter,
+                                   export_packages: 'libmilter',
+                                   extra_args: [
+                                     '--warn-all',
+                                   ],
+                                   fatal_warnings: false,
+                                   header: 'libmilter/mfapi.h',
+                                   identifier_prefix: 'SMFI',
+                                   includes: [],
+                                   install: true,
+                                   namespace: 'SMFI',
+                                   nsversion: api_version,
+                                   sources: 'mfapi.h',
+                                   symbol_prefix: 'smfi')
+if enable_doc
+  gi_docgen_toml = configure_file(input: 'gi-docgen.toml.in',
+                                  output: 'gi-docgen.toml',
+                                  configuration: gi_docgen_toml_conf)
+  custom_target('libmilter-doc',
+                command: [
+                  find_program('gi-docgen'),
+                  'generate',
+                  '--config=@INPUT0@',
+                  '--output-dir=@OUTPUT0@',
+                  '--no-namespace-dir',
+                  '@INPUT1@',
+                ],
+                input: [
+                  gi_docgen_toml,
+                  libmilter_gir[0],
+                ],
+                install: true,
+                install_dir: doc_dir,
+                output: ['libmilter'])
+endif
