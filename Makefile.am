@@ -49,28 +49,14 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
 
 OSDN_CREDENTIAL_FILE = $(HOME)/.config/osdn/credential.yml
 
-upload: upload-doc upload-coverage
+$(PACKAGE)-$(VERSION).tar.gz:
+	wget https://github.com/milter-manager/milter-manager/releases/download/$(VERSION)/$(PACKAGE)-$(VERSION).tar.gz
 
-release: release-osdn
-
-release-github: $(PACKAGE)-$(VERSION).tar.gz.asc
-	$(CUTTER_SOURCE_PATH)/misc/release-to-github.rb \
-	  --repository=milter-manager/milter-manager \
-	  --tag=$(VERSION) \
-	  --news-file=NEWS \
-	  --asset-file=$(PACKAGE)-$(VERSION).tar.gz \
-	  --asset-file=$(PACKAGE)-$(VERSION).tar.gz.asc \
-	  --access-token-file=$(ACCESS_TOKEN_FILE)
-
-release-osdn: $(PACKAGE)-$(VERSION).tar.gz.asc
-	$(CUTTER_SOURCE_PATH)/misc/release-to-osdn.rb \
-	  --credential=$(OSDN_CREDENTIAL_FILE) \
-	  --project=$(PACKAGE) \
-	  --new-version=$(VERSION) \
-	  --news-file=NEWS \
-	  --package=$(PACKAGE) \
-	  --asset-file=$(PACKAGE)-$(VERSION).tar.gz \
-	  --asset-file=$(PACKAGE)-$(VERSION).tar.gz.asc
+upload-sign: $(PACKAGE)-$(VERSION).tar.gz.asc
+	gh release upload			\
+	  --repo milter-manager/milter-manager	\
+	  $(VERSION)				\
+	  $(PACKAGE)-$(VERSION).tar.gz.asc
 
 sign-archive: $(PACKAGE)-$(VERSION).tar.gz
 	gpg --local-user $(GPG_UID) --armor --detach-sign $(PACKAGE)-$(VERSION).tar.gz
