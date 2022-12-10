@@ -117,8 +117,8 @@ update-latest-release:
 	  html/index.html.ja					\
 	  html/blog/tdiary.en.conf				\
 	  html/blog/tdiary.ja.conf				\
-	  doc/reference/header.html	\
-	  doc/reference/header-ja.html	\
+	  doc/reference/header.html				\
+	  doc/reference/header-ja.html				\
 	  doc/install-to-centos.rd				\
 	  doc/install-to-centos.rd.ja				\
 	  doc/install-to-freebsd.rd				\
@@ -126,7 +126,8 @@ update-latest-release:
 	  doc/upgrade-on-centos.rd				\
 	  doc/upgrade-on-centos.rd.ja				\
 	  doc/upgrade-on-freebsd.rd				\
-	  doc/upgrade-on-freebsd.rd.ja
+	  doc/upgrade-on-freebsd.rd.ja				\
+	  site/_config.yml
 
 tag:
 	cd $(srcdir) && git tag -a "$(VERSION)" -m "released $(VERSION)!!!"
