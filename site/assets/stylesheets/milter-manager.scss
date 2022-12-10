@@ -1,0 +1,56 @@
+---
+---
+
+@import "bootstrap";
+
+$fa-font-path: "../fonts/font-awesome";
+@import "font-awesome/font-awesome";
+
+
+.navbar-brand img
+{
+  height: 20px;
+  vertical-align: super;
+}
+
+ul.other-languages {
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+ul.other-languages li {
+  display: inline-block;
+}
+
+ul.other-languages li:after {
+  content: " | ";
+}
+
+ul.other-languages li:last-child:after {
+  content: "";
+}
+
+table {
+  @extend .table;
+  @extend .table-striped;
+  @extend .table-bordered;
+
+  td.note {
+    @extend .text-center;
+  }
+}
+
+div.note {
+  @extend .alert;
+  @extend .alert-info;
+
+  a {
+    @extend .alert-link;
+  }
+}
+
+#myautocomplete {
+  padding: 0 $padding-base-horizontal;
+}

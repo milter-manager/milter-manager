@@ -1,0 +1,6 @@
+{% case page.language %}
+{% when "ja" %}
+  {% include navbar-content.ja.html %}
+{% else %}
+  {% include navbar-content.en.html %}
+{% endcase %}

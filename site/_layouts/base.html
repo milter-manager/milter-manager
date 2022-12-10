@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="{{ page.language }}">
+  <head>
+    {% if page.description %}
+      {% assign description = page.description %}
+    {% else %}
+      {% capture description %}{% include site-description.html %}{% endcapture %}
+    {% endif %}
+
+    {% capture title %}{% if page.title == "none" %}{{ site.title }} - {{ description }}{% else %}{{ page.title }} | {{ site.title }}{% endif %}{% endcapture %}
+    {% capture relative_path %}{{ page.url | remove_first: page.path_prefix | remove: "index.html" }}{% endcapture %}
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {% if page.redirect %}
+      <meta http-equiv="refresh" content="0;URL={{ page.redirect }}">
+    {% endif %}
+
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="icon" href="/favicon.png">
+
+    <title>{{ title }}</title>
+    <meta name="description" content="{{ description | strip_newlines }}">
+
+    <link href="/assets/stylesheets/syntax.css"
+          rel="stylesheet">
+    <link href="/assets/stylesheets/milter-manager.css"
+          rel="stylesheet"
+          media="screen">
+  </head>
+
+  <body>
+    <nav class="navbar navbar-default" role="navigation">
+      <div class="container-fluid">
+        {% include navbar-content.html %}
+      </div>
+    </nav>
+
+    <div class="container">
+      {{ content }}
+    </div>
+
+    <footer>
+      <hr>
+      <div class="container">
+        {% case page.language %}
+        {% when "ja" %}
+          <a href="https://www.clear-code.com/">株式会社クリアコード</a>は<a href="https://www.ipa.go.jp/software/open/ossc/2008/theme/koubo1.html">独立行政法人情報処理推進機構（IPA）平成20年度オープンソフトウェア利用促進事業</a>「迷惑メール対策を柔軟に実現するためのmilterの開発」の一環としてmilter managerの開発を行ないました。
+        {% else %}
+          <a href="https://www.clear-code.com/">ClearCode Inc.</a> has been developing milter manager. This project was sponsored by <a href="https://www.ipa.go.jp/">IPA (Information-technology Promotion Agency, Japan)</a>.
+        {% endcase %}
+        <p class="copyright">&copy; 2008-{{ site.time | date: "%Y" }} <a href="https://github.com/milter-manager/milter-manager">milter manager project</a></p>
+      </div>
+    </footer>
+
+    <script src="//code.jquery.com/jquery.js"></script>
+    <script src="/assets/javascripts/bootstrap.min.js"></script>
+  </body>
+</html>

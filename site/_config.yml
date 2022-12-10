@@ -1,0 +1,80 @@
+# Copyright (C) 2022  Sutou Kouhei <kou@clear-code.com>
+#
+# This library is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this library.  If not, see <http://www.gnu.org/licenses/>.
+
+title: milter manager
+description:
+  en: an effective anti-spam with milter
+  ja: milterを使った効果的な迷惑メール対策
+milter_manager_version: 2.2.4
+milter_manager_release_date: 2022-12-10
+timezone: Asia/Tokyo
+
+url: https://milter-manager.github.io
+baseurl:
+permalink: /ja/blog/:year/:i_month/:i_day/:title:output_ext
+
+excerpt_separator: "<!--more-->"
+
+future: true
+
+pagination:
+  enabled: true
+  sort_reverse: true
+  permalink: /:num.html
+  title: ":title（:num）"
+
+sass:
+  style: expanded
+  sass_dir: assets/stylesheets
+
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM
+  smart_quotes: ["apos", "apos", "quot", "quot"]
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - Rakefile
+  - README.md
+  - vendor/
+  - ".#*.*"
+  - ".#*"
+  - "#*#"
+
+defaults:
+  - scope:
+      type: "posts"
+    values:
+      path_prefix: /ja/
+      layout: "post"
+      type: "post"
+      language: ja
+      country: JP
+  - scope:
+      path: "ja"
+    values:
+      path_prefix: /ja/
+      layout: "base"
+      language: ja
+      country: JP
+  - scope:
+      path: ""
+    values:
+      path_prefix: /
+      layout: "base"
+      language: en
+      country: US

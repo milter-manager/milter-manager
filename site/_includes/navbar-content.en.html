@@ -1,0 +1,54 @@
+<div class="navbar-header">
+  <button type="button"
+          class="navbar-toggle"
+          data-toggle="collapse"
+          data-target=".navbar-collapse">
+    <span class="sr-only">Toggle navigation</span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+  </button>
+  <a class="navbar-brand" href="{% link index.md %}">
+    <img alt="{{ site.title }}" src="{% link /images/milter-manager-icon.png %}">
+  </a>
+</div>
+<div class="collapse navbar-collapse">
+  <ul class="nav navbar-nav navbar-left">
+    <li><a href="{% link news/index.md %}">News</a></li>
+    <li><a href="{% link milter-manager/introduction.md %}">Introduction</a></li>
+    <li class="dropdown">
+      <a class="dropdown-toggle"
+         data-toggle="dropdown"
+         role="button"
+         aria-haspopup="true"
+         aria-expanded="false">
+        Documents <span class="caret"></span>
+      </a>
+      <ul class="dropdown-menu">
+        <li><a href="{% link install/index.md %}">Install</a></li>
+        <li><a href="{% link upgrade/index.md %}">Upgrade</a></li>
+        <li><a href="{% link milter-manager/configuration.md %}">Configuration</a></li>
+        <li><a href="{% link milter-manager/log-list.md %}">Log list</a></li>
+        <li><a href="{% link api/index.md %}">API reference manuals</a></li>
+      </ul>
+    </li>
+    <li><a href="{% link users/index.md %}">Users</a></li>
+  </ul>
+  <ul class="nav navbar-nav navbar-right">
+    <li><a href="/ja/{{ relative_path }}">日本語</a></li>
+    {% if page.upper_level != null %}
+      <li><a href="{{ page.upper_level }}"><i class="fa fa-arrow-circle-up"></i> Up one level</a></li>
+    {% elsif relative_path != "" %}
+      {% capture last_component %}{{ page.url | split:"/" | last }}{% endcapture %}
+      {% if last_component == "index.html" %}
+        {% assign upper_level = "../" %}
+      {% else %}
+        {% assign upper_level = "./" %}
+      {% endif %}
+      <li><a href="{{ upper_level }}"><i class="fa fa-arrow-circle-up"></i> Up one level</a></li>
+    {% endif %}
+    <li>
+      <a href="https://github.com/milter-manager/milter-manager"><i class="fa fa-github"></i> GitHub</a>
+    </li>
+  </ul>
+</div>
