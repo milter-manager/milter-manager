@@ -131,6 +131,20 @@ update-latest-release:
 tag:
 	cd $(srcdir) && git tag -a "$(VERSION)" -m "released $(VERSION)!!!"
 
+update-doc:
+	cd $(srcdir);						\
+	source_reference="$$(git describe)";			\
+	case "$${source_reference}" in				\
+	  *-*)							\
+	    source_reference=master;				\
+	    ;;							\
+	esac;							\
+	gh workflow						\
+	  --repo milter-manager/milter-manager.github.io	\
+	  run							\
+	  site.yml						\
+	  --raw-field "source-reference=$${source_reference}"
+
 echo-abs-top-srcdir:
 	@echo $(abs_top_srcdir)
 
