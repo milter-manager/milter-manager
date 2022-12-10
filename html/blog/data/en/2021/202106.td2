@@ -36,3 +36,5 @@ At that time, we maintained APT/YUM repository on sourceforge.net, but it was no
 As we mentioned above, we are freed from maintainance of APT/YUM repository, so we can focus on developing milter-manager itself.
 
 Thanks, packagecloud.io for sponsoring milter-manager!
+
+.
