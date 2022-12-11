@@ -147,20 +147,20 @@ module Milter
       @context.authenticated?
     end
 
-    def watch_io(channel, condition, options=nil, &block)
-      @context.event_loop.watch_io(interval, options, &block)
+    def watch_io(channel, condition, **options, &block)
+      @context.event_loop.watch_io(interval, **options, &block)
     end
 
-    def watch_child(pid, options=nil, &block)
-      @context.event_loop.watch_child(pid, options, &block)
+    def watch_child(pid, **options, &block)
+      @context.event_loop.watch_child(pid, **options, &block)
     end
 
-    def add_idle(options=nil, &block)
-      @context.event_loop.add_idle(options, &block)
+    def add_idle(**options, &block)
+      @context.event_loop.add_idle(**options, &block)
     end
 
-    def add_timeout(interval, options=nil, &block)
-      @context.event_loop.add_timeout(interval, options, &block)
+    def add_timeout(interval, **options, &block)
+      @context.event_loop.add_timeout(interval, **options, &block)
     end
 
     def remove_event(tag)
