@@ -632,6 +632,14 @@ module Milter
           @configuration.max_pending_finished_sessions = n_sessions
         end
 
+        def run_gc_on_maintain?
+          @configuration.run_gc_on_maintain?
+        end
+
+        def run_gc_on_maintain=(run)
+          @configuration.run_gc_on_maintain = run
+        end
+
         def maintained(hook=nil, &block)
           hook ||= Proc.new(&block)
           guarded_hook = Proc.new do |configuration|
