@@ -69,7 +69,7 @@ module Milter::Manager
     private
     def netstat
       stdout, stderr, wait_status =
-                      Milter::CommandRunner.run(@netstat_command_line,
+                      Milter::CommandRunner.run(*@netstat_command_line,
                                                 env: @netstat_command_env)
       if wait_status.zero?
         stdout
