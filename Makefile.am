@@ -56,8 +56,10 @@ upload-sign: $(PACKAGE)-$(VERSION).tar.gz.asc
 	  $(VERSION)				\
 	  $(PACKAGE)-$(VERSION).tar.gz.asc
 
-sign-archive: $(PACKAGE)-$(VERSION).tar.gz
+$(PACKAGE)-$(VERSION).tar.gz.asc: $(PACKAGE)-$(VERSION).tar.gz
 	gpg --local-user $(GPG_UID) --armor --detach-sign $(PACKAGE)-$(VERSION).tar.gz
+
+sign-archive: $(PACKAGE)-$(VERSION).tar.gz.asc
 
 # Deprecated. Use update-doc instead.
 upload-doc:
