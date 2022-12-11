@@ -199,6 +199,12 @@ module Milter
         session_context.clear
         status
       end
+
+      @sessions ||= {}
+      @sessions[session] = true
+      context.signal_connect(:finished) do
+        @sessions.delete(session)
+      end
     end
 
     def reload_callbacks
