@@ -66,6 +66,12 @@ jobs:
           path: milter-manager-*.tar.gz
 
       # Release
+      - uses: actions/checkout@v3
+        if: |
+          startsWith(github.ref, 'refs/tags/')
+        with:
+          repository: milter-manager/milter-manager.github.io
+          path: milter-manager.github.io
       - name: Extract release note
         if: |
           startsWith(github.ref, 'refs/tags/')
@@ -73,7 +79,7 @@ jobs:
           ruby \
             -e 'print("## milter manager "); \
                 puts(ARGF.read.split(/^## /)[1].gsub(/ {.+?}/, ""))' \
-            site/news/index.md > release-note.md
+            milter-manager.github.io/news/index.md > release-note.md
       - name: Upload to release
         uses: softprops/action-gh-release@v1
         if: |
