@@ -66,20 +66,6 @@ upload-doc:
 	cd html && $(MAKE) $(AM_MAKEFLAGS) upload
 	cd doc/reference && $(MAKE) $(AM_MAKEFLAGS) upload
 
-update-doc:
-	cd $(srcdir);						\
-	source_reference="$$(git describe)";			\
-	case "$${source_reference}" in				\
-	  *-*)							\
-	    source_reference=master;				\
-	    ;;							\
-	esac;							\
-	gh workflow						\
-	  --repo milter-manager/milter-manager.github.io	\
-	  run							\
-	  site.yml						\
-	  --raw-field "source-reference=$${source_reference}"
-
 upload-coverage: coverage-force
 	rsync -avz coverage/ $(OSDN_HTDOCS)/coverage/
 
@@ -127,8 +113,7 @@ update-latest-release:
 	  doc/upgrade-on-centos.rd				\
 	  doc/upgrade-on-centos.rd.ja				\
 	  doc/upgrade-on-freebsd.rd				\
-	  doc/upgrade-on-freebsd.rd.ja				\
-	  site/_config.yml
+	  doc/upgrade-on-freebsd.rd.ja
 
 tag:
 	cd $(srcdir) &&							\
