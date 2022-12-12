@@ -61,11 +61,6 @@ $(PACKAGE)-$(VERSION).tar.gz.asc: $(PACKAGE)-$(VERSION).tar.gz
 
 sign-archive: $(PACKAGE)-$(VERSION).tar.gz.asc
 
-# Deprecated. Use update-doc instead.
-upload-doc:
-	cd html && $(MAKE) $(AM_MAKEFLAGS) upload
-	cd doc/reference && $(MAKE) $(AM_MAKEFLAGS) upload
-
 upload-coverage: coverage-force
 	rsync -avz coverage/ $(OSDN_HTDOCS)/coverage/
 
