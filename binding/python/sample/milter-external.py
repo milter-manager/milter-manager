@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import re
 import subprocess
 import sys
 
@@ -33,7 +32,7 @@ class MilterExternal(milter.client.Session):
         command_line = [
             sys.executable,
             "-c",
-            f"import random; import time; time.sleep({self._timeout})",
+            f"import time; time.sleep({self._timeout})",
         ]
         process = subprocess.Popen(command_line)
         def on_exit(pid, wait_status):
@@ -45,7 +44,7 @@ class MilterExternal(milter.client.Session):
         self._delay_response()
 
     def abort(self, status):
-        if not self._source_id is None:
+        if self._source_id is not None:
             self._remove_source(self._source_id)
 
     def reset(self):
