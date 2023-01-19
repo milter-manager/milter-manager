@@ -37,7 +37,7 @@ class MilterReplace(milter.client.Session):
     def end_of_message(self):
         header_indexes = {}
         for name, value in self._headers:
-            if not name in header_indexes:
+            if name not in header_indexes:
                 header_indexes[name] = 0
             header_indexes[name] += 1
             for pattern, replaced in self._patterns.items():
