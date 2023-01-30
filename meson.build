@@ -191,14 +191,14 @@ subdir('milter/server')
 subdir('milter/manager')
 subdir('libmilter')
 
+rubies = ['ruby-3.3', 'ruby-3.2', 'ruby-3.1', 'ruby-3.0', 'ruby-2.7', 'ruby']
 if meson.version().version_compare('>=0.60.0')
-  libruby = dependency('ruby-3.2', 'ruby-3.1', 'ruby-3.0', 'ruby-2.7', 'ruby',
-                       required: true)
+  libruby = dependency(rubies, required: true)
 else
   # depencency():
   # Before 0.60.0 only a single dependency name was allowed.
   # https://mesonbuild.com/Reference-manual_functions.html#dependency
-  foreach ruby: ['ruby-3.2', 'ruby-3.1', 'ruby-3.0', 'ruby-2.7', 'ruby']
+  foreach ruby: rubies
     libruby = dependency(ruby, required: false)
     if libruby.found()
       break
