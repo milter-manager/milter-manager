@@ -1,5 +1,5 @@
 # Copyright (C) 2022  Daijiro Fukuda <fukuda@clear-code.com>
-# Copyright (C) 2022  Sutou Kouhei <kou@clear-code.com>
+# Copyright (C) 2022-2023  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -17,7 +17,7 @@
 project('milter-manager',
         'c',
         license: 'LGPL-3.0-or-later',
-        version: '2.2.6')
+        version: '2.2.7')
 
 api_version = '2.0'
 so_version = 2
