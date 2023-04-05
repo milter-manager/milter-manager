@@ -1,4 +1,5 @@
 # Copyright(C) 2022  Sutou Kouhei <kou@clear-code.com>
+# Copyright(C) 2023  Kentaro Hayashi <hayashi@clear-code.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -15,8 +16,11 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 require_relative "../vendor/groonga-source/packages/packages-groonga-org-package-task"
+require_relative "opensuse-build-service-helper"
 
 class MilterManagerTask < PackagesGroongaOrgPackageTask
+  include OpenSUSEBuildServiceHelper
+
   def initialize
     super("milter-manager", detect_version, detect_release_time)
   end
@@ -24,6 +28,7 @@ class MilterManagerTask < PackagesGroongaOrgPackageTask
   def define
     super
     define_source_tasks
+    define_obs_tasks
   end
 
   private
