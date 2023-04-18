@@ -143,7 +143,7 @@ module Milter
 
     private
     def setup_session(context, session_class, session_new_arguments)
-      context.set_use_bytes(true)
+      context.use_bytes = true
       session_context = ClientSessionContext.new(context)
       session = session_class.new(session_context, *session_new_arguments)
 
