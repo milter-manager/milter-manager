@@ -1,3 +1,19 @@
+# Copyright (C) 2009-2023  Sutou Kouhei <kou@clear-code.com>
+# Copyright (C) 2017  Kenji Okimoto <okimoto@clear-code.com>
+#
+# This library is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this library.  If not, see <http://www.gnu.org/licenses/>.
+
 require 'milter/manager/detector'
 
 module Milter::Manager
@@ -39,10 +55,6 @@ module Milter::Manager
 
     def opendkim?
       @script_name == "opendkim"
-    end
-
-    def rmilter?
-      @script_name == "rmilter"
     end
 
     def rspamd?
@@ -106,7 +118,6 @@ module Milter::Manager
       spec ||= detect_clamav_milter_connection_spec if clamav_milter?
       spec ||= detect_milter_greylist_connection_spec if milter_greylist?
       spec ||= detect_opendkim_connection_spec if opendkim?
-      spec ||= detect_rmilter_connection_spec if rmilter?
       spec ||= detect_rspamd_proxy_connection_spec if rspamd?
       spec
     end

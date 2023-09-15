@@ -1,4 +1,4 @@
-# Copyright (C) 2016  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2016-2023  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -34,11 +34,6 @@ module Milter::Manager
     def opendkim_conf
       extract_parameter_from_flags(@variables["OPTIONS"] || "", "-x") ||
         etc_file("opendkim.conf")
-    end
-
-    def rmilter_conf
-      extract_parameter_from_flags(@exec, "-c") ||
-        etc_file("rmilter", "rmilter.conf")
     end
 
     def system_dir

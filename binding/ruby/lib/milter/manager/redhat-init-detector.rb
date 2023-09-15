@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2017  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2023  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -16,7 +16,6 @@
 require 'milter/manager/file-reader'
 require 'milter/manager/init-detector'
 require 'milter/manager/enma-socket-detector'
-require 'milter/manager/rmilter-socket-detector'
 
 module Milter::Manager
   class RedHatInitDetector
@@ -62,15 +61,6 @@ module Milter::Manager
 
     def opendkim?
       @script_name == "opendkim"
-    end
-
-    def rmilter?
-      @script_name == "rmilter"
-    end
-
-    def rmilter_conf
-      @variables["rmilter_CONF_FILE"] ||
-        etc_file("rmilter", "rmilter.conf.sysvinit")
     end
 
     def rspamd?
@@ -173,7 +163,6 @@ module Milter::Manager
         spec ||= detect_clamav_milter_connection_spec
       end
       spec ||= detect_opendkim_connection_spec if opendkim?
-      spec ||= detect_rmilter_connection_spec if rmilter?
       spec ||= detect_rspamd_proxy_connection_spec if rspamd?
       spec
     end

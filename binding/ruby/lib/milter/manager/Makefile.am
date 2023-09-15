@@ -29,5 +29,4 @@ dist_binding_lib_milter_DATA =			\
 	postfix-cidr-table.rb			\
 	postfix-regexp-table.rb			\
 	file-reader.rb				\
-	rspamd-proxy-detector.rb		\
-	rmilter-socket-detector.rb
+	rspamd-proxy-detector.rb

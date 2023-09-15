@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2010  Kouhei Sutou <kou@clear-code.com>
+# Copyright (C) 2009-2023  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -16,7 +16,6 @@
 require 'milter/manager/clamav-milter-config-parser'
 require 'milter/manager/milter-greylist-config-parser'
 require 'milter/manager/opendkim-config-parser'
-require 'milter/manager/rmilter-socket-detector'
 require 'milter/manager/rspamd-proxy-detector'
 
 module Milter::Manager
@@ -83,10 +82,6 @@ module Milter::Manager
 
     def detect_opendkim_connection_spec
       opendkim_config_parser.socket
-    end
-
-    def detect_rmilter_connection_spec
-      Milter::Manager::RmilterSocketDetector.new(rmilter_conf).detect
     end
 
     def detect_rspamd_proxy_connection_spec
