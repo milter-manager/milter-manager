@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2021  Sutou Kouhei <kou@clear-code.com>
+# Copyright (C) 2008-2023  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -456,61 +456,6 @@ EOC
                   (@rc_d + "milter-enma").to_s,
                   "start",
                   "inet:10025@127.0.0.1"]])
-  end
-
-  def test_apply_rmilter_style
-    rmilter_conf = @tmp_dir + "rmilter.conf"
-    (@rc_d + "rmilter").open("w") do |rc|
-      rc << <<-RC
-name="rmilter"
-rcvar=rmilter_enable
-command="/usr/local/sbin/rmilter"
-
-load_rc_config $name
-
-: ${rmilter_enable="NO"}
-: ${rmilter_pidfile="/var/run/rmilter/rmilter.pid"}
-: ${rmilter_socket="/var/run/rmilter/rmilter.sock"}
-: ${rmilter_user="_rmilter"}
-: ${rmilter_group="mail"}
-
-command_args="$procname -c /usr/local/etc/rmilter.conf"
-
-run_rc_command "$1"
-      RC
-    end
-
-    rmilter_conf.open("w") do |conf|
-      conf << <<-CONFIG
-# Sample config file for rmilter
-# $Id$
-#
-
-# .include - directive to include other config file
-#.include ./rmilter-grey.conf
-
-# pidfile - path to pid file
-#   Default: pidfile = /var/run/rmilter.pid
-pidfile = /var/run/rmilter/rmilter.pid;
-
-# bind_socket - socket credits for local bind:
-# unix:/path/to/file - bind to local socket
-# inet:port@host - bind to inet socket
-#   Default: bind_socket = unix:/var/tmp/rmilter.sock;
-bind_socket = unix:/var/run/rmilter/rmilter.sock;
-      CONFIG
-    end
-
-    detector = freebsd_rc_detector("rmilter")
-    detector.detect
-    detector.apply(@loader)
-    assert_equal("rmilter", detector.name)
-    assert_eggs([["rmilter",
-                  nil,
-                  false,
-                  (@rc_d + "rmilter").to_s,
-                  "start",
-                  "unix:/var/run/rmilter/rmilter.sock"]])
   end
 
   private

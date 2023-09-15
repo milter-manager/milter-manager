@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2021  Sutou Kouhei <kou@clear-code.com>
+# Copyright (C) 2009-2023  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -615,57 +615,6 @@ EOC
                   "local:/var/run/opendkim/opendkim.socket"]])
   end
 
-  def test_apply_rmilter_style
-    rmilter_conf_sysvinit = @tmp_dir + "rmilter.conf.sysvinit"
-    rmilter_conf_common = @tmp_dir + "rmilter.conf.common"
-    (@init_d + "rmilter").open("w") do |file|
-      file << rmilter_init_header(rmilter_conf_sysvinit.to_s)
-    end
-
-    rmilter_conf_sysvinit.open("w") do |conf|
-      conf << <<-CONF
-# sysvinit-specific settings for rmilter
-
-.include #{rmilter_conf_common}
-
-bind_socket = unix:/var/run/rmilter/rmilter.sock;
-
-# pidfile - path to pid file
-# Default: pidfile = /var/run/rmilter.pid
-
-pidfile = /var/run/rmilter/rmilter.pid;
-
-# include user's configuration
-.try_include #{@tmp_dir}/rmilter.conf.local
-.try_include #{@tmp_dir}/rmilter.conf.d/*.conf
-.try_include #{@tmp_dir}/rmilter/rmilter.conf.local
-.try_include #{@tmp_dir}/rmilter/conf.d/*.conf
-      CONF
-    end
-
-    rmilter_conf_common.open("w") do |conf|
-      conf << <<-CONF
-# bind_socket - socket credits for local bind:
-# unix:/path/to/file - bind to local socket
-# inet:port@host - bind to inet socket
-# Default: bind_socket = unix:/var/tmp/rmilter.sock;
-
-bind_socket = unix:/run/rmilter/rmilter.sock;
-      CONF
-    end
-
-    detector = redhat_init_detector("rmilter")
-    detector.detect
-    detector.apply(@loader)
-    assert_equal("rmilter", detector.name)
-    assert_eggs([["rmilter",
-                  "rmilter is a spam filtering system",
-                  false,
-                  (@init_d + "rmilter").to_s,
-                  "start",
-                  "unix:/var/run/rmilter/rmilter.sock"]])
-  end
-
   private
   def redhat_init_detector(name, options={})
     detector = Milter::Manager::RedHatInitDetector.new(@configuration, name)
@@ -974,36 +923,5 @@ PIDFILE=/var/run/$NAME/$NAME.pid
 CONFIG=#{opendkim_conf}
 USER=opendkim
 EOS
-  end
-
-  def rmilter_init_header(rmilter_conf)
-    <<-HEADER
-#!/bin/sh
-#
-# rmilter - this script starts and stops the rmilter daemon
-#
-# chkconfig:   - 85 15 
-# description:  rmilter is a spam filtering system
-# processname: rmilter
-# config:      #{rmilter_conf}
-# config:      /etc/sysconfig/rmilter
-# pidfile:     /var/run/rmilter/rmilter.pid
-
-# Source function library.
-. /etc/rc.d/init.d/functions
-
-# Source networking configuration.
-. /etc/sysconfig/network
-
-# Check that networking is up.
-[ "$NETWORKING" = "no" ] && exit 0
-
-rmilter="/usr/sbin/rmilter"
-prog=$(basename $rmilter)
-
-rmilter_CONF_FILE="#{rmilter_conf}"
-rmilter_USER="_rmilter"
-rmilter_GROUP="adm"
-    HEADER
   end
 end

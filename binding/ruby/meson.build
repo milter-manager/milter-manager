@@ -1,4 +1,4 @@
-# Copyright (C) 2022  Sutou Kouhei <kou@clear-code.com>
+# Copyright (C) 2022-2023  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -69,7 +69,6 @@ install_data('lib/milter/manager/address-matcher.rb',
              'lib/milter/manager/redhat-init-detector.rb',
              'lib/milter/manager/redhat-systemd-detector.rb',
              'lib/milter/manager/redhat-upstart-detector.rb',
-             'lib/milter/manager/rmilter-socket-detector.rb',
              'lib/milter/manager/rspamd-proxy-detector.rb',
              'lib/milter/manager/systemd-detector.rb',
              install_dir: ruby_install_dir / 'milter' / 'manager')
