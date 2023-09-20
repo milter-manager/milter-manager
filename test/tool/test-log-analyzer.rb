@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2022  Sutou Kouhei <kou@clear-code.com>
+# Copyright (C) 2009-2023  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -15,6 +15,9 @@
 
 class TestLogAnalyzer < Test::Unit::TestCase
   def setup
+    if RUBY_PLATFORM.start_with?("i386-")
+      omit("Need 64bit platform because fixture data are only for 64bit platform")
+    end
     begin
       pid = spawn("rrdtool", "--version",
                   out: File::NULL,
