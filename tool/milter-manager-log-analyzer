@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
+# Copyright (C) 2008-2023  Sutou Kouhei <kou@clear-code.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -806,7 +806,9 @@ EODS
 
     def report_key(header_name, header_value, milter_name, &block)
       case header_name
-      when /\AX-Spam-Flag\z/i
+      when /\AX-Spam(?:-Flag)?\z/i
+        # SpamAssassin uses X-Spam-Flag by default.
+        # rspamd uses X-Spam by default.
         parse_x_spam_flag(header_value, &block)
       when /\AX-Spam-Status\z/i
         parse_x_spam_status(header_value, &block)
