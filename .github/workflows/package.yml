@@ -29,7 +29,7 @@ jobs:
             rdtool \
             rttool
       - name: Cache ccache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.ccache
           key: source-ccache-${{ hashFiles('libmilter/**', 'milter/**', 'src/**', 'tool/**', 'test/**') }}
@@ -164,7 +164,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Cache ccache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: package/${{ matrix.task-namespace }}/build/${{ matrix.target }}/ccache
           key: package-${{ matrix.id }}-ccache-${{ hashFiles('libmilter/**', 'milter/**', 'src/**', 'tool/**', 'test/**') }}
