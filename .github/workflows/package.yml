@@ -99,6 +99,7 @@ jobs:
         label:
           - CentOS 7
           - Debian GNU/Linux bullseye
+          - Debian GNU/Linux bookworm
           - Ubuntu Focal Fossa
           - Ubuntu Jammy Jellyfish
           - AlmaLinux 8
@@ -114,6 +115,11 @@ jobs:
             task-namespace: apt
             target: debian-bullseye
             test-docker-image: debian:bullseye
+          - label: Debian GNU/Linux bookworm
+            id: debian-bookworm
+            task-namespace: apt
+            target: debian-bookworm
+            test-docker-image: debian:bookworm
           - label: Ubuntu Focal Fossa
             id: ubuntu-focal
             task-namespace: apt
@@ -215,6 +221,7 @@ jobs:
         label:
           - CentOS 7
           - Debian GNU/Linux bullseye
+          - Debian GNU/Linux bookworm
           - Ubuntu Focal Fossa
           - Ubuntu Jammy Jellyfish
           - AlmaLinux 8
@@ -230,6 +237,11 @@ jobs:
             task-namespace: apt
             target: debian-bullseye
             test-docker-image: debian:bullseye
+          - label: Debian GNU/Linux bookworm
+            id: debian-bookworm
+            task-namespace: apt
+            target: debian-bookworm
+            test-docker-image: debian:bookworm
           - label: Ubuntu Focal Fossa
             id: ubuntu-focal
             task-namespace: apt

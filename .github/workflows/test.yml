@@ -12,6 +12,7 @@ jobs:
           # - almalinux-8
           - centos-7
           - debian-bullseye
+          - debian-bookworm
           - ubuntu-bionic
           - ubuntu-focal
           - ubuntu-jammy
