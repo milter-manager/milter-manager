@@ -72,7 +72,7 @@ jobs:
         with:
           repository: milter-manager/milter-manager.github.io
           path: milter-manager.github.io
-      - name: Extract release note
+      - name: Release
         if: |
           startsWith(github.ref, 'refs/tags/')
         run: |
@@ -80,15 +80,15 @@ jobs:
             -e 'print("## milter manager "); \
                 puts(ARGF.read.split(/^## /)[1].gsub(/ {.+?}/, ""))' \
             milter-manager.github.io/news/index.md > release-note.md
-      - name: Upload to release
-        uses: softprops/action-gh-release@v1
-        if: |
-          startsWith(github.ref, 'refs/tags/')
-        with:
-          body_path: release-note.md
-          discussion_category_name: "Releases"
-          files: |
+          title="$(head -n1 release-note.md | sed -e 's/^## //')"
+          tail -n +2 release-note.md > release-note-without-version.md
+          gh release create ${GITHUB_REF_NAME} \
+            --discussion-category Releases \
+            --notes-file release-note-without-version.md \
+            --title "${title}" \
             milter-manager-*.tar.gz
+        env:
+          GH_TOKEN: ${{ github.token }}
 
   build:
     name: Build
@@ -205,12 +205,13 @@ jobs:
         run: |
           tar czf ${{ matrix.id }}.tar.gz package/${{ matrix.task-namespace }}/repositories/
       - name: Upload to release
-        uses: softprops/action-gh-release@v1
         if: |
           startsWith(github.ref, 'refs/tags/')
-        with:
-          files: |
+        run: |
+          gh release upload ${GITHUB_REF_NAME} \
             ${{ matrix.id }}.tar.gz
+        env:
+          GH_TOKEN: ${{ github.token }}
 
   test:
     name: Test
