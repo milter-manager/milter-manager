@@ -1,4 +1,4 @@
-# Copyright(C) 2022  Sutou Kouhei <kou@clear-code.com>
+# Copyright(C) 2022-2024  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -14,7 +14,11 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
-require_relative "../vendor/groonga-source/packages/packages-groonga-org-package-task"
+groonga_repository = ENV["GROONGA_REPOSITORY"]
+if groonga_repository.nil?
+  raise "Specify GROONGA_REPOSITORY environment variable"
+end
+require "#{groonga_repository}/packages/packages-groonga-org-package-task"
 
 class MilterManagerTask < PackagesGroongaOrgPackageTask
   def initialize

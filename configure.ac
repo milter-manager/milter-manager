@@ -638,22 +638,6 @@ auto)
 esac
 AC_SUBST(CUTTER_SOURCE_PATH)
 
-AC_ARG_WITH([groonga-source-path],
-            AS_HELP_STRING([--with-groonga-source-path=PATH],
-                             [Specify Groonga source path for
-                             milter-manager's release manager.]),
-              [GROONGA_SOURCE_PATH="$withval"],
-              [GROONGA_SOURCE_PATH=""])
-case "$GROONGA_SOURCE_PATH" in
-""|/*)
-  : # do nothing
-  ;;
-*)
-  GROONGA_SOURCE_PATH="\$(top_builddir)/${GROONGA_SOURCE_PATH}"
-  ;;
-esac
-AC_SUBST(GROONGA_SOURCE_PATH)
-
 dnl **************************************************************
 dnl Check for osdn.net.
 dnl **************************************************************

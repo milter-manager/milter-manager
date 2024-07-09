@@ -140,12 +140,24 @@ jobs:
             task-namespace: yum
             target: almalinux-9
             test-docker-image: almalinux:9
+    env:
+      APACHE_ARROW_REPOSITORY: apache-arrow
+      GROONGA_REPOSITORY: groonga
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+      - uses: actions/checkout@v4
+        with:
+          path: groonga
+          repository: groonga/groonga
+          submodules: recursive
+      - uses: actions/checkout@v4
+        with:
+          path: apache-arrow
+          repository: apache/arrow
       - name: Install dependencies
         run: |
           sudo apt update

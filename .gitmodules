@@ -4,6 +4,3 @@
 [submodule "vendor/cutter-source"]
 	path = vendor/cutter-source
 	url = https://github.com/clear-code/cutter.git
-[submodule "vendor/groonga-source"]
-	path = vendor/groonga-source
-	url = https://github.com/groonga/groonga.git
