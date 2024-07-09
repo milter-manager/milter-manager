@@ -91,7 +91,6 @@ class MilterManagerTask < PackagesGroongaOrgPackageTask
 
   def yum_targets_default
     [
-      "centos-7",
       "almalinux-8",
       "almalinux-9",
     ]
