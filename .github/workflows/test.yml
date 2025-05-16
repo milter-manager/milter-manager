@@ -16,7 +16,7 @@ jobs:
           - ubuntu-bionic
           - ubuntu-focal
           - ubuntu-jammy
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
