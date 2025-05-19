@@ -33,7 +33,7 @@ jobs:
             --location \
             https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh
       - run: ./autogen.sh
-      - run: docker-compose build ${{ matrix.service }}
+      - run: docker compose build ${{ matrix.service }}
       - name: Cache ccache
         uses: actions/cache@v4
         with:
@@ -44,7 +44,7 @@ jobs:
         run: |
           sudo mkdir -p .cache/ccache/
           sudo chmod -R o+rwx .cache/ccache/
-      - run: docker-compose run --rm ${{ matrix.service }}
+      - run: docker compose run --rm ${{ matrix.service }}
 
   # Temporary. We should integrate this to the above test job.
   meson:
