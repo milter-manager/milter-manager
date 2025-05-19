@@ -45,6 +45,21 @@ services:
     command:
       /host/dockerfiles/run-test.sh
 
+  debian-bookworm:
+    build:
+      context: .
+      dockerfile: dockerfiles/debian-bookworm.dockerfile
+    environment:
+      TZ: Asia/Tokyo
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - "seccomp=unconfined"
+    volumes:
+      - .:/host:delegated
+    command:
+      /host/dockerfiles/run-test.sh
+
   ubuntu-bionic:
     build:
       context: .
