@@ -141,8 +141,8 @@ jobs:
             target: almalinux-9
             test-docker-image: almalinux:9
     env:
-      APACHE_ARROW_REPOSITORY: apache-arrow
-      GROONGA_REPOSITORY: groonga
+      APACHE_ARROW_REPOSITORY: ${{ github.workspace }}/apache-arrow
+      GROONGA_REPOSITORY: ${{ github.workspace }}/groonga
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
