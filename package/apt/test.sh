@@ -29,7 +29,7 @@ distribution=$(lsb_release --short --id | tr 'A-Z' 'a-z')
 code_name=$(lsb_release --codename --short)
 architecture=$(dpkg --print-architecture)
 
-repositories_dir=/vagrant/package/apt/repositories
+repositories_dir=/host/package/apt/repositories
 sudo apt install -V -y \
   ${repositories_dir}/${distribution}/pool/${code_name}/*/*/*/*_{${architecture},all}.deb
 echo "::endgroup::"
