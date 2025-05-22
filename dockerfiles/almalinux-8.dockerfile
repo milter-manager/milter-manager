@@ -1,15 +1,10 @@
-FROM centos:7
+FROM almalinux:8
 
-ENV SCL=rh-ruby30
-
-RUN yum update -q -y && \
-    yum install -q -y \
-      centos-release-scl-rh \
-      epel-release \
-      http://sourceforge.net/projects/cutter/files/centos/cutter-release-1.3.0-1.noarch.rpm && \
-    yum install -q -y \
+RUN dnf update -q -y && \
+    dnf install -q -y epel-release && \
+    dnf module -y enable ruby:3.3 && \
+    dnf install --enablerepo=powertools -q -y \
       ccache \
-      cutter \
       gcc \
       gettext \
       git \
@@ -20,18 +15,17 @@ RUN yum update -q -y && \
       libtool \
       libev-devel \
       make \
-      ${SCL}-ruby \
-      ${SCL}-ruby-devel \
-      ${SCL}-rubygem-rexml \
+      ruby \
+      ruby-devel \
+      rubygem-rexml \
       rpm-build \
       rrdtool \
       sudo \
       tar \
       tzdata && \
-   (source /opt/rh/${SCL}/enable && \
     gem install \
       gio2 \
-      test-unit)
+      test-unit
 
 ENV PATH=/usr/lib64/ccache:$PATH
 

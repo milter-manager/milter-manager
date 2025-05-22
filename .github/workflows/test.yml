@@ -9,8 +9,7 @@ jobs:
       fail-fast: false
       matrix:
         service:
-          # - almalinux-8
-          - centos-7
+          - almalinux-8
           - debian-bullseye
           - debian-bookworm
           - ubuntu-bionic
