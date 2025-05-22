@@ -43,7 +43,7 @@ esac
 # curl -s https://packagecloud.io/install/repositories/milter-manager/repos/script.rpm.sh | \
 #   sudo bash
 
-repositories_dir=/vagrant/package/yum/repositories
+repositories_dir=/host/package/yum/repositories
 sudo ${DNF} install -y \
   ${repositories_dir}/${os}/${version}/x86_64/Packages/*.rpm
 

@@ -242,34 +242,28 @@ jobs:
           - label: Debian GNU/Linux bullseye
             id: debian-bullseye
             task-namespace: apt
-            target: debian-bullseye
-            test-docker-image: debian:bullseye
+            image: images:debian/11
           - label: Debian GNU/Linux bookworm
             id: debian-bookworm
             task-namespace: apt
-            target: debian-bookworm
-            test-docker-image: debian:bookworm
+            image: images:debian/12
           - label: Ubuntu Focal Fossa
             id: ubuntu-focal
             task-namespace: apt
-            target: ubuntu-focal
-            test-docker-image: ubuntu:focal
+            image: images:ubuntu/20.04
           - label: Ubuntu Jammy Jellyfish
             id: ubuntu-jammy
             task-namespace: apt
-            target: ubuntu-jammy
-            test-docker-image: ubuntu:jammy
+            image: images:ubuntu/22.04
           - label: AlmaLinux 8
             id: almalinux-8
             task-namespace: yum
-            target: almalinux-8
-            test-docker-image: almalinux:8
+            image: images:almalinux/8
           - label: AlmaLinux 9
             id: almalinux-9
             task-namespace: yum
-            target: almalinux-9
-            test-docker-image: almalinux:9
-    runs-on: macos-12
+            image: images:almalinux/9
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -277,12 +271,24 @@ jobs:
         with:
           name: package-${{ matrix.id }}
           path: package/${{ matrix.task-namespace }}/repositories
-      - name: Run VM
+      - name: Install Incus
         run: |
-          vagrant up ${{ matrix.id }}
+          sudo apt update
+          sudo apt install -y -V incus
+      - name: Allow egress network traffic flows for Incus
+        # https://linuxcontainers.org/incus/docs/main/howto/network_bridge_firewalld/#prevent-connectivity-issues-with-incus-and-docker
+        run: |
+          sudo iptables -I DOCKER-USER -i incusbr0 -j ACCEPT
+          sudo iptables -I DOCKER-USER -o incusbr0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+      - name: Setup Incus
+        run: |
+          sudo incus admin init --auto
+      - name: Prepare image
+        run: |
+          sudo incus launch ${{ matrix.image }} target
+          sudo incus config device add target host disk source=$PWD path=/host
+          # https://discuss.linuxcontainers.org/t/network-issue-with-almalinux-8-9-on-github-actions-using-incus/20046
+          sleep 10
       - name: Run test
         run: |
-          vagrant \
-            ssh ${{ matrix.id }} \
-            -- \
-            /vagrant/package/${{ matrix.task-namespace }}/test.sh
+          sudo incus exec target -- /host/package/${{ matrix.task-namespace }}/test.sh
