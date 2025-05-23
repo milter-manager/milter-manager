@@ -201,6 +201,9 @@ EOH
   end
 
   def parse_fetched_data(raw_data)
+    # It appears that the output format of signed nan in rrdtool differs depending on the environment.
+    # (`nan` for arm64, `-nan` for amd64)
+    raw_data = raw_data.gsub(/-nan/, "nan")
     raw_data = StringIO.new(raw_data)
     headers = raw_data.gets.split
     raw_data.gets
