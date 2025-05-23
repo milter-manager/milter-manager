@@ -1,5 +1,4 @@
 services:
-  # TODO
   almalinux-8:
     build:
       context: .
@@ -14,21 +13,6 @@ services:
       - .:/host:delegated
     command:
       /host/dockerfiles/run-test.sh
-
-  centos-7:
-    build:
-      context: .
-      dockerfile: dockerfiles/centos-7.dockerfile
-    environment:
-      TZ: Asia/Tokyo
-    cap_add:
-      - SYS_PTRACE
-    security_opt:
-      - "seccomp=unconfined"
-    volumes:
-      - .:/host:delegated
-    command:
-      /host/dockerfiles/run-test-scl.sh
 
   debian-bullseye:
     build:
