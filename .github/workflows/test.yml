@@ -13,8 +13,6 @@ jobs:
           - centos-7
           - debian-bullseye
           - debian-bookworm
-          - ubuntu-bionic
-          - ubuntu-focal
           - ubuntu-jammy
     runs-on: ubuntu-latest
     timeout-minutes: 10
