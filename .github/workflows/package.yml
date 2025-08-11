@@ -159,7 +159,7 @@ jobs:
             devscripts \
             qemu-user-static \
             ruby
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: source
       - name: Update version
@@ -256,7 +256,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: package-${{ matrix.id }}
           path: package/${{ matrix.task-namespace }}/repositories
