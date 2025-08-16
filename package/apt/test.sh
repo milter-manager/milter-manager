@@ -68,8 +68,10 @@ else
   curl -s https://packagecloud.io/install/repositories/milter-manager/repos/script.deb.sh | \
     sudo bash
 fi
-sudo apt install -V -y milter-manager
-sudo apt install -V -y \
-  ${repositories_dir}/${distribution}/pool/${code_name}/*/*/*/*_{${architecture},all}.deb
-systemctl status milter-manager
+if sudo apt install -V -y milter-manager; then
+  # A released package exists
+  sudo apt install -V -y \
+    ${repositories_dir}/${distribution}/pool/${code_name}/*/*/*/*_{${architecture},all}.deb
+  systemctl status milter-manager
+fi
 echo "::endgroup::"

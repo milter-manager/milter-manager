@@ -60,6 +60,21 @@ services:
     command:
       /host/dockerfiles/run-test.sh
 
+  debian-trixie:
+    build:
+      context: .
+      dockerfile: dockerfiles/debian-trixie.dockerfile
+    environment:
+      TZ: Asia/Tokyo
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - "seccomp=unconfined"
+    volumes:
+      - .:/host:delegated
+    command:
+      /host/dockerfiles/run-test.sh
+
   ubuntu-jammy:
     build:
       context: .

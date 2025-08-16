@@ -100,6 +100,7 @@ jobs:
           - CentOS 7
           - Debian GNU/Linux bullseye
           - Debian GNU/Linux bookworm
+          - Debian GNU/Linux trixie
           - Ubuntu Jammy Jellyfish
           - AlmaLinux 8
           - AlmaLinux 9
@@ -108,32 +109,30 @@ jobs:
             id: centos-7
             task-namespace: yum
             target: centos-7
-            test-docker-image: centos:7
           - label: Debian GNU/Linux bullseye
             id: debian-bullseye
             task-namespace: apt
             target: debian-bullseye
-            test-docker-image: debian:bullseye
           - label: Debian GNU/Linux bookworm
             id: debian-bookworm
             task-namespace: apt
             target: debian-bookworm
-            test-docker-image: debian:bookworm
+          - label: Debian GNU/Linux trixie
+            id: debian-trixie
+            task-namespace: apt
+            target: debian-trixie
           - label: Ubuntu Jammy Jellyfish
             id: ubuntu-jammy
             task-namespace: apt
             target: ubuntu-jammy
-            test-docker-image: ubuntu:jammy
           - label: AlmaLinux 8
             id: almalinux-8
             task-namespace: yum
             target: almalinux-8
-            test-docker-image: almalinux:8
           - label: AlmaLinux 9
             id: almalinux-9
             task-namespace: yum
             target: almalinux-9
-            test-docker-image: almalinux:9
     env:
       APACHE_ARROW_REPOSITORY: ${{ github.workspace }}/apache-arrow
       GROONGA_REPOSITORY: ${{ github.workspace }}/groonga
@@ -228,6 +227,7 @@ jobs:
         label:
           - Debian GNU/Linux bullseye
           - Debian GNU/Linux bookworm
+          - Debian GNU/Linux trixie
           - Ubuntu Jammy Jellyfish
           - AlmaLinux 8
           - AlmaLinux 9
@@ -240,6 +240,10 @@ jobs:
             id: debian-bookworm
             task-namespace: apt
             image: images:debian/12
+          - label: Debian GNU/Linux trixie
+            id: debian-trixie
+            task-namespace: apt
+            image: images:debian/13
           - label: Ubuntu Jammy Jellyfish
             id: ubuntu-jammy
             task-namespace: apt
