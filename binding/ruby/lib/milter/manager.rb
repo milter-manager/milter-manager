@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2022  Sutou Kouhei <kou@clear-code.com>
+# Copyright (C) 2008-2025  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -458,10 +458,6 @@ module Milter
         return if platform.nil?
 
         return if load_if_exist("defaults/#{platform}.conf")
-
-        if platform.start_with?("centos")
-          load_if_exist("defaults/redhat.conf")
-        end
       end
 
       def define_milter(name, &block)

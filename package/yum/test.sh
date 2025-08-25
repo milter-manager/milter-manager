@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C) 2022  Sutou Kouhei <kou@clear-code.com>
+# Copyright (C) 2022-2025  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -21,12 +21,6 @@ os=$(. /etc/os-release && echo $ID)
 version=$(. /etc/os-release && echo $VERSION_ID | grep -oE '^[0-9]+')
 
 case ${version} in
-  7)
-    DNF=yum
-    sudo ${DNF} install -y \
-         centos-release-scl-rh \
-         epel-release
-    ;;
   8)
     DNF="dnf --enablerepo=powertools"
     sudo ${DNF} install -y epel-release
