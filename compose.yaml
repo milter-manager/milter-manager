@@ -1,5 +1,4 @@
 services:
-  # TODO
   almalinux-8:
     build:
       context: .
