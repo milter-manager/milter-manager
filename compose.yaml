@@ -14,6 +14,21 @@ services:
     command:
       /host/dockerfiles/run-test.sh
 
+  almalinux-9:
+    build:
+      context: .
+      dockerfile: dockerfiles/almalinux-9.dockerfile
+    environment:
+      TZ: Asia/Tokyo
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - "seccomp=unconfined"
+    volumes:
+      - .:/host:delegated
+    command:
+      /host/dockerfiles/run-test.sh
+
   debian-bullseye:
     build:
       context: .
