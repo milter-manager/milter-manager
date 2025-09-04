@@ -29,6 +29,21 @@ services:
     command:
       /host/dockerfiles/run-test.sh
 
+  almalinux-10:
+    build:
+      context: .
+      dockerfile: dockerfiles/almalinux-10.dockerfile
+    environment:
+      TZ: Asia/Tokyo
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - "seccomp=unconfined"
+    volumes:
+      - .:/host:delegated
+    command:
+      /host/dockerfiles/run-test.sh
+
   debian-bullseye:
     build:
       context: .
