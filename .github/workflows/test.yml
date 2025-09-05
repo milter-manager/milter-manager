@@ -8,6 +8,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        runs-on:
+          - ubuntu-latest
+          - ubuntu-24.04-arm
         service:
           - almalinux-8
           - almalinux-9
@@ -16,11 +19,12 @@ jobs:
           - debian-bookworm
           - debian-trixie
           - ubuntu-jammy
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runs-on }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
       - name: Install dependencies
+        if: ${{ matrix.runs-on == 'ubuntu-latest' }}
         run: |
           sudo apt update
           sudo apt install -y -V \
@@ -32,6 +36,16 @@ jobs:
             --silent \
             --location \
             https://raw.github.com/clear-code/cutter/master/data/travis/setup.sh | sh
+      - name: Install dependencies
+        if: ${{ matrix.runs-on != 'ubuntu-latest' }}
+        run: |
+          sudo apt update
+          sudo apt install -y -V \
+            curl \
+            gtk-doc-tools \
+            intltool \
+            lsb-release \
+            libglib2.0-dev
       - run: ./autogen.sh
       - run: docker compose build ${{ matrix.service }}
       - name: Cache ccache
@@ -39,17 +53,27 @@ jobs:
         with:
           path: .cache/ccache
           key: test-${{ matrix.service }}-ccache-${{ hashFiles('libmilter/**', 'milter/**', 'src/**', 'tool/**', 'test/**') }}
-          restore-keys: test-${{ matrix.service }}-ccache-
+          restore-keys: test-${{ matrix.runs-on }}-${{ matrix.service }}-ccache-
       - name: Prepare ccache directory
         run: |
           sudo mkdir -p .cache/ccache/
           sudo chmod -R o+rwx .cache/ccache/
-      - run: docker compose run --rm ${{ matrix.service }}
+      - name: Run
+        run: |
+          docker compose run --rm \
+            --env USE_CUTTER=${{ matrix.runs-on == 'ubuntu-latest' }} \
+            ${{ matrix.service }}
 
   # Temporary. We should integrate this to the above test job.
   meson:
     name: meson
-    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on:
+          - ubuntu-latest
+          - ubuntu-24.04-arm
+    runs-on: ${{ matrix.runs-on }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
@@ -67,7 +91,7 @@ jobs:
         with:
           path: ~/.ccache
           key: test-meson-ccache-${{ hashFiles('libmilter/**', 'milter/**', 'src/**', 'tool/**', 'test/**') }}
-          restore-keys: test-meson-ccache-
+          restore-keys: test-meson-${{ matrix.runs-on }}-ccache-
       - name: Setup
         run: |
           meson setup \
