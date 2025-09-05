@@ -281,12 +281,14 @@ AM_CONDITIONAL(REDHAT_PLATFORM,
                [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat" \
                   -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat7" \
                   -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat8" \
-                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat9"])
-                  
+                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat9" \
+                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat10"])
+
 AM_CONDITIONAL(REDHAT_SYSTEMD_PLATFORM,
                [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat7" \
                   -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat8" \
-                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat9"])
+                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat9" \
+                  -o "$MILTER_MANAGER_PACKAGE_PLATFORM" = "redhat10"])
 AM_CONDITIONAL(FREEBSD_PLATFORM,
                [test "$MILTER_MANAGER_PACKAGE_PLATFORM" = "freebsd"])
 AM_CONDITIONAL(SOLARIS_PLATFORM,

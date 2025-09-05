@@ -94,6 +94,7 @@ class MilterManagerTask < PackagesGroongaOrgPackageTask
     [
       "almalinux-8",
       "almalinux-9",
+      "almalinux-10",
     ]
   end
 
