@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-: ${USE_CUTTER:=1}
-
 set -eux
 
 cache_dir=/host/.cache/ccache/$(. /etc/os-release && echo "${ID}-${VERSION_ID}")
@@ -30,7 +28,5 @@ cd /build
 make -j$(nproc)
 
 ../host/binding/ruby/test/run-test.sh -vv
-if [ $USE_CUTTER -eq 1 ]; then
-  ../host/test/run-test.sh
-fi
+../host/test/run-test.sh
 ../host/test/tool/run-test.sh
