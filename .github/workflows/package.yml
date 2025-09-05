@@ -96,44 +96,30 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        label:
-          - Debian GNU/Linux bullseye
-          - Debian GNU/Linux bookworm
-          - Debian GNU/Linux trixie
-          - Ubuntu Jammy Jellyfish
-          - AlmaLinux 8
-          - AlmaLinux 9
-        include:
-          - label: Debian GNU/Linux bullseye
-            id: debian-bullseye
-            task-namespace: apt
-            target: debian-bullseye
-          - label: Debian GNU/Linux bookworm
-            id: debian-bookworm
-            task-namespace: apt
-            target: debian-bookworm
-          - label: Debian GNU/Linux trixie
-            id: debian-trixie
-            task-namespace: apt
-            target: debian-trixie
-          - label: Ubuntu Jammy Jellyfish
-            id: ubuntu-jammy
-            task-namespace: apt
-            target: ubuntu-jammy
-          - label: AlmaLinux 8
-            id: almalinux-8
-            task-namespace: yum
-            target: almalinux-8
-          - label: AlmaLinux 9
-            id: almalinux-9
-            task-namespace: yum
-            target: almalinux-9
+        id:
+          - debian-bullseye
+          - debian-bookworm
+          - debian-trixie
+          - ubuntu-jammy
+          - almalinux-8
+          - almalinux-9
+          - almalinux-10
     env:
       APACHE_ARROW_REPOSITORY: ${{ github.workspace }}/apache-arrow
       GROONGA_REPOSITORY: ${{ github.workspace }}/groonga
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
+      - name: Prepare
+        run: |
+          case ${{ matrix.id }} in
+            debian-*|ubuntu-*)
+              echo "TASK_NAMESPACE=apt" >> "${GITHUB_ENV}"
+              ;;
+            almalinux-*)
+              echo "TASK_NAMESPACE=yum" >> "${GITHUB_ENV}"
+              ;;
+          esac
       - uses: actions/checkout@v5
         with:
           submodules: recursive
@@ -172,38 +158,38 @@ jobs:
       - name: Cache ccache
         uses: actions/cache@v4
         with:
-          path: package/${{ matrix.task-namespace }}/build/${{ matrix.target }}/ccache
+          path: package/${{ env.TASK_NAMESPACE }}/build/${{ matrix.id }}/ccache
           key: package-${{ matrix.id }}-ccache-${{ hashFiles('libmilter/**', 'milter/**', 'src/**', 'tool/**', 'test/**') }}
           restore-keys: package-${{ matrix.id }}-ccache-
       - name: Build with Docker
         run: |
           cd package
           rake docker:pull || :
-          rake ${{ matrix.task-namespace }}:build BUILD_DIR=build
+          rake ${TASK_NAMESPACE}:build BUILD_DIR=build
         env:
-          APT_TARGETS: ${{ matrix.target }}
-          YUM_TARGETS: ${{ matrix.target }}
+          APT_TARGETS: ${{ matrix.id }}
+          YUM_TARGETS: ${{ matrix.id }}
       - name: Push the built Docker image
         continue-on-error: true
         run: |
           cd package
           rake docker:push
         env:
-          APT_TARGETS: ${{ matrix.target }}
-          YUM_TARGETS: ${{ matrix.target }}
+          APT_TARGETS: ${{ matrix.id }}
+          YUM_TARGETS: ${{ matrix.id }}
 
       # Artifact
       - uses: actions/upload-artifact@v4
         with:
           name: package-${{ matrix.id }}
-          path: package/${{ matrix.task-namespace }}/repositories/
+          path: package/${{ env.TASK_NAMESPACE }}/repositories/
 
       # Release
       - name: Create assets
         if: |
           startsWith(github.ref, 'refs/tags/')
         run: |
-          tar czf ${{ matrix.id }}.tar.gz package/${{ matrix.task-namespace }}/repositories/
+          tar czf ${{ matrix.id }}.tar.gz package/${TASK_NAMESPACE}/repositories/
       - name: Upload to release
         if: |
           startsWith(github.ref, 'refs/tags/')
@@ -219,13 +205,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        label:
-          - Debian GNU/Linux bullseye
-          - Debian GNU/Linux bookworm
-          - Debian GNU/Linux trixie
-          - Ubuntu Jammy Jellyfish
-          - AlmaLinux 8
-          - AlmaLinux 9
+        id:
+          - debian-bullseye
+          - debian-bookworm
+          - debian-trixie
+          - ubuntu-jammy
+          - almalinux-8
+          - almalinux-9
+          - almalinux-10
         include:
           - label: Debian GNU/Linux bullseye
             id: debian-bullseye
@@ -251,14 +238,44 @@ jobs:
             id: almalinux-9
             task-namespace: yum
             image: images:almalinux/9
+          - label: AlmaLinux 10
+            id: almalinux-10
+            task-namespace: yum
+            image: images:almalinux/10
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Prepare
+        run: |
+          id=${{ matrix.id }}
+          case ${id} in
+            debian-bullseye)
+              echo "TASK_NAMESPACE=apt" >> "${GITHUB_ENV}"
+              echo "IMAGE=debian/11" >> "${GITHUB_ENV}"
+              ;;
+            debian-bookworm)
+              echo "TASK_NAMESPACE=apt" >> "${GITHUB_ENV}"
+              echo "IMAGE=debian/12" >> "${GITHUB_ENV}"
+              ;;
+            debian-trixie)
+              echo "TASK_NAMESPACE=apt" >> "${GITHUB_ENV}"
+              echo "IMAGE=debian/13" >> "${GITHUB_ENV}"
+              ;;
+            ubuntu-jammy)
+              echo "TASK_NAMESPACE=apt" >> "${GITHUB_ENV}"
+              echo "IMAGE=ubuntu/22.04" >> "${GITHUB_ENV}"
+              ;;
+            almalinux-*)
+              echo "TASK_NAMESPACE=yum" >> "${GITHUB_ENV}"
+              version=${id#almalinux-}
+              echo "IMAGE=almalinux/${version}" >> "${GITHUB_ENV}"
+              ;;
+          esac
       - uses: actions/checkout@v5
       - uses: actions/download-artifact@v5
         with:
           name: package-${{ matrix.id }}
-          path: package/${{ matrix.task-namespace }}/repositories
+          path: package/${{ env.TASK_NAMESPACE }}/repositories
       - name: Install Incus
         run: |
           sudo apt update
@@ -273,10 +290,10 @@ jobs:
           sudo incus admin init --auto
       - name: Prepare image
         run: |
-          sudo incus launch ${{ matrix.image }} target
+          sudo incus launch images:${IMAGE} target
           sudo incus config device add target host disk source=$PWD path=/host
           # https://discuss.linuxcontainers.org/t/network-issue-with-almalinux-8-9-on-github-actions-using-incus/20046
           sleep 10
       - name: Run test
         run: |
-          sudo incus exec target -- /host/package/${{ matrix.task-namespace }}/test.sh
+          sudo incus exec target -- /host/package/${TASK_NAMESPACE}/test.sh
