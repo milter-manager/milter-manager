@@ -31,6 +31,10 @@ case ${version} in
     sudo ${DNF} install -y epel-release
     DNF="${DNF} --enablerepo=epel-testing"
     ;;
+  *)
+    DNF="dnf --enablerepo=crb"
+    sudo ${DNF} install -y epel-release
+    ;;
 esac
 
 # TODO: Need this for testing package upgrade
