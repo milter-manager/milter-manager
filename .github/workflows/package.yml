@@ -101,6 +101,7 @@ jobs:
           - debian-bookworm
           - debian-trixie
           - ubuntu-jammy
+          - ubuntu-noble
           - almalinux-8
           - almalinux-9
           - almalinux-10
@@ -108,7 +109,7 @@ jobs:
       APACHE_ARROW_REPOSITORY: ${{ github.workspace }}/apache-arrow
       GROONGA_REPOSITORY: ${{ github.workspace }}/groonga
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
       - name: Prepare
         run: |
@@ -210,38 +211,10 @@ jobs:
           - debian-bookworm
           - debian-trixie
           - ubuntu-jammy
+          - ubuntu-noble
           - almalinux-8
           - almalinux-9
           - almalinux-10
-        include:
-          - label: Debian GNU/Linux bullseye
-            id: debian-bullseye
-            task-namespace: apt
-            image: images:debian/11
-          - label: Debian GNU/Linux bookworm
-            id: debian-bookworm
-            task-namespace: apt
-            image: images:debian/12
-          - label: Debian GNU/Linux trixie
-            id: debian-trixie
-            task-namespace: apt
-            image: images:debian/13
-          - label: Ubuntu Jammy Jellyfish
-            id: ubuntu-jammy
-            task-namespace: apt
-            image: images:ubuntu/22.04
-          - label: AlmaLinux 8
-            id: almalinux-8
-            task-namespace: yum
-            image: images:almalinux/8
-          - label: AlmaLinux 9
-            id: almalinux-9
-            task-namespace: yum
-            image: images:almalinux/9
-          - label: AlmaLinux 10
-            id: almalinux-10
-            task-namespace: yum
-            image: images:almalinux/10
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -264,6 +237,10 @@ jobs:
             ubuntu-jammy)
               echo "TASK_NAMESPACE=apt" >> "${GITHUB_ENV}"
               echo "IMAGE=ubuntu/22.04" >> "${GITHUB_ENV}"
+              ;;
+            ubuntu-noble)
+              echo "TASK_NAMESPACE=apt" >> "${GITHUB_ENV}"
+              echo "IMAGE=ubuntu/24.04" >> "${GITHUB_ENV}"
               ;;
             almalinux-*)
               echo "TASK_NAMESPACE=yum" >> "${GITHUB_ENV}"
