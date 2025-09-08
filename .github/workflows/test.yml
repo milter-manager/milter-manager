@@ -8,6 +8,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        runs-on:
+          - ubuntu-latest
+          - ubuntu-24.04-arm
         service:
           - almalinux-8
           - almalinux-9
@@ -16,10 +19,19 @@ jobs:
           - debian-bookworm
           - debian-trixie
           - ubuntu-jammy
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runs-on }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
+      - name: Prepare environment variables
+        run: |
+          if [ "${{ matrix.runs-on }}" = "ubuntu-latest" ]; then
+            echo "CUTTER_MAIN=no" >> "${GITHUB_ENV}"
+            echo "PLATFORM=linux/amd64" >> "${GITHUB_ENV}"
+          else
+            echo "CUTTER_MAIN=yes" >> "${GITHUB_ENV}"
+            echo "PLATFORM=linux/arm64" >> "${GITHUB_ENV}"
+          fi
       - name: Install dependencies
         run: |
           sudo apt update
@@ -38,8 +50,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .cache/ccache
-          key: test-${{ matrix.service }}-ccache-${{ hashFiles('libmilter/**', 'milter/**', 'src/**', 'tool/**', 'test/**') }}
-          restore-keys: test-${{ matrix.service }}-ccache-
+          key: test-${{ matrix.runs-on }}-${{ matrix.service }}-ccache-${{ hashFiles('libmilter/**', 'milter/**', 'src/**', 'tool/**', 'test/**') }}
+          restore-keys: test-${{ matrix.runs-on }}-${{ matrix.service }}-ccache-
       - name: Prepare ccache directory
         run: |
           sudo mkdir -p .cache/ccache/
@@ -49,7 +61,13 @@ jobs:
   # Temporary. We should integrate this to the above test job.
   meson:
     name: meson
-    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on:
+          - ubuntu-latest
+          - ubuntu-24.04-arm
+    runs-on: ${{ matrix.runs-on }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
@@ -66,8 +84,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.ccache
-          key: test-meson-ccache-${{ hashFiles('libmilter/**', 'milter/**', 'src/**', 'tool/**', 'test/**') }}
-          restore-keys: test-meson-ccache-
+          key: test-meson-${{ matrix.runs-on }}-ccache-${{ hashFiles('libmilter/**', 'milter/**', 'src/**', 'tool/**', 'test/**') }}
+          restore-keys: test-meson-${{ matrix.runs-on }}-ccache-
       - name: Setup
         run: |
           meson setup \
