@@ -1,5 +1,6 @@
 services:
   almalinux-8:
+    platform: ${PLATFORM}
     build:
       context: .
       dockerfile: dockerfiles/almalinux-8.dockerfile
@@ -15,6 +16,7 @@ services:
       /host/dockerfiles/run-test.sh
 
   almalinux-9:
+    platform: ${PLATFORM}
     build:
       context: .
       dockerfile: dockerfiles/almalinux-9.dockerfile
@@ -30,6 +32,7 @@ services:
       /host/dockerfiles/run-test.sh
 
   almalinux-10:
+    platform: ${PLATFORM}
     build:
       context: .
       dockerfile: dockerfiles/almalinux-10.dockerfile
@@ -45,6 +48,7 @@ services:
       /host/dockerfiles/run-test.sh
 
   debian-bullseye:
+    platform: ${PLATFORM}
     build:
       context: .
       dockerfile: dockerfiles/debian-bullseye.dockerfile
@@ -60,6 +64,7 @@ services:
       /host/dockerfiles/run-test.sh
 
   debian-bookworm:
+    platform: ${PLATFORM}
     build:
       context: .
       dockerfile: dockerfiles/debian-bookworm.dockerfile
@@ -75,6 +80,7 @@ services:
       /host/dockerfiles/run-test.sh
 
   debian-trixie:
+    platform: ${PLATFORM}
     build:
       context: .
       dockerfile: dockerfiles/debian-trixie.dockerfile
@@ -90,6 +96,7 @@ services:
       /host/dockerfiles/run-test.sh
 
   ubuntu-jammy:
+    platform: ${PLATFORM}
     build:
       context: .
       dockerfile: dockerfiles/ubuntu-jammy.dockerfile

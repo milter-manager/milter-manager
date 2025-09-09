@@ -10,8 +10,12 @@ class TestHeader < Test::Unit::TestCase
     header1 = Milter::Header.new("name1", "value1")
     header2 = Milter::Header.new("name2", "value2")
     assert_equal(0, header1 <=> header1)
-    assert_equal(-1, header1 <=> header2)
-    assert_equal(1, header2 <=> header1)
+    assert do
+      (header1 <=> header2) < 0
+    end
+    assert do
+      (header2 <=> header1) > 0
+    end
   end
 
   def test_equal

@@ -26,6 +26,8 @@ cd /build
 ../host/configure \
   --with-default-connection-spec="inet:10025@[127.0.0.1]"
 make -j$(nproc)
+# Ensure creating src/.libs/lt-milter-manager
+src/milter-manager --version >/dev/null 2>&1 || :
 
 ../host/binding/ruby/test/run-test.sh -vv
 ../host/test/run-test.sh
