@@ -14,14 +14,16 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 applicable_conditions = [
-  'authentication.conf',
-  'dnsbl.conf',
-  'remote-network.conf',
-  'restrict-accounts.conf',
-  's25r.conf',
-  'sendmail-compatible.conf',
-  'stress.conf',
-  'trust.conf',
+    'authentication.conf',
+    'dnsbl.conf',
+    'remote-network.conf',
+    'restrict-accounts.conf',
+    's25r.conf',
+    'sendmail-compatible.conf',
+    'stress.conf',
+    'trust.conf',
 ]
-install_data(applicable_conditions,
-             install_dir: project_sysconf_dir / 'applicable-conditions')
+install_data(
+    applicable_conditions,
+    install_dir: project_sysconf_dir / 'applicable-conditions',
+)

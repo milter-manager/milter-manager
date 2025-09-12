@@ -14,13 +14,12 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 defaults = [
-  'debian.conf',
-  'freebsd.conf',
-  'pkgsrc.conf',
-  'redhat.conf',
-  'redhat7.conf',
-  'redhat8.conf',
-  'redhat9.conf',
+    'debian.conf',
+    'freebsd.conf',
+    'pkgsrc.conf',
+    'redhat.conf',
+    'redhat7.conf',
+    'redhat8.conf',
+    'redhat9.conf',
 ]
-install_data(defaults,
-             install_dir: project_sysconf_dir / 'defaults')
+install_data(defaults, install_dir: project_sysconf_dir / 'defaults')
