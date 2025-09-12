@@ -1,4 +1,4 @@
-# Copyright (C) 2022  Sutou Kouhei <kou@clear-code.com>
+# Copyright (C) 2025  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -13,10 +13,26 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-executable(
-    'milter-manager',
-    'milter-manager.c',
-    dependencies: [milter_manager],
-    install: true,
-    install_dir: get_option('sbindir'),
-)
+name: Lint
+on:
+  push:
+    branches-ignore:
+      - dependabot/**
+  pull_request:
+jobs:
+  pre-commit:
+    name: pre-commit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install pre-commit
+        run: |
+          python -m pip install pre-commit
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+      - name: Run pre-commit
+        run: |
+          pre-commit run --show-diff-on-failure --color=always --all-files

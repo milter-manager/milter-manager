@@ -14,70 +14,69 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-sources = files(
-  'libmilter-compatible.c',
+sources = files('libmilter-compatible.c')
+
+headers = files('libmilter-compatible.h', 'mfapi.h', 'mfdef.h')
+
+install_headers(
+    headers,
+    subdir: project_include_sub_dir / 'libmilter' / 'libmilter',
 )
 
-headers = files(
-  'libmilter-compatible.h',
-  'mfapi.h',
-  'mfdef.h',
+dependencies = [config, milter_client]
+libmilter = library(
+    'libmilter',
+    c_args: '-DMILTER_LOG_DOMAIN="libmilter"',
+    sources: sources + headers,
+    install: true,
+    dependencies: dependencies,
+    soversion: so_version,
+    version: library_version,
 )
 
-install_headers(headers, subdir: project_include_sub_dir / 'libmilter' / 'libmilter')
+pkgconfig.generate(
+    libmilter,
+    description: 'libmilter API',
+    filebase: 'libmilter',
+    name: 'Sendmail\'s libmilter compatible API by milter client library',
+    requires: ['milter-client = ' + meson.project_version()],
+    subdirs: project_include_sub_dir / 'libmilter',
+    variables: pkgconfig_variables,
+)
 
-dependencies = [
-  config,
-  milter_client,
-]
-libmilter = library('libmilter',
-                    c_args: '-DMILTER_LOG_DOMAIN="libmilter"',
-                    sources: sources + headers,
-                    install: true,
-                    dependencies: dependencies,
-                    soversion: so_version,
-                    version: library_version)
-
-pkgconfig.generate(libmilter,
-                   description: 'libmilter API',
-                   filebase: 'libmilter',
-                   name: 'Sendmail\'s libmilter compatible API by milter client library',
-                   requires: ['milter-client = ' + meson.project_version()],
-                   subdirs: project_include_sub_dir / 'libmilter',
-                   variables: pkgconfig_variables)
-
-libmilter_gir = gnome.generate_gir(libmilter,
-                                   export_packages: 'libmilter',
-                                   extra_args: [
-                                     '--warn-all',
-                                   ],
-                                   fatal_warnings: false,
-                                   header: 'libmilter/mfapi.h',
-                                   identifier_prefix: 'SMFI',
-                                   includes: [],
-                                   install: true,
-                                   namespace: 'SMFI',
-                                   nsversion: api_version,
-                                   sources: 'mfapi.h',
-                                   symbol_prefix: 'smfi')
+libmilter_gir = gnome.generate_gir(
+    libmilter,
+    export_packages: 'libmilter',
+    extra_args: ['--warn-all'],
+    fatal_warnings: false,
+    header: 'libmilter/mfapi.h',
+    identifier_prefix: 'SMFI',
+    includes: [],
+    install: true,
+    namespace: 'SMFI',
+    nsversion: api_version,
+    sources: 'mfapi.h',
+    symbol_prefix: 'smfi',
+)
 if enable_doc
-  gi_docgen_toml = configure_file(input: 'gi-docgen.toml.in',
-                                  output: 'gi-docgen.toml',
-                                  configuration: gi_docgen_toml_conf)
-  custom_target('libmilter-doc',
-                command: [
-                  find_program('gi-docgen'),
-                  'generate',
-                  '--config=@INPUT0@',
-                  '--output-dir=@OUTPUT0@',
-                  '--no-namespace-dir',
-                  '@INPUT1@',
-                ],
-                input: [
-                  gi_docgen_toml,
-                  libmilter_gir[0],
-                ],
-                install: true,
-                install_dir: doc_dir,
-                output: ['libmilter'])
+    gi_docgen_toml = configure_file(
+        input: 'gi-docgen.toml.in',
+        output: 'gi-docgen.toml',
+        configuration: gi_docgen_toml_conf,
+    )
+    custom_target(
+        'libmilter-doc',
+        command: [
+            find_program('gi-docgen'),
+            'generate',
+            '--config=@INPUT0@',
+            '--output-dir=@OUTPUT0@',
+            '--no-namespace-dir',
+            '@INPUT1@',
+        ],
+        input: [gi_docgen_toml, libmilter_gir[0]],
+        install: true,
+        install_dir: doc_dir,
+        output: ['libmilter'],
+    )
 endif
