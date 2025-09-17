@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2023  Sutou Kouhei <kou@clear-code.com>
+# Copyright (C) 2022-2025  Sutou Kouhei <kou@clear-code.com>
 #
 # This library is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -83,5 +83,13 @@ install_data(
 )
 
 test_env = environment()
+test_env.set('GI_TYPELIB_PATH', meson.build_root() / 'milter' / 'core')
+test_env.append('GI_TYPELIB_PATH', meson.build_root() / 'milter' / 'client')
+test_env.append('GI_TYPELIB_PATH', meson.build_root() / 'milter' / 'server')
+test_env.append('GI_TYPELIB_PATH', meson.build_root() / 'milter' / 'manager')
+test_env.set('LD_LIBRARY_PATH', meson.build_root() / 'milter' / 'core')
+test_env.append('LD_LIBRARY_PATH', meson.build_root() / 'milter' / 'client')
+test_env.append('LD_LIBRARY_PATH', meson.build_root() / 'milter' / 'server')
+test_env.append('LD_LIBRARY_PATH', meson.build_root() / 'milter' / 'manager')
 test_run_test_rb = files('test/run-test.rb')
 test('ruby', ruby, args: [test_run_test_rb], env: test_env)
