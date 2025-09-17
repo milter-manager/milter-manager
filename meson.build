@@ -14,10 +14,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
-project('milter-manager',
-        'c',
-        license: 'LGPL-3.0-or-later',
-        version: '2.2.8')
+project('milter-manager', 'c', license: 'LGPL-3.0-or-later', version: '2.2.8')
 
 api_version = '2.0'
 so_version = 2
@@ -34,15 +31,15 @@ project_lib_dir = get_option('libdir') / meson.project_name()
 module_dir = project_lib_dir / 'module'
 module_configuration_dir = module_dir / 'configuration'
 sysconf_dir = get_option('sysconfdir')
-project_sysconf_dir = sysconf_dir/ meson.project_name()
+project_sysconf_dir = sysconf_dir / meson.project_name()
 
 fs = import('fs')
 gnome = import('gnome')
 pkgconfig = import('pkgconfig')
 pkgconfig_variables = [
-  'bindir=${prefix}/@0@'.format(get_option('bindir')),
-  'datadir=${prefix}/@0@'.format(data_dir),
-  'girdir=${datadir}/@0@'.format(relative_gir_dir),
+    'bindir=${prefix}/@0@'.format(get_option('bindir')),
+    'datadir=${prefix}/@0@'.format(data_dir),
+    'girdir=${datadir}/@0@'.format(relative_gir_dir),
 ]
 
 
@@ -57,49 +54,50 @@ glib_version_min_required = 'GLIB_VERSION_2_50'
 
 package_platform = get_option('package-platform')
 if package_platform == ''
-  uname = run_command(find_program('uname'), capture: true, check: true).stdout()
-  if uname == 'Linux'
-    if fs.is_file('/etc/debian_version') or fs.exists('/usr/bin/dpkg')
-      package_platform = 'debian'
-    elif fs.is_file('/etc/redhat-release')
-      package_platform = 'redhat'
+    uname = run_command(find_program('uname'), capture: true, check: true).stdout()
+    if uname == 'Linux'
+        if fs.is_file('/etc/debian_version') or fs.exists('/usr/bin/dpkg')
+            package_platform = 'debian'
+        elif fs.is_file('/etc/redhat-release')
+            package_platform = 'redhat'
+        endif
+    elif uname == 'FreeBSD'
+        package_platform = 'freebsd'
+    elif uname == 'NetBSD' or uname == 'DragonFly'
+        package_platform = 'pkgsrc'
     endif
-  elif uname == 'FreeBSD'
-    package_platform = 'freebsd'
-  elif uname == 'NetBSD' or uname == 'DragonFly'
-    package_platform = 'pkgsrc'
-  endif
 endif
 if package_platform == 'redhat'
-  distribution_version = run_command(find_program('sh'),
-                                     '-c',
-                                     '. /etc/os-release && ' +
-                                     'echo ${VESRION_ID} | ' +
-                                     'grep -oE "^[0-9]+"',
-                                     capture: true,
-                                     check: true).stdout()
-  package_platform += distribution_version
+    distribution_version = run_command(
+        find_program('sh'),
+        '-c',
+        '. /etc/os-release && ' + 'echo ${VESRION_ID} | ' + 'grep -oE "^[0-9]+"',
+        capture: true,
+        check: true,
+    ).stdout()
+    package_platform += distribution_version
 endif
 if package_platform == ''
-  package_platform = 'unknown'
+    package_platform = 'unknown'
 endif
 
 
 default_connection_spec = get_option('default-connection-spec')
 if default_connection_spec == ''
-  if package_platform == 'debian'
-    default_connection_spec = \
-      'unix:/run/@0@/@0@.sock'.format(meson.project_name(),
-                                      meson.project_name())
-  elif (package_platform == 'redhat' or
-        package_platform == 'freebsd' or
-        package_platform == 'pkgsrc')
-    default_connection_spec = \
-      'unix:/var/run/@0@/@0@.sock'.format(meson.project_name(),
-                                          meson.project_name())
-  else
-    default_connection_spec = 'inet:10025@[127.0.0.1]'
-  endif
+    if package_platform == 'debian'
+        default_connection_spec = \
+    'unix:/run/@0@/@0@.sock'.format(meson.project_name(), meson.project_name())
+    elif (package_platform == 'redhat' or
+    package_platform == 'freebsd' or
+    package_platform == 'pkgsrc')
+        default_connection_spec = \
+    'unix:/var/run/@0@/@0@.sock'.format(
+            meson.project_name(),
+            meson.project_name(),
+        )
+    else
+        default_connection_spec = 'inet:10025@[127.0.0.1]'
+    endif
 endif
 
 
@@ -110,11 +108,11 @@ default_socket_group = get_option('default-socket-group')
 rcddir = get_option('rcddir')
 package_options = get_option('package-options')
 if rcddir != ''
-  if package_options == ''
-    package_options = 'rcddir=@0@'.format(rcddir)
-  else
-    package_options = 'rcddir=@0@,@0@'.format(rcddir, package_options)
-  endif
+    if package_options == ''
+        package_options = 'rcddir=@0@'.format(rcddir)
+    else
+        package_options = 'rcddir=@0@,@0@'.format(rcddir, package_options)
+    endif
 endif
 
 enable_doc = get_option('doc')
@@ -126,64 +124,77 @@ gi_docgen_toml_conf.set('SOURCE_REFERENCE', source_reference)
 gi_docgen_toml_conf.set('VERSION', meson.project_version())
 
 config_h_conf = configuration_data()
-config_h_conf.set_quoted('CONFIG_DIR',
-                         prefix /
-                         get_option('sysconfdir') /
-                         meson.project_name())
-config_h_conf.set_quoted('CONFIG_FILE_NAME',
-                         '@0@.conf'.format(meson.project_name()))
-config_h_conf.set_quoted('CUSTOM_CONFIG_FILE_NAME',
-                         '@0@.custom.conf'.format(meson.project_name()))
-config_h_conf.set_quoted('CONFIGURATION_MODULE_DIR',
-                         prefix /
-                         get_option('libdir') /
-                         meson.project_name() /
-                         'module' /
-                         'configuration')
+config_h_conf.set_quoted(
+    'CONFIG_DIR',
+    prefix / get_option('sysconfdir') / meson.project_name(),
+)
+config_h_conf.set_quoted(
+    'CONFIG_FILE_NAME',
+    '@0@.conf'.format(meson.project_name()),
+)
+config_h_conf.set_quoted(
+    'CUSTOM_CONFIG_FILE_NAME',
+    '@0@.custom.conf'.format(meson.project_name()),
+)
+config_h_conf.set_quoted(
+    'CONFIGURATION_MODULE_DIR',
+    prefix / get_option('libdir') / meson.project_name() / 'module' / 'configuration',
+)
 config_h_conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
 config_h_conf.set('GLIB_VERSION_MIN_REQUIRED', glib_version_min_required)
-config_h_conf.set_quoted('LOCALEDIR',
-                         prefix / get_option('localedir'))
-config_h_conf.set_quoted('MILTER_MANAGER_DEFAULT_CONNECTION_SPEC',
-                         default_connection_spec)
+config_h_conf.set_quoted('LOCALEDIR', prefix / get_option('localedir'))
+config_h_conf.set_quoted(
+    'MILTER_MANAGER_DEFAULT_CONNECTION_SPEC',
+    default_connection_spec,
+)
 if default_effective_group == ''
-  config_h_conf.set('MILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP', 'NULL')
+    config_h_conf.set('MILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP', 'NULL')
 else
-  config_h_conf.set_quoted('MILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP',
-                           default_effective_group)
+    config_h_conf.set_quoted(
+        'MILTER_MANAGER_DEFAULT_EFFECTIVE_GROUP',
+        default_effective_group,
+    )
 endif
 if default_effective_user == ''
-  config_h_conf.set('MILTER_MANAGER_DEFAULT_EFFECTIVE_USER', 'NULL')
+    config_h_conf.set('MILTER_MANAGER_DEFAULT_EFFECTIVE_USER', 'NULL')
 else
-  config_h_conf.set_quoted('MILTER_MANAGER_DEFAULT_EFFECTIVE_USER',
-                           default_effective_user)
+    config_h_conf.set_quoted(
+        'MILTER_MANAGER_DEFAULT_EFFECTIVE_USER',
+        default_effective_user,
+    )
 endif
 if default_pid_file == ''
-  config_h_conf.set('MILTER_MANAGER_DEFAULT_PID_FILE', 'NULL')
+    config_h_conf.set('MILTER_MANAGER_DEFAULT_PID_FILE', 'NULL')
 else
-  config_h_conf.set_quoted('MILTER_MANAGER_DEFAULT_PID_FILE', default_pid_file)
+    config_h_conf.set_quoted('MILTER_MANAGER_DEFAULT_PID_FILE', default_pid_file)
 endif
 if default_socket_group == ''
-  config_h_conf.set('MILTER_MANAGER_DEFAULT_SOCKET_GROUP', 'NULL')
+    config_h_conf.set('MILTER_MANAGER_DEFAULT_SOCKET_GROUP', 'NULL')
 else
-  config_h_conf.set_quoted('MILTER_MANAGER_DEFAULT_SOCKET_GROUP',
-                           default_socket_group)
+    config_h_conf.set_quoted(
+        'MILTER_MANAGER_DEFAULT_SOCKET_GROUP',
+        default_socket_group,
+    )
 endif
 if package_options == ''
-  config_h_conf.set('MILTER_MANAGER_PACKAGE_OPTIONS', 'NULL')
+    config_h_conf.set('MILTER_MANAGER_PACKAGE_OPTIONS', 'NULL')
 else
-  config_h_conf.set_quoted('MILTER_MANAGER_PACKAGE_OPTIONS', package_options)
+    config_h_conf.set_quoted('MILTER_MANAGER_PACKAGE_OPTIONS', package_options)
 endif
 config_h_conf.set_quoted('MILTER_MANAGER_PACKAGE_PLATFORM', package_platform)
 config_h_conf.set_quoted('PACKAGE', meson.project_name())
 config_h_conf.set_quoted('PREFIX', prefix)
 config_h_conf.set_quoted('VERSION', meson.project_version())
-config_h = configure_file(input: 'meson-config.h.in',
-                          output: 'config.h',
-                          configuration: config_h_conf)
-config = declare_dependency(compile_args: '-DHAVE_CONFIG_H',
-                            include_directories: include_directories('.'),
-                            sources: config_h)
+config_h = configure_file(
+    input: 'meson-config.h.in',
+    output: 'config.h',
+    configuration: config_h_conf,
+)
+config = declare_dependency(
+    compile_args: '-DHAVE_CONFIG_H',
+    include_directories: include_directories('.'),
+    sources: config_h,
+)
 
 subdir('milter/core')
 subdir('milter/client')
@@ -193,56 +204,60 @@ subdir('libmilter')
 
 rubies = ['ruby-3.3', 'ruby-3.2', 'ruby-3.1', 'ruby-3.0', 'ruby-2.7', 'ruby']
 if meson.version().version_compare('>=0.60.0')
-  libruby = dependency(rubies, required: true)
+    libruby = dependency(rubies, required: true)
 else
-  # depencency():
-  # Before 0.60.0 only a single dependency name was allowed.
-  # https://mesonbuild.com/Reference-manual_functions.html#dependency
-  foreach ruby: rubies
-    libruby = dependency(ruby, required: false)
-    if libruby.found()
-      break
+    # depencency():
+    # Before 0.60.0 only a single dependency name was allowed.
+    # https://mesonbuild.com/Reference-manual_functions.html#dependency
+    foreach ruby : rubies
+        libruby = dependency(ruby, required: false)
+        if libruby.found()
+            break
+        endif
+    endforeach
+    if not libruby.found()
+        error('Ruby not found.')
     endif
-  endforeach
-  if not libruby.found()
-    error('Ruby not found.')
-  endif
 endif
 
 ruby_install_dir = get_option('ruby-install-dir')
 if ruby_install_dir == 'site'
-  ruby_install_dir = libruby.get_variable(pkgconfig: 'sitelibdir')
+    ruby_install_dir = libruby.get_variable(pkgconfig: 'sitelibdir')
 elif ruby_install_dir == 'vendor'
-  ruby_install_dir = libruby.get_variable(pkgconfig: 'vendorlibdir')
+    ruby_install_dir = libruby.get_variable(pkgconfig: 'vendorlibdir')
 endif
 ruby = find_program(libruby.get_variable(pkgconfig: 'ruby'), required: true)
 ruby_glib2_compile_args = []
 ruby_glib2_gem_path = \
-  run_command(ruby,
-              '-e',
-              'print(Gem::Specification.find_by_name("glib2").full_gem_path)',
-              capture: true,
-              check: true).stdout()
+    run_command(
+    ruby,
+    '-e',
+    'print(Gem::Specification.find_by_name("glib2").full_gem_path)',
+    capture: true,
+    check: true,
+).stdout()
 if fs.is_dir(ruby_glib2_gem_path)
-  ruby_glib2_compile_args += [
-    '-I@0@/ext/glib2'.format(ruby_glib2_gem_path),
-    '-I@0@/lib'.format(ruby_glib2_gem_path),
-  ]
+    ruby_glib2_compile_args += [
+        '-I@0@/ext/glib2'.format(ruby_glib2_gem_path),
+        '-I@0@/lib'.format(ruby_glib2_gem_path),
+    ]
 endif
 ruby_vendor_arch_dir = libruby.get_variable(pkgconfig: 'vendorarchdir')
-ruby_glib2_compile_args += [
-  '-I@0@'.format(ruby_vendor_arch_dir),
-]
-ruby_glib2 = declare_dependency(compile_args: ruby_glib2_compile_args,
-                                dependencies: [libruby])
+ruby_glib2_compile_args += ['-I@0@'.format(ruby_vendor_arch_dir)]
+ruby_glib2 = declare_dependency(
+    compile_args: ruby_glib2_compile_args,
+    dependencies: [libruby],
+)
 subdir('binding/ruby')
 subdir('module/configuration/ruby')
 subdir('src')
 subdir('tool')
 subdir('data')
 
-python = import('python').find_installation(get_option('python-path'),
-                                            required: get_option('python'))
+python = import('python').find_installation(
+    get_option('python-path'),
+    required: get_option('python'),
+)
 if python.found()
-  subdir('binding/python')
+    subdir('binding/python')
 endif

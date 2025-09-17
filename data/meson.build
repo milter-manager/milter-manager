@@ -16,5 +16,4 @@
 subdir('applicable-conditions')
 subdir('defaults')
 
-install_data('milter-manager.conf',
-             install_dir: project_sysconf_dir)
+install_data('milter-manager.conf', install_dir: project_sysconf_dir)
