@@ -105,3 +105,39 @@ jobs:
             meson test \
               --print-errorlogs \
               --verbose
+
+  docs:
+    name: Documents
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y -V \
+            ccache \
+            gi-docgen \
+            libev-dev \
+            libgirepository1.0-dev \
+            meson
+          sudo gem install gio2
+      - name: Cache ccache
+        uses: actions/cache@v4
+        with:
+          path: ~/.ccache
+          key: docs-ccache-${{ hashFiles('libmilter/**', 'milter/**', 'src/**', 'tool/**', 'test/**') }}
+          restore-keys: docs-ccache-
+      - name: Setup
+        run: |
+          meson setup \
+            --prefix=/tmp/local \
+            -Ddoc=true \
+            ../milter-manager.build \
+            .
+      - name: Build
+        run: |
+          meson compile -C ../milter-manager.build
+      - name: Install
+        run: |
+          sudo meson install -C ../milter-manager.build
