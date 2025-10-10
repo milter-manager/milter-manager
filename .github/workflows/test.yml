@@ -15,7 +15,6 @@ jobs:
           - almalinux-8
           - almalinux-9
           - almalinux-10
-          - debian-bullseye
           - debian-bookworm
           - debian-trixie
           - ubuntu-jammy
