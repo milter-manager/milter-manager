@@ -497,6 +497,9 @@ fi
 
 
 %changelog
+* Fri Oct 10 2025 Sutou Kouhei <kou@clear-code.com> - 2.2.9-1
+- New upstream release.
+
 * Fri Oct 10 2025 Sutou Kouhei <kou@clear-code.com> - 2.2.8-1
 - New upstream release.
 
