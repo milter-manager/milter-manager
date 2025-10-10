@@ -84,7 +84,6 @@ class MilterManagerTask < PackagesGroongaOrgPackageTask
 
   def apt_targets_default
     [
-      "debian-bullseye",
       "debian-bookworm",
       "debian-trixie",
     ]

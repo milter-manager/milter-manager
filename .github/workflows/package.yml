@@ -97,7 +97,6 @@ jobs:
       fail-fast: false
       matrix:
         id:
-          - debian-bullseye
           - debian-bookworm
           - debian-trixie
           - ubuntu-jammy
@@ -207,7 +206,6 @@ jobs:
       fail-fast: false
       matrix:
         id:
-          - debian-bullseye
           - debian-bookworm
           - debian-trixie
           - ubuntu-jammy
