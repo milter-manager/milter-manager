@@ -1768,7 +1768,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      * Returns: response status.
      *
-     * Since: 2.1.6.
+     * Since: 2.1.6
      */
     signals[BODY_BYTES] =
         g_signal_new("body-bytes",
@@ -1926,7 +1926,7 @@ milter_client_context_class_init (MilterClientContextClass *klass)
      *
      * Returns: response status.
      *
-     * Since: 2.1.6.
+     * Since: 2.1.6
      */
     signals[END_OF_MESSAGE_BYTES] =
         g_signal_new("end-of-message-bytes",
