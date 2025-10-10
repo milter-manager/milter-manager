@@ -1,3 +1,9 @@
+milter-manager (2.2.8-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Sutou Kouhei <kou@clear-code.com>  Fri, 10 Oct 2025 13:30:17 -0000
+
 milter-manager (2.2.7-1) unstable; urgency=low
 
   * New upstream release.
@@ -362,4 +368,3 @@ milter-manager (0.8.0-0~test5) hardy; urgency=low
   * Initial release.
 
  -- Jun Kobayashi <jkbys@ubuntu.com>  Mon, 02 Feb 2009 11:21:28 +0900
-
