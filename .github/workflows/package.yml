@@ -139,7 +139,7 @@ jobs:
             devscripts \
             qemu-user-static \
             ruby
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: source
       - name: Update version
@@ -247,7 +247,7 @@ jobs:
               ;;
           esac
       - uses: actions/checkout@v5
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: package-${{ matrix.id }}
           path: package/${{ env.TASK_NAMESPACE }}/repositories
