@@ -21,7 +21,7 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Prepare environment variables
         run: |
           if [ "${{ matrix.runs-on }}" = "ubuntu-latest" ]; then
@@ -69,7 +69,7 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Install dependencies
         run: |
           sudo apt update
@@ -111,7 +111,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Install dependencies
         run: |
           sudo apt update
