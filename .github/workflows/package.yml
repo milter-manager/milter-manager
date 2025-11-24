@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
       - name: Install dependencies
@@ -66,7 +66,7 @@ jobs:
           path: milter-manager-*.tar.gz
 
       # Release
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         if: |
           startsWith(github.ref, 'refs/tags/')
         with:
@@ -120,15 +120,15 @@ jobs:
               echo "TASK_NAMESPACE=yum" >> "${GITHUB_ENV}"
               ;;
           esac
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           path: groonga
           repository: groonga/groonga
           submodules: recursive
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           path: apache-arrow
           repository: apache/arrow
@@ -246,7 +246,7 @@ jobs:
               echo "IMAGE=almalinux/${version}" >> "${GITHUB_ENV}"
               ;;
           esac
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/download-artifact@v6
         with:
           name: package-${{ matrix.id }}
