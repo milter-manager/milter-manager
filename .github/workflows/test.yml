@@ -46,7 +46,7 @@ jobs:
       - run: ./autogen.sh
       - run: docker compose build ${{ matrix.service }}
       - name: Cache ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .cache/ccache
           key: test-${{ matrix.runs-on }}-${{ matrix.service }}-ccache-${{ hashFiles('libmilter/**', 'milter/**', 'src/**', 'tool/**', 'test/**') }}
@@ -80,7 +80,7 @@ jobs:
             meson
           sudo gem install gio2
       - name: Cache ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.ccache
           key: test-meson-${{ matrix.runs-on }}-ccache-${{ hashFiles('libmilter/**', 'milter/**', 'src/**', 'tool/**', 'test/**') }}
@@ -123,7 +123,7 @@ jobs:
             meson
           sudo gem install gio2
       - name: Cache ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.ccache
           key: docs-ccache-${{ hashFiles('libmilter/**', 'milter/**', 'src/**', 'tool/**', 'test/**') }}
