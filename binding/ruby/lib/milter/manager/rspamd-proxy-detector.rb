@@ -24,11 +24,17 @@ module Milter::Manager
       rspamd_proxy = workers.detect do |worker|
         worker.key?("rspamd_proxy") && worker["rspamd_proxy"]["milter"]
       end
-      host, port = rspamd_proxy["rspamd_proxy"]["bind_socket"].split(":", 2)
-      if host == "*"
-        "inet:#{port}@localhost"
+      bind_socket = rspamd_proxy["rspamd_proxy"]["bind_socket"]
+      if bind_socket.start_with?("/")
+        path = bind_socket.split(/[ ,]/, 2)[0]
+        "unix:#{path}"
       else
-        "inet:#{port}@#{host}"
+        host, port = bind_socket.split(":", 2)
+        if host == "*"
+          "inet:#{port}@localhost"
+        else
+          "inet:#{port}@#{host}"
+        end
       end
     end
   end

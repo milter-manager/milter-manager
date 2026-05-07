@@ -1,6 +1,8 @@
 class TestRspamdProxyDetector < Test::Unit::TestCase
   data(default: ["*:11332", "inet:11332@localhost"],
-       host: ["mail.example.com:11332", "inet:11332@mail.example.com"])
+       host: ["mail.example.com:11332", "inet:11332@mail.example.com"],
+       unix: ["/run/rspamd/rspamd.sock mode=0660 owner=_rspamd",
+              "unix:/run/rspamd/rspamd.sock"])
   test "detect" do |(bind_socket, expected)|
     rspamadm = Tempfile.new(["rspamadm", ".sh"])
     FileUtils.chmod(0755, rspamadm.path)
