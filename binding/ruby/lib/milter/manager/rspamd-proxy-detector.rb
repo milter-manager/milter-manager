@@ -26,7 +26,7 @@ module Milter::Manager
       end
       bind_socket = rspamd_proxy["rspamd_proxy"]["bind_socket"]
       if bind_socket.start_with?("/")
-        path = bind_socket.sub(/\s+\w+=.*\z/, "")
+        path = bind_socket.split(/[ ,]+/, 2)[0]
         "unix:#{path}"
       else
         host, port = bind_socket.split(":", 2)
