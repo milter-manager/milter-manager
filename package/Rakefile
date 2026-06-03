@@ -145,7 +145,7 @@ class MilterManagerTask < PackagesGroongaOrgPackageTask
            "-D", "__gpg /usr/bin/gpg",
            "-D", "__gpg_check_password_cmd /bin/true true",
            "--resign",
-           rpm)
+           path.to_s)
       end
       sh("package_cloud",
          "push",
