@@ -32,7 +32,7 @@ class MilterExternal(milter.client.Session):
         command_line = [
             sys.executable,
             "-c",
-            f"import time; time.sleep({self._timeout})",
+            f"import time; time.sleep({float(self._timeout)})",
         ]
         process = subprocess.Popen(command_line)
         def on_exit(pid, wait_status):
