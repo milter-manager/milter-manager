@@ -140,6 +140,12 @@ class MilterManagerTask < PackagesGroongaOrgPackageTask
         components = relative_path.to_s.split("/")
         distribution = "el"
         version = components[1]
+        sh("rpm",
+           "-D", "_gpg_name #{gpg_uid}",
+           "-D", "__gpg /usr/bin/gpg",
+           "-D", "__gpg_check_password_cmd /bin/true true",
+           "--resign",
+           rpm)
       end
       sh("package_cloud",
          "push",
