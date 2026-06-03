@@ -497,6 +497,9 @@ fi
 
 
 %changelog
+* Wed Jun 03 2026 Sutou Kouhei <kou@clear-code.com> - 2.3.1-1
+- New upstream release.
+
 * Wed Jun 03 2026 Sutou Kouhei <kou@clear-code.com> - 2.3.0-1
 - New upstream release.
 
