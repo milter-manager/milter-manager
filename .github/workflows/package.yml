@@ -101,6 +101,7 @@ jobs:
           - debian-trixie
           - ubuntu-jammy
           - ubuntu-noble
+          - ubuntu-resolute
           - almalinux-8
           - almalinux-9
           - almalinux-10
@@ -210,6 +211,7 @@ jobs:
           - debian-trixie
           - ubuntu-jammy
           - ubuntu-noble
+          - ubuntu-resolute
           - almalinux-8
           - almalinux-9
           - almalinux-10
