@@ -97,7 +97,6 @@ jobs:
       fail-fast: false
       matrix:
         id:
-          - debian-bookworm
           - debian-trixie
           - ubuntu-jammy
           - ubuntu-noble
@@ -207,7 +206,6 @@ jobs:
       fail-fast: false
       matrix:
         id:
-          - debian-bookworm
           - debian-trixie
           - ubuntu-jammy
           - ubuntu-noble
@@ -222,10 +220,6 @@ jobs:
         run: |
           id=${{ matrix.id }}
           case ${id} in
-            debian-bookworm)
-              echo "TASK_NAMESPACE=apt" >> "${GITHUB_ENV}"
-              echo "IMAGE=debian/12" >> "${GITHUB_ENV}"
-              ;;
             debian-trixie)
               echo "TASK_NAMESPACE=apt" >> "${GITHUB_ENV}"
               echo "IMAGE=debian/13" >> "${GITHUB_ENV}"
