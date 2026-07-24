@@ -22,7 +22,7 @@ USER=
 GROUP=
 SOCKET_GROUP=
 CONNECTION_SPEC=
-PIDFILE=/var/run/milter-manager/$NAME.pid
+PIDFILE=/run/milter-manager/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 OPTION_ARGS=""
 
